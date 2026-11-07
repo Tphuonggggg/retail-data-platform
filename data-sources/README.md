@@ -14,7 +14,7 @@ MVP theo thứ tự Sales/Invoicing, Customer Analytics, Inventory Movements. Pu
 
 ## 4. Responsibilities
 
-WWI-02 tạo source contract và data dictionary có bằng chứng metadata. Các bảng dự kiến khảo sát gồm `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines`, `Sales.Customers`, `Sales.CustomerTransactions`, `Warehouse.StockItems` và `Warehouse.StockItemTransactions`. Đây là danh sách khảo sát, chưa phải hợp đồng triển khai đã chốt.
+WWI-02 tạo source contract và data dictionary có bằng chứng metadata. Phase 1.1 đã khảo sát trực tiếp chín bảng MVP, gồm `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines`, `Sales.Customers`, `Sales.CustomerTransactions`, `Warehouse.StockItems`, `Warehouse.StockItemHoldings` và `Warehouse.StockItemTransactions`. Phase 1.2 đã kiểm tra dữ liệu hiện hành và hai archive temporal. Xem [metadata dictionary](../docs/data-models/wwi-metadata-dictionary.md), [Phase 1.1 assessment](../docs/data-models/wwi-phase-1-1-assessment.md) và [Phase 1.2 profiling](../docs/data-models/wwi-phase-1-2-assessment.md). Đây chưa phải hợp đồng triển khai đã chốt.
 
 ## 5. Inputs
 
@@ -54,4 +54,4 @@ Contract đúng bảng/cột/grain đã kiểm chứng; quyền đọc tối thi
 
 ## 14. Current Status
 
-Database WWI local đã được khảo sát read-only trong assessment. Chưa có source adapter, contract WWI hoàn chỉnh hoặc pipeline được kiểm thử trong repository. Not implemented yet.
+Database WWI local đã được khảo sát metadata trực tiếp, chỉ đọc trong Phase 1.1. Chưa có source adapter, contract WWI hoàn chỉnh hoặc pipeline được kiểm thử trong repository. Not implemented yet.

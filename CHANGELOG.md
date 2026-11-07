@@ -5,7 +5,9 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ## Unreleased
 
 ### Changed
-- Hoàn tất nghiệm thu Phase 0 theo phê duyệt có điều kiện của chủ dự án: P0-01 đến P0-06 ở `DONE`; ADR chuyển nguồn được diễn giải bằng tiếng Việt; liên kết, file tracked và secret được kiểm tra lại. Phase 1 vẫn `Not Started`.
+- Chủ dự án chấp thuận nội dung Phase 1.1 và nghiệm thu khảo sát Phase 1.2. Bổ sung profiling chỉ đọc cho Sales/Invoicing, Customer temporal và Inventory/integrity cùng truy vấn SQL tái kiểm chứng; cho phép Phase 1.3, WWI-02 vẫn `IN_PROGRESS`.
+- Bắt đầu Phase 1 theo phê duyệt của chủ dự án nhưng chỉ khảo sát Phase 1.1 của WWI-02: truy vấn metadata SQL Server WWI chỉ đọc và ghi inventory, dictionary, classification/dependencies, temporal/index, truy vấn kiểm chứng và assessment. WWI-02 vẫn `IN_PROGRESS`, chưa có source contract cuối cùng.
+- Hoàn tất nghiệm thu Phase 0 theo phê duyệt có điều kiện của chủ dự án: P0-01 đến P0-06 ở `DONE`; ADR chuyển nguồn được diễn giải bằng tiếng Việt; liên kết, file tracked và secret được kiểm tra lại. Tại thời điểm nghiệm thu Phase 0, Phase 1 vẫn `Not Started`.
 - Đồng bộ scope, roadmap, task tracker, kiến trúc và README theo nguồn WWI SQL Server chỉ đọc và warehouse PostgreSQL.
 - Chuyển MVP sang Sales/Invoicing, Customer Analytics và Inventory Movements theo thứ tự; Purchasing, Finance và BigQuery là extensions.
 - Ghi ADR chuyển nguồn và giữ các quyết định KPI, grain, SCD2, incremental, inventory và ngưỡng chất lượng ở trạng thái Open.
@@ -22,4 +24,4 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 
 ### Status
 - Phase 0: Completed ở mức tài liệu và repository. Chưa triển khai hoặc kiểm thử pipeline.
-- P0-01 đến P0-06 và WWI-01: `DONE`. Không tạo remote hoặc push; Phase 1 chưa bắt đầu.
+- P0-01 đến P0-06 và WWI-01: `DONE`. Không tạo remote hoặc push; Phase 1.1 và khảo sát Phase 1.2 được chấp thuận, WWI-02 ở `IN_PROGRESS`.

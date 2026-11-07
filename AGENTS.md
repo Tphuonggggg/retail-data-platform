@@ -54,4 +54,4 @@ Hỏi trước khi thiếu thông tin ảnh hưởng architecture, business rule
 AI hỗ trợ triển khai; chủ dự án quyết định scope, architecture, features, priorities, phase transitions và acceptance.
 
 ## Trạng thái hiện tại
-Phase 0 — Project Initialization: Completed. Các phase 1–9: Not Started. Chưa có module chức năng được triển khai.
+Phase 0 — Project Initialization: Completed. Phase 1 — WWI Requirements & Source Design: In Progress; nội dung Phase 1.1 và khảo sát Phase 1.2 đã được chấp thuận, Phase 1.3 được phép thực hiện. Các phase 2–9: Not Started. Chưa có module chức năng được triển khai.

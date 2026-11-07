@@ -43,4 +43,4 @@ Rà liên kết, tính nhất quán và đối chiếu tài liệu với bằng 
 Không trình bày thành phần planned như implemented.
 
 ## 14. Current Status
-Tài liệu kiến trúc và ADR WWI đã có; WWI source contract/KPI chi tiết chưa được duyệt. Pipeline và kết quả kiểm thử chức năng: Not implemented yet.
+Tài liệu kiến trúc và ADR WWI đã có; [Phase 1.1](data-models/wwi-phase-1-1-assessment.md) được chấp thuận về nội dung, [Phase 1.2 profiling](data-models/wwi-phase-1-2-assessment.md) được nghiệm thu về mặt khảo sát. Phase 1.3 được phép thực hiện. WWI source contract/KPI chi tiết chưa được duyệt. Pipeline và kết quả kiểm thử chức năng: Not implemented yet.

@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1 và khảo sát Phase 1.2 đã được chấp thuận; Phase 1.3 được phép thực hiện); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -24,7 +24,7 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Dependencies:** Phase 0 được chủ dự án nghiệm thu và cho phép Phase 1.
 - **Deliverables:** Requirements, source contract/mapping, KPI matrix và ADR quyết định.
 - **Acceptance Criteria:** Các quyết định ảnh hưởng Sales schema/pipeline được duyệt; giới hạn snapshot/temporal ghi rõ.
-- **Status:** Not Started.
+- **Status:** In Progress — Phase 1.2 đã được nghiệm thu về mặt khảo sát; Phase 1.3 được phép thực hiện; WWI-02 vẫn `IN_PROGRESS`, WWI-03 chưa bắt đầu.
 
 ## Phase 2: Local Source & Destination Readiness
 
@@ -106,6 +106,6 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - [x] WWI-01 được chủ dự án review và phê duyệt; bằng chứng ghi trong TASKS.md.
 - [x] Chủ dự án phê duyệt P0-01, P0-02, P0-05, P0-06 và cho phép đóng Phase 0 nếu P0-03/P0-04 đạt; bằng chứng kiểm tra lại ghi trong TASKS.md.
 - [x] Khởi tạo Git local và tạo baseline commit theo task P0-06 được chủ dự án giao; không tạo remote/push.
-- [ ] Chủ dự án cho phép bắt đầu Phase 1.
+- [x] Chủ dự án chấp thuận nội dung Phase 1.1 và khảo sát Phase 1.2, cho phép Phase 1.3; chưa phê duyệt WWI-03/04.
 
 Checklist là rà soát tài liệu và filesystem, không phải kết quả kiểm thử pipeline.
