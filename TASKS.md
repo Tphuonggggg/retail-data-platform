@@ -1,0 +1,34 @@
+# Task Tracker
+
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0 vẫn `In Progress`; Phase 1–9 `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
+
+Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
+
+| Task ID | Phase | Module | Description | Priority | Dependencies | Acceptance Criteria | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| P0-01 | 0 | Root | Kiểm tra hiện trạng và bảo toàn file dùng chung | High | Yêu cầu khởi tạo | Xác định root, file hiện có và phạm vi thay đổi | REVIEW |
+| P0-02 | 0 | All modules | Tạo cấu trúc và README điều hướng | High | P0-01 | Module dùng chung có README phù hợp | REVIEW |
+| P0-03 | 0 | Root/docs | Viết quy tắc AI, scope, roadmap và architecture | High | P0-01 | Tài liệu hiện hành nhất quán; Open Decisions rõ | REVIEW |
+| P0-04 | 0 | Root | Kiểm tra checklist Phase 0 | High | P0-02, P0-03, WWI-01 | Không có code sớm, secret, link gãy hoặc kết quả giả | REVIEW |
+| P0-05 | 0 | Root | Kiểm tra file nhạy cảm/lớn, `.gitignore` và đề xuất baseline commit | High | P0-01 | Có kết luận về file được theo dõi, dữ liệu nguồn, secret và các bước Git trước `git init` | REVIEW |
+| P0-06 | 0 | Root | Khởi tạo Git repository và baseline commit theo yêu cầu riêng | Medium | P0-05, owner approval | `.git` có trạng thái kiểm tra được; staged files an toàn; baseline commit đúng message; không tạo remote/push | REVIEW |
+| WWI-01 | 0 | Root/docs/data-sources | Chuyển tài liệu hiện hành sang WWI, rà yêu cầu chung và loại file nguồn/đề cương cũ | High | Quyết định chuyển nguồn của owner | Scope, roadmap, tasks, architecture, README, ADR đồng bộ; không còn link gãy/file nguồn cũ/PDF đề cương; không xóa thành phần dùng chung | DONE |
+| WWI-02 | 1 | docs/data-models, data-sources | WWI source contract/data dictionary/ERD cho Sales; khảo sát Customer/Inventory | High | Phase 0 được nghiệm thu, WWI-01 | PK/FK/grain/dates/temporal/null và ngoại lệ có bằng chứng; owner review | TODO |
+| WWI-03 | 1 | docs/requirements, analytics | Đề xuất và chốt Sales KPI/revenue/tax/customer role/grain | High | WWI-02 | Công thức, source measure, date basis, exclusions, reconciliation và tests được owner duyệt trước fact/mart | TODO |
+| WWI-04 | 1 | docs/adr, ingestion | Quyết định incremental, SCD2 và môi trường thử nghiệm độc lập | High | WWI-02, WWI-03 | Watermark/tie-breaker/delete/history/as-of và test INSERT/UPDATE không sửa WWI gốc được owner duyệt | TODO |
+| WWI-05 | 2 | infrastructure, data-sources, storage | Chuẩn bị WWI read-only và PostgreSQL đích | High | WWI-02, WWI-04, phase implementation approval | Quyền/cấu hình kết nối, điều kiện nguồn ngoài repo và môi trường local tái lập được xác minh; không lộ secret/không sửa WWI | TODO |
+| WWI-06 | 3 | ingestion, storage, data-quality | Sales full load, raw/staging, validation và rerun | High | WWI-03, WWI-05 | Batch metadata (count/duration/error), count/keys đối soát, quarantine và idempotent rerun có unit/integration test thực | TODO |
+| WWI-07 | 3 | ingestion, tests | Sales incremental/checkpoint và failure recovery | High | WWI-04, WWI-06, approval cho test environment | Test INSERT/UPDATE end-to-end trong môi trường độc lập; checkpoint/retry/backfill có bằng chứng; WWI gốc không đổi | TODO |
+| WWI-08 | 4 | storage, transformation, data-quality | Sales warehouse/dbt và kiểm tra cơ bản | High | WWI-03, WWI-06 | Fact/dim đúng grain, tránh double count; unique/not null/relationships/accepted values và business tests, reconciliation chạy thực | TODO |
+| WWI-09 | 5 | orchestration, tests | Điều phối Sales bằng Airflow | High | WWI-07, WWI-08 | DAG đúng dependency, retry/rerun an toàn qua thử nghiệm | TODO |
+| WWI-10 | 6 | data-quality, monitoring, tests | Sales quality gates, monitoring, failure và hiệu năng | High | WWI-09 | Ngưỡng được duyệt; sai lệch/lỗi được phát hiện, truy vết và phục hồi; thời gian/query plan có số đo thực | TODO |
+| WWI-11 | 7 | analytics | Sales mart/Power BI và nghiệm thu lát cắt Sales | High | WWI-08, WWI-10 | KPI khớp định nghĩa, mart/report có lineage và đối soát; Sales end-to-end được review | TODO |
+| WWI-12 | 7 | ingestion, transformation, analytics | Customer Analytics và SCD2 theo bằng chứng | High | WWI-11, WWI-02, WWI-04, quyết định customer/SCD2 | Customer pipeline/mart có as-of tests, DQ, orchestration và reconciliation | TODO |
+| WWI-13 | 7 | ingestion, transformation, analytics | Inventory Movements và mart | High | WWI-12, inventory contract/decisions | Movement grain/quantity đúng; DQ, orchestration, reconciliation; không suy daily balance chưa duyệt | TODO |
+| WWI-14 | 8 | docs/analytics | Purchasing hoặc Finance extension khi được duyệt | Low | WWI-13, owner scope approval | Task/KPI/contract và tests riêng; không chặn MVP | TODO |
+| WWI-15 | 8 | infrastructure, storage | BigQuery extension khi được duyệt | Low | WWI-13, owner approval | Tương đương dữ liệu, bảo mật/chi phí và số đo thực nếu triển khai | TODO |
+| WWI-16 | 9 | tests, docs, .github | Unit/integration/e2e, CI, runbooks, tối ưu truy vấn và portfolio MVP local | High | WWI-11, WWI-12, WWI-13; WWI-14, WWI-15 chỉ nếu được giao | Người khác tái lập local với nguồn WWI được chuẩn bị hợp lệ; CI/test/failure report và số đo tối ưu trước/sau nếu có đều có bằng chứng | TODO |
+
+## Bằng chứng nghiệm thu WWI-01
+
+Chủ dự án đã review và phê duyệt WWI-01 ngày 2026-11-07. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [README](README.md), [architecture](docs/architecture/README.md) và [ADR](docs/adr/wwi-source-migration.md) cùng mô tả một nguồn WWI SQL Server chỉ đọc và warehouse PostgreSQL. File dữ liệu/đề cương và tài liệu chỉ phục vụ nguồn cũ đã được loại; module Data Engineering dùng chung được giữ. Kiểm tra 102 liên kết Markdown cục bộ cho kết quả 0 liên kết gãy; quét nội dung hiện hành không thấy tham chiếu tới file nguồn cũ. Đây là nghiệm thu **tài liệu/cấu trúc**; không có pipeline, database đích hoặc test chức năng được xác nhận.
