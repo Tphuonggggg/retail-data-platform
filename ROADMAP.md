@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: In Progress; Phase 1–9: Not Started.** Task ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -13,9 +13,9 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Objective:** Cấu trúc repository, quy tắc AI và tài liệu kiến trúc WWI nhất quán.
 - **Tasks:** Đồng bộ scope/roadmap/tasks/architecture/README/ADR; loại bỏ file chỉ phục vụ nguồn cũ; kiểm kê file nhạy cảm, file lớn và `.gitignore`; lập task khởi tạo Git.
 - **Dependencies:** Quyết định chuyển nguồn của chủ dự án.
-- **Deliverables:** Tài liệu hiện hành, cấu trúc module dùng chung, Git readiness checklist và đề xuất baseline commit. PDF đề cương cũ được rà yêu cầu kỹ thuật chung rồi loại khỏi repository.
+- **Deliverables:** Tài liệu hiện hành, cấu trúc module dùng chung, Git readiness checklist và baseline commit đã kiểm tra. PDF đề cương cũ được rà yêu cầu kỹ thuật chung rồi loại khỏi repository.
 - **Acceptance Criteria:** Không có link tới file đã xóa, không có task nguồn cũ active, không có code/secret/kết quả giả; Git chỉ được khởi tạo khi task riêng được giao.
-- **Status:** In Progress.
+- **Status:** Completed.
 
 ## Phase 1: WWI Requirements & Source Design
 
@@ -104,7 +104,7 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - [x] Đã kiểm kê file nhạy cảm/lớn và kiểm tra quy tắc `.gitignore` bằng Git local.
 - [x] Đã rà PDF đề cương, chuyển các yêu cầu kỹ thuật chung còn phù hợp vào tài liệu WWI và loại PDF cũ.
 - [x] WWI-01 được chủ dự án review và phê duyệt; bằng chứng ghi trong TASKS.md.
-- [ ] Chủ dự án nghiệm thu tài liệu/cấu trúc Phase 0.
+- [x] Chủ dự án phê duyệt P0-01, P0-02, P0-05, P0-06 và cho phép đóng Phase 0 nếu P0-03/P0-04 đạt; bằng chứng kiểm tra lại ghi trong TASKS.md.
 - [x] Khởi tạo Git local và tạo baseline commit theo task P0-06 được chủ dự án giao; không tạo remote/push.
 - [ ] Chủ dự án cho phép bắt đầu Phase 1.
 

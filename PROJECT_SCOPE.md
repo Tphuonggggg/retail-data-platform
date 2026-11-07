@@ -2,7 +2,7 @@
 
 ## Trạng thái
 
-Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 vẫn `In Progress`; Phase 1–9 chưa được bắt đầu. Các quyết định nghiệp vụ và schema ở mục Open Decisions chưa được chốt.
+Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 đã `Completed`; Phase 1–9 chưa được bắt đầu. Các quyết định nghiệp vụ và schema ở mục Open Decisions chưa được chốt.
 
 ## Mục tiêu và kiến trúc
 

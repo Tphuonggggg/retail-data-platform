@@ -1,17 +1,17 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0 vẫn `In Progress`; Phase 1–9 `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
 | Task ID | Phase | Module | Description | Priority | Dependencies | Acceptance Criteria | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P0-01 | 0 | Root | Kiểm tra hiện trạng và bảo toàn file dùng chung | High | Yêu cầu khởi tạo | Xác định root, file hiện có và phạm vi thay đổi | REVIEW |
-| P0-02 | 0 | All modules | Tạo cấu trúc và README điều hướng | High | P0-01 | Module dùng chung có README phù hợp | REVIEW |
-| P0-03 | 0 | Root/docs | Viết quy tắc AI, scope, roadmap và architecture | High | P0-01 | Tài liệu hiện hành nhất quán; Open Decisions rõ | REVIEW |
-| P0-04 | 0 | Root | Kiểm tra checklist Phase 0 | High | P0-02, P0-03, WWI-01 | Không có code sớm, secret, link gãy hoặc kết quả giả | REVIEW |
-| P0-05 | 0 | Root | Kiểm tra file nhạy cảm/lớn, `.gitignore` và đề xuất baseline commit | High | P0-01 | Có kết luận về file được theo dõi, dữ liệu nguồn, secret và các bước Git trước `git init` | REVIEW |
-| P0-06 | 0 | Root | Khởi tạo Git repository và baseline commit theo yêu cầu riêng | Medium | P0-05, owner approval | `.git` có trạng thái kiểm tra được; staged files an toàn; baseline commit đúng message; không tạo remote/push | REVIEW |
+| P0-01 | 0 | Root | Kiểm tra hiện trạng và bảo toàn file dùng chung | High | Yêu cầu khởi tạo | Xác định root, file hiện có và phạm vi thay đổi | DONE |
+| P0-02 | 0 | All modules | Tạo cấu trúc và README điều hướng | High | P0-01 | Module dùng chung có README phù hợp | DONE |
+| P0-03 | 0 | Root/docs | Viết quy tắc AI, scope, roadmap và architecture | High | P0-01 | Tài liệu hiện hành nhất quán; Open Decisions rõ | DONE |
+| P0-04 | 0 | Root | Kiểm tra checklist Phase 0 | High | P0-02, P0-03, WWI-01 | Không có code sớm, secret, link gãy hoặc kết quả giả | DONE |
+| P0-05 | 0 | Root | Kiểm tra file nhạy cảm/lớn, `.gitignore` và đề xuất baseline commit | High | P0-01 | Có kết luận về file được theo dõi, dữ liệu nguồn, secret và các bước Git trước `git init` | DONE |
+| P0-06 | 0 | Root | Khởi tạo Git repository và baseline commit theo yêu cầu riêng | Medium | P0-05, owner approval | `.git` có trạng thái kiểm tra được; staged files an toàn; baseline commit đúng message; không tạo remote/push | DONE |
 | WWI-01 | 0 | Root/docs/data-sources | Chuyển tài liệu hiện hành sang WWI, rà yêu cầu chung và loại file nguồn/đề cương cũ | High | Quyết định chuyển nguồn của owner | Scope, roadmap, tasks, architecture, README, ADR đồng bộ; không còn link gãy/file nguồn cũ/PDF đề cương; không xóa thành phần dùng chung | DONE |
 | WWI-02 | 1 | docs/data-models, data-sources | WWI source contract/data dictionary/ERD cho Sales; khảo sát Customer/Inventory | High | Phase 0 được nghiệm thu, WWI-01 | PK/FK/grain/dates/temporal/null và ngoại lệ có bằng chứng; owner review | TODO |
 | WWI-03 | 1 | docs/requirements, analytics | Đề xuất và chốt Sales KPI/revenue/tax/customer role/grain | High | WWI-02 | Công thức, source measure, date basis, exclusions, reconciliation và tests được owner duyệt trước fact/mart | TODO |
@@ -32,3 +32,9 @@ Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI ch�
 ## Bằng chứng nghiệm thu WWI-01
 
 Chủ dự án đã review và phê duyệt WWI-01 ngày 2026-11-07. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [README](README.md), [architecture](docs/architecture/README.md) và [ADR](docs/adr/wwi-source-migration.md) cùng mô tả một nguồn WWI SQL Server chỉ đọc và warehouse PostgreSQL. File dữ liệu/đề cương và tài liệu chỉ phục vụ nguồn cũ đã được loại; module Data Engineering dùng chung được giữ. Kiểm tra 102 liên kết Markdown cục bộ cho kết quả 0 liên kết gãy; quét nội dung hiện hành không thấy tham chiếu tới file nguồn cũ. Đây là nghiệm thu **tài liệu/cấu trúc**; không có pipeline, database đích hoặc test chức năng được xác nhận.
+
+## Bằng chứng nghiệm thu Phase 0
+
+Ngày 2026-11-07, chủ dự án phê duyệt P0-01, P0-02, P0-05 và P0-06 theo báo cáo nghiệm thu, đồng thời cho phép hoàn tất Phase 0 nếu P0-03 và P0-04 đạt sau khi khắc phục. Root Git được xác minh tại thư mục dự án; 13 module cấp cao đều có README với các mục bắt buộc. [ADR chuyển nguồn](docs/adr/wwi-source-migration.md) đã được diễn giải bằng tiếng Việt, giữ quyết định WWI SQL Server chỉ đọc → PostgreSQL warehouse và các Open Decisions. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [README](README.md) và ADR nhất quán về MVP, thứ tự Sales → Customer → Inventory và giới hạn chưa triển khai.
+
+Kiểm tra lại P0-04 trên 57 file tracked: 111 liên kết Markdown nội bộ, không có link gãy; không phát hiện yêu cầu nguồn cũ còn hiệu lực, file dữ liệu nguồn, file nhị phân hoặc mẫu secret; không có code pipeline hay kết quả test chức năng được tuyên bố. File lớn nhất 8.985 byte. Baseline commit `9f514f81fb8f2a0efac65b566a4b1cd7f3818677` có đúng message `chore: initialize WWI retail data platform`; Git không có remote hoặc push. Nghiệm thu này chỉ áp dụng cho Phase 0 tài liệu và repository; Phase 1 vẫn `Not Started`.

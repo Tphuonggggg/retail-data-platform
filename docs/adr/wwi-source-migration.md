@@ -1,34 +1,34 @@
-# ADR — WideWorldImporters as Primary OLTP Source
+# ADR — Chọn WideWorldImporters làm nguồn OLTP chính
 
-- **Status:** Approved direction by Project Owner on 2026-11-07; implementation and business/schema decisions remain open.
-- **Owner:** Project Owner.
-- **Context:** [Project Scope](../../PROJECT_SCOPE.md), [Roadmap](../../ROADMAP.md), [Task Tracker](../../TASKS.md).
+- **Trạng thái:** Chủ dự án phê duyệt định hướng ngày 2026-11-07; các quyết định triển khai, nghiệp vụ và schema vẫn còn mở.
+- **Người quyết định:** Project Owner.
+- **Tài liệu liên quan:** [Project Scope](../../PROJECT_SCOPE.md), [Roadmap](../../ROADMAP.md), [Task Tracker](../../TASKS.md).
 
-## Decision
+## Quyết định
 
-`WideWorldImporters` on SQL Server is the **single primary OLTP source** for the project and is accessed **read-only**. PostgreSQL is the Data Warehouse designed and built by this project. Planned flow: SQL Server → Python ingestion → PostgreSQL raw/staging → dbt/SQL → PostgreSQL warehouse → analytical marts → Power BI. Apache Airflow orchestrates the pipeline.
+`WideWorldImporters` trên SQL Server là **nguồn OLTP chính duy nhất** của dự án và chỉ được truy cập ở chế độ **chỉ đọc**. PostgreSQL là Data Warehouse do dự án tự thiết kế và xây dựng. Luồng dự kiến: SQL Server → Python ingestion → PostgreSQL raw/staging → dbt/SQL → PostgreSQL warehouse → analytical marts → Power BI. Apache Airflow điều phối pipeline.
 
-MVP subject areas are Sales/Invoicing, Customer Analytics and Inventory Movements, in that order. Sales must be completed end-to-end, including ingestion, warehouse, Airflow, basic/central quality, monitoring and reporting, before expanding to Customer and Inventory. Purchasing, Finance and BigQuery are controlled extensions.
+MVP gồm Sales/Invoicing, Customer Analytics và Inventory Movements theo thứ tự đó. Cần hoàn thiện Sales end-to-end, bao gồm ingestion, warehouse, Airflow, kiểm tra chất lượng cơ bản và tập trung, monitoring và reporting, trước khi mở rộng sang Customer và Inventory. Purchasing, Finance và BigQuery là các phần mở rộng có kiểm soát.
 
-The repository keeps reusable Data Engineering modules. Files and requirements serving only the previous source design are removed; the project does not maintain a second active architecture.
+Repository giữ lại các module Data Engineering có thể tái sử dụng. Các file và yêu cầu chỉ phục vụ thiết kế nguồn trước đây đã được loại bỏ; dự án không duy trì một kiến trúc nguồn thứ hai đang có hiệu lực.
 
-## Reason
+## Lý do
 
-The WWI database available locally contains connected OLTP tables for orders, invoices, customer transactions and stock item movements, plus temporal history for selected entities. This supports the chosen MVP without building simulated upstream systems. These observations do **not** approve revenue rules, source-to-target mappings or warehouse schema.
+Database WWI có sẵn trên máy chứa các bảng OLTP liên kết với nhau về orders, invoices, customer transactions và stock item movements, cùng temporal history cho một số thực thể. Điều này hỗ trợ MVP đã chọn mà không cần xây các hệ thống nguồn mô phỏng. Những quan sát này **không** đồng nghĩa với việc phê duyệt quy tắc revenue, source-to-target mapping hoặc warehouse schema.
 
-## Consequences
+## Hệ quả
 
-- Source contracts, KPI definitions and tests must be rewritten for WWI grain and relationships. Order, invoice, invoice line, ledger and stock movement measures must not be added across fan-out joins.
-- The original WWI database is never modified by project work. CDC is outside the current design; Change Tracking is not enabled. WWI-04 must propose a separate test environment for INSERT/UPDATE and incremental end-to-end evidence before it is created or used.
-- Temporal history may support selected SCD2 dimensions, but cannot be assumed to represent complete history for all transactions.
-- Basic data quality checks begin with ingestion and warehouse work. Phase 6 adds centralized quality gates, monitoring and advanced failure scenarios.
-- The project remains at Phase 0 `In Progress`; this ADR does not authorize Phase 1, DDL, ingestion or package installation.
+- Source contracts, định nghĩa KPI và tests phải được viết lại theo grain và quan hệ của WWI. Không cộng measures từ order, invoice, invoice line, ledger và stock movement qua các JOIN gây nhân bản dòng.
+- Dự án không thay đổi database WWI gốc. CDC nằm ngoài thiết kế hiện hành; Change Tracking chưa được bật. WWI-04 phải đề xuất môi trường thử nghiệm độc lập để kiểm chứng INSERT/UPDATE và incremental end-to-end trước khi tạo hoặc sử dụng môi trường đó.
+- Temporal history có thể hỗ trợ một số dimension SCD2, nhưng không được mặc định là lịch sử đầy đủ cho mọi giao dịch.
+- Kiểm tra data quality cơ bản bắt đầu từ ingestion và warehouse. Phase 6 bổ sung quality gates tập trung, monitoring và các tình huống failure nâng cao.
+- ADR này không cho phép tự bắt đầu Phase 1, viết DDL, triển khai ingestion hoặc cài đặt package.
 - Các yêu cầu Data Engineering dùng chung từ đề cương ban đầu đã được đối chiếu và diễn giải theo WWI trong scope/roadmap. Đề cương cũ đã được loại khỏi repository; tài liệu hiện hành là nguồn tham chiếu cho dự án.
 
-## Alternatives considered
+## Các phương án đã xem xét
 
-Continue the previous simulated-source architecture: rejected by the Project Owner. Move all components to a new repository: rejected to preserve reusable modules and task traceability. Use SQL Server as the warehouse: outside the approved architecture; PostgreSQL is the target warehouse.
+Tiếp tục kiến trúc nguồn mô phỏng trước đây: Project Owner không chọn. Chuyển toàn bộ thành phần sang repository mới: không chọn để giữ các module có thể tái sử dụng và khả năng truy vết task. Dùng SQL Server làm warehouse: nằm ngoài kiến trúc đã duyệt; PostgreSQL là warehouse đích.
 
-## Open Decisions
+## Quyết định còn mở
 
-Revenue recognition/tax and invoice-versus-delivery date; `CustomerID` versus `BillToCustomerID`; fact/dimension grain and schema; profit/COGS; SCD2 attributes/validity; incremental extraction/deletes/test environment; inventory daily balance; data quality thresholds. See [Open Decisions](../../PROJECT_SCOPE.md#open-decisions).
+Revenue recognition/tax và ngày invoice so với ngày delivery; `CustomerID` so với `BillToCustomerID`; grain và schema của fact/dimension; profit/COGS; thuộc tính và khoảng hiệu lực SCD2; incremental extraction/deletes/môi trường thử nghiệm; inventory daily balance; ngưỡng data quality. Xem [Open Decisions](../../PROJECT_SCOPE.md#open-decisions).

@@ -5,6 +5,7 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ## Unreleased
 
 ### Changed
+- Hoàn tất nghiệm thu Phase 0 theo phê duyệt có điều kiện của chủ dự án: P0-01 đến P0-06 ở `DONE`; ADR chuyển nguồn được diễn giải bằng tiếng Việt; liên kết, file tracked và secret được kiểm tra lại. Phase 1 vẫn `Not Started`.
 - Đồng bộ scope, roadmap, task tracker, kiến trúc và README theo nguồn WWI SQL Server chỉ đọc và warehouse PostgreSQL.
 - Chuyển MVP sang Sales/Invoicing, Customer Analytics và Inventory Movements theo thứ tự; Purchasing, Finance và BigQuery là extensions.
 - Ghi ADR chuyển nguồn và giữ các quyết định KPI, grain, SCD2, incremental, inventory và ngưỡng chất lượng ở trạng thái Open.
@@ -20,5 +21,5 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 - PDF đề cương cũ sau khi các yêu cầu kỹ thuật chung còn phù hợp đã được chuyển vào tài liệu hiện hành.
 
 ### Status
-- Phase 0: In Progress, chờ chủ dự án nghiệm thu. Chưa triển khai hoặc kiểm thử pipeline.
-- P0-06 ở `REVIEW` để chủ dự án nghiệm thu sau baseline commit. Không tạo remote hoặc push.
+- Phase 0: Completed ở mức tài liệu và repository. Chưa triển khai hoặc kiểm thử pipeline.
+- P0-01 đến P0-06 và WWI-01: `DONE`. Không tạo remote hoặc push; Phase 1 chưa bắt đầu.
