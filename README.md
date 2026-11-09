@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Dự án portfolio Data Engineering dùng **WideWorldImporters (WWI) trên SQL Server** làm nguồn OLTP **chỉ đọc**, xây Data Warehouse riêng trên PostgreSQL và phục vụ Power BI. Phase 0 **Completed** ở mức tài liệu/cấu trúc; nội dung Phase 1.1 và khảo sát Phase 1.2 đã được chấp thuận, Phase 1.3 được phép thực hiện. Chưa có pipeline của dự án chạy được. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
+Dự án portfolio Data Engineering dùng **WideWorldImporters (WWI) trên SQL Server** làm nguồn OLTP **chỉ đọc**, xây Data Warehouse riêng trên PostgreSQL và phục vụ Power BI. Phase 0 **Completed** ở mức tài liệu/cấu trúc; Phase 1.1–1.4 đã được chấp thuận trong phạm vi từng phần, WWI-02 `DONE`, Phase 1.5 được phép thực hiện. Chưa có pipeline của dự án chạy được. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
 
 ## Business Problems and MVP
 

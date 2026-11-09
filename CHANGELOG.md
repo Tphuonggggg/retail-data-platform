@@ -5,6 +5,7 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ## Unreleased
 
 ### Changed
+- Phase 1.4 source contracts cho chín bảng MVP, extraction matrix, raw requirements, validation matrix và assessment đã được Project Owner nghiệm thu ở mức tài liệu; WWI-02 `DONE` ở phạm vi source design, không tạo code/schema hoặc chốt incremental/KPI.
 - Phase 1.3 source relationships, Mermaid ERD, business data flow, SQL kiểm chứng và assessment được Project Owner chấp thuận ở mức tài liệu/khảo sát; chưa chốt KPI hoặc warehouse design, WWI-02 vẫn `IN_PROGRESS`.
 - Chủ dự án chấp thuận nội dung Phase 1.1 và nghiệm thu khảo sát Phase 1.2. Bổ sung profiling chỉ đọc cho Sales/Invoicing, Customer temporal và Inventory/integrity cùng truy vấn SQL tái kiểm chứng; cho phép Phase 1.3, WWI-02 vẫn `IN_PROGRESS`.
 - Bắt đầu Phase 1 theo phê duyệt của chủ dự án nhưng chỉ khảo sát Phase 1.1 của WWI-02: truy vấn metadata SQL Server WWI chỉ đọc và ghi inventory, dictionary, classification/dependencies, temporal/index, truy vấn kiểm chứng và assessment. WWI-02 vẫn `IN_PROGRESS`, chưa có source contract cuối cùng.

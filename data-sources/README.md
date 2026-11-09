@@ -14,7 +14,7 @@ MVP theo thứ tự Sales/Invoicing, Customer Analytics, Inventory Movements. Pu
 
 ## 4. Responsibilities
 
-WWI-02 tạo source contract và data dictionary có bằng chứng metadata. Phase 1.1 đã khảo sát trực tiếp chín bảng MVP, gồm `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines`, `Sales.Customers`, `Sales.CustomerTransactions`, `Warehouse.StockItems`, `Warehouse.StockItemHoldings` và `Warehouse.StockItemTransactions`. Phase 1.2 đã kiểm tra dữ liệu hiện hành và hai archive temporal. Xem [metadata dictionary](../docs/data-models/wwi-metadata-dictionary.md), [Phase 1.1 assessment](../docs/data-models/wwi-phase-1-1-assessment.md) và [Phase 1.2 profiling](../docs/data-models/wwi-phase-1-2-assessment.md). Đây chưa phải hợp đồng triển khai đã chốt.
+WWI-02 tạo source contract và data dictionary có bằng chứng metadata. Phase 1.1 đã khảo sát trực tiếp chín bảng MVP, gồm `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines`, `Sales.Customers`, `Sales.CustomerTransactions`, `Warehouse.StockItems`, `Warehouse.StockItemHoldings` và `Warehouse.StockItemTransactions`. Phase 1.2 đã kiểm tra dữ liệu hiện hành và hai archive temporal; Phase 1.3 đã ghi quan hệ nguồn. Xem [metadata dictionary](../docs/data-models/wwi-metadata-dictionary.md), [relationship contract](../docs/data-models/wwi-source-relationships.md) và [Phase 1.4 source contracts](../docs/data-models/wwi-source-contracts.md). Phase 1.4 và WWI-02 đã được nghiệm thu ở mức source design; hợp đồng triển khai và runtime: Not implemented yet.
 
 ## 5. Inputs
 

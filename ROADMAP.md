@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1 và khảo sát Phase 1.2 đã được chấp thuận; Phase 1.3 được phép thực hiện); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1–1.4 được chấp thuận trong phạm vi từng phần; WWI-02 DONE; Phase 1.5 được phép thực hiện); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -24,7 +24,7 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Dependencies:** Phase 0 được chủ dự án nghiệm thu và cho phép Phase 1.
 - **Deliverables:** Requirements, source contract/mapping, KPI matrix và ADR quyết định.
 - **Acceptance Criteria:** Các quyết định ảnh hưởng Sales schema/pipeline được duyệt; giới hạn snapshot/temporal ghi rõ.
-- **Status:** In Progress — Phase 1.2 và Phase 1.3 đã được chủ dự án chấp thuận ở mức khảo sát/tài liệu; Phase 1.4 được phép thực hiện; WWI-02 vẫn `IN_PROGRESS`, WWI-03 chưa bắt đầu.
+- **Status:** In Progress — Phase 1.1–1.4 được chấp thuận ở mức khảo sát/tài liệu; WWI-02 `DONE`; Phase 1.5 được phép thực hiện, WWI-03 chưa nghiệm thu.
 
 ## Phase 2: Local Source & Destination Readiness
 

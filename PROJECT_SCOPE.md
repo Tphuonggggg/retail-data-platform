@@ -2,7 +2,7 @@
 
 ## Trạng thái
 
-Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 đã `Completed`; Phase 1 đang `In Progress`, nội dung Phase 1.1 và khảo sát Phase 1.2 đã được chấp thuận, Phase 1.3 được phép thực hiện; Phase 2–9 chưa bắt đầu. Các quyết định nghiệp vụ và schema ở mục Open Decisions chưa được chốt.
+Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 đã `Completed`; Phase 1 đang `In Progress`, Phase 1.1–1.4 đã được chấp thuận trong phạm vi từng phần, WWI-02 `DONE` và Phase 1.5 được phép thực hiện. Phase 2–9 chưa bắt đầu. Các quyết định nghiệp vụ và schema ở mục Open Decisions chưa được chốt.
 
 ## Mục tiêu và kiến trúc
 
@@ -55,9 +55,9 @@ Definition of Done cho **MVP triển khai** là một người khác có thể c
 | Nhóm | Quyết định chưa chốt | Gate |
 | --- | --- | --- |
 | KPI | Revenue recognition, tax treatment, invoice date hay delivery date, invoice chưa xác nhận giao | WWI-03 |
-| Customer | `CustomerID` so với `BillToCustomerID` trong facts/KPI | WWI-02/03 |
+| Customer | `CustomerID` so với `BillToCustomerID` trong facts/KPI | WWI-03 |
 | Warehouse | Grain, tên fact/dimension, source-to-target mapping, profit/COGS và ý nghĩa `LineProfit` | WWI-03 trước schema |
-| SCD2 | Thuộc tính, hiệu lực `ValidFrom`/`ValidTo`, as-of và độ phủ history | WWI-02/04 |
+| SCD2 | Thuộc tính, hiệu lực `ValidFrom`/`ValidTo`, as-of và độ phủ history | WWI-04 |
 | Incremental | Watermark/tie-breaker, delete, replay, môi trường thử nghiệm độc lập | WWI-04 |
 | Inventory | Có cần daily balance không; opening balance và đối soát movements | Trước inventory mart |
 | Data quality | Eligibility, ngưỡng, mức cảnh báo/chặn batch và ngoại lệ nguồn | WWI-03/04 |
