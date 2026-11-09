@@ -1,6 +1,6 @@
 # WWI Business Data Flow — Phase 1.3
 
-**Trạng thái:** mô tả quan hệ dữ liệu nguồn đã kiểm tra; chờ Project Owner review. Đây không phải thiết kế pipeline, KPI hay warehouse. Xem [Source ERD](wwi-source-erd.md), [relationship contract](wwi-source-relationships.md) và [SQL evidence](wwi-relationship-validation-sql.md).
+**Trạng thái:** mô tả quan hệ dữ liệu nguồn đã kiểm tra; Project Owner đã chấp thuận ở mức tài liệu/khảo sát ngày 2026-11-09. Đây không phải thiết kế pipeline, KPI hay warehouse. Xem [Source ERD](wwi-source-erd.md), [relationship contract](wwi-source-relationships.md) và [SQL evidence](wwi-relationship-validation-sql.md).
 
 ## Sales/Invoicing
 

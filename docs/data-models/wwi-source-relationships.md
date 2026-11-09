@@ -1,6 +1,6 @@
 # WWI Source Relationships — Phase 1.3
 
-**Trạng thái:** Verified metadata và snapshot quan sát ngày 2026-11-07; chờ Project Owner review. Đây là mô hình **nguồn SQL Server**, không phải schema warehouse hay quyết định KPI. PK/FK và nullable lấy từ [metadata dictionary](wwi-metadata-dictionary.md), đối chiếu bằng [Relationship Validation SQL](wwi-relationship-validation-sql.md). Các số snapshot không là constraint lâu dài.
+**Trạng thái:** Verified metadata và snapshot quan sát ngày 2026-11-07; Project Owner đã chấp thuận ở mức tài liệu/khảo sát ngày 2026-11-09. Đây là mô hình **nguồn SQL Server**, không phải schema warehouse hay quyết định KPI. PK/FK và nullable lấy từ [metadata dictionary](wwi-metadata-dictionary.md), đối chiếu bằng [Relationship Validation SQL](wwi-relationship-validation-sql.md). Các số snapshot không là constraint lâu dài.
 
 ## Quy ước relationship contract
 

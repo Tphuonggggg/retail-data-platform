@@ -1,6 +1,6 @@
 # WWI Source ERD — Phase 1.3
 
-**Trạng thái:** mô hình quan hệ nguồn dựa trên FK enabled/trusted và nullable metadata, đối chiếu snapshot ngày 2026-11-07. Chờ Project Owner review. `||` = đúng một parent cho child; `o|` = parent tùy chọn đối với child; `o{` = 0..N child theo schema; `o|` ở phía child = 0..1 child khi child FK cũng là PK. Số lượng thực tế ở [relationship contract](wwi-source-relationships.md). Diagram chỉ vẽ FK thực; quan hệ quan sát không có FK được ghi bên dưới.
+**Trạng thái:** mô hình quan hệ nguồn dựa trên FK enabled/trusted và nullable metadata, đối chiếu snapshot ngày 2026-11-07; Project Owner đã chấp thuận ở mức tài liệu/khảo sát ngày 2026-11-09. `||` = đúng một parent cho child; `o|` = parent tùy chọn đối với child; `o{` = 0..N child theo schema; `o|` ở phía child = 0..1 child khi child FK cũng là PK. Số lượng thực tế ở [relationship contract](wwi-source-relationships.md). Diagram chỉ vẽ FK thực; quan hệ quan sát không có FK được ghi bên dưới.
 
 ## 1. Sales & Invoicing
 
