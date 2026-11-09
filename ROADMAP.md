@@ -24,7 +24,7 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Dependencies:** Phase 0 được chủ dự án nghiệm thu và cho phép Phase 1.
 - **Deliverables:** Requirements, source contract/mapping, KPI matrix và ADR quyết định.
 - **Acceptance Criteria:** Các quyết định ảnh hưởng Sales schema/pipeline được duyệt; giới hạn snapshot/temporal ghi rõ.
-- **Status:** In Progress — Phase 1.2 đã được nghiệm thu về mặt khảo sát; Phase 1.3 được phép thực hiện; WWI-02 vẫn `IN_PROGRESS`, WWI-03 chưa bắt đầu.
+- **Status:** In Progress — Phase 1.2 và Phase 1.3 đã được chủ dự án chấp thuận ở mức khảo sát/tài liệu; Phase 1.4 được phép thực hiện; WWI-02 vẫn `IN_PROGRESS`, WWI-03 chưa bắt đầu.
 
 ## Phase 2: Local Source & Destination Readiness
 

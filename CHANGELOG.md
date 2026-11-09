@@ -5,6 +5,7 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ## Unreleased
 
 ### Changed
+- Phase 1.3 source relationships, Mermaid ERD, business data flow, SQL kiểm chứng và assessment được Project Owner chấp thuận ở mức tài liệu/khảo sát; chưa chốt KPI hoặc warehouse design, WWI-02 vẫn `IN_PROGRESS`.
 - Chủ dự án chấp thuận nội dung Phase 1.1 và nghiệm thu khảo sát Phase 1.2. Bổ sung profiling chỉ đọc cho Sales/Invoicing, Customer temporal và Inventory/integrity cùng truy vấn SQL tái kiểm chứng; cho phép Phase 1.3, WWI-02 vẫn `IN_PROGRESS`.
 - Bắt đầu Phase 1 theo phê duyệt của chủ dự án nhưng chỉ khảo sát Phase 1.1 của WWI-02: truy vấn metadata SQL Server WWI chỉ đọc và ghi inventory, dictionary, classification/dependencies, temporal/index, truy vấn kiểm chứng và assessment. WWI-02 vẫn `IN_PROGRESS`, chưa có source contract cuối cùng.
 - Hoàn tất nghiệm thu Phase 0 theo phê duyệt có điều kiện của chủ dự án: P0-01 đến P0-06 ở `DONE`; ADR chuyển nguồn được diễn giải bằng tiếng Việt; liên kết, file tracked và secret được kiểm tra lại. Tại thời điểm nghiệm thu Phase 0, Phase 1 vẫn `Not Started`.
