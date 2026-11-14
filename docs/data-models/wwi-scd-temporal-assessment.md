@@ -2,6 +2,8 @@
 
 **DW-02B khảo sát đã nghiệm thu; Verified observations giữ nguyên; SCD-03–07 Approved Principles, technical policies Pending Approval.** Chỉ khảo sát SELECT ngày 2026-11-14; không chọn SCD2 validity, as-of proxy, fallback hay physical datatype. [SQL evidence](wwi-scd-temporal-evidence.md) giữ truy vấn và aggregate output tái kiểm chứng; [classification](wwi-scd-attribute-classification.md) là đề xuất độc lập, không tự phê duyệt từ observed changes. DW-01 và BRD không đổi.
 
+ADR-SCD-01–06 được Owner duyệt sau nghiệm thu A/B, xem [ADR index](../adr/README.md). Các numeric findings/probes dưới đây giữ nguyên evidence; Product tracking nay chỉ ba packaging columns, registry/consensus/reconciled cutover/exact precision/controlled unresolved là accepted directions. Không có truy vấn mới hoặc runtime conversion result trong vòng nghiệm thu C/D.
+
 ## Năm loại thời gian/dữ liệu cần phân biệt
 
 | Khái niệm | Ý nghĩa / giới hạn |

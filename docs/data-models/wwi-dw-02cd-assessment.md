@@ -1,0 +1,100 @@
+# DW-02C/D Assessment & Test Scenario Matrix
+
+**DW-02C/D DONE ở mức thiết kế sau targeted acceptance review — D01–D06 Accepted Architecture Direction; technical procedures Pending Approval.** DW-02A/B DONE, commit `b293fdbfed99cfb64d65c7bc3641c1068627e060`; DW-02, WWI-04 IN_PROGRESS, Phase 1 In Progress. DW-02C và DW-02D DONE; DW-02E TODO chỉ có kế hoạch, DW-03 TODO. Owner đã review directions và cho phép commit nghiệm thu C/D khi document acceptance đạt. Runtime chưa triển khai.
+
+## Evidence / approvals / proposals
+
+| Trạng thái | Nội dung |
+| --- | --- |
+| Verified source evidence | A/B counts, duplicate Customer start-key, zero-duration, precision/proxy sensitivities; giữ nguyên SQL evidence. SELECT metadata Product 7 candidates được ghi trong classification A/B |
+| Approved Principles | SCD-01–07 trong [classification](wwi-scd-attribute-classification.md); DW-01 grain/role/population/publication invariants và BRD-01–12 |
+| Accepted Architecture Decisions | [D01–D06 trong ADR index](../adr/README.md): ba Product packaging columns, K-A registry, L-B whole-day consensus, reconciled H-A, exact 100 ns, controlled unresolved core/certified gates |
+| Proposed Technical Policies | Stable episode-ID details/supersession, P-A/B/C physical precision, exact coverage proof implementation, reserved SK/reason encoding/thresholds, cutover boundaries và R-A/R-B recovery procedures vẫn Pending Approval |
+| Not implemented/tested | SK registry, SCD2 algorithm, PostgreSQL conversion, source DML test, dbt/pipeline/DAG/marts; không tạo môi trường test |
+
+## Deliverables
+
+| Output yêu cầu | File chịu trách nhiệm |
+| --- | --- |
+| A/B evidence và Product tracking update | [Classification](wwi-scd-attribute-classification.md) cập nhật final set theo D01; [A/B assessment](wwi-dw-02ab-assessment.md) giữ hồ sơ nghiệm thu tại thời điểm ban hành |
+| Source identity/SK và precision options | [Identity & Key Design](wwi-scd-identity-key-design.md) |
+| Historical Lookup/Unresolved Member Specification | [Lookup Design](wwi-scd-historical-lookup-design.md) |
+| Forward transitions, hybrid cutover, recovery, restatement | [Forward/Cutover Design](wwi-scd-forward-cutover-design.md) |
+| Assessment, tests và Open Decisions | Tài liệu này; không tạo thêm tài liệu test trùng chức năng |
+
+## Test Scenario Matrix — 21 scenarios, execution status NOT RUN
+
+Chỉ chạy INSERT/UPDATE/DELETE sau approval trong SQL Server test độc lập; WWI gốc read-only. Preconditions có policy/representation nghĩa là điều kiện phải được duyệt trước khi chạy test, không phải policy được tự chốt trong tài liệu này. Input test là controlled fixture/copy có provenance; không tạo database hoặc thực hiện các changes dưới đây trong vòng nghiệm thu.
+
+| Test ID / scenario | Preconditions | Input/source change | Expected dimension state | Expected fact impact | Expected publication behavior | Expected recovery behavior | Test execution status |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| CD-T01 initial baseline | Permitted source history/current, declared tracking sets, empty candidate generation | Full baseline input | Raw/audit gồm zero-duration; candidate episodes chỉ theo approved vectors và reconciled evidence | 7 role requests; R/U/I phân biệt, giữ source population | Core có thể giữ U; I block scope; chưa Certified nếu gate chưa approved | Restore prior/empty publication; replay cùng registry mappings | NOT RUN |
+| CD-T02 new NK INSERT | Complete validated input; registry không có NK/incarnation này | INSERT mới ở SQL Server test | Candidate episode ID/SK cấp qua registry, không ROW_NUMBER/time-derived key | New/previous missing-reference requests được resolve hoặc U theo evidence | Không drop source fact do U; invalid identity block affected scope | Retry reuse accepted mapping, không cấp lại identity đã committed | NOT RUN |
+| CD-T03 Type1 UPDATE | Field đã admitted, Type1 direction; approved Type2 vector giữ nguyên | Name hoặc Brand/Color/Size/Chiller Type1 correction | Không thêm Type2 episode; correction scope phải là policy được duyệt trước test | SK không đổi nghĩa; label/grouping refresh theo approved reporting mode | Totals giữ nguyên; report không che historical Type1 impact | Audit correction và restore/replay theo policy, không tạo phantom Type2 | NOT RUN |
+| CD-T04 Customer Type2 UPDATE | Registered NK; Category/Group/Bill-to tracking direction; time basis được test policy xác định | UPDATE ba Customer IDs riêng hoặc cùng lúc | Candidate episode/revision với positive intervals, no duplicate active match | Affected Buyer/Bill-to requests chỉ theo invoice NK riêng; date-only theo D03 | Core R/U đúng; invalid multi-match block; certified gate độc lập | Replay không duplicate SK; rollback candidate không đổi published meaning | NOT RUN |
+| CD-T05 optional/technical/excluded changes | CreditLimit/hold chưa activated; Product CustomFields/Tags excluded | UPDATE optional/editor/Tags hoặc source metadata | Raw/audit đổi, không analytical Type2 trigger; technical không thành Type1 | Không rekey fact chỉ vì editor/Tags/optional change | Population/measures và coverage giữ theo actual lookups | Replay lưu evidence không nhân episodes | NOT RUN |
+| CD-T06 Product Type2 UPDATE | Type2 set chính xác UnitPackageID/OuterPackageID/QuantityPerOuter; registered product | UPDATE một/nhiều packaging columns; Type1-only control case | Packaging change tạo candidate episode khi basis hợp lệ; control không Type2 | Invoice/order/movement Product remap theo scope, không sửa UnitPrice/tax/qty | R/U/I và gates; current holdings chỉ trong validated state | Retry stable registry mapping, không tạo grouping-field Type2 ngoài set | NOT RUN |
+| CD-T07 same-transaction multiple updates | Independent temporal test table/copy được phép; exact periods giữ đủ | Hai UPDATE cùng transaction gây zero-duration occurrence | Raw/audit giữ row; zero-duration không positive interval; source start key không coi unique | Không chọn zero-duration cho role; no fake business duration | Integrity checks và core coverage tách biệt; không loại audit để pass | Re-extract/replay nhận diện same evidence, không thêm episode từ zero-duration | NOT RUN |
+| CD-T08 no-change replay / failed retry | Accepted registry mapping và known request lineage | Lặp input/no-op retry failed attempt | Same episode→same opaque SK; reservation không gán sang nghĩa khác | Fact keys/measures không double apply | Previous consistent publication hoặc completed validated generation, không partial mix | Resume/reconcile committed vs candidate state, log attempt | NOT RUN |
+| CD-T09 several changes between observations | Two observations; tùy case có/không permitted source history | A→B→C hoặc A→B→A trong SQL Server test giữa batches | Source-backed sequence chỉ khi có evidence; snapshot-only không invent B | Khoảng không đủ validity giữ U, không current/earliest fallback | Core giữ U lineage; certified grouping theo gates, không claim full history | Retain forward evidence để retry/reload không mất intermediate đã biết | NOT RUN |
+| CD-T10 precision 100 ns / sentinel | Chosen technical representation test candidate; chưa có runtime approval | 100 ns-distinct adjacent boundaries, sentinel/open end, round-trip | Exact identity/periods không bị mất; collision flagged thay vì merge | Predicates so exact values; no silent lost/multi lookup do reduction | Invalid conversion block affected scope; missing proof không tự RESOLVED | Replay/restore exact source representation; không chỉ timestamp(6) | NOT RUN |
+| CD-T11 hash collision/canonicalization | Registry có equality/provenance; digest là accelerator | Same digest khác payload, NULL/rỗng/case/decimal variants | Không merge identities theo hash; collision/normalization conflict báo lỗi | Không remap fact sang episode khác vì hash bằng nhau | Integrity conflict block; giữ audit reason | Retry deterministic comparison, collision investigation trước publish | NOT RUN |
+| CD-T12 date-only disagreement | Relevant-day domain và analytical validity test policy rõ; exact intervals | Case full-day một E qua nhiều source occurrences; case internal gap; hai sequential E; noncontiguous same values; overlap | Chỉ continuous evidence map về một E được consensus; không merge episodes noncontiguous | Full-day unique E→R; gap/sequential E→U; overlapping integrity→I | D03 full coverage bắt buộc, endpoint-only không pass; I block, U core controlled | Re-run cùng proof artifact; policy/evidence revision mới phải audit, không proxy fallback | NOT RUN |
+| CD-T13 missing/multi match | Role requests và complete source scope được xác định | Missing reference, gap, date-only uncertainty, invalid key/precision, integrity overlap | Candidate identity/interval không được tự sửa bằng first/MAX/current | R/U/I và lý do phân biệt; unknown member không successful match | Core giữ U; invalid/multi-match block; certified thresholds chưa duyệt thì không Certified | Re-resolution có lineage; chỉ sửa affected scope sau validation | NOT RUN |
+| CD-T14 late history/backfill correction | Registry published episodes + source evidence lineage; correction plan candidate | Boundary-only correction; split; continuous merge; ambiguous mapping | Same identifiable episode giữ ID/SK với validity revision; split/merge candidate supersession map; ambiguity hold | Old/new affected fact-role mapping diff; không blanket rekey | Candidate revision chỉ publish sau policy/gates; unresolved không bị ép timeline | Preserve old revision/publication, replay supersession idempotent; registry loss không claim stability | NOT RUN |
+| CD-T15 DELETE/missing/reinsert | Complete-scan proof hoặc partial-scan counterexample; source audit giữ | Confirmed DELETE, missing partial batch, NK reinsert | Partial absence không delete; retire/incarnation theo policy còn cần duyệt | Historical facts không cascade; new reference U hoặc approved incarnation lookup | Core reconciliation bảo toàn; unproven delete không publish destructive change | Restore registry/history và delete evidence, không tạo reuse SK mang nghĩa khác | NOT RUN |
+| CD-T16 cutover bridge mismatch | Permitted archive/current + retained forward observations, same tracking-policy generation | Current khác first observation hoặc same vector/editor-only change | Reconciled bridge khi có evidence; không đủ giữ unverified span; metadata-only không episode mới | Affected history requests U nếu thiếu basis; no duplicate mapping từ hai streams | D04 no forced timeline; core U controlled; conflicting accepted intervals block | Reload giữ forward audit và registry, không replay source snapshot làm mất history | NOT RUN |
+| CD-T17 mid-publication failure | Validated old publication và candidate/new registry state | Fail sau key allocation/dimension write/fact rekey/trước mart refresh | No changed SK meaning; failed candidate không lộ như accepted complete state | No mixed-generation FK, affected scope giữ consistent visibility | Core/certified publication không expose partial state; exact mechanism pending | Restore last compatible registry+evidence/maps hoặc finish gated recovery; same logical result khi retry | NOT RUN |
+| CD-T18 rebuild preserve mapping | Backup registry, identities, revisions, forward evidence và publications tương thích | Controlled full reload/restore | Same accepted episode IDs/SKs, integrity check no dangling/supersession corruption | Same approved lookups và role references; totals/count/qty match | Gates trước publish restored generation; no loss of forward history | Recovery evidence chứng minh complete mapping restore, không chỉ restore SK list | NOT RUN |
+| CD-T19 rebuild without registry | Registry missing/corrupt hoặc source evidence thiếu | Clean rebuild/reordered history/late version | Không assume old SK; restore evidence hoặc hold candidate; remap generation chỉ sau approval | Không mix old FKs/new namespaces; report non-equivalence khi thiếu forward evidence | Affected scope blocked cho tới recovery/remap plan hợp lệ | Escalate registry loss, không derive ROW_NUMBER để giả stable mapping | NOT RUN |
+| CD-T20 current Product refresh | Holdings observation window + current published-state mapping | Current Product pointer đổi trong lúc observe/publish | Product version resolve thuộc same new state, not latest-at-query | fact_inventory_current Product key đổi theo validated publication; quantity không suy history | observed_at khác published_at; no partial state/daily balance claim | Replay/recover state manifest + key mapping cùng generation | NOT RUN |
+| CD-T21 header-only fact update | Complete header+line source population; line timestamp giữ nguyên | InvoiceDate/OrderDate/buyer/bill-to source header UPDATE | Dimension episodes không tự đổi chỉ vì header đổi | Propagate date/role lookup và old/new groups; source invoice roles giữ đúng | Core R/U/I reconcile, S06 cùng population, C02 distinct OrderID; no fan-out | Rerun same affected work không double count; restore coherent publication | NOT RUN |
+
+Mỗi test cần input manifest, policy/version, before/after identity/SK/lookup distributions, affected fact/role/NK/time scope, reconciliation và result. Expected outcomes là specification, chưa có PASS runtime. Failure injection và DML execution thuộc task triển khai/test riêng sau phê duyệt.
+
+## Acceptance checklist — mức thiết kế để review
+
+| Tiêu chí | Evidence | Đánh giá |
+| --- | --- | --- |
+| SCD approvals chính xác | SCD-01–07 giữ nguyên; sáu ADR D01–D06 tách accepted direction và pending policies | PASS — ghi nhận Owner decisions |
+| Product final Type2 set | UnitPackageID, OuterPackageID, QuantityPerOuter; Type1 direction chỉ analytical fields admitted; excluded/audit không đổi thành Type1 | PASS — Accepted D01 |
+| Source identity không dùng CustomerID+ValidFrom mặc định | Identity design, duplicate-start evidence và mutable ValidTo analysis | PASS — thiết kế |
+| SK replay/rebuild/collision | K-A Accepted D02; episode identity feasibility, boundary revision giữ key khi có unique continuity; split/merge/supersession và ambiguity stop rule | PASS — logical path feasible; procedures pending |
+| Historical lookup bảy roles | L-B Accepted D03: full relevant-day coverage và một episode identity; U khi thiếu proof, I khi integrity multi-match; không proxy/fallback | PASS — constraints/proof obligations |
+| Zero-duration/precision | Raw/audit invariant, P-A/B/C, CD-T07/10 | PASS — thiết kế |
+| Type1/Type2/observation vs business time | State Transition Matrix, SCD-01 tracking direction không tự time policy | PASS — thiết kế |
+| Hybrid không invent history | Reconciled direction Accepted D04; per-NK bridge/reconciliation invariants; unverified evidence không ép nối; preserve forward reload | PASS — thiết kế |
+| Restatement theo DW-01 | Propagation matrix: version creation/rekey/mart/source correction tách biệt | PASS — đề xuất scope, không blanket execution |
+| Independent test design, không runtime | CD-T01–21 đủ preconditions/input/dimension/fact/publication/recovery và execution NOT RUN; DML chỉ independent test environment sau approval | PASS — test specification, không runtime PASS |
+| Không thay schema/pipeline/source/BRD/fact grain | Chỉ Markdown; accepted DW-01 và source evidence giữ nguyên | PASS — phạm vi |
+| Links/secrets/Git scope | 454 local Markdown links/0 broken; 23 Markdown files đúng phạm vi, 21 unique scenarios đủ 8 columns và đều NOT RUN; không phát hiện mẫu secret/whitespace/fence lỗi; git diff --check sạch. Hash source evidence/KPI/BRD/Bus/diagrams giữ nguyên; bốn fact rows giữ nguyên, dictionary chỉ đồng bộ SCD notes | PASS — document QA; staged scope được kiểm trước commit |
+
+## Targeted acceptance A–G và thay đổi so với draft
+
+| Check | Kết quả review | Evidence / còn mở |
+| --- | --- | --- |
+| A Product | Chỉ ba packaging columns Type2, grouping fields khác Type1 nếu admitted; test CD-T03/T05/T06 theo cùng set | D01/classification/forward/test matrix; không mở rộng dimension |
+| B Registry | Feasible stable identity bằng durable registry episode mapping độc lập period. Boundary-only revision không tự đổi SK; ambiguous mapping stop. Split/merge phải có replacement/supersession plan, không reuse SK khác nghĩa | D02 + Identity feasibility matrix; exact allocator/schema/supersession/recovery procedure còn pending |
+| C Lookup | Full-day proof cần union accepted intervals của **một episode ID** phủ toàn relevant event window, không chỉ endpoints/same vector. Gaps hoặc sequential episodes → U; integrity overlap/multi → I | D03/Lookup; day domain/basis và efficient algorithm còn cần nghiệm thu E/physical |
+| D Cutover | Reconciled direction H-A; separate evidence khi chưa bridge được, no forced timeline; completeness/current-vector/occurrence-map/interval/publication invariants | D04/Forward; physical cutover window chưa chọn |
+| E Precision | Exact 100 ns là required invariant; P-A/B/C còn options, không claim timestamp microsecond lossless | D05/Identity; runtime round-trip NOT RUN |
+| F Publication/restatement | Core giữ U và nguồn measures; I block scope; Certified gate cần approved thresholds. Role/source NK không bị master overwrite; rekey/restate là request scoped, không blanket | D06/Lookup/Forward; reserved SK/threshold/scope/re-resolution procedure pending |
+| G Tests | Đủ 21 scenarios, từng row có tất cả required fields và NOT RUN | Test matrix trong hồ sơ này; không dựng SQL Server/PostgreSQL test DB |
+
+Không có blocker trọng yếu cho **nghiệm thu C/D ở mức tài liệu**: stable identity có logical path và ambiguity rule khả thi; chi tiết mở được phân loại trong [DW-02E plan/backlog](wwi-dw-02e-work-plan.md), không bị đổi thành Approved policies. Các gate đó vẫn chặn implementation/certified publication cho tới approval và tests tương ứng. Không có truy vấn nguồn mới trong đợt này; SQL evidence/findings không được viết lại.
+
+## Open Decisions để Owner review trước DW-02E
+
+| ID | Technical choice Pending Approval | Khuyến nghị để review / impact |
+| --- | --- | --- |
+| CD-01 | Type1 correction scope và AccountOpenedDate exception | Product Type2 set đã chốt đúng ba packaging columns theo D01; các analytical fields khác admitted theo Type1, không activate optional credit/hold |
+| CD-02 | Source occurrence/durable episode identity, NK incarnation | Không start-only; separate open/closed revisions; quy tắc same-vector continuity cần duyệt |
+| CD-03 | K-A registry procedures và clean-rebuild semantics | Persistent registry + opaque SK đã Accepted D02; backup/restore/generation và SK remap procedures còn cần duyệt |
+| CD-04 | P-A/B/C representation/exact interval comparison | Lossless source identity bắt buộc, physical type/epoch/canonicalization chưa chọn |
+| CD-05 | Relevant-day/basis evidence, consensus implementation và unresolved conventions | L-B và controlled unresolved core đã Accepted D03/D06; exact thresholds/scope/re-resolution còn cần duyệt |
+| CD-06 | Reconciled H-A cutover boundary/bridge procedures | Direction Accepted D04; per-NK continuity, forward retention và unresolved conflicts cần operational policy |
+| CD-07 | Type1 overwrite scope và late-history/rekey approval | Chỉ affected NK/role/interval/groups, lưu old/new mapping; không blanket restate |
+| CD-08 | R-A/R-B consistency/recovery unit | Publication generation hoặc bounded transactions+ledger; checkpoint orchestration chi tiết vẫn thuộc DW-03 |
+| CD-09 | Delete/reinsert, missing-source proof | Không cascade historical facts, cần incarnation/delete policy và complete input evidence |
+
+Các technical choices trên chuyển sang kế hoạch E1–E5 và backlog B1–B9; xem [DW-02E Work Plan](wwi-dw-02e-work-plan.md) để biết phần bắt buộc E và phần có thể defer có gate tới DW-03/physical. Chỉ lập kế hoạch E, chưa thực hiện. C/D DONE sau final document QA theo Owner authorization; DW-02/WWI-04/Phase 1 chưa hoàn tất.

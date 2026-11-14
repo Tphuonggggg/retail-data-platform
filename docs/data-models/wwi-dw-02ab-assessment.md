@@ -2,6 +2,8 @@
 
 **DW-02A/B DONE ở mức khảo sát/phân loại theo phê duyệt SCD-01–07 và quyền nghiệm thu có điều kiện của Owner.** Phase 1 In Progress, WWI-04 và DW-02 IN_PROGRESS. Hồ sơ A/B được commit riêng sau QA; không thay bốn facts/BRD-01–12. Các technical policies chưa được phê duyệt.
 
+**Ghi chú chuyển tiếp:** các câu “Product candidates/technical choices Pending Approval” dưới đây phản ánh snapshot nghiệm thu A/B tại commit `b293fdb`. Sau đó Owner đã duyệt [ADR-SCD-01–06](../adr/README.md), gồm Product set ba packaging columns và các architecture directions. Classification hiện hành đã đồng bộ ADR; numeric findings/SQL evidence của A/B giữ nguyên. Technical implementation details vẫn pending; ghi chú này không sửa nguyên tắc SCD-01–07 hoặc kết quả khảo sát cũ.
+
 ## Executive summary
 
 Classification bao phủ đầy đủ 31 Customer và 25 Product source columns; Customer Category/Group/Bill-to có Approved Type 2 direction; CreditLimit/hold optional chưa bật. Product concrete candidates và technical policies vẫn Pending Approval. Physical Customer history có 714 versions so với 713 FOR SYSTEM_TIME ALL, một zero-duration và một duplicate-start identity group; source full period identity hiện unique. Product có 671 versions, không zero-duration/gap/overlap. Customer/Product finite periods trong snapshot không có phần dưới microsecond nhưng sentinel và future 100 ns changes vẫn có rủi ro; chưa test PostgreSQL conversion.
