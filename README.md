@@ -2,11 +2,11 @@
 
 ## Project Overview
 
-Dự án portfolio Data Engineering dùng **WideWorldImporters (WWI) trên SQL Server** làm nguồn OLTP **chỉ đọc**, xây Data Warehouse riêng trên PostgreSQL và phục vụ Power BI. Phase 0 **Completed** ở mức tài liệu/cấu trúc; Phase 1.1–1.4 đã được chấp thuận trong phạm vi từng phần, WWI-02 `DONE`, Phase 1.5 được phép thực hiện. Chưa có pipeline của dự án chạy được. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
+Dự án portfolio Data Engineering dùng **WideWorldImporters (WWI) trên SQL Server** làm nguồn OLTP **chỉ đọc**, xây Data Warehouse riêng trên PostgreSQL và phục vụ Power BI. Phase 0 **Completed** ở mức tài liệu/cấu trúc; Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 chưa bắt đầu. Chưa có pipeline của dự án chạy được. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
 
 ## Business Problems and MVP
 
-Dữ liệu order, invoice, customer transaction và stock movement có grain/ý nghĩa khác nhau. Báo cáo cần phân biệt đặt hàng, xuất hóa đơn, thu tiền và biến động hàng để tránh đếm trùng và đối soát được. MVP gồm **Sales/Invoicing, Customer Analytics, Inventory Movements**; hoàn thiện Sales end-to-end trước. Purchasing, Finance và BigQuery chỉ là extensions có kiểm soát. Các quy tắc revenue, tax, customer role, grain, SCD2 và incremental chi tiết vẫn là Open Decisions.
+Dữ liệu order, invoice, customer transaction và stock movement có grain/ý nghĩa khác nhau. Báo cáo cần phân biệt đặt hàng, xuất hóa đơn, thu tiền và biến động hàng để tránh đếm trùng và đối soát được. MVP gồm **Sales/Invoicing, Customer Analytics, Inventory Movements**; hoàn thiện Sales end-to-end trước. Purchasing, Finance và BigQuery chỉ là extensions có kiểm soát. BRD-01–BRD-12 đã được duyệt ở mức nghiệp vụ; [KPI Catalog](analytics/kpi-definitions/wwi-kpi-candidate-catalog.md) phân loại KPI MVP và loại trừ. Fact/dimension grain, SCD2, incremental và quality thresholds còn mở.
 
 ## Planned Architecture
 

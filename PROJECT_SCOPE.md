@@ -2,7 +2,7 @@
 
 ## Trạng thái
 
-Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 đã `Completed`; Phase 1 đang `In Progress`, Phase 1.1–1.4 đã được chấp thuận trong phạm vi từng phần, WWI-02 `DONE` và Phase 1.5 được phép thực hiện. Phase 2–9 chưa bắt đầu. Các quyết định nghiệp vụ và schema ở mục Open Decisions chưa được chốt.
+Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 và Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
 
 ## Mục tiêu và kiến trúc
 
@@ -27,16 +27,16 @@ MVP gồm **Sales/Invoicing, Customer Analytics và Inventory Movements**. Hoàn
 
 ## Business và data boundaries
 
-- `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines` và `Sales.CustomerTransactions` có grain/ý nghĩa khác nhau. Chưa chốt fact chính hoặc quy tắc revenue/tax.
-- Customer analytics phải phân biệt `CustomerID` và `BillToCustomerID` theo KPI được duyệt.
-- Inventory Movements dùng `Warehouse.StockItemTransactions` theo loại nghiệp vụ; current holdings không tự chứng minh lịch sử tồn cuối ngày.
+- `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines` và `Sales.CustomerTransactions` có grain/ý nghĩa khác nhau. Order metrics theo `OrderDate`; invoice metrics theo `InvoiceDate`. `Invoiced Sales Before Tax = SUM(InvoiceLines.ExtendedPrice − InvoiceLines.TaxAmount)` là measure mặc định của MVP, cùng với Tax Amount và Invoice Amount Including Tax. Đây là quy ước báo cáo dự án, không là Recognized Revenue hay doanh thu kế toán. Fact grain/schema chưa chốt.
+- Customer analytics: buyer `CustomerID` là role mặc định cho Sales; `BillToCustomerID` là góc nhìn billing riêng. Monthly Repeat Order Customer Rate = buyer có ≥2 distinct orders trong tháng / buyer có ≥1 order trong tháng, theo `OrderDate`; quý tính lại trên toàn quý.
+- Inventory Movements dùng `Warehouse.StockItemTransactions` theo loại nghiệp vụ; current holdings chỉ là snapshot hiện tại. Daily Inventory Balance và Stockout Risk ngoài MVP.
 - Temporal history chỉ hỗ trợ SCD2 ở bảng và khoảng lịch sử đã kiểm chứng, không mặc định bao phủ mọi giao dịch.
 - Kiểm tra chất lượng cơ bản bắt đầu ở Phase 3–4. Phase 6 tập trung quality gates, monitoring tập trung và failure scenarios nâng cao.
 - WWI gốc luôn chỉ đọc. Không dùng CDC trong phương án hiện hành; chưa bật Change Tracking. Phương án môi trường thử nghiệm độc lập cho incremental chỉ được thiết kế ở WWI-04, chưa tạo clone hoặc DML.
 
 ## Out of Scope và extensions
 
-MVP không gồm returns/refunds chi tiết, campaign attribution, streaming, Kafka/Flink/Hadoop cluster/Kubernetes, machine learning, payment gateway thật hay frontend web application hoàn chỉnh. Purchasing, Finance và BigQuery là phần mở rộng có kiểm soát; chúng không chặn nghiệm thu MVP local. Không tự thêm dependency hoặc thay đổi technology stack.
+MVP không gồm Recognized Revenue, official Gross Profit/COGS, AOV chưa có policy, Refund/Credit Note KPI, invoice-level payment allocation, Daily Inventory Balance, Stockout Risk, returns/refunds chi tiết, campaign attribution, streaming, Kafka/Flink/Hadoop cluster/Kubernetes, machine learning, payment gateway thật hay frontend web application hoàn chỉnh. `Source-Reported Line Profit` chỉ là optional analytical measure từ `InvoiceLines.LineProfit`. `Average Invoice Value Before Tax` là measure riêng, không là AOV. Purchasing, Finance và BigQuery là phần mở rộng có kiểm soát; chúng không chặn nghiệm thu MVP local. Không tự thêm dependency hoặc thay đổi technology stack.
 
 ## Non-functional Requirements và Definition of Done dự kiến
 
@@ -54,13 +54,13 @@ Definition of Done cho **MVP triển khai** là một người khác có thể c
 
 | Nhóm | Quyết định chưa chốt | Gate |
 | --- | --- | --- |
-| KPI | Revenue recognition, tax treatment, invoice date hay delivery date, invoice chưa xác nhận giao | WWI-03 |
-| Customer | `CustomerID` so với `BillToCustomerID` trong facts/KPI | WWI-03 |
-| Warehouse | Grain, tên fact/dimension, source-to-target mapping, profit/COGS và ý nghĩa `LineProfit` | WWI-03 trước schema |
+| KPI triển khai | Population/filter theo kỳ, precision/rounding, credit note tương lai, kiểm thử đối soát các measure đã duyệt; không mở lại revenue recognition ngoài MVP | WWI-04 và trước mart |
+| Customer | Mapping kỹ thuật buyer/bill-to vào fact/dimension, as-of/restatement; role nghiệp vụ đã duyệt | WWI-04 và trước schema |
+| Warehouse | Grain/tên fact/dimension, source-to-target mapping và physical schema; official COGS/Gross Profit deferred | Trước schema |
 | SCD2 | Thuộc tính, hiệu lực `ValidFrom`/`ValidTo`, as-of và độ phủ history | WWI-04 |
 | Incremental | Watermark/tie-breaker, delete, replay, môi trường thử nghiệm độc lập | WWI-04 |
-| Inventory | Có cần daily balance không; opening balance và đối soát movements | Trước inventory mart |
-| Data quality | Eligibility, ngưỡng, mức cảnh báo/chặn batch và ngoại lệ nguồn | WWI-03/04 |
+| Inventory | Đối soát movements/current holdings; daily balance và stockout risk ngoài MVP | Trước inventory mart |
+| Data quality | Ngưỡng, mức cảnh báo/chặn batch và ngoại lệ nguồn | WWI-04 |
 | Git publication | Quyền phân phối dữ liệu, license và chính sách công khai repository trước khi tạo remote/push | Chủ dự án quyết định trước publish |
 
 ## Change control

@@ -42,4 +42,4 @@ WWI-11 Sales; WWI-12 Customer; WWI-13 Inventory. Theo dõi [TASKS.md](../TASKS.m
 Báo cáo dùng metric có định nghĩa và dữ liệu đã kiểm tra; không JOIN fact khác grain gây double count.
 
 ## 14. Current Status
-Chưa có mart, KPI definition được duyệt hoặc report. Not implemented yet.
+Phase 1.5 đã ghi [KPI definitions](kpi-definitions/wwi-kpi-candidate-catalog.md) và [SQL evidence](kpi-definitions/wwi-kpi-verification-sql.md); BRD-01–BRD-12 và định nghĩa nghiệp vụ được Project Owner duyệt. Chưa có mart, KPI runtime hoặc report. Not implemented yet.

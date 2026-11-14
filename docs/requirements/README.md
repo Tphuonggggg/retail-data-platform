@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-Tài liệu yêu cầu thuộc [docs](../README.md); các tài liệu Phase 1.4 hiện ở mức đề xuất.
+Tài liệu yêu cầu thuộc [docs](../README.md). Phase 1.4 và 1.5 đã được nghiệm thu ở mức tài liệu.
 
 ## 2. Purpose
 
@@ -10,7 +10,7 @@ Ghi yêu cầu nghiệp vụ/kỹ thuật cần được phê duyệt trước t
 
 ## 3. Scope
 
-BRD/KPI definitions theo task sau; Phase 1.4 chỉ mô tả raw layer và validation/reconciliation requirements cho chín bảng WWI MVP.
+Phase 1.4 mô tả raw layer và validation/reconciliation requirements; Phase 1.5 phân tích business requirements/questions, KPI candidates và Open Decisions cho ba subject areas MVP.
 
 ## 4. Responsibilities
 
@@ -22,7 +22,7 @@ Phân biệt yêu cầu nguồn đã kiểm chứng, yêu cầu sau ingestion ch
 
 ## 6. Outputs
 
-[Raw Layer Requirements](wwi-raw-layer-requirements.md) và [Source Validation Matrix](wwi-source-validation-matrix.md). KPI definitions và BRD chi tiết: Not implemented yet.
+[Raw Layer Requirements](wwi-raw-layer-requirements.md), [Source Validation Matrix](wwi-source-validation-matrix.md), [Business Requirements](wwi-business-requirements.md), [Business Questions](wwi-business-questions-use-cases.md), [Business Rules Matrix](wwi-business-rules-decision-matrix.md) và [Phase 1.5 Assessment](wwi-phase-1-5-assessment.md). KPI business definitions đã duyệt; runtime: Not implemented yet.
 
 ## 7. Dependencies
 
@@ -42,7 +42,7 @@ Tài liệu để review, không có lệnh chạy ingestion hay validation runt
 
 ## 11. Tasks
 
-Phase 1.4 thuộc WWI-02 đã được Project Owner nghiệm thu ở mức tài liệu; WWI-02 `DONE`. [TASKS.md](../../TASKS.md) là tracker.
+Phase 1.4/WWI-02 và Phase 1.5/WWI-03 đã được nghiệm thu ở mức tài liệu; cả hai `DONE`. [TASKS.md](../../TASKS.md) là tracker.
 
 ## 12. Testing Strategy
 
@@ -54,4 +54,4 @@ Raw metadata và validation matrix tách rõ Verified/Proposed, grain và owner 
 
 ## 14. Current Status
 
-Phase 1.4 được nghiệm thu ở mức tài liệu; chức năng nghiệp vụ và pipeline: Not implemented yet.
+Phase 1.4/1.5 được nghiệm thu ở mức tài liệu. Pipeline và warehouse runtime: Not implemented yet.

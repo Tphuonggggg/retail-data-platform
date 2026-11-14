@@ -5,6 +5,7 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ## Unreleased
 
 ### Changed
+- Project Owner phê duyệt BRD-01–BRD-12; chuẩn hóa 22 KPI IDs thành 12 MVP Core, 5 MVP Optional, 2 Deferred, 3 Not Supported by Current Evidence. K10–K13 kiểm chứng read-only công thức AIV trước thuế, repeat theo tháng, attribution hai customer roles và LineProfit nguồn. Phase 1.5/WWI-03 `DONE` ở mức tài liệu; Phase 1 vẫn `In Progress`, không tạo warehouse/pipeline.
 - Phase 1.4 source contracts cho chín bảng MVP, extraction matrix, raw requirements, validation matrix và assessment đã được Project Owner nghiệm thu ở mức tài liệu; WWI-02 `DONE` ở phạm vi source design, không tạo code/schema hoặc chốt incremental/KPI.
 - Phase 1.3 source relationships, Mermaid ERD, business data flow, SQL kiểm chứng và assessment được Project Owner chấp thuận ở mức tài liệu/khảo sát; chưa chốt KPI hoặc warehouse design, WWI-02 vẫn `IN_PROGRESS`.
 - Chủ dự án chấp thuận nội dung Phase 1.1 và nghiệm thu khảo sát Phase 1.2. Bổ sung profiling chỉ đọc cho Sales/Invoicing, Customer temporal và Inventory/integrity cùng truy vấn SQL tái kiểm chứng; cho phép Phase 1.3, WWI-02 vẫn `IN_PROGRESS`.

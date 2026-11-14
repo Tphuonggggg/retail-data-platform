@@ -43,4 +43,4 @@ Rà liên kết, tính nhất quán và đối chiếu tài liệu với bằng 
 Không trình bày thành phần planned như implemented.
 
 ## 14. Current Status
-Tài liệu kiến trúc và ADR WWI đã có; [Phase 1.1](data-models/wwi-phase-1-1-assessment.md), [Phase 1.2](data-models/wwi-phase-1-2-assessment.md), [Phase 1.3](data-models/wwi-phase-1-3-assessment.md) và [Phase 1.4](data-models/wwi-phase-1-4-assessment.md) đã được chấp thuận theo phạm vi từng phần. WWI-02 `DONE` ở mức source design; KPI/business rules chưa được duyệt. Pipeline và kết quả kiểm thử chức năng: Not implemented yet.
+Tài liệu kiến trúc và ADR WWI đã có; [Phase 1.1](data-models/wwi-phase-1-1-assessment.md), [Phase 1.2](data-models/wwi-phase-1-2-assessment.md), [Phase 1.3](data-models/wwi-phase-1-3-assessment.md), [Phase 1.4](data-models/wwi-phase-1-4-assessment.md) và [Phase 1.5](requirements/wwi-phase-1-5-assessment.md) đã được chấp thuận ở mức tài liệu. WWI-02/03 `DONE`; KPI business definitions được duyệt, physical warehouse và pipeline chưa triển khai. Kết quả kiểm thử chức năng: Not implemented yet.
