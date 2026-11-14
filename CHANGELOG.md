@@ -5,6 +5,8 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ## Unreleased
 
 ### Changed
+- Nghiệm thu DW-01 sau targeted review theo yêu cầu Owner: làm rõ lookup 0..1 version và unresolved ở DW-02; distinct header population/Product filters; single-role customer totals; observed_at/published_at và Product SK theo published state; reference contract/controlled mapping cùng precision requirements. DW-01 DONE, WWI-04 IN_PROGRESS, Phase 1 In Progress; DW-02 chưa bắt đầu. Commit tài liệu nghiệm thu theo task riêng.
+- Bắt đầu Phase 1.6 chỉ trong DW-01 theo Owner authorization: logical Kimball/bus, bốn fact/four conformed dimensions, source-to-target mapping, năm Mermaid, change impact và sáu logical marts. Ghi nhận architecture constraints L01–L05; WWI-04/DW-01 IN_PROGRESS, DW-02 chưa bắt đầu. Chỉ tài liệu, không commit hoặc triển khai runtime ở bước này.
 - Project Owner phê duyệt BRD-01–BRD-12; chuẩn hóa 22 KPI IDs thành 12 MVP Core, 5 MVP Optional, 2 Deferred, 3 Not Supported by Current Evidence. K10–K13 kiểm chứng read-only công thức AIV trước thuế, repeat theo tháng, attribution hai customer roles và LineProfit nguồn. Phase 1.5/WWI-03 `DONE` ở mức tài liệu; Phase 1 vẫn `In Progress`, không tạo warehouse/pipeline.
 - Phase 1.4 source contracts cho chín bảng MVP, extraction matrix, raw requirements, validation matrix và assessment đã được Project Owner nghiệm thu ở mức tài liệu; WWI-02 `DONE` ở phạm vi source design, không tạo code/schema hoặc chốt incremental/KPI.
 - Phase 1.3 source relationships, Mermaid ERD, business data flow, SQL kiểm chứng và assessment được Project Owner chấp thuận ở mức tài liệu/khảo sát; chưa chốt KPI hoặc warehouse design, WWI-02 vẫn `IN_PROGRESS`.

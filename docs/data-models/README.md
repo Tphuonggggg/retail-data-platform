@@ -10,7 +10,7 @@ Ghi metadata, profile, quan hệ nguồn và source contracts làm đầu vào c
 
 ## 3. Scope
 
-Chín bảng MVP thuộc Sales/Invoicing, Customer và Inventory; Purchasing chỉ là dependency ở các phép đối soát đã nêu. KPI, fact/dimension và incremental policy chưa được phê duyệt.
+Chín bảng MVP thuộc Sales/Invoicing, Customer và Inventory; Purchasing chỉ là dependency ở các phép đối soát đã nêu. KPI nghiệp vụ Phase 1.5 đã duyệt; DW-01 đề xuất logical dimensional models theo bốn grain/conformed dimensions đã được Owner định hướng. Physical schema và incremental/SCD2 policy chi tiết còn mở.
 
 ## 4. Responsibilities
 
@@ -29,6 +29,8 @@ SQL Server WWI chỉ đọc, [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md), [TASKS.
 
 ## 7. Dependencies
 
+Phase 1.6/DW-01: [Logical DW Design và Bus Matrix](wwi-logical-dw-design.md), [Fact/Dimension Dictionary](wwi-fact-dimension-dictionary.md), [Logical Mapping](wwi-logical-source-to-target.md), [Star Schemas](wwi-logical-star-schemas.md), [Change Impact Matrix](wwi-change-impact-matrix.md), [Logical Marts](wwi-logical-data-marts.md), [Assessment](wwi-dw-01-assessment.md). Các tài liệu đích này không thay source ERD/dictionary hiện có.
+
 Metadata Dictionary và profiling trước relationship contract; relationship contract trước source contracts. Các quyết định WWI-03/04 cần phê duyệt riêng trước schema/pipeline.
 
 ## 8. Technology
@@ -45,7 +47,7 @@ Các truy vấn đọc/tái kiểm chứng nằm trong tài liệu SQL tương �
 
 ## 11. Tasks
 
-WWI-02 `DONE` ở mức source design; Phase 1.4 được nghiệm thu ở mức tài liệu. Theo dõi [TASKS.md](../../TASKS.md).
+WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-01 `DONE`; DW-02 chưa bắt đầu. Theo dõi [TASKS.md](../../TASKS.md).
 
 ## 12. Testing Strategy
 
@@ -57,4 +59,4 @@ Mỗi kết luận quan trọng có evidence hoặc nhãn Unverified/Proposed; �
 
 ## 14. Current Status
 
-Phase 1.1–1.4 được Project Owner chấp thuận trong phạm vi từng phần; WWI-02 `DONE` ở mức source design. Runtime: Not implemented yet.
+Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu. DW-01 đã nghiệm thu qua targeted review. Runtime: Not implemented yet.

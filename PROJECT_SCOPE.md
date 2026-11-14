@@ -2,7 +2,7 @@
 
 ## Trạng thái
 
-Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 và Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
+Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 chưa bắt đầu; Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
 
 ## Mục tiêu và kiến trúc
 
@@ -11,6 +11,8 @@ Pipeline dự kiến: SQL Server WWI (**chỉ đọc**) → Python ingestion →
 MVP gồm **Sales/Invoicing, Customer Analytics và Inventory Movements**. Hoàn thiện **Sales end-to-end** từ ingestion đến warehouse, Airflow, data quality, monitoring và mart/report trước khi mở rộng Customer rồi Inventory. Purchasing, Finance và BigQuery cần scope/task riêng. Giữ cấu trúc repository và các module Data Engineering dùng chung.
 
 ## Functional Requirements dự kiến
+
+Phase 1.6 ghi nhận architecture constraints được Owner phê duyệt: Kimball Star Schema với Conformed Dimensions, bốn logical facts (Invoice Line, Order Line, Stock Movement, Inventory Current); Core DW giữ chi tiết, marts riêng Power BI. L01–L05: initial full + periodic incremental + periodic full reconciliation; transaction watermark candidates, temporal history/snapshot, holdings snapshot comparison; test INSERT/UPDATE/DELETE trên SQL Server độc lập; idempotent upsert + SCD2 theo bằng chứng/forward tracking + rebuild/restate; Sales end-to-end trước. DW-01 đã nghiệm thu [logical design](docs/data-models/wwi-logical-dw-design.md), chưa chốt SCD2 attributes/validity, incremental algorithm hay physical schema.
 
 | ID | Yêu cầu | Acceptance criteria dự kiến |
 | --- | --- | --- |
@@ -27,7 +29,7 @@ MVP gồm **Sales/Invoicing, Customer Analytics và Inventory Movements**. Hoàn
 
 ## Business và data boundaries
 
-- `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines` và `Sales.CustomerTransactions` có grain/ý nghĩa khác nhau. Order metrics theo `OrderDate`; invoice metrics theo `InvoiceDate`. `Invoiced Sales Before Tax = SUM(InvoiceLines.ExtendedPrice − InvoiceLines.TaxAmount)` là measure mặc định của MVP, cùng với Tax Amount và Invoice Amount Including Tax. Đây là quy ước báo cáo dự án, không là Recognized Revenue hay doanh thu kế toán. Fact grain/schema chưa chốt.
+- `Sales.Orders`, `Sales.OrderLines`, `Sales.Invoices`, `Sales.InvoiceLines` và `Sales.CustomerTransactions` có grain/ý nghĩa khác nhau. Order metrics theo `OrderDate`; invoice metrics theo `InvoiceDate`. `Invoiced Sales Before Tax = SUM(InvoiceLines.ExtendedPrice − InvoiceLines.TaxAmount)` là measure mặc định của MVP, cùng với Tax Amount và Invoice Amount Including Tax. Đây là quy ước báo cáo dự án, không là Recognized Revenue hay doanh thu kế toán. Bốn logical fact grains được khai báo trong DW-01 theo yêu cầu Owner; logical mapping đã nghiệm thu; physical schema và các policy được chuyển tiếp vẫn còn mở.
 - Customer analytics: buyer `CustomerID` là role mặc định cho Sales; `BillToCustomerID` là góc nhìn billing riêng. Monthly Repeat Order Customer Rate = buyer có ≥2 distinct orders trong tháng / buyer có ≥1 order trong tháng, theo `OrderDate`; quý tính lại trên toàn quý.
 - Inventory Movements dùng `Warehouse.StockItemTransactions` theo loại nghiệp vụ; current holdings chỉ là snapshot hiện tại. Daily Inventory Balance và Stockout Risk ngoài MVP.
 - Temporal history chỉ hỗ trợ SCD2 ở bảng và khoảng lịch sử đã kiểm chứng, không mặc định bao phủ mọi giao dịch.
@@ -56,7 +58,7 @@ Definition of Done cho **MVP triển khai** là một người khác có thể c
 | --- | --- | --- |
 | KPI triển khai | Population/filter theo kỳ, precision/rounding, credit note tương lai, kiểm thử đối soát các measure đã duyệt; không mở lại revenue recognition ngoài MVP | WWI-04 và trước mart |
 | Customer | Mapping kỹ thuật buyer/bill-to vào fact/dimension, as-of/restatement; role nghiệp vụ đã duyệt | WWI-04 và trước schema |
-| Warehouse | Grain/tên fact/dimension, source-to-target mapping và physical schema; official COGS/Gross Profit deferred | Trước schema |
+| Warehouse | Physical schema và policy từ logical mapping DW-01 đã nghiệm thu; bốn fact/conformed dims theo constraints Owner đã giao; official COGS/Gross Profit deferred | Trước schema |
 | SCD2 | Thuộc tính, hiệu lực `ValidFrom`/`ValidTo`, as-of và độ phủ history | WWI-04 |
 | Incremental | Watermark/tie-breaker, delete, replay, môi trường thử nghiệm độc lập | WWI-04 |
 | Inventory | Đối soát movements/current holdings; daily balance và stockout risk ngoài MVP | Trước inventory mart |

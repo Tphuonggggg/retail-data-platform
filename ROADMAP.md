@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1–1.5 được chấp thuận ở mức tài liệu; WWI-02/03 DONE; Phase 1.6/WWI-04 chưa bắt đầu); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1–1.5 được chấp thuận ở mức tài liệu; WWI-02/03 DONE; Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 chưa bắt đầu); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -24,7 +24,11 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Dependencies:** Phase 0 được chủ dự án nghiệm thu và cho phép Phase 1.
 - **Deliverables:** Requirements, source contract/mapping, KPI matrix và ADR quyết định.
 - **Acceptance Criteria:** Các quyết định ảnh hưởng Sales schema/pipeline được duyệt; giới hạn snapshot/temporal ghi rõ.
-- **Status:** In Progress — Phase 1.1–1.5 được chủ dự án chấp thuận ở mức tài liệu; WWI-02 và WWI-03 `DONE`. BRD-01–BRD-12 đã duyệt; Phase 1.6/WWI-04 chưa bắt đầu, physical warehouse schema chưa duyệt.
+- **Status:** In Progress — Phase 1.1–1.5 được chủ dự án chấp thuận ở mức tài liệu; WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-01 DONE, DW-02 chưa bắt đầu; physical warehouse schema chưa duyệt.
+
+### Phase 1.6 / WWI-04 — kế hoạch thiết kế
+
+DW-01 Logical Dimensional Modeling đã nghiệm thu theo Kimball/bốn facts/conformed dims và L01–L05 Owner đã duyệt. Bàn giao [logical design](docs/data-models/wwi-logical-dw-design.md) đã qua targeted review. Các task sau cần Owner giao riêng: DW-02 SCD2 & Temporal History; DW-03A Full Load & Raw Layer; DW-03B Incremental; DW-03C Change Propagation & Recovery; DW-04 Final Verification & Acceptance. Dependencies/acceptance ở [TASKS.md](TASKS.md). Đã dừng sau DW-01; không bắt đầu DW-02, không triển khai service/database/pipeline.
 
 ## Phase 2: Local Source & Destination Readiness
 

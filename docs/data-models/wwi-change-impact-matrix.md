@@ -1,0 +1,37 @@
+# WWI Change Impact Matrix — DW-01
+
+**DW-01 logical change-impact requirements accepted; không chốt thuật toán incremental.** L01–L05 là constraints đã duyệt; tách bốn lớp: **detection** ở nguồn, **propagation** tới row/group phụ thuộc, **SCD2 version change** của attributes và **mart restatement**. Có thể phải propagation dù fact nguồn không đổi timestamp. [Fact dictionary](wwi-fact-dimension-dictionary.md), [marts](wwi-logical-data-marts.md), [extraction candidates](wwi-extraction-requirements-matrix.md).
+
+| Source change / detection candidate | Fact/dimension/intermediate chịu ảnh hưởng | Required action logic / SCD2 | Mart restatement | Verification trước triển khai |
+| --- | --- | --- | --- | --- |
+| InvoiceLines INSERT; watermark candidate | fact_invoice_line | Resolve header/product/role; insert đúng InvoiceLineID; không tạo invoice count mỗi line | sales daily/product/customer groups của invoice | PK unique; count/sums khớp source; rerun không nhân row |
+| InvoiceLines UPDATE | fact_invoice_line | Upsert theo PK; nếu InvoiceID/StockItemID đổi, lookup lại; giữ thông tin nhóm trước và sau | Rebuild impacted date/product/customer groups cũ và mới; count-distinct invoice tính lại | Quantity/amount/tax/profit diff; replay bằng full build |
+| Invoices UPDATE ngày/buyer/bill-to/OrderID/IsCreditNote, line không đổi | int_invoice_header + **mọi** fact_invoice_line cùng InvoiceID | Phát hiện header riêng; propagate ngày/roles/references tới lines, không dựa line LastEditedWhen; không tự thêm credit logic | Sales date và role groups cũ/mới; invoice count/AIV numerator+denominator; product mart từng line | Header-only test: line source timestamp giữ nguyên nhưng target/mart đổi đúng; không duplicate |
+| OrderLines INSERT/UPDATE | fact_order_line | Upsert theo OrderLineID; re-resolve parent/product; không suy invoice counterpart | Product/order-detail aggregates nếu dùng; S01/C01/C02 vẫn từ header | Source line totals; không thay order count khi thêm line |
+| Orders UPDATE ngày/buyer, line không đổi | int_order_header + mọi fact_order_line cùng OrderID | Header detection độc lập; propagate role/date; cập nhật header kể cả không line | Count/active buyer/repeat monthly ở buyer-month cũ và mới; quarterly recalc khi yêu cầu | Header-only đổi tháng hoặc CustomerID: distinct OrderID, buyer population đúng, bao phủ no-line case |
+| Customers current/history change | dim_customer; buyer/bill-to lookup; order/invoice facts khi policy yêu cầu | SCD1 correction hay SCD2 tùy thuộc tính DW-02; version mới không tự buộc rekey mọi historical fact. Source bill-to attribute đổi **không** thay Invoices.BillToCustomerID đã ghi | Historical regroup chỉ theo validity/rekey policy được duyệt; current C05 cập nhật; natural-key distinct không tăng vì có version | Single-match validity; zero-duration/gap; late version; C03/C04 giữ totals, C01/C02 không đếm versions |
+| StockItems current/history change | dim_product; ba transaction facts + inventory_current | Source history/snapshot; SCD1/2 tùy DW-02; current holdings có thể cần current product rekey; transaction price không dùng master price | Product groups cũ/mới theo policy; current mart đổi thuộc tính/current pointer | No double counting theo version; không suy cost history; totals trước/sau rekey không đổi |
+| StockItemTransactions INSERT/UPDATE | fact_stock_movement | Upsert PK; đổi date/type/product/quantity/doc ref thì xác định hai phía; không tự đổi holding | inventory movement groups cũ/mới; receipt/issue reconciliation groups | Signed decimal qty; optional FK; type 12 zero; doc-product grouped match |
+| StockItemHoldings snapshot changed | fact_inventory_current | Snapshot comparison L02; current-state replacement/upsert sau complete validation; **không** tạo fact lịch sử ngày | inventory_current xuất bản cùng state; không cộng với state cũ | Unique NK, source count/quantity cùng window; partial batch không publish |
+| Source key missing/DELETE | Tất cả targets và refs có liên quan | Missing key không là delete bằng chứng nếu scan/filter/consistency chưa đủ; đề xuất confirm/quarantine trước tombstone/remove/deactivate theo DW-03B, không mặc định cascade | Nếu được duyệt xóa/retract: restate mọi group cũ; giữ lineage/reason để recovery | Phân biệt actual delete với partial extract/filter/race; parent-delete/child còn; nguồn gốc không được DML |
+| Replay/backfill/rebuild | Raw validated input → dimensions/facts → marts | Cùng source PK không tạo duplicate; version SK stability/remapping cần DW-02; full rebuild chỉ publish sau gates; checkpoint/retry protocol DW-03C | Recompute từ detail/header của cùng version/run, không cộng thêm delta lần hai | So incremental output với full rebuild theo PK, amount, qty, counts/ratios; failure giữa các lớp có recovery |
+| Reference TransactionTypes thay đổi nếu được duyệt nạp | dim_movement_type, fact key lookup nếu cần | Contract/history/change detection bổ sung; SCD1 name candidate, không tự đổi type sign classification | Group label/update theo policy; không đổi signed quantities vô cớ | Reference completeness/type domain; 10/11/12 evidence, unknown types review |
+
+## Full / incremental publication requirements
+
+Current Product version phải được resolve cùng holdings published_state_id. Product change sau observation nhưng trước publish cần được kiểm trong publication policy, không dùng is_current độc lập từ một run khác. observed_at ghi observation; published_at chỉ ghi khi validated state được công bố. Republish/rekey Product tạo state nhất quán, không tạo daily inventory history. Customer-role restatement giữ discriminator và single-role totals; không cộng hai roles. Unknown/history fallback vẫn là quyết định DW-02.
+
+Initial Full tạo dimension lookup và full facts/header intermediates, kiểm count/PK/RI/amount/quantity và complete batch trước publish. Periodic Full Reconciliation so key-set và values, không chỉ tổng (hai sai lệch có thể bù nhau). Watermark NULL/duplicates, update timestamp behavior, delete detection, consistent multi-table reads đều cần kiểm chứng; tuple timestamp+PK chỉ là candidate, không đủ chứng minh bắt late update vào row cũ.
+
+Incremental phải ghi được affected keys và group cũ/mới trước khi target thay đổi để date/customer/product changes không để lại số cũ trong mart. Không mặc định cùng extracted_at là snapshot nguyên tử. Facts/headers/marts phải có publication version/run tương thích; batch partial không phục vụ ratio tử/mẫu từ hai run khác nhau. Cách thực hiện transaction, checkpoints, affected-key log hoặc partition replacement để DW-03 quyết định.
+
+## Scenario plan chuyển DW-03C (chưa chạy)
+
+1. Insert line, replay cùng input; update amount và đổi parent/product: target unique, totals full-equivalent.
+2. Chỉ đổi InvoiceDate/buyer/bill-to, chỉ đổi OrderDate/buyer: line watermark không đổi vẫn propagate; tháng/role cũ bị rút đúng.
+3. Header không line, invoice OrderID NULL, order không invoice: header metrics giữ population; missing batch không làm thành amount 0 giả.
+4. Late customer/product version, zero-duration, history gap và date-only ambiguity: không chọn phiên bản tùy ý; amounts invariant khi rekey hợp lệ.
+5. Update movement fractional quantity/type/date; type 12 zero; grouped document-product reconciliation.
+6. Holdings partial snapshot/missing key, source delete đã xác nhận, retry sau lỗi: không publish state thiếu; recovery tái lập full-equivalent.
+
+Chỉ thiết kế scenario; INSERT/UPDATE/DELETE chạy sau approval trong SQL Server test độc lập. Không thay WWI gốc hoặc tạo test DB trong DW-01.

@@ -1,6 +1,6 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 chưa bắt đầu; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 chưa bắt đầu; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
@@ -15,7 +15,7 @@ Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI ch�
 | WWI-01 | 0 | Root/docs/data-sources | Chuyển tài liệu hiện hành sang WWI, rà yêu cầu chung và loại file nguồn/đề cương cũ | High | Quyết định chuyển nguồn của owner | Scope, roadmap, tasks, architecture, README, ADR đồng bộ; không còn link gãy/file nguồn cũ/PDF đề cương; không xóa thành phần dùng chung | DONE |
 | WWI-02 | 1 | docs/data-models, data-sources | WWI source contract/data dictionary/ERD cho Sales; khảo sát Customer/Inventory | High | Phase 0 được nghiệm thu, WWI-01 | PK/FK/grain/dates/temporal/null và ngoại lệ có bằng chứng; owner review | DONE |
 | WWI-03 | 1 | docs/requirements, analytics | Chốt business requirements, KPI MVP, tax/customer role và hoãn revenue/COGS/AOV không đủ policy | High | WWI-02 | Công thức, source measure, date basis, exclusions, reconciliation và tests được owner duyệt trước fact/mart | DONE |
-| WWI-04 | 1 | docs/adr, ingestion | Quyết định incremental, SCD2 và môi trường thử nghiệm độc lập | High | WWI-02, WWI-03 | Watermark/tie-breaker/delete/history/as-of và test INSERT/UPDATE không sửa WWI gốc được owner duyệt | TODO |
+| WWI-04 | 1 | docs/data-models, docs/architecture, docs/adr | Thiết kế logical DW, SCD2, full/incremental, propagation/recovery và môi trường thử nghiệm độc lập | High | WWI-02, WWI-03 | DW-01–DW-04 được owner nghiệm thu; watermark/tie-breaker/delete/history/as-of và test INSERT/UPDATE/DELETE chỉ trên môi trường độc lập được duyệt | IN_PROGRESS |
 | WWI-05 | 2 | infrastructure, data-sources, storage | Chuẩn bị WWI read-only và PostgreSQL đích | High | WWI-02, WWI-04, phase implementation approval | Quyền/cấu hình kết nối, điều kiện nguồn ngoài repo và môi trường local tái lập được xác minh; không lộ secret/không sửa WWI | TODO |
 | WWI-06 | 3 | ingestion, storage, data-quality | Sales full load, raw/staging, validation và rerun | High | WWI-03, WWI-05 | Batch metadata (count/duration/error), count/keys đối soát, quarantine và idempotent rerun có unit/integration test thực | TODO |
 | WWI-07 | 3 | ingestion, tests | Sales incremental/checkpoint và failure recovery | High | WWI-04, WWI-06, approval cho test environment | Test INSERT/UPDATE end-to-end trong môi trường độc lập; checkpoint/retry/backfill có bằng chứng; WWI gốc không đổi | TODO |
@@ -29,7 +29,22 @@ Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI ch�
 | WWI-15 | 8 | infrastructure, storage | BigQuery extension khi được duyệt | Low | WWI-13, owner approval | Tương đương dữ liệu, bảo mật/chi phí và số đo thực nếu triển khai | TODO |
 | WWI-16 | 9 | tests, docs, .github | Unit/integration/e2e, CI, runbooks, tối ưu truy vấn và portfolio MVP local | High | WWI-11, WWI-12, WWI-13; WWI-14, WWI-15 chỉ nếu được giao | Người khác tái lập local với nguồn WWI được chuẩn bị hợp lệ; CI/test/failure report và số đo tối ưu trước/sau nếu có đều có bằng chứng | TODO |
 
-## Bằng chứng nghiệm thu WWI-01
+## Kế hoạch Phase 1.6 / WWI-04
+
+WWI-04 là parent task; các ID DW dưới đây phân rã task theo yêu cầu Owner, không đổi ID WWI hiện hữu. DW-01 đã hoàn tất; các task sau chỉ bắt đầu khi Owner giao; dependencies đạt không tự cấp quyền bắt đầu task sau. Không tạo database/code/test environment trong DW-01.
+
+| ID | Description / module | Dependencies | Acceptance criteria | Status |
+| --- | --- | --- | --- | --- |
+| DW-01 | Logical Dimensional Modeling — docs/data-models, architecture | WWI-02, WWI-03, Owner cho phép Phase 1.6 | Bốn fact grains, conformed dims, mapping nguồn, BRD/KPI trace, năm Mermaid, change impact/header updates, sáu marts và checklist được Owner review | DONE |
+| DW-02 | SCD2 & Temporal History Design — docs/data-models | DW-01 nghiệm thu, Owner giao task | Attributes, system/business/observation time, validity, gap/zero-duration/unknown và forward tracking được duyệt | TODO |
+| DW-03A | Full Load & Raw Layer Design — docs/requirements, architecture | DW-01 nghiệm thu, source contracts, Owner giao task | Full extraction consistency, projection/type/precision, batch/raw/manifest và reconciliation được duyệt | TODO |
+| DW-03B | Incremental Load Design — docs/adr, ingestion docs | DW-02, DW-03A, Owner giao task | Watermark/tie-breaker, late update/delete/snapshot và test INSERT/UPDATE/DELETE độc lập được duyệt, không đổi WWI gốc | TODO |
+| DW-03C | Change Propagation & Recovery Design — docs/architecture | DW-03B, DW-02, Owner giao task | Header/dim propagation, affected old/new groups, checkpoint/replay/restate/publication và recovery tests có specification được duyệt | TODO |
+| DW-04 | Final Design Verification & Acceptance — docs | DW-01, DW-02, DW-03A/B/C, Owner giao task | Cross-document/model/KPI/lineage/phase gates nhất quán, không open blocker bắt buộc; Owner nghiệm thu WWI-04 | TODO |
+
+[DW-01 specification](docs/data-models/wwi-logical-dw-design.md) và [assessment](docs/data-models/wwi-dw-01-assessment.md) là bộ thiết kế đã nghiệm thu, không phải evidence runtime. WWI-03 giữ DONE; DW-01 đã nghiệm thu qua targeted review; WWI-04 vẫn IN_PROGRESS. L01–L05 và Kimball/bốn facts/conformed dims do Owner phê duyệt ở task Phase 1.6; chi tiết SCD2/incremental/physical schema còn mở.
+
+## Bằng chứng nghiệm thu WWI-01 (hồ sơ)
 
 Chủ dự án đã review và phê duyệt WWI-01 ngày 2026-11-07. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [README](README.md), [architecture](docs/architecture/README.md) và [ADR](docs/adr/wwi-source-migration.md) cùng mô tả một nguồn WWI SQL Server chỉ đọc và warehouse PostgreSQL. File dữ liệu/đề cương và tài liệu chỉ phục vụ nguồn cũ đã được loại; module Data Engineering dùng chung được giữ. Kiểm tra 102 liên kết Markdown cục bộ cho kết quả 0 liên kết gãy; quét nội dung hiện hành không thấy tham chiếu tới file nguồn cũ. Đây là nghiệm thu **tài liệu/cấu trúc**; không có pipeline, database đích hoặc test chức năng được xác nhận.
 
