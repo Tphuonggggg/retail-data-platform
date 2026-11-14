@@ -29,6 +29,8 @@ SQL Server WWI chỉ đọc, [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md), [TASKS.
 
 ## 7. Dependencies
 
+DW-02A/B: [SCD Attribute Classification](wwi-scd-attribute-classification.md), [Temporal/Precision/Lookup Assessment](wwi-scd-temporal-assessment.md), [SELECT Evidence](wwi-scd-temporal-evidence.md), [Assessment](wwi-dw-02ab-assessment.md). Đây là phần khảo sát/proposal bổ sung, không thay dictionary nguồn, profiling cũ hoặc DW-01 đã nghiệm thu.
+
 Phase 1.6/DW-01: [Logical DW Design và Bus Matrix](wwi-logical-dw-design.md), [Fact/Dimension Dictionary](wwi-fact-dimension-dictionary.md), [Logical Mapping](wwi-logical-source-to-target.md), [Star Schemas](wwi-logical-star-schemas.md), [Change Impact Matrix](wwi-change-impact-matrix.md), [Logical Marts](wwi-logical-data-marts.md), [Assessment](wwi-dw-01-assessment.md). Các tài liệu đích này không thay source ERD/dictionary hiện có.
 
 Metadata Dictionary và profiling trước relationship contract; relationship contract trước source contracts. Các quyết định WWI-03/04 cần phê duyệt riêng trước schema/pipeline.
@@ -47,7 +49,7 @@ Các truy vấn đọc/tái kiểm chứng nằm trong tài liệu SQL tương �
 
 ## 11. Tasks
 
-WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-01 `DONE`; DW-02 chưa bắt đầu. Theo dõi [TASKS.md](../../TASKS.md).
+WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 và DW-02 `IN_PROGRESS`, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles, Product/technical policies còn Pending Approval. C/D thực hiện sau commit riêng A/B; E/DW-03 chưa bắt đầu. Theo dõi [TASKS.md](../../TASKS.md).
 
 ## 12. Testing Strategy
 

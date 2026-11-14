@@ -1,6 +1,6 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 chưa bắt đầu; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 IN_PROGRESS; DW-02A/B DONE ở mức khảo sát, C/D/E chưa bắt đầu trong hồ sơ nghiệm thu A/B; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
@@ -36,7 +36,7 @@ WWI-04 là parent task; các ID DW dưới đây phân rã task theo yêu cầu 
 | ID | Description / module | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
 | DW-01 | Logical Dimensional Modeling — docs/data-models, architecture | WWI-02, WWI-03, Owner cho phép Phase 1.6 | Bốn fact grains, conformed dims, mapping nguồn, BRD/KPI trace, năm Mermaid, change impact/header updates, sáu marts và checklist được Owner review | DONE |
-| DW-02 | SCD2 & Temporal History Design — docs/data-models | DW-01 nghiệm thu, Owner giao task | Attributes, system/business/observation time, validity, gap/zero-duration/unknown và forward tracking được duyệt | TODO |
+| DW-02 | SCD2 & Temporal History Design — docs/data-models | DW-01 nghiệm thu, Owner giao task | Attributes, system/business/observation time, validity, gap/zero-duration/unknown và forward tracking được duyệt | IN_PROGRESS |
 | DW-03A | Full Load & Raw Layer Design — docs/requirements, architecture | DW-01 nghiệm thu, source contracts, Owner giao task | Full extraction consistency, projection/type/precision, batch/raw/manifest và reconciliation được duyệt | TODO |
 | DW-03B | Incremental Load Design — docs/adr, ingestion docs | DW-02, DW-03A, Owner giao task | Watermark/tie-breaker, late update/delete/snapshot và test INSERT/UPDATE/DELETE độc lập được duyệt, không đổi WWI gốc | TODO |
 | DW-03C | Change Propagation & Recovery Design — docs/architecture | DW-03B, DW-02, Owner giao task | Header/dim propagation, affected old/new groups, checkpoint/replay/restate/publication và recovery tests có specification được duyệt | TODO |
@@ -44,7 +44,16 @@ WWI-04 là parent task; các ID DW dưới đây phân rã task theo yêu cầu 
 
 [DW-01 specification](docs/data-models/wwi-logical-dw-design.md) và [assessment](docs/data-models/wwi-dw-01-assessment.md) là bộ thiết kế đã nghiệm thu, không phải evidence runtime. WWI-03 giữ DONE; DW-01 đã nghiệm thu qua targeted review; WWI-04 vẫn IN_PROGRESS. L01–L05 và Kimball/bốn facts/conformed dims do Owner phê duyệt ở task Phase 1.6; chi tiết SCD2/incremental/physical schema còn mở.
 
-## Bằng chứng nghiệm thu WWI-01 (hồ sơ)
+## Phạm vi đang thực hiện DW-02A/B
+
+Owner cho phép bắt đầu DW-02 trong đúng A/B sau nghiệm thu DW-01. [Attribute Classification](docs/data-models/wwi-scd-attribute-classification.md), [Temporal/Precision/Lookup Assessment](docs/data-models/wwi-scd-temporal-assessment.md), [SQL evidence](docs/data-models/wwi-scd-temporal-evidence.md) và [Assessment A/B](docs/data-models/wwi-dw-02ab-assessment.md) là deliverables để review. A/B đã được Owner nghiệm thu sau ghi nhận SCD-01–07; approved Customer direction tách khỏi Product/technical options Pending Approval. C/D chưa được đưa vào commit nghiệm thu A/B.
+
+| ID | Description / module | Dependencies | Acceptance criteria | Status |
+| --- | --- | --- | --- | --- |
+| DW-02A | SCD Attribute Classification — docs/data-models | DW-01 DONE; Owner giao A/B | Customer/Product đủ columns, meaning/observations/SCD recommendation/reason/KPI/evidence/approval; không auto SCD2 metadata | DONE |
+| DW-02B | Temporal History Coverage — docs/data-models | DW-01 DONE; source evidence; Owner giao A/B | NK/version coverage, physical/ALL, zero/gap/overlap/precision/lookup và forward readiness có SELECT evidence; không tự chọn fallback/type/algorithm | DONE |
+
+## Bằng chứng nghiệm thu WWI-01 (hồ sơ lịch sử)
 
 Chủ dự án đã review và phê duyệt WWI-01 ngày 2026-11-07. [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [README](README.md), [architecture](docs/architecture/README.md) và [ADR](docs/adr/wwi-source-migration.md) cùng mô tả một nguồn WWI SQL Server chỉ đọc và warehouse PostgreSQL. File dữ liệu/đề cương và tài liệu chỉ phục vụ nguồn cũ đã được loại; module Data Engineering dùng chung được giữ. Kiểm tra 102 liên kết Markdown cục bộ cho kết quả 0 liên kết gãy; quét nội dung hiện hành không thấy tham chiếu tới file nguồn cũ. Đây là nghiệm thu **tài liệu/cấu trúc**; không có pipeline, database đích hoặc test chức năng được xác nhận.
 

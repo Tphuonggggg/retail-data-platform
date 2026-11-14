@@ -2,7 +2,7 @@
 
 ## Trạng thái
 
-Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 chưa bắt đầu; Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
+Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 IN_PROGRESS; DW-02A/B DONE ở mức khảo sát, C/D/E chưa bắt đầu trong hồ sơ nghiệm thu A/B; Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
 
 ## Mục tiêu và kiến trúc
 
@@ -53,6 +53,8 @@ MVP không gồm Recognized Revenue, official Gross Profit/COGS, AOV chưa có p
 Definition of Done cho **MVP triển khai** là một người khác có thể chuẩn bị nguồn WWI theo hướng dẫn, cấu hình môi trường hợp lệ, chạy pipeline local, xem kết quả kiểm thử/đối soát và giải thích grain/KPI/SCD2. Điều này không phải tiêu chí hoàn thành Phase 0 tài liệu.
 
 ## Open Decisions
+
+SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCategoryID/BuyingGroupID/BillToCustomerID; CreditLimit/IsOnCreditHold optional chưa kích hoạt; hybrid history có evidence, giữ zero-duration Raw/audit, không fallback current/earliest cho unresolved, bảo toàn precision và không blanket restatement. Product columns và technical policies vẫn cần duyệt, xem [classification](docs/data-models/wwi-scd-attribute-classification.md). Không thay các BRD/KPI đã duyệt.
 
 | Nhóm | Quyết định chưa chốt | Gate |
 | --- | --- | --- |
