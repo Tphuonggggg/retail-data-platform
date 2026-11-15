@@ -29,6 +29,8 @@ SQL Server WWI chỉ đọc, [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md), [TASKS.
 
 ## 7. Dependencies
 
+DW-03A: [Work Plan](wwi-dw-03a-work-plan.md), [Full Extraction & Raw Proposal](wwi-dw-03a-full-raw-design-proposal.md), [Decision Register A01–A06](wwi-dw-03a-decision-register.md), [Assessment](wwi-dw-03a-assessment.md). [Evidence & Approval Readiness](wwi-dw-03a-evidence-approval-readiness.md) section 10 ghi trusted TCP PASS, SNAPSHOT/RCSI OFF, interactive permissions 9 current + 2 H và SQL precision subset; sections trước giữ lịch sử Stages 1–3. F1 V1 PASS nhưng whole-second fixed-width FAIL; F2 SQL subset PASS. Python-driver/PG/runtime tests NOT RUN. Owner approval ngày 2026-11-15: A01/A03/A04/A06 Approved — Logical Policy; A02 Approved — Conditional Logical Policy; A05 Approved — PoC Direction Only (F2). B9 Pending Physical Approval; chưa final acceptance hoặc verified full-extraction consistency. Work Plan sections 5–6 giữ backlog G01–G08 và narrow B9 handoff; installation/physical/runtime approval còn riêng.
+
 [ADR index](../adr/README.md) là nguồn quyết định D01–D06. [DW-02E Work Plan](wwi-dw-02e-work-plan.md) giữ backlog B1–B9; [Final SCD2 Specification](wwi-final-scd2-design-specification.md) và [DW-02E Assessment](wwi-dw-02e-assessment.md) ghi kết quả review E1–E5, B1–B8 logical approved, E/DW-02 design DONE sau QA; B9 physical pending, không runtime.
 
 
@@ -55,7 +57,7 @@ Các truy vấn đọc/tái kiểm chứng nằm trong tài liệu SQL tương �
 
 ## 11. Tasks
 
-WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03 chưa bắt đầu. Theo dõi [TASKS.md](../../TASKS.md).
+WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A IN_PROGRESS, chỉ cập nhật evidence/refinement, chưa final acceptance; DW-03B/C và DW-04 TODO. Theo dõi [TASKS.md](../../TASKS.md).
 
 ## 12. Testing Strategy
 
