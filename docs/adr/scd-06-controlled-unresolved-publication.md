@@ -19,6 +19,6 @@ Tách khả năng bảo toàn detail/population khỏi mức chứng nhận anal
 
 Drop unresolved facts hoặc fallback current/earliest: không chọn. Chặn mọi core facts chỉ do thiếu lịch sử: không phải default direction được duyệt; quarantine/hold vẫn dành cho input invalid/incomplete hoặc integrity-invalid scopes theo policy.
 
-## Proposed Technical Policies / Pending Implementation Details
+## Logical policy approval và Pending Implementation Details
 
-Thresholds, publication unit/scope, reserved SK conventions, reason-code encoding, re-resolution, recovery và gate implementation cần nghiệm thu sau. Coverage definition/gate specification trong C/D không tự đặt ngưỡng số hoặc phê duyệt physical members/schema.
+B4/B5 đã **Approved — Logical Policy** ngày 2026-11-15: Core giữ otherwise-valid U với source population/measures/NK/role/reason/lineage; I block affected scope. Chọn **Tiered Certification** theo KPI/view dependencies, đánh giá cả row và measure/value coverage; enterprise KPI có thể chứng nhận riêng, historical breakdown thiếu coverage là Uncertified. Lookup R/U/I khác certification Uncertified/Certified. Numeric thresholds được Owner cho phép chuyển DW-03 nhưng bắt buộc phê duyệt trước mọi Certified publication; không default 100%. Member/reserved SK/reason encoding, exact publication mechanism và runtime tests vẫn pending. [Final Specification](../data-models/wwi-final-scd2-design-specification.md), [backlog B4/B5](../data-models/wwi-dw-02e-work-plan.md) ghi chi tiết.

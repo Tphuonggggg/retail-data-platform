@@ -19,7 +19,7 @@
 
 ## Full / incremental publication requirements
 
-Current Product version phải được resolve cùng holdings published_state_id. Product change sau observation nhưng trước publish cần được kiểm trong publication policy, không dùng is_current độc lập từ một run khác. observed_at ghi observation; published_at chỉ ghi khi validated state được công bố. Republish/rekey Product tạo state nhất quán, không tạo daily inventory history. Customer-role restatement giữ discriminator và single-role totals; không cộng hai roles. Unknown/history fallback vẫn là quyết định DW-02.
+Current Product version phải được resolve cùng holdings published_state_id. Product change sau observation nhưng trước publish cần được kiểm trong publication policy, không dùng is_current độc lập từ một run khác. observed_at ghi observation; published_at chỉ ghi khi validated state được công bố. Republish/rekey Product tạo state nhất quán, không tạo daily inventory history. Customer-role restatement giữ discriminator và single-role totals; không cộng hai roles. B3/B4 đã duyệt Unresolved khi thiếu proof và cấm historical fallback; B7 controlled correction/rekey theo NK/role/interval và old/new groups. [Final Specification](wwi-final-scd2-design-specification.md) ghi logic hiện hành, physical procedures chuyển DW-03.
 
 Initial Full tạo dimension lookup và full facts/header intermediates, kiểm count/PK/RI/amount/quantity và complete batch trước publish. Periodic Full Reconciliation so key-set và values, không chỉ tổng (hai sai lệch có thể bù nhau). Watermark NULL/duplicates, update timestamp behavior, delete detection, consistent multi-table reads đều cần kiểm chứng; tuple timestamp+PK chỉ là candidate, không đủ chứng minh bắt late update vào row cũ.
 

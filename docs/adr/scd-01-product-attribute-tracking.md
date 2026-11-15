@@ -19,6 +19,6 @@ Tập tracking nhỏ phục vụ packaging, tránh tạo versions do source chan
 
 Track toàn bộ source columns hoặc toàn bộ grouping candidates: không chọn. Giữ tất cả current-only: không đáp ứng packaging-history direction đã duyệt.
 
-## Proposed Technical Policies / Pending Implementation Details
+## Logical policy approval và Pending Implementation Details
 
-Type1 overwrite phạm vi current/all versions, correction audit và reference label contracts chưa chốt; không chọn schema, trigger/hash/merge algorithm hoặc datatype. [Classification](../data-models/wwi-scd-attribute-classification.md), [Forward design](../data-models/wwi-scd-forward-cutover-design.md) ghi phân loại và impacts. Metadata/observed changes là source evidence, không phải runtime test.
+B7 đã **Approved — Logical Policy** ngày 2026-11-15: Type1 correction phải có impact scope riêng, audit/reconciliation/rollback; AccountOpenedDate correction không tự tạo SCD2 episode. Không chọn mặc định current/all-version overwrite hoặc thêm admitted attributes. Mode và exact selected-version scope phải được review trong correction plan trước execution; reference label contracts, schema/algorithm/datatype vẫn pending. [Final SCD2 Specification](../data-models/wwi-final-scd2-design-specification.md) ghi contract hiện hành; metadata/observations không là runtime tests.

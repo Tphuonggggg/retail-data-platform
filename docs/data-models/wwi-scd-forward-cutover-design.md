@@ -1,6 +1,6 @@
 # WWI Forward-Tracked SCD2, Hybrid Cutover & Recovery — DW-02D
 
-**DW-02D DONE ở mức thiết kế — D01/D02/D04/D06 Accepted Architecture Directions, technical procedures Pending Approval.** [ADR index](../adr/README.md) ghi quyết định Owner; SCD-01–07 giữ nguyên. [A/B evidence](wwi-scd-temporal-assessment.md), [identity/SK](wwi-scd-identity-key-design.md), [lookup](wwi-scd-historical-lookup-design.md), [DW-01 Change Impact](wwi-change-impact-matrix.md) là đầu vào. Không MERGE/dbt/DDL hoặc test environment. Runtime: Not implemented yet.
+**DW-02D DONE ở mức thiết kế — D01/D02/D04/D06 Accepted Architecture Directions, B1/B2/B6/B7/B8 Approved — Logical Policy (2026-11-15); physical procedures pending.** [ADR index](../adr/README.md) ghi quyết định Owner; SCD-01–07 giữ nguyên. [A/B evidence](wwi-scd-temporal-assessment.md), [identity/SK](wwi-scd-identity-key-design.md), [lookup](wwi-scd-historical-lookup-design.md), [DW-01 Change Impact](wwi-change-impact-matrix.md) là đầu vào. Không MERGE/dbt/DDL hoặc test environment. Runtime: Not implemented yet.
 
 ## Logical states và time basis
 
@@ -19,12 +19,12 @@ Giữ riêng source_valid_from/to, observation window/observed_at, proposed anal
 | Multiple changes between batches | Snapshot A rồi C; có thể đã qua B hoặc A→B→A | Nếu nguồn history đủ, retain source-backed sequence; nếu chỉ snapshots thì chỉ biết endpoints/observation bounds, không tạo B giả | Facts trong khoảng thiếu evidence có thể unresolved | Gaps/coverage, basis label, lost intermediate uncertainty; không claim complete history |
 | No-change replay / metadata-only | Same accepted vector/occurrences; editor hoặc excluded attrs đổi | Reuse mapping/SK; audit observation mới nếu cần, không Type2 episode mới | Không rekey chỉ vì run mới; marts giữ amount/qty/count | Replay identity, canonical equality, same publication semantics; CustomFields/Tags không trigger |
 | Late historical correction | Evidence muộn bổ sung/sửa interval hay attributes | Candidate timeline revision, conflict/quarantine nếu không đủ identity; giữ published revision đến approval, không overwrite history âm thầm | Identify exact NK/role/time and old/new keys; rekey/restate đề xuất riêng | Source evidence precedence, overlaps, as-of sensitivity, old→new mapping, totals invariance |
-| Delete/missing NK | Key vắng trong snapshot hoặc delete được xác nhận | Partial absence → hold investigation. Confirmed delete: retire current candidate theo policy, preserve history/source audit; reinsert có incarnation decision | Historical facts không cascade delete; new/current facts có unresolved/retirement impact | Complete snapshot proof, delete vs extraction error, source history coverage, NK reuse |
+| Delete/missing NK | Key vắng trong snapshot hoặc delete được xác nhận | Incremental absence không delete; consistent full-snapshot absence chỉ delete candidate cần evidence. Confirmed delete: retire current candidate theo policy, preserve history/source audit; reinsert phân biệt reactivation/new incarnation bằng evidence; thiếu giữ Ambiguous/U, không tự nối histories | Historical facts không cascade delete; new/current facts có unresolved/retirement impact | Complete snapshot proof, delete vs extraction error, source history coverage, NK reuse |
 | Failed batch | Input partial hoặc validation/publication lỗi | FAILED_CANDIDATE, published version set trước giữ visible; không tiến checkpoint công bố | Không publish subset dependent facts/marts; giữ affected-work audit | Failure phase, recovery point, registry integrity, no mixed-generation refs |
 | Retry | Rerun input của failed attempt | Reconcile candidate/registry với last committed state; reuse committed identities, không reuse SK cho ý nghĩa khác | Reapply đúng scope một lần | Idempotency, stable SK meaning, failed attempts lineage, double-apply checks |
 | Backfill/rebuild | Re-read history/full current, hoặc restore registry | Build candidate generation từ **cả forward history đã giữ** và source evidence; clean rebuild không còn forward evidence không được claim tương đương | Existing FK mappings giữ hoặc remap toàn dependent scope trong generation mới sau approval | Registry restore/remap, historic forward retention, full-equivalence, key-set/amount/qty/coverage tests |
 
-Type0 AccountOpenedDate correction là policy còn nghiên cứu: không tự overwrite/reversion do dữ liệu đổi; flag candidate correction request, audit origin và impacts trước khi Owner quyết định. Type1 correction xuyên versions có thể đổi label quá khứ; phải phân biệt label restatement với thay đổi facts.
+B7 đã duyệt AccountOpenedDate correction phải auditable và không tự tạo SCD2 episode; không tự overwrite khi chưa có scoped correction request. Mode/current-all versions và impact phải review trước execution, không được mặc định từ approval B7. Type1 correction xuyên versions có thể đổi label quá khứ; phải phân biệt label restatement với thay đổi facts.
 
 ## Hybrid history cutover — reconciled direction H-A được duyệt
 
@@ -56,7 +56,7 @@ Ba input streams logic: (1) physical source archive, (2) source current row, (3)
 | Full reload | Retained forward evidence, registry và supersession/lookup-policy maps còn tương thích; reconcile version identities và fact R/U/I theo scope, không chỉ raw row count |
 | Consumer publication | Core giữ controlled unresolved, invalid block affected scope; certified mart gates độc lập. Product current SK thuộc cùng published state, không latest-at-query |
 
-Các invariants trên được đòi hỏi bởi D02/D04/D06; exact dedupe/bridge/transaction algorithms, chosen cutover boundary và pass thresholds là technical policies chưa được duyệt. Expected same mapping không được kiểm bằng source row count = analytical episode count, vì hai grain khác nhau.
+Các invariants trên được đòi hỏi bởi D02/D04/D06 và B1/B2/B6 Approved — Logical Policy; exact dedupe/bridge/transaction algorithms, chosen cutover boundary và numerical thresholds còn cần duyệt tại DW-03 trước runtime/certification. Expected same mapping không được kiểm bằng source row count = analytical episode count, vì hai grain khác nhau.
 
 ## Recovery/publication options — chưa triển khai
 
@@ -82,3 +82,5 @@ Theo [DW-01 Change Impact](wwi-change-impact-matrix.md); **version creation ≠ 
 | Source fact header/line correction | Không tự là dimension version change | Propagate header-only source changes đúng DW-01; retain source correction lineage | Old/new groups phải recalc nếu source date/role/product đổi; không che dưới label SCD remap |
 
 Không đụng source WWI để thực thi các action; test INSERT/UPDATE/DELETE/replay chỉ sau approval trong môi trường SQL Server độc lập. [Assessment/Test Matrix](wwi-dw-02cd-assessment.md) quy định bằng chứng mong đợi; chưa chạy bất kỳ scenario nào.
+
+[Final Specification](wwi-final-scd2-design-specification.md) và [E Assessment](wwi-dw-02e-assessment.md) ghi approval B1–B8, Tiered Certification và conditional design acceptance; B9 physical/21 runtime tests vẫn pending/NOT RUN. Handoff không bắt đầu DW-03.

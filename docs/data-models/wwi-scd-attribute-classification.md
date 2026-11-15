@@ -1,6 +1,6 @@
 # WWI SCD Attribute Classification Matrix — DW-02A
 
-**DW-02A/B được nghiệm thu ở mức khảo sát/phân loại; SCD-01–07 là Approved Principles.** ADR-SCD-01 (D01) đã chốt ba Product Type 2 columns; technical policies vẫn Pending Approval. Bao phủ 31 Customer columns và 25 Product columns theo [Metadata Dictionary](wwi-metadata-dictionary.md). Không thay đổi [DW-01](wwi-logical-dw-design.md), bốn fact grains hay [BRD-01–12](../requirements/wwi-business-rules-decision-matrix.md). Runtime: Not implemented yet.
+**DW-02A/B được nghiệm thu ở mức khảo sát/phân loại; SCD-01–07 là Approved Principles.** ADR-SCD-01 (D01) đã chốt ba Product Type 2 columns; B1–B8 được Owner duyệt ở mức Logical Policy ngày 2026-11-15; physical procedures/B9 vẫn pending. Bao phủ 31 Customer columns và 25 Product columns theo [Metadata Dictionary](wwi-metadata-dictionary.md). Không thay đổi [DW-01](wwi-logical-dw-design.md), bốn fact grains hay [BRD-01–12](../requirements/wwi-business-rules-decision-matrix.md). Runtime: Not implemented yet.
 
 `Type 0 candidate` là đề xuất contract bất biến có policy correction cần duyệt; không khẳng định cột bất biến từ 0 observed change. `Type 1 candidate` thay label hiện hành, có thể đổi cách hiển thị historical facts. `Type 2 candidate` chỉ phục vụ historical analytical meaning đã nêu, không mặc định được đưa vào tracking set. Conditional/optional có thể dùng current-only Type 1 hoặc loại bỏ nếu Owner không cần historical grouping. Excluded khỏi analytical dimension không có nghĩa xóa raw payload.
 
@@ -10,13 +10,13 @@ Observed change dùng lại profiling đã Verified 2026-11-07: Q06 kiểm 28 Cu
 
 | ID | Quyết định được duyệt | Technical policy còn mở |
 | --- | --- | --- |
-| SCD-01 | Customer Type 2 direction: CustomerCategoryID, BuyingGroupID, BillToCustomerID. CustomerID là NK. CreditLimit/IsOnCreditHold optional, chưa kích hoạt MVP | CustomerName Type1 candidate; AccountOpenedDate Type0 candidate/correction policy; version validity và algorithm chưa duyệt |
-| SCD-02 | Product Type2 chỉ cho grouping/packaging có analytical requirement; StockItemName Type1 candidate. Không thay transaction price; CustomFields/Tags ngoài analytical scope | Nguyên tắc giữ nguyên; ADR-SCD-01 sau đó duyệt concrete set ba packaging columns, Type1 direction cho analytical attributes đã admitted; correction scope còn mở |
-| SCD-03 | Hybrid: dùng temporal history đủ evidence và forward tracking sau pipeline hoạt động | Cutover/coverage/validity chưa chốt; system-time không mặc định business-effective |
-| SCD-04 | Giữ zero-duration trong Raw/audit; không là interval dương | Mapping source identity sang DW version còn mở |
-| SCD-05 | Không fallback current/earliest khi thiếu evidence; unresolved phải rõ | Unknown/inferred/pending publication policy chưa chọn |
-| SCD-06 | Bảo toàn source temporal identity/precision; chưa chọn đầu/cuối ngày | Representation/SK/lookup policy chờ duyệt |
-| SCD-07 | Phải đánh giá fact/role/mart propagation và restatement | Không blanket restate; phạm vi/approval/remapping chưa chọn |
+| SCD-01 | Customer Type 2 direction: CustomerCategoryID, BuyingGroupID, BillToCustomerID. CustomerID là NK. CreditLimit/IsOnCreditHold optional, chưa kích hoạt MVP | B7 correction contract approved; CustomerName admission/mode và concrete validity evidence/algorithm phải review trước execution |
+| SCD-02 | Product Type2 chỉ cho grouping/packaging có analytical requirement; StockItemName Type1 candidate. Không thay transaction price; CustomFields/Tags ngoài analytical scope | Nguyên tắc giữ nguyên; ADR-SCD-01 sau đó duyệt concrete set ba packaging columns, Type1 direction cho analytical attributes đã admitted; B7 yêu cầu correction scope riêng; mode và selected versions phải review trước execution |
+| SCD-03 | Hybrid: dùng temporal history đủ evidence và forward tracking sau pipeline hoạt động | B3/B6 logical coverage/cutover approved; exact windows/basis evidence và algorithm chuyển DW-03; system-time không business-effective |
+| SCD-04 | Giữ zero-duration trong Raw/audit; không là interval dương | B1/B2 identity/supersession/recovery logical approved; physical mapping/audit attachment deferred |
+| SCD-05 | Không fallback current/earliest khi thiếu evidence; unresolved phải rõ | B4 Core giữ valid U, I block affected scope đã duyệt; unknown/inferred physical encoding chưa chọn |
+| SCD-06 | Bảo toàn source temporal identity/precision; chưa chọn đầu/cuối ngày | D02/B3 registry/lookup logical approved; B9 physical representation pending, không day proxy |
+| SCD-07 | Phải đánh giá fact/role/mart propagation và restatement | B7 controlled correction/rekey approved; exact request scope và procedures review trước execution |
 
 ## Customer — Sales.Customers và Sales.Customers_Archive
 
@@ -123,3 +123,5 @@ Application.TransactionTypes vẫn là dependency dim_movement_type đã nêu �
 - Customer change: Type 1 chỉ đổi mô tả theo policy; Type 2 có thể thêm version nhưng không tự rekey mọi historical fact. Invoice buyer/bill-to lấy từ invoice header, không rewrite theo Customers.BillToCustomerID mới. C01/C02 distinct theo source CustomerID, không SK; C05 lấy một current row/NK.
 - Product change: không sửa transaction price/tax/quantity từ master. Product/day mart grain vẫn NK/day; nếu muốn as-was attributes phải chọn version/reporting mode được duyệt, không JOIN toàn history theo NK. Current inventory Product SK gắn published state, không latest-at-query.
 - Version lịch sử nguồn thay đổi chỉ Technical/Excluded attributes có thể không tạo DW Type 2 version; ngược lại 0 observed change không cấm forward tracking thuộc tính Type 2 được Owner duyệt. Không chốt merge/hash/lookup/rekey algorithm trong DW-02A.
+
+Logical approval B1–B8 không tự đổi field admission/classification của các rows trên; observations và reference dependencies giữ nguyên. [Final Specification](wwi-final-scd2-design-specification.md) và [backlog](wwi-dw-02e-work-plan.md) ghi policy hiện hành; old Pending Approval ở từng attribute vẫn chỉ admission/correction implementation chưa được duyệt.

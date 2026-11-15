@@ -19,6 +19,6 @@ Các finite periods hiện tại có thể không có submicrosecond differences
 
 Canonical representation, integer ticks và timestamp kèm exact identity/residual vẫn là technical options. Chỉ dùng timestamp giảm precision: không đáp ứng direction. Không có physical option nào được chọn trong ADR này.
 
-## Proposed Technical Policies / Pending Implementation Details
+## Logical policy approval và Pending Implementation Details
 
-Encoding, epoch, datatype, normalization, timezone interpretation, sentinel representation và driver/PostgreSQL round-trip cần đặc tả/kiểm thử tại bước phù hợp. C/D chỉ có test specification; chưa có runtime result.
+B9 = **Pending — Physical Implementation** theo Owner task ngày 2026-11-15; không hoãn hoặc bác bỏ logical exact 100 ns invariant đã duyệt. Datatype/encoding/epoch/normalization/timezone/sentinel/driver conversion và round-trip implementation là DW-03/physical design inputs, phải duyệt trước conversion và có tests trước runtime publication. Chưa chọn P-A/B/C hoặc có runtime result. [Backlog B9](../data-models/wwi-dw-02e-work-plan.md) ghi stage/gate.

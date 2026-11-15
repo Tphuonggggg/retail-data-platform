@@ -19,6 +19,6 @@ Tránh chọn arbitrary timestamp khi nguồn chỉ có ngày. Hai endpoint đ�
 
 Operational midnight/end-day proxy: không được chọn. Unresolved vẫn là kết quả bắt buộc khi không chứng minh consensus, không phải fallback về current/earliest.
 
-## Proposed Technical Policies / Pending Implementation Details
+## Logical policy approval và Pending Implementation Details
 
-Day/timezone domain, analytical-validity evidence, exact interval coverage algorithm và registry mapping revision chưa chốt. Timestamp microsecond đơn thuần không đủ nếu mất boundary precision. Lookup specification ghi proof obligations và ambiguity behavior; không tuyên bố business-effective validity từ system-time.
+B3 đã **Approved — Logical Policy** ngày 2026-11-15: relevant day phải có valid evidence phủ toàn bộ và đúng một eligible episode identity; thiếu proof/ambiguity U, integrity overlap/incompatible multi-match I block affected publication. Không chọn day proxy. Concrete day/timezone domain và analytical-validity evidence phải được chứng minh trước lookup; thiếu proof vẫn U. Exact coverage algorithm/representation/registry revision procedures chuyển DW-03. [Final Specification](../data-models/wwi-final-scd2-design-specification.md) giữ proof obligations; không biến system-time thành business-effective time.

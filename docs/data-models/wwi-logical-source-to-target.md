@@ -4,7 +4,7 @@
 
 Join aliases: `il` Sales.InvoiceLines; `i` Sales.Invoices; `ol` Sales.OrderLines; `o` Sales.Orders; `m` Warehouse.StockItemTransactions; `h` Warehouse.StockItemHoldings; `c` Sales.Customers; `p` Warehouse.StockItems. `J-I`: il.InvoiceID=i.InvoiceID; `J-O`: ol.OrderID=o.OrderID, cả hai many-to-one. Source columns đã có dictionary trừ reference labels được đánh dấu riêng. Không thêm FK từ InvoiceLine sang OrderLine.
 
-`H`: historical lookup theo NK + policy validity DW-02 chưa chốt; **không** tự dùng 00:00 business date làm business-effective timestamp. `C`: chọn đúng một current dimension version theo run công bố. Giá trị nguồn bắt buộc NULL → DQ; optional NULL giữ nguyên. Lookup unresolved giữ NK và lý do, policy publication/unknown chờ DW-02.
+`H`: historical lookup theo NK + accepted episode/basis, B3 whole-day consensus cho date-only hoặc exact-time khi proof đủ; **không** tự dùng 00:00 business date làm business-effective timestamp. `C`: chọn đúng một current dimension version theo run công bố. Giá trị nguồn bắt buộc NULL → DQ; optional NULL giữ nguyên. Lookup unresolved giữ NK và lý do, B4 đã duyệt controlled Core U; I block affected scope. Physical member encoding và lookup algorithm chuyển DW-03; [Final Specification](wwi-final-scd2-design-specification.md) là logical policy hiện hành.
 
 | Target logical field | Source columns / join | Biến đổi | NULL và type/precision | Lookup | Validation evidence / approval |
 | --- | --- | --- | --- | --- | --- |

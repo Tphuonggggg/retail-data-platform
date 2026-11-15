@@ -1,6 +1,6 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 IN_PROGRESS; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E TODO chỉ có kế hoạch, chưa bắt đầu; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
@@ -36,13 +36,13 @@ WWI-04 là parent task; các ID DW dưới đây phân rã task theo yêu cầu 
 | ID | Description / module | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
 | DW-01 | Logical Dimensional Modeling — docs/data-models, architecture | WWI-02, WWI-03, Owner cho phép Phase 1.6 | Bốn fact grains, conformed dims, mapping nguồn, BRD/KPI trace, năm Mermaid, change impact/header updates, sáu marts và checklist được Owner review | DONE |
-| DW-02 | SCD2 & Temporal History Design — docs/data-models | DW-01 nghiệm thu, Owner giao task | Attributes, system/business/observation time, validity, gap/zero-duration/unknown và forward tracking được duyệt | IN_PROGRESS |
+| DW-02 | SCD2 & Temporal History Design — docs/data-models | DW-01 nghiệm thu, Owner giao task | Attributes, system/business/observation time, validity, gap/zero-duration/unknown và forward tracking được duyệt | DONE |
 | DW-03A | Full Load & Raw Layer Design — docs/requirements, architecture | DW-01 nghiệm thu, source contracts, Owner giao task | Full extraction consistency, projection/type/precision, batch/raw/manifest và reconciliation được duyệt | TODO |
 | DW-03B | Incremental Load Design — docs/adr, ingestion docs | DW-02, DW-03A, Owner giao task | Watermark/tie-breaker, late update/delete/snapshot và test INSERT/UPDATE/DELETE độc lập được duyệt, không đổi WWI gốc | TODO |
 | DW-03C | Change Propagation & Recovery Design — docs/architecture | DW-03B, DW-02, Owner giao task | Header/dim propagation, affected old/new groups, checkpoint/replay/restate/publication và recovery tests có specification được duyệt | TODO |
 | DW-04 | Final Design Verification & Acceptance — docs | DW-01, DW-02, DW-03A/B/C, Owner giao task | Cross-document/model/KPI/lineage/phase gates nhất quán, không open blocker bắt buộc; Owner nghiệm thu WWI-04 | TODO |
 
-[DW-01 specification](docs/data-models/wwi-logical-dw-design.md) và [assessment](docs/data-models/wwi-dw-01-assessment.md) là bộ thiết kế đã nghiệm thu, không phải evidence runtime. WWI-03 giữ DONE; DW-01 đã nghiệm thu qua targeted review; WWI-04 vẫn IN_PROGRESS. L01–L05 và Kimball/bốn facts/conformed dims do Owner phê duyệt ở task Phase 1.6; chi tiết SCD2/incremental/physical schema còn mở.
+[DW-01 specification](docs/data-models/wwi-logical-dw-design.md) và [assessment](docs/data-models/wwi-dw-01-assessment.md) là bộ thiết kế đã nghiệm thu, không phải evidence runtime. WWI-03 giữ DONE; DW-01 đã nghiệm thu qua targeted review; WWI-04 vẫn IN_PROGRESS. L01–L05 và Kimball/bốn facts/conformed dims do Owner phê duyệt ở task Phase 1.6; B1–B8 SCD2 logical policies sau đó được duyệt; incremental/physical implementation còn mở.
 
 ## DW-02A/B nghiệm thu và nghiệm thu thiết kế DW-02C/D
 
@@ -54,7 +54,7 @@ Owner cho phép bắt đầu DW-02 trong đúng A/B sau nghiệm thu DW-01. [Att
 | DW-02B | Temporal History Coverage — docs/data-models | DW-01 DONE; source evidence; Owner giao A/B | NK/version coverage, physical/ALL, zero/gap/overlap/precision/lookup và forward readiness có SELECT evidence; không tự chọn fallback/type/algorithm | DONE |
 | DW-02C | Source Identity, SK & Historical Lookup — docs/data-models | DW-02A/B DONE, Owner giao C/D | Tách NK/source/business version/SK/lookup, ít nhất hai identity/SK options, precision và bảy role lookups/unresolved; technical choices chờ Owner review | DONE |
 | DW-02D | Forward Tracking, Hybrid Cutover & Recovery — docs/data-models | DW-02A/B DONE, interface C, Owner giao C/D | State transitions, hybrid/recovery options, scoped restatement và independent test matrix được trình review; không runtime | DONE |
-| DW-02E | Final SCD2 Design Assessment & Handoff — docs/data-models | DW-02C/D DONE; Owner giao E riêng | E1–E5 audit/invariants/transitions/gates/handoff được Owner nghiệm thu; technical backlog có quyết định hoặc deferral hợp lệ; chưa tự triển khai | TODO |
+| DW-02E | Final SCD2 Design Assessment & Handoff — docs/data-models | DW-02C/D DONE; Owner giao E riêng | E1–E5 audit/invariants/transitions/gates/handoff được Owner nghiệm thu; technical backlog có quyết định hoặc deferral hợp lệ; chưa tự triển khai | DONE |
 
 
 ## Bằng chứng nghiệm thu WWI-01 (hồ sơ lịch sử)
@@ -79,6 +79,8 @@ Phase 1.5/WWI-03: Project Owner đã phê duyệt BRD-01–BRD-12 theo [Business
 
 ## Nghiệm thu DW-02C/D và chuẩn bị DW-02E
 
-A/B acceptance commit: `b293fdbfed99cfb64d65c7bc3641c1068627e060`. Bản [Identity/SK/Precision](docs/data-models/wwi-scd-identity-key-design.md), [Historical Lookup](docs/data-models/wwi-scd-historical-lookup-design.md), [Forward/Cutover/Recovery](docs/data-models/wwi-scd-forward-cutover-design.md), [Assessment/Test Matrix](docs/data-models/wwi-dw-02cd-assessment.md) đã được targeted review, C/D DONE ở mức tài liệu theo D01–D06. Architecture direction Accepted; technical procedures/physical details vẫn Pending Approval. WWI-04/DW-02 vẫn IN_PROGRESS; DW-02E và DW-03 chưa bắt đầu.
+A/B acceptance commit: `b293fdbfed99cfb64d65c7bc3641c1068627e060`. Bản [Identity/SK/Precision](docs/data-models/wwi-scd-identity-key-design.md), [Historical Lookup](docs/data-models/wwi-scd-historical-lookup-design.md), [Forward/Cutover/Recovery](docs/data-models/wwi-scd-forward-cutover-design.md), [Assessment/Test Matrix](docs/data-models/wwi-dw-02cd-assessment.md) đã được targeted review, C/D DONE ở mức tài liệu theo D01–D06. Architecture direction Accepted; technical procedures/physical details vẫn Pending Approval. Hồ sơ C/D tại thời điểm nghiệm thu giữ parent IN_PROGRESS; nay DW-02/DW-02E design DONE theo approval B1–B8 và final QA, WWI-04 vẫn IN_PROGRESS; DW-03 chưa bắt đầu.
 
-Sáu [ADR SCD](docs/adr/README.md) đã được Owner phê duyệt ngày 2026-11-14. [DW-02E Work Plan](docs/data-models/wwi-dw-02e-work-plan.md) ghi E1–E5 và backlog B1–B9; tất cả package TODO, chỉ lập kế hoạch, chưa thực hiện E/DW-03. Parent DW-02/WWI-04 vẫn IN_PROGRESS, Phase 1 In Progress. Source evidence và BRD/KPI không thay đổi; 21 runtime tests NOT RUN.
+Sáu [ADR SCD](docs/adr/README.md) đã được Owner phê duyệt ngày 2026-11-14. [DW-02E Work Plan](docs/data-models/wwi-dw-02e-work-plan.md) ghi E1–E5 và backlog B1–B9; E1–E5 đã có kết quả review tài liệu trong [Final Specification](docs/data-models/wwi-final-scd2-design-specification.md) và [E Assessment](docs/data-models/wwi-dw-02e-assessment.md). E/DW-02 DONE ở mức thiết kế theo B1–B8 logical approval và conditional acceptance authority của Owner sau QA đạt; không thực hiện DW-03. Parent DW-02 DONE ở mức thiết kế, WWI-04 vẫn IN_PROGRESS, Phase 1 In Progress. Source evidence và BRD/KPI không thay đổi; 21 runtime tests NOT RUN.
+
+Bằng chứng nghiệm thu DW-02 ngày 2026-11-15: B1–B8 Approved — Logical Policy; B9 Pending — Physical Implementation và numerical thresholds chuyển DW-03 với gate trước conversion/Certified publication. E Assessment ghi 19 required design criteria PASS, runtime execution NOT APPLICABLE/21 tests NOT RUN; 502 local links/0 broken, 82 protected files và 56 attribute rows/bốn fact rows/Bus giữ nguyên, secret/diff/scope checks đạt. Chỉ E/DW-02 đóng theo quyền Owner; WWI-04/Phase 1 In Progress, DW-03A/B/C và DW-04 TODO.

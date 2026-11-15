@@ -19,6 +19,6 @@ Persistent mapping giúp replay và rebuild có kiểm soát bảo toàn referen
 
 Deterministic hash/ordinal-derived SK không được chọn làm kiến trúc cấp key hiện hành. Hash có thể hỗ trợ lookup/equality với collision checks, không là chứng cứ uniqueness hoặc durable SK thay registry.
 
-## Proposed Technical Policies / Pending Implementation Details
+## Logical policy approval và Pending Implementation Details
 
-Registry schema, stable episode-ID allocation, ambiguity rules chi tiết, split/merge/supersession, backup format/schedule, recovery và rekey procedures cần duyệt tại DW-02E/DW-03. Logical feasibility/invariants trong Identity design không có nghĩa physical policy đã được nghiệm thu. Rebuild mất registry không được tuyên bố giữ SK cũ.
+B1/B2/B8 đã **Approved — Logical Policy** ngày 2026-11-15: boundary-only giữ identity/SK khi unique continuity; split/merge tạo replacement episode identities và explicit supersession. Recovery phải giữ registry/version evidence/lineage/supersession/publication state tương thích, prove continuity trước equivalent rebuild; thiếu evidence là recovery limitation, không cấp keys rồi assume equivalent. Reinsert chỉ có new incarnation khi evidence đủ, thiếu giữ Ambiguous. Registry schema/allocator/encoding, backup tooling/schedule và execution procedures chuyển DW-03 trước runtime. [Final Specification](../data-models/wwi-final-scd2-design-specification.md), [backlog](../data-models/wwi-dw-02e-work-plan.md) ghi approval boundary.

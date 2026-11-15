@@ -19,6 +19,6 @@ Dùng source evidence có sẵn và theo dõi từ khi pipeline hoạt động m
 
 Ép một global cutover/business-effective timestamp hoặc bỏ forward history khi reload: không chọn. Evidence tracks có thể được giữ riêng khi chưa reconcile, nhưng không phải alternative cho phép hai timelines conflict cùng được publish như một lịch sử đã xác minh.
 
-## Proposed Technical Policies / Pending Implementation Details
+## Logical policy approval và Pending Implementation Details
 
-Generation boundaries, bridge criteria, source consistency, registry backup/replay và recovery procedures còn cần nghiệm thu. C/D mô tả reconciliation invariants, không phê duyệt isolation, chunking, checkpoints hoặc runtime state tables.
+B6 và recovery contract B2 đã **Approved — Logical Policy** ngày 2026-11-15: reconcile theo NK/lineage/verified generations, giữ ba time bases riêng, không fake history/duplicate episodes hoặc mất forward evidence khi reload. Conflict thiếu proof giữ U, proven integrity conflict I. Exact generation/window, source consistency, bridge/dedupe/checkpoint và restore mechanisms chuyển DW-03 trước runtime; không phê duyệt isolation/chunking/state tables. [Final Specification](../data-models/wwi-final-scd2-design-specification.md) và [backlog](../data-models/wwi-dw-02e-work-plan.md) là policy/handoff hiện hành.

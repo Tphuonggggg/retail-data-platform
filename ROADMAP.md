@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1–1.5 được chấp thuận ở mức tài liệu; WWI-02/03 DONE; Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 IN_PROGRESS; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E TODO chỉ có kế hoạch, chưa bắt đầu); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1–1.5 được chấp thuận ở mức tài liệu; WWI-02/03 DONE; Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -24,13 +24,13 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Dependencies:** Phase 0 được chủ dự án nghiệm thu và cho phép Phase 1.
 - **Deliverables:** Requirements, source contract/mapping, KPI matrix và ADR quyết định.
 - **Acceptance Criteria:** Các quyết định ảnh hưởng Sales schema/pipeline được duyệt; giới hạn snapshot/temporal ghi rõ.
-- **Status:** In Progress — Phase 1.1–1.5 được chủ dự án chấp thuận ở mức tài liệu; WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-01 DONE, DW-02 IN_PROGRESS; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E TODO chỉ có kế hoạch, chưa bắt đầu; physical warehouse schema chưa duyệt.
+- **Status:** In Progress — Phase 1.1–1.5 được chủ dự án chấp thuận ở mức tài liệu; WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-01 DONE, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15; physical warehouse schema chưa duyệt.
 
 ### Phase 1.6 / WWI-04 — kế hoạch thiết kế
 
 DW-01 Logical Dimensional Modeling đã nghiệm thu theo Kimball/bốn facts/conformed dims và L01–L05 Owner đã duyệt. Bàn giao [logical design](docs/data-models/wwi-logical-dw-design.md) đã qua targeted review. Các task sau cần Owner giao riêng: DW-02 SCD2 & Temporal History; DW-03A Full Load & Raw Layer; DW-03B Incremental; DW-03C Change Propagation & Recovery; DW-04 Final Verification & Acceptance. Dependencies/acceptance ở [TASKS.md](TASKS.md). DW-02A/B đã nghiệm thu; Owner đã nghiệm thu thiết kế C/D, chưa triển khai service/database/pipeline.
 
-DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B](docs/data-models/wwi-dw-02ab-assessment.md). Approved Principles không thay technical policies Pending Approval: Product columns, identity/SK, lookup, cutover/recovery. A/B đã commit riêng; C/D đã nghiệm thu tài liệu theo D01–D06, technical details còn Pending Approval; DW-02E/DW-03 chưa được bắt đầu, không triển khai runtime.
+DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B](docs/data-models/wwi-dw-02ab-assessment.md). D01 sau đó chốt ba Product Type2 columns; B1–B8 identity/lookup/cutover/recovery/correction logical policies đã duyệt; physical procedures và numerical thresholds vẫn pending. A/B đã commit riêng; C/D đã nghiệm thu tài liệu theo D01–D06, technical details còn Pending Approval; DW-02E/DW-02 DONE ở mức thiết kế sau B1–B8 approval và QA; DW-03 chưa bắt đầu, không triển khai runtime.
 
 ## Phase 2: Local Source & Destination Readiness
 
@@ -116,6 +116,6 @@ DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B
 
 Checklist là rà soát tài liệu và filesystem, không phải kết quả kiểm thử pipeline.
 
-## Kế hoạch DW-02E — chưa thực hiện
+## DW-02E / DW-02 — finalization theo logical approval
 
-[Work plan E1–E5 và Technical Backlog](docs/data-models/wwi-dw-02e-work-plan.md): decision traceability, identity/validity/SK invariants, transitions/cutover, publication gates, final handoff. DW-02E TODO, chưa thực hiện audit hoặc chốt policies; DW-03/physical cần giao task riêng. Việc C/D DONE không đóng DW-02/WWI-04 hoặc Phase 1.
+[Work plan E1–E5 và Technical Backlog](docs/data-models/wwi-dw-02e-work-plan.md): decision traceability, identity/validity/SK invariants, transitions/cutover, publication gates, final handoff. DW-02E/DW-02 DONE ở mức thiết kế: [Final Specification](docs/data-models/wwi-final-scd2-design-specification.md) và [Assessment](docs/data-models/wwi-dw-02e-assessment.md) ghi kết quả E1–E5. B1–B8 Approved — Logical Policy (2026-11-15), B9 Pending — Physical Implementation; design acceptance và QA đã đạt theo quyền Owner ngày 2026-11-15; numerical thresholds chưa tự chọn, gate trước Certified publication; DW-03/physical cần giao task riêng. DW-02 DONE không đóng WWI-04 hoặc Phase 1; DW-03/DW-04 vẫn TODO.

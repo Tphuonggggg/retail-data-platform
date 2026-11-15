@@ -1,6 +1,6 @@
 # WWI Logical DW Design Specification — DW-01
 
-**DW-01 DONE — thiết kế logic đã qua targeted review ngày 2026-11-14 theo quyền nghiệm thu có điều kiện của Project Owner.** Phase 1.5 đã nghiệm thu tại commit `411e3eed9cb0b422e0c19fdcd0566b2691a31fd2`; WWI-03 DONE. DW-01 chỉ thiết kế logic; Các logical contracts được nghiệm thu trong DW-01; SCD2 policy, physical implementation và các Open Decisions được ghi rõ vẫn Pending Approval. Runtime: Not implemented yet.
+**DW-01 DONE — thiết kế logic đã qua targeted review ngày 2026-11-14 theo quyền nghiệm thu có điều kiện của Project Owner.** Phase 1.5 đã nghiệm thu tại commit `411e3eed9cb0b422e0c19fdcd0566b2691a31fd2`; WWI-03 DONE. DW-01 chỉ thiết kế logic; Các logical contracts được nghiệm thu trong DW-01; SCD2 candidates bên dưới là snapshot DW-01; B1–B8 sau đó được Owner duyệt ở mức Logical Policy, physical implementation/Open Decisions chuyển tiếp vẫn pending. Runtime: Not implemented yet.
 
 ## Đầu vào và ranh giới quyết định
 
@@ -66,4 +66,4 @@ K01–K13 ở [SQL KPI](../../analytics/kpi-definitions/wwi-kpi-verification-sql
 - [Star Schemas](wwi-logical-star-schemas.md): bốn stars và consolidated bus.
 - [Change Impact](wwi-change-impact-matrix.md): detection → propagation → SCD2 → restatement.
 - [Logical Marts](wwi-logical-data-marts.md): sáu marts, population và aggregation contracts.
-- [DW-01 Assessment](wwi-dw-01-assessment.md): checklist, rủi ro và chuyển giao. DW-02 chưa bắt đầu.
+- [DW-01 Assessment](wwi-dw-01-assessment.md): checklist, rủi ro và chuyển giao. DW-02 logical policies được ghi trong [Final SCD2 Specification](wwi-final-scd2-design-specification.md); [E assessment](wwi-dw-02e-assessment.md) ghi nghiệm thu hiện hành, DW-03 chưa bắt đầu.

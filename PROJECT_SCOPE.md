@@ -2,7 +2,7 @@
 
 ## Trạng thái
 
-Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 IN_PROGRESS; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E TODO chỉ có kế hoạch, chưa bắt đầu; Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
+Chủ dự án đã quyết định **WideWorldImporters (WWI) trên SQL Server là nguồn OLTP chính** và **PostgreSQL là Data Warehouse do dự án tự xây dựng**. Đây là phạm vi mục tiêu đã duyệt, không phải bằng chứng pipeline đã triển khai. Phase 0 `Completed`; Phase 1 `In Progress`, Phase 1.1–1.5 được chấp thuận ở mức tài liệu, WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15; Phase 2–9 chưa bắt đầu. Business rules BRD-01–BRD-12 đã duyệt; các quyết định kỹ thuật ở mục Open Decisions còn mở.
 
 ## Mục tiêu và kiến trúc
 
@@ -12,7 +12,7 @@ MVP gồm **Sales/Invoicing, Customer Analytics và Inventory Movements**. Hoàn
 
 ## Functional Requirements dự kiến
 
-Phase 1.6 ghi nhận architecture constraints được Owner phê duyệt: Kimball Star Schema với Conformed Dimensions, bốn logical facts (Invoice Line, Order Line, Stock Movement, Inventory Current); Core DW giữ chi tiết, marts riêng Power BI. L01–L05: initial full + periodic incremental + periodic full reconciliation; transaction watermark candidates, temporal history/snapshot, holdings snapshot comparison; test INSERT/UPDATE/DELETE trên SQL Server độc lập; idempotent upsert + SCD2 theo bằng chứng/forward tracking + rebuild/restate; Sales end-to-end trước. DW-01 đã nghiệm thu [logical design](docs/data-models/wwi-logical-dw-design.md), chưa chốt SCD2 attributes/validity, incremental algorithm hay physical schema.
+Phase 1.6 ghi nhận architecture constraints được Owner phê duyệt: Kimball Star Schema với Conformed Dimensions, bốn logical facts (Invoice Line, Order Line, Stock Movement, Inventory Current); Core DW giữ chi tiết, marts riêng Power BI. L01–L05: initial full + periodic incremental + periodic full reconciliation; transaction watermark candidates, temporal history/snapshot, holdings snapshot comparison; test INSERT/UPDATE/DELETE trên SQL Server độc lập; idempotent upsert + SCD2 theo bằng chứng/forward tracking + rebuild/restate; Sales end-to-end trước. DW-01 đã nghiệm thu [logical design](docs/data-models/wwi-logical-dw-design.md), Customer/Product tracking direction đã duyệt theo SCD principles/D01; B1–B8 validity/registry/recovery/publication/correction logical policies đã duyệt ngày 2026-11-15; physical procedures, incremental algorithm và physical schema còn cần phê duyệt.
 
 | ID | Yêu cầu | Acceptance criteria dự kiến |
 | --- | --- | --- |
@@ -54,14 +54,14 @@ Definition of Done cho **MVP triển khai** là một người khác có thể c
 
 ## Open Decisions
 
-SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCategoryID/BuyingGroupID/BillToCustomerID; CreditLimit/IsOnCreditHold optional chưa kích hoạt; hybrid history có evidence, giữ zero-duration Raw/audit, không fallback current/earliest cho unresolved, bảo toàn precision và không blanket restatement. ADR-SCD-01–06 nay chốt Product Type2 ba packaging columns, registry/consensus/reconciled cutover/exact precision/controlled unresolved; technical policies vẫn cần duyệt, xem [classification](docs/data-models/wwi-scd-attribute-classification.md). Không thay các BRD/KPI đã duyệt.
+SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCategoryID/BuyingGroupID/BillToCustomerID; CreditLimit/IsOnCreditHold optional chưa kích hoạt; hybrid history có evidence, giữ zero-duration Raw/audit, không fallback current/earliest cho unresolved, bảo toàn precision và không blanket restatement. ADR-SCD-01–06 nay chốt Product Type2 ba packaging columns, registry/consensus/reconciled cutover/exact precision/controlled unresolved; B1–B8 đã Approved — Logical Policy; B9 physical implementation và numerical thresholds còn pending theo gate DW-03, xem [classification](docs/data-models/wwi-scd-attribute-classification.md). Không thay các BRD/KPI đã duyệt.
 
 | Nhóm | Quyết định chưa chốt | Gate |
 | --- | --- | --- |
 | KPI triển khai | Population/filter theo kỳ, precision/rounding, credit note tương lai, kiểm thử đối soát các measure đã duyệt; không mở lại revenue recognition ngoài MVP | WWI-04 và trước mart |
 | Customer | Mapping kỹ thuật buyer/bill-to vào fact/dimension, as-of/restatement; role nghiệp vụ đã duyệt | WWI-04 và trước schema |
 | Warehouse | Physical schema và policy từ logical mapping DW-01 đã nghiệm thu; bốn fact/conformed dims theo constraints Owner đã giao; official COGS/Gross Profit deferred | Trước schema |
-| SCD2 | D01–D06 accepted direction; episode/supersession/correction procedures, validity evidence, physical encoding và quality thresholds còn cần duyệt | DW-02E/DW-03 theo backlog |
+| SCD2 | D01–D06/B1–B8 approved architecture/logical policies; physical encoding/member/algorithm, concrete day/basis evidence và thresholds còn pending | DW-03 trước conversion/runtime/correction; thresholds trước Certified publication |
 | Incremental | Watermark/tie-breaker, delete, replay, môi trường thử nghiệm độc lập | WWI-04 |
 | Inventory | Đối soát movements/current holdings; daily balance và stockout risk ngoài MVP | Trước inventory mart |
 | Data quality | Ngưỡng, mức cảnh báo/chặn batch và ngoại lệ nguồn | WWI-04 |
