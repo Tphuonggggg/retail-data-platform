@@ -1,6 +1,6 @@
 # WWI DW-03A — Proposal & Technical Evidence Assessment
 
-**IN_PROGRESS — Owner Logical Approval Milestone, 2026-11-15.** Section 11 là current assessment: A01/A03/A04/A06 Approved — Logical Policy; A02 Approved — Conditional Logical Policy; A05 Approved — PoC Direction Only. **Sections 1–10 là hồ sơ lịch sử trước approval**, gồm partial SQL evidence và QA ở từng vòng; không dùng các câu “A01–A06 Proposed/chưa approved” cũ làm trạng thái hiện hành. B9 Pending Physical Approval; B1–B8/accepted DW-02 giữ nguyên. Final DW-03A acceptance **NOT PERFORMED**; runtime **Not implemented yet**.
+**DONE — Design, 2026-11-15.** Section15 là final acceptance:14/14 mandatory design criteria PASS, scoped B9 physical approval recorded và actual B9 tests/QA đạt. Sections1–14 giữ dated history/Pending/failures/prior PoCs,không current blockers. B1–B8/A01–A06 không đổi; G01–G08 runtime/implementation deferrals explicit,WWI-04/Phase1 IN_PROGRESS,B/C/DW-04 TODO;không production deployment hoặc phase transition.
 
 ## 1. Stage 1 baseline và tài liệu đã khảo sát
 
@@ -250,3 +250,180 @@ QA chỉ đánh giá documentation/scope/pattern security; không comprehensive 
 **Logical approval recording milestone đã được Owner cho phép; DW-03A final acceptance chưa thực hiện, giữ IN_PROGRESS.** Các unresolved items là technical/physical/evidence gates ở đúng cấp, không còn “chờ Owner phê duyệt A01–A06 logical directions”. Concrete full-extraction method/proof và B9 physical/target evidence chưa đủ; Raw implementation/publication chưa được phép coi ready.
 
 Owner review tiếp narrow handoff/environment/dependency installation và connection authority trước khi execution; persistence/physical design cần scope riêng. DW-03B/C/DW-04 TODO, WWI-04/Phase 1 In Progress; B1–B8 và DW-02 design DONE giữ nguyên. Chỉ một documentation-only commit nếu QA/staged checks đạt; không push, database changes, install hoặc bắt đầu task tiếp.
+
+## 12. B9 Minimal Technical PoC — current assessment, 2026-11-15
+
+### 12.1 Scope, implementation và actual results
+
+Task **DW-03A/B9 Minimal Technical PoC**, module tests/integration/b9_precision; dependencies: A05 F2 PoC direction, prior verified SQL expression/endpoint và current Owner authorization cho project-local venv/pyodbc. **Implemented/Tested: SQL→Python subset**; không production ingestion hoặc phase transition. Initial main/HEAD8fc248a sạch; snapshot113 files, không ghi đè existing work.
+
+[Evidence section12](wwi-dw-03a-evidence-approval-readiness.md) giữ detailed input/expected/actual/commands/driver versions và raw-file SHA-256; [PoC README](../../tests/integration/b9_precision/README.md) giữ execution/failure strategy/acceptance. Không tạo report trùng chức năng hoặc nhân bản dictionary.
+
+| Acceptance criterion | Actual evidence | Result |
+| --- | --- | --- |
+| Isolated authorized dependencies | New ignored project-local .venv; CPython3.12.10, pyodbc5.5.0, pip25.0.1; global pyodbc vẫn absent | PASS — không global package change hoặc pip upgrade |
+| Reuse exact F2 | Offline expression contract test đối chiếu section5.1 | PASS — không formatter khác |
+| Trusted source session | Driver18, integrated/NTLM, TCP, encrypt TRUE; no bypass; SELECT-only | PASS — interactive sysadmin không least-privilege proof |
+| Exact str/None fixture transport | 14/14 fixture values đúng text/type/length/ASCII/SQL reverse/ns | PASS — không authoritative datetime conversion |
+| Exact ordering/adjacent collision | 169 pairs đủ population; Python = source datetime2/F2 BIN2, V1/V2 distinct | PASS — SQL→Python subset |
+| Actual temporal source samples | 18/18 period cells đối chiếu source components/typed equality; sentinel/zero-duration giữ nguyên | PASS — bounded samples, không full capture |
+| Negative controls/fail-fast | Eight unittest methods PASS, invalid values/missing or duplicate pairs bị reject | PASS — không actual exactness FAIL mới |
+| Approved PostgreSQL profile discovery | .env.example only, no process PG/POSTGRES/DATABASE_URL connection names hoặc active matching project profile | Inspected — không tìm approved target trong phạm vi kiểm tra |
+| PG parameter transport | Không approved profile; không cài psycopg hoặc connect PG | BLOCKED |
+| PG persisted round-trip | Không separately approved write sandbox; không table/schema | NOT RUN |
+| B9/final task status | Approval levels/B1–B8 giữ nguyên, B9 physical pending; DW-03A IN_PROGRESS | Required boundary preserved |
+
+### 12.2 Readiness, risks và remaining gates
+
+G03 có verified bounded pyodbc text transport evidence, không final production adapter selection; G02 service account còn mở vì session interactive sysadmin. G05 source+Python ordering PASS, PG predicates/collisions/encoding/collation chưa verify. G01 common full-extraction context, G04 target parameter/persistence, G06 special datatypes, G07 physical Raw/retention và G08 publication/recovery vẫn cần gate; không tự đóng backlog chỉ vì subset PASS.
+
+**B9 Pending Physical Approval**, chưa đủ end-to-end/persistence/physical decision evidence. Microsecond native datetime/timestamp làm authoritative carrier vẫn có precision-loss risk; đã tránh ở PoC này, chưa chứng minh các path khác. Không tự chốt PG datatype/adapter/encoding/collation hoặc biến source system-time thành business-effective time. Current task không commit/push, DW-03A closure hoặc DW-03B/C.
+
+### 12.3 Files và QA
+
+Thêm `tests/integration/b9_precision/{poc.py,test_poc.py,requirements.txt,README.md}`; cập nhật tests README/integration README, DW-03A evidence/assessment/work-plan/register/full-Raw current notes và data-models index. Local .venv/raw JSON ignored; không secrets hoặc source dataset được đưa vào tracked files. Không sửa project scope/roadmap/tasks/changelog/AGENTS/accepted DW-02/ADRs.
+
+Final `python -c $b9Qa` **PASS**, exit0: đúng 12 scope files (4 new PoC files + 8 updated README/design files), **105 protected initial files giữ SHA-256**; 608 local Markdown links/2 fragments, 0 broken targets/anchors; 0 secret-pattern/encoding/control/whitespace/fence/table errors, binary hoặc files >5MiB. Evidence historical body sections1–11 và sáu Recorded Owner decision texts giữ nguyên; sáu approval levels, tám gate/sáu handoff steps và task statuses không đổi. Raw evidence có đúng 14 fixtures/169 ordering rows/18 cells, executed queries SELECT-only; raw JSON ignored và zero tracked venv files. `git diff --check` exit0 sau khi sửa ba new blank EOF lines trong modified docs. Branch main/HEAD giữ 8fc248a35ae1e44fd53f0a87ac3cf440322f8f7b, index rỗng; **không stage/commit/push**. Security pattern scan không là comprehensive assurance; QA không nâng B9/production readiness.
+
+## 13. B9 PostgreSQL Transport & Persistence — infrastructure BLOCKED, 2026-11-15
+
+Task/module: DW-03A/B9, existing tests/integration/b9_precision; dependencies A05/verified F2 and current Owner sandbox authorization. Baseline main/HEAD8fc248a, 12 pre-existing dirty paths/117 visible files; bảo toàn previous PoC/evidence và không stage/commit/push.
+
+[Evidence section13](wwi-dw-03a-evidence-approval-readiness.md) là detailed source cho environment/commands/status; không tạo assessment trùng chức năng. Current task authorize psycopg3.3.9 và một isolated Docker PG/test-table bounded writes khi Docker installed/functioning; authorization không còn là missing gate cho sandbox này. **Blocker thực tế là unavailable Docker API + không approved target khác**, không lack-of-approval hoặc executed precision FAIL.
+
+| Acceptance / proof | Actual outcome | Status |
+| --- | --- | --- |
+| Preserve current work/F2/fixtures/approved policies | Minimal message/dependency/docs updates, no new formatter/architecture | Required preservation checked by QA |
+| Authorized venv dependency install/import | psycopg3.3.9/psycopg-binary3.3.9, required typing_extensions4.16.0/tzdata2026.6; binary pq180004 | PASS — client install/import, không server proof |
+| Existing offline tests | 8 methods PASS | PASS |
+| Existing SQL→Python integration | 14 fixtures/169 order pairs/18 actual temporal cells PASS | PASS — source regression |
+| Approved existing PG profile | No profile in scoped repo/process inspection | Not found |
+| Docker functioning prerequisite | CLI29.8.2 available; info/ps cannot connect named pipe dockerDesktopLinuxEngine | BLOCKED |
+| New isolated PostgreSQL sandbox/TEXT table | Không Docker pull/create/container/volume/DB/table operations | NOT RUN theo stop condition |
+| psycopg parameter equality/NULL/boundaries | Không PG connection/query | NOT RUN — BLOCKED infrastructure |
+| Persistence commit/close/reconnect/read-back | Không target transaction hoặc INSERT | NOT RUN — BLOCKED infrastructure |
+| PG ordering/ranges/shared occurrences/collisions | Không target values/comparisons | NOT RUN |
+| PG server version/encoding/collation | Chưa query server; libpq180004 chỉ client | Unverified |
+| B9/final DW-03A acceptance | Evidence missing, không all target tests PASS | B9 Pending Physical Approval, DW-03A IN_PROGRESS |
+
+**Không hoàn thành target PoC implementation/execution** khi infrastructure chưa sẵn sàng; source-only code chỉ cập nhật blocker reason để không nói sai driver absent. Không claim “B9 target transport and sandbox persistence PoC verified within the tested scope.” vì chưa có target evidence.
+
+Exact continuation requirement: Docker Desktop Linux engine đang hoạt động và docker info trả Server, hoặc approved existing PG sandbox profile qua excluded config. Current sandbox/test-only table/write scope đã được Owner authorize, không xin lại cùng permission; khi ready mới verify unique names/volumes và localhost-only port (prefer127.0.0.1:55433), credentials excluded, preserve resources sau tests. Không tự start/install/configure Docker hoặc modify existing PG; không changes nguồn SQL Server/production Raw schema.
+
+Files sửa thêm so đầu vòng: `tests/integration/b9_precision/{requirements.txt,poc.py,README.md}` và `docs/data-models/wwi-dw-03a-{evidence-approval-readiness,assessment,work-plan}.md`. Previous 12 dirty paths giữ nguyên membership; ignored logs/results trong .venv, không credential/config secret files mới. Initial B1–B8/Recorded approvals/source policies không đổi; G04 target blocked/G05 PG proof chưa chạy, G01/G02/G06/G07/G08 còn gates.
+
+Actual `python -c $pgQa` **PASS**, exit0: đúng **6 files thay đổi thêm** so đầu vòng, **111 protected initial files giữ SHA-256**; tổng working tree vẫn12 dirty paths từ source-only PoC, không new visible paths ngoài existing work. Kiểm tra611 local links/2 fragments, 0 broken targets/anchors, secret-pattern/format/table/binary/large-file errors; historical source evidence/Recorded approvals và task statuses không đổi. Executed source queries SELECT-only, raw results/venv ignored, zero tracked venv files. `git diff --check` exit0; main/HEAD8fc248a giữ nguyên, index rỗng, không stage/commit/push. QA/security pattern checks không chứng minh target runtime hoặc comprehensive secret assurance; PG remains BLOCKED.
+
+Dừng target-dependent tests đúng infrastructure stop condition. Không stage/commit/push, B9 approval, DW-03A closure, production ingestion hoặc DW-03B/C.
+
+## 14. Resume B9 PostgreSQL PoC — verified bounded scope, 2026-11-15
+
+Owner Resume task authorize isolated B9 sandbox/test-only table/bounded writes; Docker engine reverified. Baseline main/HEAD8fc248a,12 pre-existing dirty paths/117 files, không reset hoặc overwrite prior work. [Evidence section14](wwi-dw-03a-evidence-approval-readiness.md) và [PoC README](../../tests/integration/b9_precision/README.md) là detailed command/expected/actual records, không duplicate report.
+
+| Acceptance | Actual evidence | Result / boundary |
+| --- | --- | --- |
+| Resources/port before mutation | desktop-linux29.8.2/linux, no containers, one unrelated volume; target names absent,55433 loopback bind available | PASS; unrelated resources không dùng/sửa/xóa |
+| Isolated target | retail-b9-pg-poc,postgres:18 digest recorded,volume riêng,127.0.0.1:55433,b9_precision_poc | PASS; test sandbox only |
+| Credentials/adapters | Random new ignored files, pinned drivers reused, no credential logging/global package change | Required QA checks |
+| F2/source regression | Original expression/14 fixtures unchanged,source14/169/18 PASS | PASS; SELECT-only nguồn |
+| Unit tests |12 methods PASS,8 existing +4 target guards | PASS |
+| PG parameter transport |14/14 str/None equality/type/char/octet lengths | PASS |
+| Persistence/reconnect |15 records,explicit commit/closed writer,new reader backend92→93,15/15 exact read-back | PASS; không restart/crash durability proof |
+| Ordering/equality/collisions |169 PG comparisons match SQL typed/Python,14 equality cases, intended same-text pair retained as2 IDs | PASS; bounded fixtures |
+| NULL/ranges/boundaries |Five ranges0/1/2/8 rows đúng expected; NULL/min/max/sentinel/100ns preserved | PASS; no new SCD2 business policy |
+| Actual PG settings |18.7/UTF8/default en_US.utf8/libc; explicit C on test temporal TEXT columns | Verified; database default không đổi |
+| Retention/scope | Container running,volume/15 rows retained; no source/production Raw writes | Required scope preserved |
+
+First target attempt FAILED metadata SQLSTATE42704 trước value tests/writes, raw retained. Sửa đọc pg_database thay unsupported lc_collate setting, không normalize/sửa source/fixtures. Successful retry raw .venv/b9-pg-complete-results-v2.json SHA25652837bd1f0af1b8be0e16229a032577040625b9f77ae31f5fe3a43ee2313d05e. Không che precision discrepancy.
+
+**B9 target transport and sandbox persistence PoC verified within the tested scope.** B9 vẫn Pending Physical Approval/DW-03A IN_PROGRESS. Có evidence trình Owner review candidate trong tested environment, không final datatype/adapter/encoding/collation/index/Raw schema approval. G04/G05 bounded proof; G01 consistency/G02 least-privilege/G06 special types/G07 physical Raw-retention/G08 publication-recovery còn gates. Server restart/recreation/crash/concurrency/production load/benchmark tests NOT RUN.
+
+Files sửa thêm: existing poc.py/test_poc.py/README.md; tests README/integration README; data-models README và năm DW-03A documents evidence/assessment/work-plan/register/full-Raw current notes. requirements giữ nguyên pin; không new project structure/SQL Server writes/TASKS/ROADMAP/AGENTS hoặc accepted DW-02 changes.
+
+Actual `python -c $resumeQa` PASS/exit0: đúng **11 files sửa thêm** so đầu Resume, **106 protected initial files giữ SHA-256**; tổng dirty paths vẫn12 (bao gồm requirements từ trước).615 local Markdown links/2 fragments,0 broken targets/anchors,secret-pattern/format/table/binary/large-file errors. Recorded approvals/F2/original fixtures/task statuses không đổi; source executed queries SELECT-only, bounded PG evidence valid. Credential-value scan trên visible files/raw result logs **0 leaks**; credential files/raw/venv ignored,zero tracked venv files. Docker inspect verified localhost-only binding và dedicated volume,original mage-demo-main_pgdata vẫn hiện diện. `git diff --check` exit0,index rỗng,main/HEAD8fc248a giữ nguyên; không stage/commit/push. Security pattern checks không comprehensive assurance hoặc production proof.
+
+Credentials/config/raw audit/results trong ignored .venv; container/volume/data retained, không cleanup. Không stage/commit/push. B9 Pending Physical Approval,DW-03A/WWI-04/Phase1 IN_PROGRESS,B/C/DW-04 TODO; dừng sau bounded PoC.
+
+## 15. Final DW-03A Design Acceptance — DONE — Design, 2026-11-15
+
+### 15.1 Authority và kết luận
+
+Project Owner **“DW-03A — B9 Physical Approval & Final Design Acceptance Review”** trực tiếp approve scoped B9 physical mapping và conditional closure authority; không unconditional approval toàn DW-03A/runtime. Đã review all DW-03A/PoC/approved DW-02 ADRs/project management; actual baseline main/HEAD8fc248a,12 pre-existing dirty paths/117 files được bảo toàn. Test rerun và QA/staged scope checks là điều kiện commit.
+
+**Kết luận: mandatory design-level conditions đạt, không còn unapproved mandatory architectural choice trong phạm vi DW-03A; DONE — Design.** G07 đã đủ conceptual storage/occurrence/manifest/identity/lineage/retention/replay/no-deletion contract. Full DDL/index/retention periods/access/capacity/runtime không được Owner cấp approval; đó là separate implementation gates đã được A03/B9 cho giữ, không bắt complete production pipeline mới nghiệm thu design. Không tạo approval giả cho deferred choices.
+
+### 15.2 Structured design acceptance matrix
+
+| ID | Criterion | Actual design/approval evidence | Design result | Runtime/physical boundary |
+| --- | --- | --- | --- | --- |
+| DA01 | Full source preservation | Proposal§2 nine-row explicit projection/type matrix + A01 Approved; contracts/dictionary retained | PASS | Full actual Raw field fidelity còn runtime G03/G06 |
+| DA02 | Current/history completeness | Proposal§2/§4 + evidence§2:9 current+2 direct physical H,origin/multiplicity/zero-duration/no overlapping temporal-query ingestion | PASS | Full context counts/keyset/multiset chưa executed |
+| DA03 | Source consistency strategy | A02 Approved Conditional; SNAPSHOT/RCSI OFF; no-write window hoặc approved verified copy; thiếu proof hold | PASS | Real full-extraction consistency NOT RUN/G01 |
+| DA04 | Raw storage architecture | A03 immutable source-shaped captures + control manifests/published membership/pins,không SCD2/mirror overwrite | PASS | Full physical DDL/layout/access/capacity chưa approved |
+| DA05 | Identities/lineage | Proposal§4/5 run/attempt/capture/logical batch/chunk/publication/locator khác nhau,context/origin/version links | PASS | Allocator/constraint implementation pending |
+| DA06 | Retry/replay contracts | A04 sealed-compatible replay,new context=new capture,unknown commit read-back,partial visibility hold | PASS | Actual loader retries/crashes G08 NOT RUN |
+| DA07 | Exact temporal preservation | Owner scoped B9 physical approval + ADR-SCD-05 ten rules; source/Python/PG PoC và actual rerun PASS | PASS | No automatic entire Raw/index/runtime approval |
+| DA08 | Reconciliation requirements | Proposal§7/evidence§2:scope/count/keyset/multiset/types/per-key/aggregate/context/NULL/source anomalies; no cross-grain netting | PASS | Actual full-load reconciliation not executed; thresholds trước Certified publish còn pending |
+| DA09 | Atomic publication design | A06/evidence§6 ledger+membership+pointer coherent commit,eligibility/request/content/predecessor/durable outcome | PASS | Runtime transactions/races/visibility G08 NOT RUN |
+| DA10 | Downstream pinning | Evidence§6 consumer pins full scope/dependency bundle; incompatible dependency hold/restart,không latest từng table | PASS | Runtime propagation tại DW-03C/implementation; chưa bắt đầu |
+| DA11 | DW-02/SCD2 compatibility | Proposal§8 B1–B8 preservation,Raw occurrence≠episode≠SK,Core U≠Raw fidelity fail,time bases riêng | PASS | No new lookup/fallback/day-domain/SK/certification policies |
+| DA12 | Raw physical design readiness | Conceptual objects/keys/metadata/source map + approved B9 đủ guide implementation-specific DDL; A03/current B9 expressly defer remaining schema/index | PASS | WWI-05 physical proposal approval trước WWI-06 schema/ingestion |
+| DA13 | Retention/evidence policy | A03 + Proposal§4/evidence§4 retain source/forward/registry/publication/failed-superseded lineage,no unapproved purge | PASS | Periods/tiers/access/capacity/purge proof deferred,không unlimited retention default |
+| DA14 | Implementation gates traceability | Work Plan current G01–G08 có reason/Owner/stage/required evidence/acceptance gate; design vs runtime rõ | PASS | Every remaining implementation criterion pending đúng gate,không false PASS |
+
+14/14 design conditions PASS là **document/decision sufficiency + scoped B9 PoC**, không 14 runtime suites PASS. B1–B8/A01–A06 và original Recorded approvals không đổi; current B9 approval authoritative tại [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md), current backlog row. All prior Pending B9 records được giữ như dated history.
+
+### 15.3 G01–G08 disposition / deferral ownership
+
+Authoritative current table tại [Work Plan](wwi-dw-03a-work-plan.md)§5: mỗi gate có disposition,reason,Owner,target stage,required evidence,acceptance gate.
+
+- G01: conditional design PASS; no actual consistent full extraction verified. Source Owner/DBA + implementer,WWI-05→trước WWI-06 capture/publish; window controls hoặc approved copy/context counts proof,thiếu hold publication.
+- G02: security contract PASS,account proof NOT RUN; DBA/implementer/DQ + Owner,WWI-05 trước ingestion; effective read-only grants/TLS/roles,không thử DML nguồn.
+- G03/G04: B9 mapping approved và bounded carrier/target persistence PoC PASS; actual extractor/Raw deployment proof pending implementer/DQ/Owner tại WWI-05/06 trước normal publish.
+- G05: exact comparator approved/fixture PoC PASS; full field/config/secondary/day-domain lookup proof pending DW implementer/DQ,WWI-06 và trước WWI-08 lookup; no source-time/business-time conflation.
+- G06: design fidelity obligations PASS; adapter physical proposal/tests pending ingestion/storage/DQ/Owner,WWI-05 review trước WWI-06 code/full capture và proof trước publish.
+- G07: conceptual/retention invariants design PASS; full schema/index/periods/access/capacity còn Owner review,storage designer/custodian,WWI-05 trước WWI-06 implementation; no purge khi chưa approved/proof.
+- G08: atomicity/replay/pinning design PASS; implementer/orchestration/DQ/Owner runtime failure/race/rollback/no partial visibility trước first normal Raw publication WWI-06; advanced monitoring WWI-10.
+
+**Remaining mandatory design blockers: none.** Runtime implementation acceptance chưa thực hiện, các deferrals không được mark PASS. Không choose chunk size/watermark/ID allocator/retention days hoặc approve database copy,full Raw schema/index từ task này.
+
+### 15.4 Actual tests/evidence và giới hạn
+
+Current task actual unit12 PASS và bounded source14/169/18,PG parameters14/readback15/order169/equality14/ranges5 PASS. Writer commit/closed,new backend150→151; batchb25689fc-e7af-4e20-91cd-2f8084120aa3,raw .venv/b9-design-acceptance-results.json SHA25613d1d24790f2b95722b6e2f99369a9a7bb3e60fc31b405a9ce1f47cab40a4188. No source writes; one additional15-record synthetic batch chỉ trong retained B9 sandbox,previous batch/data preserved,total30 rows. Environment/commands/digest/settings/driver versions tại [Evidence](wwi-dw-03a-evidence-approval-readiness.md)§15 và [PoC README](../../tests/integration/b9_precision/README.md).
+
+PoC observed runtime results không chứng minh production full extraction/actual Raw schema/privilege/retention/crash-restart-recreation/concurrency/atomic publication/performance. Existing CD-T01–21 và full pipeline tests vẫn NOT RUN. Metadata42704 failure + successful retries từ earlier task giữ nguyên, không che failed value tests.
+
+### 15.5 Files, QA, Git và handoff
+
+Current approved scope chỉ documents/status/B9 report label; no production code/schema/pipeline. Preserve initial working tree và all accepted source/KPI/DW-01/B1–B8 artifacts ngoài necessary B9 follow-up refs. Commit bao gồm prior B9 code/tests/docs và current acceptance updates,không credentials/.venv/raw reports/database files. New Raw schema/index/retention/runtime tasks chưa execute.
+
+Actual `python -c $acceptQa` **PASS**,exit0:19 files sửa thêm so đầu task,98 protected initial files giữ SHA-256;22 Git dirty paths gồm3 pre-existing paths không sửa thêm.652 local links/2 fragments,0 broken targets/anchors,secret-pattern/format/table/binary/large-file errors;credential-value scan trên visible files/raw reports0 leaks,ignored credential/raw/venv và zero tracked venv files.14 design rows PASS,8 complete gate dispositions,six recorded A01–A06 approvals/B1–B8 rows preserved,B9 scoped approval consistent. Actual tests ở§15.4;source query SELECT-only,bounded PG evidence verified,localhost/dedicated volume correct. `git diff --check` exit0;pre-stage index rỗng,main/parent HEAD8fc248a35ae1e44fd53f0a87ac3cf440322f8f7b. Không comprehensive security hoặc production runtime claim.
+
+Focused commit allowlist **22 paths**,bao gồm preserved prior PoC changes;không secret/config/extract/database artifacts. Staged blob/content/secret/size/diff checks bắt buộc trước commit; actual commit result báo final:
+
+- AGENTS.md
+- CHANGELOG.md
+- PROJECT_SCOPE.md
+- ROADMAP.md
+- TASKS.md
+- docs/adr/README.md
+- docs/adr/scd-05-exact-temporal-precision.md
+- docs/data-models/README.md
+- docs/data-models/wwi-dw-02e-work-plan.md
+- docs/data-models/wwi-dw-03a-assessment.md
+- docs/data-models/wwi-dw-03a-decision-register.md
+- docs/data-models/wwi-dw-03a-evidence-approval-readiness.md
+- docs/data-models/wwi-dw-03a-full-raw-design-proposal.md
+- docs/data-models/wwi-dw-03a-work-plan.md
+- docs/data-models/wwi-final-scd2-design-specification.md
+- docs/requirements/wwi-raw-layer-requirements.md
+- tests/README.md
+- tests/integration/README.md
+- tests/integration/b9_precision/README.md
+- tests/integration/b9_precision/poc.py
+- tests/integration/b9_precision/requirements.txt
+- tests/integration/b9_precision/test_poc.py
+
+**Final statuses:** DW-03A DONE — Design;B9 Approved — Physical Raw Temporal Representation;WWI-04/Phase1 IN_PROGRESS;DW-03B/C/DW-04 TODO. Current task cho một focused commit sau successful design acceptance/tests/QA/staged review;không push/remote/history rewrite. Commit hash được xác minh bằng git log sau commit và báo final,không ghi self-referential hash vào commit.
+
+DW-03B readiness: ready-for-Owner-task handoff,không tự bắt đầu. Inputs gồm full/base manifest/source origin/exact temporal/capture-batch-publication/replay/no-loss retention/consistency-hold contracts. Incremental watermark/tie-breaker/delete/late data và test môi trường độc lập phải được Owner giao/review riêng; G01–G08 handoff không là permission implementation.

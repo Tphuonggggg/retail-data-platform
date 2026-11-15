@@ -2,6 +2,8 @@
 
 **Trạng thái: Project Owner đã chấp thuận tài liệu Phase 1.4; physical design và policies vẫn Proposed.** Yêu cầu logic để thiết kế ingestion/raw của chín bảng WWI MVP. Không tạo PostgreSQL table, DDL, storage layout, partition, retention policy hay code. SQL Server WWI chỉ đọc. Xem [Source Contracts](../data-models/wwi-source-contracts.md), [Extraction Matrix](../data-models/wwi-extraction-requirements-matrix.md) và [Validation Matrix](wwi-source-validation-matrix.md).
 
+**Follow-up hiện hành, 2026-11-15:** DW-03A A01–A06 approved đúng cấp; B9 **Approved — Physical Raw Temporal Representation**: F2 → Python str/None → bound psycopg → authoritative TEXT/C comparison, exact27/seven digits. [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md) và [Full/Raw design](../data-models/wwi-dw-03a-full-raw-design-proposal.md) là current design authority. Pending/Proposed statements phía dưới giữ snapshot Phase1.4; physical full Raw schema/index/retention và runtime gates vẫn pending, không phủ nhận approved logical capture/archive/identity/publication hoặc scoped B9.
+
 ## Ranh giới payload và metadata
 
 **Payload nguồn:** tất cả cột được chọn từ từng bảng WWI với tên, datatype nguồn, NULL, dấu numeric và thời gian được bảo toàn theo [Metadata Dictionary](../data-models/wwi-metadata-dictionary.md). Không sửa payload thành KPI, business status hoặc dữ liệu tổng hợp. `ValidFrom/ValidTo` là **cột nguồn** ở hai bảng temporal, không phải `extracted_at`.

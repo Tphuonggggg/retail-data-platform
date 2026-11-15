@@ -30,7 +30,7 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 
 DW-01 Logical Dimensional Modeling đã nghiệm thu theo Kimball/bốn facts/conformed dims và L01–L05 Owner đã duyệt. Bàn giao [logical design](docs/data-models/wwi-logical-dw-design.md) đã qua targeted review. Các task sau cần Owner giao riêng: DW-02 SCD2 & Temporal History; DW-03A Full Load & Raw Layer; DW-03B Incremental; DW-03C Change Propagation & Recovery; DW-04 Final Verification & Acceptance. Dependencies/acceptance ở [TASKS.md](TASKS.md). DW-02A/B đã nghiệm thu; Owner đã nghiệm thu thiết kế C/D, chưa triển khai service/database/pipeline.
 
-DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B](docs/data-models/wwi-dw-02ab-assessment.md). D01 sau đó chốt ba Product Type2 columns; B1–B8 identity/lookup/cutover/recovery/correction logical policies đã duyệt; physical procedures và numerical thresholds vẫn pending. A/B đã commit riêng; C/D đã nghiệm thu tài liệu theo D01–D06, technical details còn Pending Approval; DW-02E/DW-02 DONE ở mức thiết kế sau B1–B8 approval và QA; DW-03A IN_PROGRESS; logical policies đã được Owner duyệt đúng cấp ở milestone bên dưới; concrete/physical/runtime gates còn mở. DW-03B/C chưa bắt đầu, không triển khai runtime.
+DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B](docs/data-models/wwi-dw-02ab-assessment.md). D01 sau đó chốt ba Product Type2 columns; B1–B8 identity/lookup/cutover/recovery/correction logical policies đã duyệt; physical procedures và numerical thresholds vẫn pending. A/B đã commit riêng; C/D đã nghiệm thu tài liệu theo D01–D06, technical details còn Pending Approval; DW-02E/DW-02 DONE ở mức thiết kế sau B1–B8 approval và QA; DW-03A DONE — Design;B9 scoped physical Raw temporal approval đã ghi;remaining implementation/runtime gates ở work-plan disposition. DW-03B/C chưa bắt đầu, không triển khai runtime.
 
 ## Phase 2: Local Source & Destination Readiness
 
@@ -124,10 +124,19 @@ Checklist là rà soát tài liệu và filesystem, không phải kết quả ki
 
 Bàn giao [work plan](docs/data-models/wwi-dw-03a-work-plan.md), [architecture/full-Raw proposal](docs/data-models/wwi-dw-03a-full-raw-design-proposal.md), [A01–A06 register](docs/data-models/wwi-dw-03a-decision-register.md) và [assessment](docs/data-models/wwi-dw-03a-assessment.md). Stage 1 chỉ phân tích source consistency, Raw storage, metadata/retry, B9 precision và publication; mọi quyết định mới PROPOSED — PENDING PROJECT OWNER APPROVAL. Chưa final design acceptance, không chuyển DW-03A DONE, không code/schema/database/Docker hoặc bắt đầu DW-03B/C. Không commit/push.
 
-### DW-03A — logical approval milestone, chưa final acceptance
+### DW-03A — logical approval milestone trước final design acceptance (lịch sử)
 
 Ngày 2026-11-15, Project Owner formal approve **A01/A03/A04/A06 — Logical Policy; A02 — Conditional Logical Policy; A05 — PoC Direction Only (F2)** trong [Decision Register](docs/data-models/wwi-dw-03a-decision-register.md). Full-preservation/immutable-capture/identity/atomic-pinning principles được ghi nhận, không chọn final Raw schema/retention/driver/datatype/encoding/collation hoặc certify runtime.
 
 [Work Plan](docs/data-models/wwi-dw-03a-work-plan.md) sections 5–6 giữ backlog G01–G08 và narrow SQL F2 → pyodbc string → psycopg text-parameter handoff. Static window cần no-write evidence toàn extraction interval; nếu không thì separately approved verified copy. SNAPSHOT/RCSI OFF giữ nguyên; không tự long SERIALIZABLE/NOLOCK consistency claim. Driver/PG/persistence/atomicity/recovery tests vẫn chưa chạy; F2 SQL source subset PASS không vượt toàn B9.
 
 **DW-03A IN_PROGRESS; B9 Pending Physical Approval; DW-03B/C/DW-04 TODO; WWI-04/Phase 1 In Progress.** Chưa final DW-03A acceptance hoặc phase transition. Current milestone chỉ cập nhật tài liệu/QA và một documentation-only commit sau kiểm tra theo Owner, không install, database changes, pipeline hoặc push.
+
+
+### DW-03A DONE — Design / B9 scoped physical approval, 2026-11-15
+
+[Final assessment](docs/data-models/wwi-dw-03a-assessment.md) ghi14 mandatory design checks PASS theo conditional Owner authority,actual B9 regression/QA đạt. **B9 Approved — Physical Raw Temporal Representation** theo [ADR-SCD-05](docs/adr/scd-05-exact-temporal-precision.md); A01–A06/B1–B8 giữ đúng cấp. Không approve entire Raw DDL/index/retention periods/publication/crash/performance hoặc claim production pipeline.
+
+[G01–G08](docs/data-models/wwi-dw-03a-work-plan.md) là runtime/implementation gates với reason/owner/target/evidence/gate: conditional source method phải có proof trước full extraction/normal publication;security/adapter/schema approvals trước production ingestion,atomicity/failure proof trước first Raw publish; numerical certification thresholds trước Certified publish. Không đợi Phase6 mới có basic DQ/publication correctness. G07 conceptual architecture/retention protection đủ;parameters/DDL/periods được review trong WWI-05/06 trước execution,không tự execute.
+
+DW-03B nhận handoff nhưng **TODO/chờ Owner giao**,DW-03C/DW-04 TODO,WWI-04/Phase1 IN_PROGRESS,Phase2–9 Not Started. Không tự chuyển phase/triển khai task sau; only current finalization commit theo Owner,no push.

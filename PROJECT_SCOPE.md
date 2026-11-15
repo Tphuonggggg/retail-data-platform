@@ -54,7 +54,7 @@ Definition of Done cho **MVP triển khai** là một người khác có thể c
 
 ## Open Decisions
 
-SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCategoryID/BuyingGroupID/BillToCustomerID; CreditLimit/IsOnCreditHold optional chưa kích hoạt; hybrid history có evidence, giữ zero-duration Raw/audit, không fallback current/earliest cho unresolved, bảo toàn precision và không blanket restatement. ADR-SCD-01–06 nay chốt Product Type2 ba packaging columns, registry/consensus/reconciled cutover/exact precision/controlled unresolved; B1–B8 đã Approved — Logical Policy; B9 physical implementation và numerical thresholds còn pending theo gate DW-03, xem [classification](docs/data-models/wwi-scd-attribute-classification.md). Không thay các BRD/KPI đã duyệt.
+SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCategoryID/BuyingGroupID/BillToCustomerID; CreditLimit/IsOnCreditHold optional chưa kích hoạt; hybrid history có evidence, giữ zero-duration Raw/audit, không fallback current/earliest cho unresolved, bảo toàn precision và không blanket restatement. ADR-SCD-01–06 nay chốt Product Type2 ba packaging columns, registry/consensus/reconciled cutover/exact precision/controlled unresolved; B1–B8 đã Approved — Logical Policy; B9 scoped Physical Raw Temporal Representation nay Approved tại DW-03A (F2/str-None/psycopg/TEXT/C);entire Raw schema/index/retention/runtime và numerical thresholds còn separate gates, xem [classification](docs/data-models/wwi-scd-attribute-classification.md). Không thay các BRD/KPI đã duyệt.
 
 | Nhóm | Quyết định chưa chốt | Gate |
 | --- | --- | --- |
@@ -70,3 +70,10 @@ SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCa
 ## Change control
 
 Chỉ chủ dự án phê duyệt business rules, schema, công nghệ, phase và nghiệm thu. Các tài liệu cũ không còn là yêu cầu hiện hành. Không coi tài liệu là bằng chứng database, ingestion, dbt, DAG hoặc dashboard đã hoạt động. Xem [ADR chuyển nguồn](docs/adr/wwi-source-migration.md), [ROADMAP.md](ROADMAP.md) và [TASKS.md](TASKS.md).
+
+
+## DW-03A design acceptance / B9 physical follow-up
+
+Ngày2026-11-15, Owner approve scoped authoritative Raw representation cho relevant datetime2(7): F2 fixed27/seven digits→Python str/None→parameterized psycopg→PostgreSQL TEXT;COLLATE C cho canonical ordering/comparison,NULL/min/max/sentinel/100ns giữ nguyên,derived timestamp/search forms secondary,không business-effective inference. [ADR-SCD-05](docs/adr/scd-05-exact-temporal-precision.md) ghi ten constraints/exclusions. Không approve toàn Raw DDL/index/retention periods/publication/crash/performance.
+
+[DW-03A final assessment](docs/data-models/wwi-dw-03a-assessment.md) nghiệm thu **DONE — Design** theo conditional authority sau14 mandatory design checks/tests/QA. G07 conceptual Raw/evidence/replay/retention protections đủ guide implementation-specific proposal; concrete source consistency/least-privilege/adapters/physical DDL-retention/runtime publication theo [G01–G08](docs/data-models/wwi-dw-03a-work-plan.md),không deferred test PASS. WWI-04/Phase1 **In Progress**,DW-03B/C/DW-04 TODO;không production pipeline hoặc tự chuyển phase. Existing MVP/BRD/SCD/grains/technology scope không đổi.

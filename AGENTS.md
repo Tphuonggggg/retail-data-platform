@@ -55,3 +55,8 @@ AI hỗ trợ triển khai; chủ dự án quyết định scope, architecture, 
 
 ## Trạng thái hiện tại
 Phase 0 — Project Initialization: Completed. Phase 1 — WWI Requirements & Source Design: In Progress; Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15. Các phase 2–9: Not Started. Chưa có module chức năng được triển khai.
+
+
+## DW-03A/B9 follow-up — 2026-11-15
+
+DW-03A **DONE — Design** theo conditional Owner final-review authority sau14 design criteria/actual B9 tests/QA đạt. B9 **Approved — Physical Raw Temporal Representation**: F2→Python str/None→bound psycopg→authoritative TEXT/C exact comparator;không whole Raw/index/retention/runtime approval. A01–A06/B1–B8 giữ nguyên; WWI-04/Phase1 IN_PROGRESS,DW-03B/C/DW-04 TODO,Phase2–9 Not Started. Chỉ isolated B9 PoC Implemented/Tested,production modules Not implemented yet. Xem current assessment/work-plan G01–G08; không tự bắt đầu task tiếp.

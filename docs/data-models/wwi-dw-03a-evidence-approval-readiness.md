@@ -1,6 +1,6 @@
 # WWI DW-03A — Evidence & Approval Readiness
 
-**IN_PROGRESS — Owner Logical Approval Milestone, 2026-11-15.** Section 11 là trạng thái approval hiện hành: A01/A03/A04/A06 Approved — Logical Policy; A02 Approved — Conditional Logical Policy; A05 Approved — PoC Direction Only (F2). **Sections 1–10 giữ nguyên evidence/trạng thái lịch sử trước instruction approval này**; section 10 vẫn là SQL evidence có thể tái kiểm chứng, không có SQL/driver/PG test mới trong milestone này. Trusted TCP/source SQL subset PASS, F1 zero-fraction fixed-width FAIL; Python DBAPI/PG/full-runtime proof còn NOT RUN. B9 **Pending Physical Approval**, B1–B8/DW-02 không đổi. DW-03A IN_PROGRESS, final acceptance NOT PERFORMED; không bắt đầu DW-03B/C.
+**DONE — Design, 2026-11-15.** Section15 ghi current B9 **Approved — Physical Raw Temporal Representation** và final DW-03A design acceptance theo conditional Owner authority/actual tests/QA. Sections1–14 giữ historical evidence (original Pending/failures/PoC); current authority là ADR-SCD-05/B9 backlog. Runtime G01–G08 dispositions tách khỏi design/PoC PASS; WWI-04/Phase1 IN_PROGRESS,B/C/DW-04 TODO, không production implementation.
 
 ## 1. Baseline, authority và evidence levels
 
@@ -687,3 +687,268 @@ Narrow B9 plan ở work plan section 6: **source F2 → pyodbc str/None → psyc
 Logical decisions đã được ghi **Approved đúng cấp**, không còn pending Owner approval của sáu directions. [Assessment](wwi-dw-03a-assessment.md) section 11 tách documentation/design milestone checklist khỏi implementation test criteria. Final DW-03A acceptance **NOT PERFORMED**; concrete method/physical/B9 design disposition và full verification chưa hoàn tất. Runtime tests là gates trước execution/publication, không bị đổi thành PASS khi logical policy approved.
 
 Current Owner instruction cho phép **một documentation-only commit sau QA/staged diff/secret checks**; thay thế stop “không commit” của các vòng trước tại milestone này. Không push hoặc mở DW-03B/C. Chỉ sửa 9 Markdown paths đã có changes, giữ các tài liệu/ADRs/nguồn ngoài scope bằng initial hashes; actual QA/Git outcome ghi trong assessment section 11. Không source/target query hoặc config/write, dependency install, full extraction hoặc pipeline trong vòng này.
+
+## 12. B9 Minimal Technical PoC — SQL Server → Python, 2026-11-15
+
+### 12.1 Authority và environment
+
+Owner task **“DW-03A — B9 Minimal Technical Proof of Concept”** cho phép project-local venv và pyodbc==5.5.0; psycopg[binary]==3.3.9 chỉ khi approved target có sẵn. Không authorize commit/push, schemas/tables/source writes hoặc B9 approval. Baseline main/HEAD **8fc248a35ae1e44fd53f0a87ac3cf440322f8f7b** sạch; snapshot 113 files bảo vệ existing work.
+
+F2 dùng nguyên văn section5.1, có offline contract test đối chiếu design. Endpoint `tcp,1433` thiếu hostname; dùng **tcp:DESKTOP-OBDFK6B,1433** đã được Owner cung cấp/verified trước đó, không đoán host khác.
+
+| Environment | Actual result |
+| --- | --- |
+| OS / Python | Windows-11-10.0.26200-SP0; CPython 3.12.10 x64 |
+| Isolated environment | Tạo mới project-local .venv, trước đó chưa có; không sửa global packages |
+| Installed packages | pip25.0.1, pyodbc5.5.0; cp312 win_amd64 wheel; không pip upgrade |
+| ODBC getinfo | msodbcsql18.dll, driver 18.06.0002, DBMS 17.00.1000 |
+| Connection | Windows Integrated/NTLM, TCP, encrypt_option TRUE; Driver18/Encrypt=yes/TrustServerCertificate=no |
+| Session timestamp | 2026-11-15T09:34:42.0866962 UTC |
+| Source authority/config | interactive sysadmin=1, chỉ SELECT; SNAPSHOT OFF/RCSI false/read-only false giữ nguyên |
+
+ODBC getinfo version strings khác file/registry/full engine APIs ở prior evidence; không tự normalize thành cùng measurement. ODBC read-only access-mode request và autocommit SELECT không chứng minh least privilege: **G02 chưa đạt**. Login timeout5s/query timeout20s, không long transaction/static-window proof hoặc source writes.
+
+### 12.2 Actual commands và local raw evidence
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install --only-binary=:all: pyodbc==5.5.0
+.\.venv\Scripts\python.exe -m unittest discover -s tests/integration/b9_precision -p 'test_*.py' -v
+.\.venv\Scripts\python.exe tests/integration/b9_precision/poc.py --server 'tcp:DESKTOP-OBDFK6B,1433' --output '.venv/b9-source-results.json'
+.\.venv\Scripts\python.exe -m pip list --format=json
+git check-ignore -v .venv/pyvenv.cfg .venv/b9-source-results.json tests/integration/b9_precision/__pycache__/poc.cpython-312.pyc
+```
+
+Venv/install thành công; unittest **8 methods PASS**; live PoC exit0 và SQL→Python subset PASS. Global interpreter find_spec('pyodbc') vẫn None sau install; venv pip inventory chỉ pip25.0.1/pyodbc5.5.0. Git check-ignore xác nhận venv/raw JSON/pycache ignored; không sửa .gitignore hoặc lưu credentials.
+
+[PoC README](../../tests/integration/b9_precision/README.md) mô tả code/execution/failure strategy. Raw JSON **.venv/b9-source-results.json** giữ exact executed SELECT SQL/fixture parameters/expected-actual values/all169 ordering rows/18 actual period cells/versions; SHA-256 **22259c8b55ce8ba65832f034dfae39ebbd02b37099cd737ed8311accefbaf06c**. File ignored, không Git tracked hoặc public source dataset. Không username/contact/financial payload trong report; không authoritative datetime/float conversion.
+
+### 12.3 Synthetic fixture results — expected và actual Python
+
+14/14 fixtures PASS; 13 strings có len27/27 ASCII bytes, SQL NULL thành None. Expected literal đối chiếu independent với F2 fetched value, source length/nanosecond và SQL typed reverse equality. Đây là synthetic examples, không WWI business records.
+
+| Fixture | Expected canonical input | Actual Python value | Type / length | Result |
+| --- | --- | --- | --- | --- |
+| FRACTION_MAX | `2026-11-15T12:34:56.9999999` | `2026-11-15T12:34:56.9999999` | str / 27 | PASS |
+| LEAP_DAY | `2000-02-29T00:00:00.0000000` | `2000-02-29T00:00:00.0000000` | str / 27 | PASS |
+| MAX_MINUS_TICK | `9999-12-31T23:59:59.9999998` | `9999-12-31T23:59:59.9999998` | str / 27 | PASS |
+| MIN | `0001-01-01T00:00:00.0000000` | `0001-01-01T00:00:00.0000000` | str / 27 | PASS |
+| MIN_PLUS_TICK | `0001-01-01T00:00:00.0000001` | `0001-01-01T00:00:00.0000001` | str / 27 | PASS |
+| NEXT_SECOND | `2026-11-15T12:34:57.0000000` | `2026-11-15T12:34:57.0000000` | str / 27 | PASS |
+| NULL_VALUE | SQL NULL | None | NoneType / NULL | PASS |
+| ONE_TICK | `2026-11-15T12:34:56.0000001` | `2026-11-15T12:34:56.0000001` | str / 27 | PASS |
+| SENTINEL | `9999-12-31T23:59:59.9999999` | `9999-12-31T23:59:59.9999999` | str / 27 | PASS |
+| TAIL_NINE | `2026-11-15T12:34:56.0000009` | `2026-11-15T12:34:56.0000009` | str / 27 | PASS |
+| TRAILING_ZERO | `2026-11-15T12:34:56.1234560` | `2026-11-15T12:34:56.1234560` | str / 27 | PASS |
+| V1 | `2026-11-15T12:34:56.1234567` | `2026-11-15T12:34:56.1234567` | str / 27 | PASS |
+| V2 | `2026-11-15T12:34:56.1234568` | `2026-11-15T12:34:56.1234568` | str / 27 | PASS |
+| ZERO | `2026-11-15T12:34:56.0000000` | `2026-11-15T12:34:56.0000000` | str / 27 | PASS |
+
+### 12.4 Exactness/ordering matrix
+
+| Test | Expected | Actual / status | Limitation |
+| --- | --- | --- | --- |
+| Seven/zero/trailing fractional digits | Every digit giữ nguyên, zero có .0000000 | PASS — V1/V2/ONE_TICK/TAIL_NINE/TRAILING_ZERO/ZERO | Bounded SQL→DBAPI path |
+| Adjacent 100 ns | V1 khác V2 | PASS — .1234567 và .1234568 không collapse | Không target collision proof |
+| Minimum / maximum / sentinel | Year0001/year9999 không overflow/carry | PASS — MIN/MIN_PLUS_TICK/MAX_MINUS_TICK/SENTINEL | Không PG storage proof |
+| NULL | SQL NULL thành None, không string NULL | PASS — NoneType/source length và ns NULL | Không PG NULL binding proof |
+| Ordering | Đủ 13×13 pairs, Python order = source datetime2 = source F2 BIN2 | **169/169 PASS**, 0 mismatch/missing/duplicate pairs | Không PG comparator proof |
+| Customers periods | TOP2 current/H + TOP1 zero-duration, source component controls/reverse equal | **10/10 cells PASS** | Samples không full history hoặc unique rows |
+| StockItems periods | TOP2 current/H, same controls | **8/8 cells PASS** | Samples không full history |
+| Actual sentinel/zero-duration | Bảy digits và from=to giữ nguyên | PASS, không tạo positive interval | Không SCD2/business-effective inference |
+| Offline negative guards/F2 doc contract | Detect dropped/changed digit, bytes/non-string/string NULL/non-ASCII format/missing-duplicate pairs | **8 unittest methods PASS** | Invalid controls bị reject như expected, không actual PoC failure |
+
+Actual expected prefix/fraction controls được SQL trả riêng, so với fetched F2 và typed reverse equality. Có 9 sample row occurrences/18 cells; selectors có thể lấy trùng occurrence, không source unique-count claim. F1 V1 PASS và bốn zero-fraction fixed-width failures ở section10 **giữ nguyên**, không re-run hoặc đổi thành PASS. Không exactness failure mới; mismatch sẽ fail-fast/exit1, không fallback/silent repair.
+
+### 12.5 PostgreSQL và remaining gates
+
+Scoped inspection chỉ thấy .env.example; không active approved PG profile/process PG/POSTGRES/DATABASE_URL connection variables hoặc matching project connection/profile/config filename. Không dò credential stores hoặc suy toàn máy không có PostgreSQL. **PG parameter tests BLOCKED**, psycopg **không cài**; persistence **NOT RUN**, chưa có separately approved write sandbox. Không tự tạo/configure database/schema/table; source-only runner không có executed PG path.
+
+G03 có **Verified bounded SQL→Python PoC subset trên interactive identity**; không production/service-account approval. G05 có source+Python ordering proof, target ordering/collisions/predicates còn NOT RUN. G01/G02/G04/G06/G07/G08 còn gates. Parameter SELECT khác persisted storage; source carrier proof không thay full Raw completeness hoặc publication/recovery.
+
+Risks: native datetime/PG microsecond timestamp nếu dùng làm authority, untested adapter/protocol versions, PG byte/collation/range/persistence, schema drift và special-type fidelity. **B9 Pending Physical Approval**; không final PG datatype/adapter/encoding/collation selection, system-time/business-time conversion hoặc new SCD2 logic. DW-03A IN_PROGRESS, B/C/DW-04 TODO, WWI-04/Phase1 In Progress; không commit/push.
+
+### 12.6 Files và QA
+
+Thêm bốn files dưới tests/integration/b9_precision và cập nhật parent tests READMEs/current DW-03A evidence/assessment/work-plan/register/navigation notes. Historical sections1–11 và approved decision text giữ nguyên; production runtime còn Not implemented yet. Documentation/scope/security/Git QA ghi trong assessment section12; local venv/raw results ngoài Git tracking.
+
+## 13. B9 PostgreSQL Transport & Persistence task — BLOCKED, 2026-11-15
+
+### 13.1 Authority và baseline
+
+Current Owner task cho phép reuse .venv, install psycopg[binary]==3.3.9, dùng existing approved PG sandbox hoặc tạo một isolated Docker sandbox khi Docker đã installed/functioning, official postgres:18 pull nếu cần, một test-only TEXT/C-collation table và bounded INSERT/commit/reconnect/read-back. Authorization này không approve final Raw schema/B9 hoặc source writes. **Nếu Docker unavailable và không approved target khác, task yêu cầu dừng target-dependent tests.**
+
+Main/HEAD **8fc248a35ae1e44fd53f0a87ac3cf440322f8f7b**; 12 pre-existing new/modified PoC/docs files chưa commit được bảo toàn, snapshot117 visible working files. Đọc AGENTS/current code/requirements/tests và DW-03A decisions/evidence; F2/fixtures/approved decision text không thay đổi. Không stage/commit/push.
+
+### 13.2 Actual infrastructure inspection
+
+| Check / actual command | Observed result | Classification |
+| --- | --- | --- |
+| Scoped repo/process profile inventory | .env.example only; no process PG/POSTGRES/DATABASE_URL connection names; không approved active PG profile trong inspected scope | No approved target found; không suy mọi DB trên máy không tồn tại |
+| docker executable discovery / docker --version | Existing DockerDesktop CLI on PATH, **29.8.2 build7fc2dff** | PASS — client installed only |
+| docker info --format '{{.ServerVersion}}\|{{.OSType}}' | Không có ServerVersion/OSType; failed to connect to Docker API at npipe:////./pipe/dockerDesktopLinuxEngine | **BLOCKED — server API unavailable** |
+| docker ps -a --format '{{.Names}}\\t{{.Image}}\\t{{.Ports}}\\t{{.Status}}' | Cùng missing named-pipe error, không list được containers | BLOCKED — không chứng minh Docker đang functioning |
+| Target creation/pull/write/cleanup | Không thực hiện | NOT RUN — không container/volume/database/table được tạo hoặc xóa |
+| PG server version/encoding/collation | Không có PG connection | Unverified; libpq client version không thay server evidence |
+
+Exact diagnostic: `open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified`. Không tự start service/app, đổi Docker context/config, install Docker, đoán PG default port/password hoặc modify existing PostgreSQL. Không suy engine/certificate/WSL root cause ngoài observed error. Port127.0.0.1:55433 và unique sandbox name/volume chỉ là planned settings để verify sau khi API functioning, chưa bind/reserve/create.
+
+### 13.3 Dependencies và regression commands đã chạy
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install --only-binary=:all: 'psycopg[binary]==3.3.9'
+.\.venv\Scripts\python.exe -m unittest discover -s tests/integration/b9_precision -p 'test_*.py' -v
+.\.venv\Scripts\python.exe tests/integration/b9_precision/poc.py --server 'tcp:DESKTOP-OBDFK6B,1433' --output '.venv/b9-source-pg-preflight-results.json'
+```
+
+Install **PASS** trong existing project-local .venv. Actual packages: **psycopg3.3.9, psycopg-binary3.3.9, typing_extensions4.16.0, tzdata2026.6**, existing pyodbc5.5.0/pip25.0.1 không upgrade. Required transitive dependencies do psycopg resolver cài, không unrelated framework. Import PASS, pq implementation **binary**, libpq version integer **180004**; không nói PG server18.4 đã chạy. Global interpreter find_spec('psycopg') vẫn None; không global package/config changes.
+
+Existing offline **8 tests PASS**; source integration **14/14 fixture equality,169/169 ordering,18/18 actual period cells PASS**, native exit0. Source query session tại 2026-11-15T09:56:21.5253371 UTC, encryption TRUE/TCP/NTLM, interactive sysadmin nhưng SELECT-only; không G02/production claim. F2 và fixtures nguyên trạng, authoritative values vẫn str/None; không Python datetime/PG timestamp conversion.
+
+Local ignored `.venv/b9-source-pg-preflight-results.json` giữ current regression raw SQL/parameters/expected/actual; previous `.venv/b9-source-results.json` không overwrite. `.venv/b9-pg-infrastructure.json` ghi infrastructure/dependency/status và source raw SHA-256. Không tạo credential/config secrets vì chưa có sandbox. Source runner chỉ sửa blocker message bỏ stale claim “psycopg not installed”; target runner/test execution **chưa triển khai/chạy** khi không infrastructure, không giả test result.
+
+### 13.4 SQL → Python → PostgreSQL matrix
+
+| Proof | Expected PG evidence | Actual result | Status |
+| --- | --- | --- | --- |
+| Existing SQL→Python fixture/order/period regressions | Baseline preservation trước target path | 14/169/18 PASS + 8 offline tests | PASS — source subset only |
+| str/NULL parameter binding, seven/zero/trailing digits | TEXT echo/equality/length + NULL | Không target connection/query | BLOCKED / NOT RUN |
+| Year0001/year9999/sentinel/adjacent100ns | Exact values, no collision/carry/truncation | Chỉ source results verified, không PG results | NOT RUN — infrastructure blocker |
+| Test-only TEXT table và bounded insert | Unique isolated table, safe bound values, batch/fixture IDs | Không tạo table hoặc INSERT | NOT RUN |
+| Commit-close-reconnect/read-back | Persisted values exact sau reconnect | Không PG transaction/session | NOT RUN |
+| Shared timestamp occurrences | Distinct occurrences không collapse bởi timestamp uniqueness | Không inserted source occurrences | NOT RUN |
+| Ordering/range/collisions/C collation | PG comparisons bằng verified SQL/Python; expected interval populations | Không PG comparator/query | NOT RUN |
+| Actual PG version/encoding/collation | Server settings evidence | Unverified | NOT RUN |
+
+Không executed target exactness FAIL; đây là **missing infrastructure BLOCKED**, không precision discrepancy. Không đủ điều kiện nói target transport/sandbox persistence verified hoặc approve B9.
+
+### 13.5 Exact requirement và scope khi tiếp tục
+
+Cần **Docker Desktop Linux engine đang chạy và docker info trả Server thành công**, hoặc approved existing PG sandbox profile qua excluded local config. Approval cho isolated sandbox/test-table/bounded writes đã có trong current task; không yêu cầu Owner approve lại cùng scope, không tự mở rộng.
+
+Khi infrastructure ready, kiểm list container/volume hiện hữu và available localhost port trước tạo unique sandbox; ưu tiên bind127.0.0.1:55433, official postgres:18, credentials excluded/not logs. Reuse verified F2/fixtures qua psycopg bound parameters; test-only TEXT/C-collation table không là approved Raw design; commit/close/reconnect/read exact values, occurrence/order/range/collision proofs rồi giữ resources/data sau tests, không cleanup tự động. Đây là phần còn **Planned**, không actual commands/results.
+
+**B9 Pending Physical Approval**, final datatype/adapter/encoding/collation/Raw schema còn open; G01/G02/G04/G05/G06/G07/G08 như backlog chưa close. DW-03A IN_PROGRESS, WWI-04/Phase1 In Progress, B/C/DW-04 TODO. Dừng target-dependent tests theo stop condition, không production pipeline, stage/commit/push hoặc DW-03B/C. QA/scope record tại assessment section13.
+
+## 14. Resume B9 PostgreSQL PoC — verified bounded scope, 2026-11-15
+
+**B9 target transport and sandbox persistence PoC verified within the tested scope.**
+
+### 14.1 Authority, preserved baseline và resource inspection
+
+Owner **“Resume DW-03A B9 PostgreSQL PoC”** xác nhận Docker blocker resolved, cho phép kiểm lại engine/resources và tạo isolated sandbox/test-only table/bounded writes trong existing B9 scope. Đã đọc AGENTS/current code/tests và approval/evidence; main/HEAD8fc248a35ae1e44fd53f0a87ac3cf440322f8f7b, 12 pre-existing dirty paths/snapshot117 files. Không reset, stage/commit/push hoặc đổi accepted policies/F2/original fixtures.
+
+Actual Docker context **desktop-linux**, Server **29.8.2/linux**. Trước tạo: docker ps -a không containers; volume list chỉ **mage-demo-main_pgdata**, image list chỉ postgres:17. Không existing approved B9 sandbox/profile. Tên retail-b9-pg-poc/volume retail-b9-pg-poc-data chưa có; socket bind thử **127.0.0.1:55433** thành công rồi đóng trước docker run. Checks lặp ngay trong helper trước mutation, không reuse unrelated resources.
+
+### 14.2 Actual sandbox và dependencies
+
+| Item | Verified configuration |
+| --- | --- |
+| Container | retail-b9-pg-poc, ID5a0c05b762073ed9dea4655079077ed915a27be1a7637971b035e6b750d790f5 |
+| Image | Official postgres:18, pulled digest sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc |
+| Network | docker inspect confirms **127.0.0.1:55433 → 5432/tcp**, không bind0.0.0.0/:: |
+| Volume | Dedicated retail-b9-pg-poc-data → /var/lib/postgresql; existing mage-demo-main_pgdata không dùng/sửa/xóa |
+| Database / account | b9_precision_poc / dedicated b9_poc bootstrap account, local experimental permissions, không production role approval |
+| Actual server | **PostgreSQL 18.7 (Debian 18.7-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit** |
+| Encoding / DB locale | **UTF8**, lc_collate=en_US.utf8, lc_ctype=en_US.utf8; provider c=libc, datlocale NULL |
+| Test column comparator | canonical_temporal_text/expected_temporal_text **TEXT COLLATE "C"**; database default không đổi |
+| Python / adapters | Existing project-local CPython3.12.10; pyodbc5.5.0/ODBC18.06.0002, psycopg3.3.9/psycopg-binary3.3.9, binary libpq180004; không new install/global changes |
+
+Image18 volume mount theo [official image guidance](https://hub.docker.com/_/postgres), không dùng path image17. Bind/digest/mount/container state được inspect bằng allowlisted fields, không dump Config.Env. Credentials random được tạo exclusive new local files **.venv/b9-pg.env**, **.venv/b9-pg-connection.json**, đã check ignored trước tạo; không hardcode/log value, không overwrite. Local resource audit .venv/b9-pg-sandbox-audit.json giữ inspected setup metadata; mọi artifacts này ngoài Git tracking.
+
+### 14.3 Actual commands và test-only schema contract
+
+Commands được tool helper gọi bằng argv, không credential values trong command:
+```powershell
+docker context show
+docker info --format '{{.ServerVersion}}|{{.OSType}}'
+docker ps -a --format '{{.Names}}'
+docker volume ls --format '{{.Name}}'
+docker pull postgres:18
+docker volume create --label project=retail-b9-poc retail-b9-pg-poc-data
+docker run -d --name retail-b9-pg-poc --label project=retail-b9-poc --env-file .venv/b9-pg.env --publish 127.0.0.1:55433:5432 --mount type=volume,src=retail-b9-pg-poc-data,dst=/var/lib/postgresql postgres:18
+docker exec retail-b9-pg-poc pg_isready -U b9_poc -d b9_precision_poc
+.\.venv\Scripts\python.exe -m unittest discover -s tests/integration/b9_precision -p 'test_*.py' -v
+.\.venv\Scripts\python.exe tests/integration/b9_precision/poc.py --server 'tcp:DESKTOP-OBDFK6B,1433' --pg-config '.venv/b9-pg-connection.json' --output '.venv/b9-pg-complete-results-v2.json'
+```
+
+Extend existing poc.py/test_poc.py, không new project structure. Optional --pg-config validate ignored-venv path, marker/local host/dedicated DB/account/port before target access. All values bound with psycopg %s; identifiers fixed test-only **public.b9_temporal_text_poc**, không user-value concatenation. Một table gồm fixture_id TEXT NOT NULL, canonical_temporal_text TEXT COLLATE C nullable, expected_temporal_text TEXT COLLATE C nullable, test_batch_id TEXT NOT NULL; PK(test_batch_id,fixture_id), **không unique timestamp**. Chỉ CREATE TABLE khi absent; validate columns trước insert, không truncate/drop/delete/overwrite batch.
+
+Test-only DDL/DML chỉ trên approved b9_precision_poc; không project Raw schema hoặc source writes. TEXT/C là experimental candidate, không final datatype/adapter/encoding/collation approval. Re-run append new UUID batch và output filename mới; không tự replay Docker create khi names/resources tồn tại.
+
+### 14.4 Execution ledger và persistence evidence
+
+First attempt **.venv/b9-pg-complete-results.json**: source regression PASS nhưng target metadata FAILED SQLSTATE42704/UndefinedObject, **unrecognized configuration parameter lc_collate**, trước parameter/value tests hoặc writes. Giữ original failure report (SHA25600631c1695d932cf49829a7169bb69d7253b8f9c0409d614fb0b3a81d8690f33), không coi precision discrepancy. Diagnostic SELECT xác nhận; sửa metadata read thành pg_database.datcollate/datctype/datlocprovider/datlocale theo [PG18 catalog](https://www.postgresql.org/docs/18/catalog-pg-database.html), không source/config/value normalization.
+
+Successful retry **.venv/b9-pg-complete-results-v2.json**: native exit0, full target status PASS, SHA256 **52837bd1f0af1b8be0e16229a032577040625b9f77ae31f5fe3a43ee2313d05e**. Raw giữ all executed SQL, source fixture parameters, target binding expected/actual, persisted expected/actual rows, order/range/equality/null matrices và backend/commit evidence; không credential fields.
+
+- Source→Python regression **14/14 fixtures,169/169 ordering,18/18 actual source cells PASS**; F2 exact expression/original fixture set không đổi. Các actual period cells chỉ read/check nguồn, không insert actual customer history vào PG.
+- **14/14 PG parameter cases PASS**: psycopg text binding returns text, char/octet lengths27 với 13 non-NULL values; NULL thành None với lengths NULL. Expected inputs dùng source F2 strings đã equality checked với original literal fixtures section12.3; observed text giữ nguyên mọi digits.
+- Persistence batch **b3e20acc-6520-45e6-aa8f-38d9267951ed** có **15 records**: original14 + synthetic V1_SECOND_OCCURRENCE bằng V1 timestamp; không invent business record thật. Expected/actual mappings match15/15, 14 non-NULL len27 ASCII bytes và một SQL NULL.
+- Explicit writer.commit **true**, writer.closed **true**; backend **92** đóng. New reader backend **93**, khác session cũ, đọc persisted15 rows; reader.closed true sau end read transaction. Không dùng same-session uncommitted read để claim persistence.
+- **12 offline methods PASS** (8 prior +4 target config/readback negative controls); changed digit/control và collapsed occurrence phải fail-fast. Không executed value exactness FAIL trong successful target tests.
+
+### 14.5 Ordering, equality, ranges, NULL/boundaries
+
+| Check | Expected | Actual | Status |
+| --- | --- | --- | --- |
+| PG vs SQL typed/Python order | Original13 non-NULL fixture values,13×13 signed comparisons | **169 pairs**, exact pair population và comparisons bằng source/Python | PASS |
+| Parameter/persisted equality | Every original fixture matches exact IDs/value; NULL via IS NULL riêng | **14 equality cases** match expected sets, NULL equality yields0 rows và IS NULL yields NULL_VALUE | PASS |
+| Adjacent100ns/collision | V1 .1234567 khác V2 .1234568, không unexpected equality | Distinct values retained; only intended V1/V1_SECOND_OCCURRENCE share text | PASS |
+| Repeated timestamp occurrences | Hai independent synthetic IDs không collapse | V1 và V1_SECOND_OCCURRENCE cùng exact text, hai rows/PKs sau reconnect | PASS |
+| NULL/zero/trailing digits | None riêng; .0000000/.1234560 giữ bảy digits | Source/parameter/persisted values and lengths exact | PASS |
+| Min/max/sentinel | Year0001, year9999 finite last ticks/sentinel không truncate/overflow | Original fixture expected text retained byte-for-byte | PASS |
+| Type semantics | TEXT authority, no datetime/timestamp coercion | Table metadata text/C; Python str/None; no PG timestamp authority | PASS — tested candidate |
+
+Half-open [low,high) ranges được so với Python expected sets trên values có ordering đã đối chiếu SQL typed. Duplicate synthetic row được tính riêng, NULL không match range:
+
+| Range | Low | High (excluded) | Expected/actual rows | Actual fixture IDs | Result |
+| --- | --- | --- | --- | --- | --- |
+| adjacent | 2026-11-15T12:34:56.1234567 | 2026-11-15T12:34:56.1234568 | 2 / 2 | V1, V1_SECOND_OCCURRENCE | PASS |
+| zero_duration | 2026-11-15T12:34:56.1234567 | 2026-11-15T12:34:56.1234567 | 0 / 0 | Rỗng | PASS |
+| whole_second | 2026-11-15T12:34:56.0000000 | 2026-11-15T12:34:57.0000000 | 8 / 8 | FRACTION_MAX, ONE_TICK, TAIL_NINE, TRAILING_ZERO, V1, V1_SECOND_OCCURRENCE, V2, ZERO | PASS |
+| minimum_tick | 0001-01-01T00:00:00.0000000 | 0001-01-01T00:00:00.0000001 | 1 / 1 | MIN | PASS |
+| sentinel_adjacent | 9999-12-31T23:59:59.9999998 | 9999-12-31T23:59:59.9999999 | 1 / 1 | MAX_MINUS_TICK | PASS |
+
+Range5/5 PASS; zero-duration returns0, upper boundary excluded. Không gọi predicates này là new SCD2 business validity logic; chỉ candidate comparator tests cùng time basis. Default DB locale en_US.utf8 không được dùng thay explicit C comparator.
+
+### 14.6 Readiness và retained resources
+
+**B9 target transport and sandbox persistence PoC verified within the tested scope.** Có evidence để Owner review physical candidate cho configuration đã test, **không tự B9 APPROVED**. Còn review final datatype/adapter/encoding/collation/index/codec và full-projection/type drift/special adapters, source full consistency/least-privilege, production publication/recovery/concurrency. Không benchmark hoặc production readiness claim.
+
+Commit-close-reconnect proof không là container/server restart/recreation/crash durability test; các scenario đó **NOT RUN**. Test sink/credentials/role là isolated local setup, không production access control/Raw schema. Source system-time không đổi thành business-effective time. Docker image tag mutable nên ghi actual digest, không giả future postgres:18 build như nhau.
+
+Container retail-b9-pg-poc **running**, volume và committed15 rows **retained**; không remove/stop/cleanup, không tác động unrelated containers/volumes/installations. B9 Pending Physical Approval; DW-03A/WWI-04/Phase1 IN_PROGRESS, B/C/DW-04 TODO. Không stage/commit/push hoặc pipeline/DW-03B/C. QA/files ở assessment section14.
+
+## 15. B9 physical approval & final DW-03A design acceptance, 2026-11-15
+
+### 15.1 Owner authority và decision trail
+
+Project Owner task **“DW-03A — B9 Physical Approval & Final Design Acceptance Review”** trực tiếp approve **B9 — Physical Raw Temporal Representation**; conditional DW-03A closure chỉ khi mandatory design review/actual tests/QA đạt. [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md) ghi authoritative ten-rule scope; [B9 backlog](wwi-dw-02e-work-plan.md) cập nhật current row, giữ B1–B8 nguyên trạng. Sequence D05 logical exact100ns → B9 pending physical → bounded SQL/Python/PG PoC → current scoped physical approval được giữ.
+
+Current approved mapping: verified **F2** source-side → **Python str/None** → **parameterized psycopg** → **authoritative PostgreSQL TEXT**, **COLLATE C** khi canonical ordering/comparison; non-NULL fixed27/seven fractional digits, NULL/min/max/sentinel/100ns giữ nguyên. Không business-effective inference, silent native datetime/lower-precision timestamp conversion; derived timestamp/search forms chỉ secondary. Không approve entire Raw DDL/index/retention periods/publication runtime/crash-restart-recreation/performance.
+
+Sections1–14 giữ lịch sử/raw provenance, kể cả original Pending B9 và failed metadata42704 trước successful retry. [Assessment](wwi-dw-03a-assessment.md) section15 ghi14 design criteria và G01–G08 disposition; không suy runtime readiness từ approval.
+
+### 15.2 Actual acceptance rerun
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests/integration/b9_precision -p 'test_*.py' -v
+.\.venv\Scripts\python.exe tests/integration/b9_precision/poc.py --server 'tcp:DESKTOP-OBDFK6B,1433' --pg-config '.venv/b9-pg-connection.json' --output '.venv/b9-design-acceptance-results.json'
+```
+
+Actual **12 unit methods PASS**, native integration exit0. Source SQL→Python fixtures14/14,ordering169/169,actual period cells18/18 PASS. PG parameters14/14,persisted15/15,ordering169/169,equality14/14,ranges5/5,NULL/zero/trailing/min/max/sentinel/100ns/duplicate-occurrence checks PASS. Writer commit/closed true, new backend **150→151**, read-back batch **b25689fc-e7af-4e20-91cd-2f8084120aa3**; no authoritative Python datetime/PG timestamp conversion. Source query observed **2026-11-15T10:49:15.9243634 UTC**, SELECT-only, no source configuration/data changes.
+
+Raw **.venv/b9-design-acceptance-results.json**, SHA256 **13d1d24790f2b95722b6e2f99369a9a7bb3e60fc31b405a9ce1f47cab40a4188**, ignored; expected/actual/query/parameter/versions/backend/commit proof retained. Previous successful and failed reports không overwrite. Sandbox hiện giữ **hai successful batches×15=30 records**, mỗi batch có separate UUID/PK, không truncate/delete.
+
+Environment reverified: Docker desktop-linux/Server29.8.2/linux; retail-b9-pg-poc running on **127.0.0.1:55433**, dedicated retail-b9-pg-poc-data volume → /var/lib/postgresql, database b9_precision_poc/account b9_poc. Actual **PG18.7 (Debian18.7-1.pgdg13+2)/UTF8**, default lc_collate/lc_ctype en_US.utf8/libc; tested TEXT columns/query comparator C. Official image postgres:18 digest **sha256:2ea8630df176ad090ec92136dee850397c5af8781e4bcf2e4162593691c61bbc**. CPython3.12.10,pyodbc5.5.0/ODBC18.06.0002,psycopg3.3.9/psycopg-binary3.3.9,binary libpq180004; no new install/upgrade. Test credentials/config/results ignored, no secret logging; unrelated mage-demo-main_pgdata không tác động.
+
+### 15.3 Final review vs runtime readiness
+
+[Full/Raw design](wwi-dw-03a-full-raw-design-proposal.md) section11 xác minh G07 eight-point coverage: conceptual objects,source occurrence multiplicity,batch/capture identity,publication manifests,metadata/lineage,retention/supersession,safe replay,no unauthorized evidence deletion. Existing A03/Rule07 bảo vệ evidence khi chưa approved purge/retention; không invent số ngày/infinite-retention mặc định hoặc approve full schema để đóng task.
+
+**G01 design condition PASS**, full extraction consistency **Unverified/NOT RUN**: no-write window hoặc approved verified copy, thiếu proof hold normal publication. G02/G06/G08 yêu cầu production privileges/adapters/runtime proof chưa có. [Work Plan](wwi-dw-03a-work-plan.md) tableG01–G08 ghi từng reason/owner/target/evidence/gate, không deferred test nào được nâng runtime PASS.
+
+**DW-03A DONE — Design** theo conditional Owner authority sau mandatory design review/actual tests/QA. A01–A06/B1–B8 giữ nguyên cấp; B9 scoped physical Approved. WWI-04/Phase1 IN_PROGRESS,DW-03B/C/DW-04 TODO; no production full extraction/Raw schema/publication pipeline. Sandbox resources và data retained, không cleanup.
+
+DW-03B đủ design inputs/handoff để Owner giao tiếp: full capture/manifest/current-H/source-origin contract,source consistency hold,exact TEXT temporal values,identities/replay/no-loss evidence constraints. Chưa chọn watermark/tie-breaker/delete/incarnation/late precedence; không bắt đầu DW-03B/C.

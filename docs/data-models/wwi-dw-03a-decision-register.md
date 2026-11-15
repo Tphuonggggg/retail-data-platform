@@ -1,6 +1,6 @@
 # WWI DW-03A — Owner Decision Approval Register
 
-**IN_PROGRESS — Owner Logical Approval Milestone, 2026-11-15.** A01/A03/A04/A06 Approved — Logical Policy; A02 Approved — Conditional Logical Policy; A05 Approved — PoC Direction Only. [Full & Raw Design](wwi-dw-03a-full-raw-design-proposal.md) và [Assessment](wwi-dw-03a-assessment.md) phân biệt design approval với verification/runtime gates. B1–B8 và mọi accepted DW-02/ADR giữ nguyên; B9 **Pending Physical Approval** (backlog DW-02 gọi Pending — Physical Implementation, cùng open gate). DW-03A chưa final acceptance, không DONE.
+**DW-03A DONE — Design, 2026-11-15.** A01/A03/A04/A06 Approved — Logical Policy; A02 Approved — Conditional Logical Policy; A05 Approved — PoC Direction Only (unchanged). **B9 APPROVED — Physical Raw Temporal Representation** theo current Owner instruction, không nâng A05 thành full implementation approval. B1–B8/accepted DW-02 không đổi; runtime gates ở [Work Plan](wwi-dw-03a-work-plan.md), final acceptance evidence ở [Assessment](wwi-dw-03a-assessment.md) section15.
 
 | ID | Quyết định được Owner phê duyệt | Gate còn mở / giới hạn approval | Status |
 | --- | --- | --- | --- |
@@ -8,10 +8,12 @@
 | A02 | Static window có defensible no-write evidence; nếu không, separately approved verified consistent copy; hold publication khi thiếu proof | Concrete method/operational evidence chưa verified; không tự enable SNAPSHOT/RCSI, NOLOCK claim hoặc long SERIALIZABLE | APPROVED — Conditional Logical Policy |
 | A03 | Immutable Raw captures + reconciled publication manifests + downstream pinned publication IDs; preserve incremental/SCD2 evidence | Physical schema, retention periods, access control và capacity pending; không implicit physical-view/mirror approval | APPROVED — Logical Policy |
 | A04 | Separate run/attempt/capture/logical batch/publication; retry compatible sealed content; new context → new capture | Durable state và recovery execution evidence trước production; physical keys/commit/checkpoints pending | APPROVED — Logical Policy |
-| A05 / B9 | F2 explicit seven-digit source-side formatter là preferred precision PoC candidate | PoC direction only; B9 PENDING PHYSICAL APPROVAL; driver/PG datatype/encoding/collation chưa selected | APPROVED — PoC Direction Only |
+| A05 | F2 preferred precision PoC direction (original approval unchanged) | B9 scoped physical decision được ghi riêng bên dưới; entire Raw/index/retention/runtime không approved | APPROVED — PoC Direction Only |
 | A06 | Dependency-complete atomic ledger/membership/pointer transitions; consumers pin compatible publications | Crash/retry/concurrency/rollback/atomic visibility trước runtime; RawPublished không Certified marts | APPROVED — Logical Policy |
 
 **Authority / date:** Project Owner, 2026-11-15, qua instruction **“DW-03A — Record Project Owner Logical Design Approvals”**. Đây là formal Owner approval trong đúng sáu mức nêu trên, không suy từ reviewer recommendation hoặc SQL PASS. [Evidence](wwi-dw-03a-evidence-approval-readiness.md) section 10 giữ số liệu thực thi; section 11 ghi approval milestone. [Work Plan](wwi-dw-03a-work-plan.md) section 4–6 giữ backlog tám gate và narrow B9 handoff.
+
+**Current B9:** [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md) ghi F2→Python str/None→parameterized psycopg→authoritative PostgreSQL TEXT/C comparator, exact27/seven digits/NULL/boundaries/sentinel/100ns; derived timestamp secondary. Current Owner cấp **APPROVED — Physical Raw Temporal Representation**, không entire Raw schema/index/retention/runtime approval.
 
 Các alternatives/trade-offs và chi tiết implementation dưới đây được giữ để trace; chỉ **Recorded Owner decision** và approved scope ở overview là authoritative approval. Không phê duyệt toàn bộ proposed physical mechanisms, service identity, dependency installation, source-copy creation hoặc runtime tests bằng instruction này.
 
@@ -106,7 +108,7 @@ Các alternatives/trade-offs và chi tiết implementation dưới đây đượ
 - **Exact pre-implementation conditions:** Identity/retry/new-context principles đã Approved; durable state/commit-outcome detection, checkpoint/transaction/key formats và recovery proof còn pending. UTC observation metadata/physical encoding không tự được chốt thêm. Runtime verification chưa hoàn tất; không cấp quyền source writes/schema hoặc install từ logical approval.
 - **Recorded Owner decision — APPROVED — Logical Policy, 2026-11-15:** Chấp thuận tách run, attempt, capture, logical batch và publication identities; retry compatible sealed content không tạo duplicate logical records; extraction từ new source context tạo capture mới. Durable state và recovery evidence bắt buộc trước production use.
 
-## A05
+## A05 — original PoC-direction approval và pre-physical discussion (lịch sử; current B9 bên dưới)
 
 - **Problem:** datetime2(7) có digit 100 ns có thể mất ở driver/Python/target trước khi Raw lưu.
 - **Constraints:** D05 exact preservation approved; B9 physical implementation pending; system/observation/analytical times riêng, không tự timezone conversion hoặc source-key dedupe.
@@ -123,7 +125,7 @@ Các alternatives/trade-offs và chi tiết implementation dưới đây đượ
 
 - **Approved PoC direction only:** chọn F2 làm preferred candidate để tiếp tục SQL→pyodbc string→psycopg text parameter verification. F1 V1 vẫn PASS, four zero-fraction fixed-width cases FAIL; full B9/physical representation không được duyệt.
 - **Evidence available:** D05 và 9 local groups PASS; latest SQL F1 V1 đúng text/27/ns123456700; F2 14 fixtures PASS, 169 ordered pairs không mismatch, 18 sampled temporal cells round-trip exact; source datetime2(7) và formatter varchar(27) nullable metadata verified. Chi tiết/query tại evidence section 10.
-- **Evidence missing:** actual Python DBAPI text binding, PostgreSQL parameter/collation/range/persistence, full-projection/special-type fidelity và 100 ns end-to-end proof. Python/PG tests NOT RUN; CLI JSON parsing bằng Python stdlib không là DBAPI transport.
+- **Latest evidence / missing:** Resume PoC source14/169/18,PG parameters14/persisted15 qua new backend,ordering169/equality14/ranges5 và12 unit methods PASS; evidence section14. Bounded TEXT/C candidate proof không final physical/adapter selection,least-privilege/full-projection/special-type hoặc production recovery proof. Recorded A05 vẫn PoC Direction Only; B9 Pending Physical Approval.
 - **Residual risks / alternatives / trade-offs:** F1 omitted-zero fixed-width failure đã observed; F2 engine subset PASS chưa chứng minh mọi source value/driver/storage path. Text/index/codec và ticks/residual alternatives giữ để review; microsecond projection không authoritative.
 - **Implementation implications:** preserve exact value trước driver datetime coercion; metadata datatype/scale/basis separate; candidate COLLATE C chỉ PoC expression, không tự default/index schema.
 - **Exact pre-implementation conditions:** F2 preferred PoC candidate đã Approved; riêng dependency installation/versions, identities/profiles và physical/runtime scope cần authorization/evidence phù hợp. PostgreSQL datatype/adapter/encoding/collation và B9 chưa approved. Runtime verification chưa hoàn tất; không cấp quyền source writes/schema hoặc install từ logical approval.
@@ -152,8 +154,18 @@ Các alternatives/trade-offs và chi tiết implementation dưới đây đượ
 - **Exact pre-implementation conditions:** Atomic dependency-complete publication/pinning principles đã Approved; exact scopes/severity/qualified-use exceptions/thresholds và physical implementation còn review gates; crash/retry/concurrency/rollback/atomic visibility phải verify trước runtime. Runtime verification chưa hoàn tất; không cấp quyền source writes/schema hoặc install từ logical approval.
 - **Recorded Owner decision — APPROVED — Logical Policy, 2026-11-15:** Chấp thuận dependency-complete atomic publication với coherent ledger/membership/active publication pointer transitions; downstream pin compatible publication identities. Crash/retry, concurrency, rollback và atomic visibility phải verify trước runtime use. Raw publication không đồng nghĩa Certified Data Mart publication.
 
-## Approval boundary và điểm dừng
+## Logical-approval boundary trước B9 physical approval (lịch sử)
 
 Owner đã formal approve A01–A06 theo mức trong overview và từng Recorded Owner decision; không còn gate “chờ Owner duyệt sáu logical directions”. B9 vẫn **PENDING PHYSICAL APPROVAL**, các gate thực thi/physical design và numerical certification thresholds vẫn giữ. Backlog tám technical gates và narrow B9 verification handoff tại [Work Plan](wwi-dw-03a-work-plan.md); không tạo sub-decisions được coi approved.
 
 DW-03A **IN_PROGRESS**, DW-03B/C/DW-04 **TODO**, WWI-04/Phase 1 **In Progress**; không final DW-03A acceptance. Instruction milestone chỉ cho cập nhật tài liệu và một documentation-only commit sau QA/staged review; không push, install, tạo tables, database changes hoặc bắt đầu PoC/DW-03B/C.
+
+## B9 — Current Physical Raw Temporal Representation approval
+
+Authority/date: Project Owner task “DW-03A — B9 Physical Approval & Final Design Acceptance Review”,2026-11-15. **Status: APPROVED — Physical Raw Temporal Representation**. Ten approved constraints/exclusions authoritative tại [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md); approved source scope là relevant datetime2(7) fields của project, không arbitrary new sources hoặc business-effective history.
+
+Evidence: SQL F2 fixtures14/14, source/Python/PG ordering169/169, source period samples18/18, PG parameters14/14/readback15/15,equality14/ranges5/NULL/boundaries/sentinel/adjacency PASS. Current actual test rerun/raw SHA/versions ở evidence section15, earlier failed metadata và successful PoCs giữ nguyên.
+
+Original A05 **Recorded Owner decision** vẫn PoC Direction Only, original Pending B9 statements trong phần lịch sử không current authority. New scoped physical choice là TEXT/C, không ticks hoặc native timestamp làm sole authority. Full DDL/index/retention/access/capacity/publication/crash/performance vẫn separate gates.
+
+Final DW-03A design review đủ mandatory conditions; **DONE — Design** theo conditional acceptance authority sau tests/QA. G07 conceptual evidence/replay/retention protection đủ, implementation-specific approvals explicitly deferred bởi A03/current B9; G01 conditional policy không là verified full extraction. [Work Plan](wwi-dw-03a-work-plan.md) tableG01–G08 là reason/owner/stage/proof/gate disposition; runtime không được tự PASS. WWI-04/Phase1 IN_PROGRESS,B/C/DW-04 TODO; không bắt đầu task tiếp.

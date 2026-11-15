@@ -1,8 +1,10 @@
 # WWI DW-03A — Full Extraction & Raw Logical Design / Physical Proposals
 
-**IN_PROGRESS — Owner Logical Approval Milestone, 2026-11-15.** A01/A03/A04/A06 **Approved — Logical Policy**; A02 **Approved — Conditional Logical Policy**; A05 **Approved — PoC Direction Only (F2)** theo [Decision Register](wwi-dw-03a-decision-register.md). B1–B8/DW-02 không đổi; B9 **Pending Physical Approval**. Chỉ những logical principles được nêu trong approval là Approved; physical options/execution methods bên dưới vẫn cần evidence/review. Không final DW-03A acceptance hoặc runtime authorization. Runtime: **Not implemented yet**.
+**DONE — Design, 2026-11-15.** Final review theo conditional authority của Owner; A01–A06 giữ approved levels, **B9 Approved — Physical Raw Temporal Representation** (F2/str-None/parameterized psycopg/TEXT/C comparison). B1–B8/DW-02 không đổi. Section11 ghi G07 sufficiency/current boundary; runtime/full Raw DDL/index/retention/publication còn gate, không production implementation hoặc DW-03B/C.
 
 ## 1. Evidence và phạm vi
+
+**Latest technical execution — Resume B9 PoC:** [evidence section14](wwi-dw-03a-evidence-approval-readiness.md) ghi source14/169/18,PG parameters14/persisted15 qua new backend,ordering169/equality14/ranges5 và12 unit methods PASS trong isolated TEXT/C sandbox. Driver/PG NOT RUN hoặc BLOCKED statements của pre-PoC analysis bên dưới giữ historical boundary; không current result. Không đổi architecture/physical approvals hoặc claim production ingestion.
 
 [Work plan](wwi-dw-03a-work-plan.md), [Decision Register](wwi-dw-03a-decision-register.md) và [Assessment](wwi-dw-03a-assessment.md) giữ status/approval/QA. Dùng lại [inventory](wwi-database-inventory.md), [dictionary](wwi-metadata-dictionary.md), [profiling](wwi-data-profiling.md), [source contracts](wwi-source-contracts.md), [extraction matrix](wwi-extraction-requirements-matrix.md), [raw requirements](../requirements/wwi-raw-layer-requirements.md), [validation matrix](../requirements/wwi-source-validation-matrix.md). Không lập lại dictionary hoặc chạy lại profiling toàn bộ.
 
@@ -156,7 +158,7 @@ Candidate execution states: PLANNED → EXTRACTING → EXTRACTED_COMPLETE → LO
 
 Logical exact 100 ns đã duyệt. SQL Server datetime2 có scale tối đa 7 và không mang timezone offset theo [Microsoft datetime2](https://learn.microsoft.com/en-us/sql/t-sql/data-types/datetime2-transact-sql?view=sql-server-ver17). PostgreSQL timestamp có resolution microsecond theo [PostgreSQL datetime](https://www.postgresql.org/docs/18/datatype-datetime.html); numeric/integer capabilities theo [PostgreSQL numeric](https://www.postgresql.org/docs/18/datatype-numeric.html). Python datetime fields/resolution cũng microsecond theo [Python 3.12 datetime](https://docs.python.org/3.12/library/datetime.html). Vì vậy bảo toàn tại target chưa đủ nếu driver đã mất chữ số thứ bảy trước đó.
 
-**A05 — Approved PoC Direction Only:** F2 explicit seven-digit source-side formatting là preferred candidate cho precision PoC; test carrier là canonical text 27 ASCII characters `YYYY-MM-DDTHH:mm:ss.fffffff`, NULL riêng, trước Python datetime coercion. P1 authoritative Raw text/storage vẫn là physical proposal, **không được chọn bằng PoC direction approval**. Canonicalization chỉ làm trên output đã giữ đủ precision, không reconstruct digit đã mất. Chưa chốt physical text type/collation/index hoặc expression/driver implementation. Exact comparison phải dùng normalized format và verified bytewise ordering hoặc derived exact representation đã được duyệt; không dùng target default collation hoặc timestamp(6) predicate một cách ngầm định.
+**Current B9 — Approved Physical Raw Temporal Representation:** verified F2 fixed27/seven digits → Python str/None → bound psycopg → authoritative PostgreSQL TEXT; COLLATE "C" khi canonical ordering/comparison. NULL/min/max/sentinel/100ns phải giữ nguyên, source time không business-effective, derived timestamp/search forms chỉ secondary. A05 original approval vẫn PoC Direction Only. P1 nay được chọn theo scoped B9, P2–P5 phía dưới là alternatives lịch sử; entire Raw DDL/index/retention/runtime không approved. Ten constraints/exclusions tại ADR-SCD-05.
 
 | Candidate | Round-trip / driver và source extraction | Sorting/range/boundaries | Storage/index cost & maintainability | dbt/SCD2 impact |
 | --- | --- | --- | --- | --- |
@@ -254,3 +256,30 @@ Authority: Project Owner instruction **“DW-03A — Record Project Owner Logica
 [Work Plan](wwi-dw-03a-work-plan.md) sections 5–6 là explicit backlog G01–G08 và narrow B9 handoff; [Assessment](wwi-dw-03a-assessment.md) section 11 tách milestone design checks khỏi runtime tests. Logical policy đã approved không đồng nghĩa chosen extraction method, retention periods, physical schema, final B9 hoặc production readiness đã approved/verified.
 
 DW-03A IN_PROGRESS, chưa final acceptance; DW-03B/C/DW-04 TODO, WWI-04/Phase 1 In Progress. Current task chỉ cập nhật tài liệu/QA và documentation-only commit theo Owner; không PoC execution, install, tables, database changes hoặc push.
+
+## 11. Final design contract — DONE — Design, 2026-11-15
+
+Project Owner cấp **B9 Approved — Physical Raw Temporal Representation** và conditional final-design acceptance authority. [Final assessment](wwi-dw-03a-assessment.md) section15 đối chiếu14 mandatory design criteria/G07 coverage; [Work Plan](wwi-dw-03a-work-plan.md) tableG01–G08 giữ every runtime/physical deferral với reason/owner/stage/evidence/gate. A01–A06/B1–B8 không đổi cấp; B9 ten-rule authority tại [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md).
+
+### G07 sufficiency review — existing conceptual contract
+
+| Required design point | Existing definition / proof location | Design assessment |
+| --- | --- | --- |
+| Conceptual storage objects | Section4 descriptor/capture/stream/attempt-chunk/immutable records/validation/publication objects | PASS; đủ boundary để physical mapping, không chọn actual DDL/index |
+| Source occurrence preservation | Sections2/4 current và direct physical H/multiset/zero-duration; locator không durable source/episode identity | PASS; no timestamp/hash dedupe |
+| Batch/capture identity | Sections4/5 run/attempt/capture/logical batch/chunk/publication khác nhau; new source context=new capture | PASS; concrete ID format pending implementation |
+| Publication manifests | Sections4/7 + evidence6 immutable membership,ledger,active pointer,scope revision/eligibility | PASS; atomic contract, chưa runtime transactions |
+| Metadata/lineage | Section5 source object/origin/key/periods/schema/projection/serialization/count/context/time/audit links | PASS; no fabricated source snapshot token |
+| Retention/supersession | Section4 + evidence4 preserve referenced/forward/registry/publication evidence,failed/superseded lineage | PASS; periods/tiers/access/capacity explicitly deferred A03 |
+| Safe replay | Section5 sealed compatible content,unknown commit read-back,content conflict hold,re-extraction=new capture | PASS; crash/retry enforcement runtime |
+| No unauthorized deletion | A03/Rule07; no purge before approved policy/dependency/restore proof; no truncate/full-reload evidence loss | PASS; không default infinite retention hoặc invent số ngày |
+
+G07 sufficient at design level vì keys/objects/multiplicity/state/lineage/retention invariants/replay được định nghĩa, còn physical layout/schema/index/retention periods/access/capacity là implementation-level choices đã được Owner để separate gates tại A03/B9. Implementation phải trình physical proposal trace các invariants trước DDL/ingestion; **không có quyền tạo toàn Raw schema hoặc purge chỉ từ design acceptance**. Khi thiếu policy/proof, không execute deletion; không phát minh thêm retention approval để đóng task.
+
+### Current temporal mapping và implementation boundary
+
+Relevant source datetime2(7) → verified F2 fixed27/seven digits → Python str/None → parameterized psycopg → authoritative PostgreSQL **TEXT**, dùng **COLLATE "C"** khi canonical ordering/comparison. Preserve NULL,min/max,sentinel,100ns adjacency; không infer business-effective time. Derived timestamps/search forms là secondary, không thay source value hoặc dùng sole authority cho exact predicates. Entire Raw relation DDL/index/retention/publication/crash/performance approval không được cấp theo B9.
+
+G01 giữ approved conditional static-window-with-no-writes-proof hoặc separately approved verified copy; thiếu proof hold normal publication. Không full-extraction consistency test PASS. Runtime/source privileges/adapters/actual loaders/atomicity/retention implementation còn gate ở work plan, không bị biến thành design blockers thiếu approval logic hoặc runtime PASS.
+
+**DW-03A DONE — Design**, WWI-04/Phase1 IN_PROGRESS,DW-03B/C/DW-04 TODO. Source/project Raw runtime chưa triển khai; isolated B9 sandbox code/tests chỉ scoped proof. DW-03B có handoff đủ baseline/full membership/precision/identity constraints nhưng phải Owner giao riêng, không tự bắt đầu.

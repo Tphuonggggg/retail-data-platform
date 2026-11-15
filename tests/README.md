@@ -1,7 +1,7 @@
 # tests
 
 ## 1. Overview
-Module **kiểm thử xuyên module**. Status: Not Implemented. Not implemented yet.
+Module **kiểm thử xuyên module**. Isolated [B9 precision PoC](integration/b9_precision/README.md) đã Implemented/Tested cho source→Python→PG candidate transport/persistence. Production/pipeline integration và end-to-end suites: Not implemented yet.
 
 ## 2. Purpose
 Tổ chức unit, integration và end-to-end tests cho pipeline WWI → PostgreSQL.
@@ -29,7 +29,7 @@ pytest, dbt tests và SQL validation; công cụ cụ thể chỉ được dùng
 - [e2e/](e2e/README.md)
 
 ## 10. Planned Workflow
-Chuẩn bị môi trường thử nghiệm tách biệt → chạy pipeline → so nguồn/đích → báo lỗi. Không thực hiện INSERT/UPDATE trên WWI gốc. Chưa có lệnh test.
+Workflow pipeline dự kiến: môi trường tách biệt → chạy pipeline → so nguồn/đích → báo lỗi. Chưa triển khai pipeline tests. B9 dùng project-local ignored venv và unittest/SELECT-only; commands ở README PoC. Không thực hiện INSERT/UPDATE trên WWI gốc.
 
 ## 11. Development Tasks
 WWI-07, WWI-08, WWI-09/10 và WWI-16. Theo dõi [TASKS.md](../TASKS.md).
@@ -41,4 +41,4 @@ Full/rerun, incremental trong môi trường độc lập đã duyệt, SCD2 tem
 Tests quan trọng chạy được và có kết quả thực tế; giới hạn bằng chứng incremental được ghi rõ.
 
 ## 14. Current Status
-Chưa có test code hoặc kết quả kiểm thử. Not implemented yet.
+Isolated B9 SQL→Python→PostgreSQL candidate proof:12 offline methods,source14/169/18,PG parameters14/persisted15/new-session ordering169/equality14/range5 PASS. B9 Approved — Physical Raw Temporal Representation;DW-03A DONE — Design, runtime gates pending; full ingestion/SCD2/Raw/production suites Not implemented yet.
