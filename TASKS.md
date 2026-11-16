@@ -1,6 +1,6 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. `DONE` chỉ khi acceptance criteria có bằng chứng. Chủ dự án quyết định phase transition và nghiệm thu. Phase 0: `Completed`; Phase 1: `In Progress`, Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu, WWI-02/03 `DONE`, Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15; Phase 2–9: `Not Started`. Task ở `REVIEW` không có nghĩa phase đã hoàn tất.
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. DONE cần acceptance evidence; Owner quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md).
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
@@ -15,8 +15,8 @@ Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI ch�
 | WWI-01 | 0 | Root/docs/data-sources | Chuyển tài liệu hiện hành sang WWI, rà yêu cầu chung và loại file nguồn/đề cương cũ | High | Quyết định chuyển nguồn của owner | Scope, roadmap, tasks, architecture, README, ADR đồng bộ; không còn link gãy/file nguồn cũ/PDF đề cương; không xóa thành phần dùng chung | DONE |
 | WWI-02 | 1 | docs/data-models, data-sources | WWI source contract/data dictionary/ERD cho Sales; khảo sát Customer/Inventory | High | Phase 0 được nghiệm thu, WWI-01 | PK/FK/grain/dates/temporal/null và ngoại lệ có bằng chứng; owner review | DONE |
 | WWI-03 | 1 | docs/requirements, analytics | Chốt business requirements, KPI MVP, tax/customer role và hoãn revenue/COGS/AOV không đủ policy | High | WWI-02 | Công thức, source measure, date basis, exclusions, reconciliation và tests được owner duyệt trước fact/mart | DONE |
-| WWI-04 | 1 | docs/data-models, docs/architecture, docs/adr | Thiết kế logical DW, SCD2, full/incremental, propagation/recovery và môi trường thử nghiệm độc lập | High | WWI-02, WWI-03 | DW-01–DW-04 được owner nghiệm thu; watermark/tie-breaker/delete/history/as-of và test INSERT/UPDATE/DELETE chỉ trên môi trường độc lập được duyệt | IN_PROGRESS |
-| WWI-05 | 2 | infrastructure, data-sources, storage | Chuẩn bị WWI read-only và PostgreSQL đích | High | WWI-02, WWI-04, phase implementation approval | Quyền/cấu hình kết nối, điều kiện nguồn ngoài repo và môi trường local tái lập được xác minh; không lộ secret/không sửa WWI | TODO |
+| WWI-04 | 1 | docs/data-models, docs/architecture, docs/adr | Thiết kế logical DW, SCD2, full/incremental, propagation/recovery và môi trường thử nghiệm độc lập | High | WWI-02, WWI-03 | DW-01–DW-04 được owner nghiệm thu; watermark/tie-breaker/delete/history/as-of và test INSERT/UPDATE/DELETE chỉ trên môi trường độc lập được duyệt | DONE |
+| WWI-05 | 2 | infrastructure, data-sources, storage | Chuẩn bị WWI read-only và PostgreSQL đích | High | WWI-02, WWI-04, phase implementation approval | Quyền/cấu hình kết nối, điều kiện nguồn ngoài repo và môi trường local tái lập được xác minh; không lộ secret/không sửa WWI | IN_PROGRESS |
 | WWI-06 | 3 | ingestion, storage, data-quality | Sales full load, raw/staging, validation và rerun | High | WWI-03, WWI-05 | Batch metadata (count/duration/error), count/keys đối soát, quarantine và idempotent rerun có unit/integration test thực | TODO |
 | WWI-07 | 3 | ingestion, tests | Sales incremental/checkpoint và failure recovery | High | WWI-04, WWI-06, approval cho test environment | Test INSERT/UPDATE end-to-end trong môi trường độc lập; checkpoint/retry/backfill có bằng chứng; WWI gốc không đổi | TODO |
 | WWI-08 | 4 | storage, transformation, data-quality | Sales warehouse/dbt và kiểm tra cơ bản | High | WWI-03, WWI-06 | Fact/dim đúng grain, tránh double count; unique/not null/relationships/accepted values và business tests, reconciliation chạy thực | TODO |
@@ -150,10 +150,24 @@ Owner task “DW-03C Stage 3 — Owner D1–D3 Approvals & Final Design Acceptan
 
 DW-03C acceptance evidence: six CP Logical approvals, D1/D2 Logical+D3 Governance approvals, D4 confirmed,11 source/16 model/4 fact/6 mart/AP6/recovery12/test30 coverage và final18 criteria/QA PASS. Source state/registry/SCD/reconciliation/generation/consumer/runtime gates vẫn required, không đánh dấu tests hoặc parent task DONE. DW-04 chỉ được start khi Owner giao riêng.
 
-## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (hiện hành)
+## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (lịch sử trước Owner closure)
 
 **DW-04 DONE — Design Acceptance**,20/20 criteria và static/staged QA PASS. [Assessment](docs/data-models/wwi-dw-04-assessment.md), [Implementation Gate Register](docs/data-models/wwi-implementation-gate-register.md) và [Readiness/Handoff](docs/data-models/wwi-implementation-readiness-handoff.md) đối chiếu11 source populations/16 models/22 KPI/12 BRD,31 original gates,18 readiness components và72 planned tests NOT RUN. Approved DW-01/02/03A/03B/03C/B9/INC/CP/D1–D3 giữ nguyên; không thêm business/physical defaults.
 
 Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN_PROGRESS**, Phase2–9 **Not Started**; production modules **Not implemented yet**. Không tự bắt đầu task/phase sau; chỉ task tài liệu và một focused commit sau QA theo Owner DW-04 authority, không push/remote/DB/Docker/B9 changes.
 
 DW-04 acceptance evidence:20/20 mandatory design criteria PASS;11 source/16 model/22 KPI/12 BRD coverage,31 original gates/18 components/M1–M9/72 NOT RUN scenarios;128 visible files/122 Markdown/946 local links/0 broken,115 protected hashes unchanged,secret/size/scope/staged/diff checks PASS. Conditional Owner authority chỉ nghiệm thu DW-04 — Design Acceptance; original acceptance criteria/dependencies giữ nguyên. “Owner nghiệm thu WWI-04” là parent overall review checkpoint, không tự đóng parent bằng subtask acceptance. Candidate M1–M9 trong Handoff không thay task IDs hoặc dependencies WWI-05–16.
+
+## Owner Closure & Phase 2 Authorization — 2026-11-16 (hiện hành)
+
+Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử.
+
+[Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md) là authority mới cho APPROVAL-01–05; nguồn là task trực tiếp của Project Owner, không chữ ký điện tử/hệ thống approval bên ngoài. Checkpoint A ghi nhận và commit sau QA, rồi Checkpoint B mới thực hiện M1A chỉ đọc. G01–08/RG01–12/CG01–10/B5 giữ nguyên31 entries;72 runtime scenarios NOT RUN. Approval không cho DML/DDL, infrastructure/identity/config changes, install dependencies, pipeline, M2/M3 hoặc push. Các status/no-start notes của DW-04 phía trên là lịch sử trước approval này.
+
+### WWI-05 verification checkpoint
+
+| ID | Description / module | Dependencies | Acceptance criteria | Status |
+| --- | --- | --- | --- | --- |
+| M1A | Local Readiness & Secure Connection-Contract Verification — infrastructure/data-sources/storage/docs | WWI-04/Phase1 closure APPROVAL-01/02; Phase2/task APPROVAL-03/04; Checkpoint A QA+commit | Inventory, secure connectivity/identity, target classification, contracts/evidence/handoff và QA đầy đủ; missing prerequisites ghi BLOCKED/NOT RUN; checkpoint completion khác operational readiness | IN_PROGRESS |
+
+M1A là child checkpoint của WWI-05, không thay official WWI-05 Definition of Done. Authorization không làm WWI-05 DONE; M2 và các milestone sau NOT STARTED.

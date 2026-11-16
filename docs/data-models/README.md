@@ -62,7 +62,7 @@ Các truy vấn đọc/tái kiểm chứng nằm trong tài liệu SQL tương �
 
 ## 11. Tasks
 
-WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A DONE — Design, scoped B9 physical representation approved; DW-03B DONE — Design theo Owner Stage 2 conditional acceptance ngày 2026-11-16, DW-03C DONE — Design sau Stage3 approvals/QA, DW-04 DONE — Design Acceptance sau20/20 criteria/static/staged QA. Theo dõi [TASKS.md](../../TASKS.md).
+WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `DONE — Design`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A DONE — Design, scoped B9 physical representation approved; DW-03B DONE — Design theo Owner Stage 2 conditional acceptance ngày 2026-11-16, DW-03C DONE — Design sau Stage3 approvals/QA, DW-04 DONE — Design Acceptance sau20/20 criteria/static/staged QA. Theo dõi [TASKS.md](../../TASKS.md).
 
 ## 12. Testing Strategy
 
@@ -74,4 +74,4 @@ Mỗi kết luận quan trọng có evidence hoặc nhãn Unverified/Proposed; �
 
 ## 14. Current Status
 
-Phase 1.1–1.5 đã được chấp thuận ở mức tài liệu. DW-01 đã nghiệm thu qua targeted review. Runtime: Not implemented yet.
+Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner approval](../architecture/wwi-phase-1-closure-approval.md).

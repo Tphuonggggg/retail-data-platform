@@ -276,3 +276,7 @@ DoD: G01/G02/RG02/CG08 prerequisites either proven with artifacts+approvals, ho�
 DW-04 conditional DONE không tự start Phase2. TASKS WWI-04 parent criterion gồm Owner nghiệm thu DW-01–DW-04 và approved source/incremental/history/as-of/independent-test design; DW-04 supplies consolidated evidence để Owner review tổng. Phase1 criteria còn broad Sales decisions/limits; physical choices được trace gates, không pretend implemented.
 
 Current task không yêu cầu đóng parent/phase hoặc cấp implementation authority. Giữ **WWI-04/Phase1 IN_PROGRESS**, đề xuất Owner review overall closure/Phase2 assignment separately; không dùng runtime tests NOT RUN riêng lẻ như architectural blocker để phủ nhận design acceptance. Đây là completion/authorization tracking, không thiết kế mới. Phase2–9 Not Started.
+
+## Owner follow-up — 2026-11-16, sau design review
+
+[APPROVAL-01–05](../architecture/wwi-phase-1-closure-approval.md) giải quyết parent/phase sign-off còn thiếu ở hồ sơ trên: WWI-04 DONE — Design; Phase1 Completed — Requirements & Source Design; Phase2/WWI-05/M1A IN_PROGRESS — Authorized, ban đầu chỉ bounded verification sau Checkpoint A QA+commit. Historical parent-IN_PROGRESS/no-start statements giữ mốc trước approval. M2+ chưa được giao;31 gates/72 NOT RUN tests/architecture/B9 không đổi, không operational readiness approval.

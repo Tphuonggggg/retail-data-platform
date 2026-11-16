@@ -185,3 +185,7 @@ Secret scan128 files và13 staged blobs:0 high-confidence key/token/private-key/
 - `docs/data-models/wwi-implementation-readiness-handoff.md`
 
 Giữ prior accepted evidence byte-for-byte. Chỉ focused documentation commit sau QA với message `docs: complete DW-04 architecture acceptance and implementation handoff`; không remote/push. Commit hash báo sau commit, không nhúng hash của chính nó vào commit.
+
+## Owner follow-up — 2026-11-16, sau design review
+
+[APPROVAL-01–05](../architecture/wwi-phase-1-closure-approval.md) giải quyết parent/phase sign-off còn thiếu ở hồ sơ trên: WWI-04 DONE — Design; Phase1 Completed — Requirements & Source Design; Phase2/WWI-05/M1A IN_PROGRESS — Authorized, ban đầu chỉ bounded verification sau Checkpoint A QA+commit. Historical parent-IN_PROGRESS/no-start statements giữ mốc trước approval. M2+ chưa được giao;31 gates/72 NOT RUN tests/architecture/B9 không đổi, không operational readiness approval.

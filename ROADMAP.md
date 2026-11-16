@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu và chuyển phase. Trạng thái tài liệu không chứng minh runtime đã hoạt động. **Phase 0: Completed; Phase 1: In Progress (Phase 1.1–1.5 được chấp thuận ở mức tài liệu; WWI-02/03 DONE; Phase 1.6/WWI-04 IN_PROGRESS; DW-01 DONE ở mức thiết kế logic, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15); Phase 2–9: Not Started.** Task và bằng chứng ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). Task/evidence ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -24,7 +24,7 @@ Full/incremental load, checkpoint, idempotency, SCD2, reconciliation và recover
 - **Dependencies:** Phase 0 được chủ dự án nghiệm thu và cho phép Phase 1.
 - **Deliverables:** Requirements, source contract/mapping, KPI matrix và ADR quyết định.
 - **Acceptance Criteria:** Các quyết định ảnh hưởng Sales schema/pipeline được duyệt; giới hạn snapshot/temporal ghi rõ.
-- **Status:** In Progress — Phase 1.1–1.5 được chủ dự án chấp thuận ở mức tài liệu; WWI-02 và WWI-03 `DONE`. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-01 DONE, DW-02 DONE; DW-02A/B DONE; DW-02C/D DONE ở mức thiết kế; DW-02E DONE — B1–B8 Approved — Logical Policy và design acceptance/QA đạt ngày 2026-11-15; physical warehouse schema chưa duyệt.
+- **Status:** Completed — Requirements & Source Design theo APPROVAL-02; WWI-04 DONE — Design theo APPROVAL-01. Physical/runtime gates giữ nguyên.
 
 ### Phase 1.6 / WWI-04 — kế hoạch thiết kế
 
@@ -39,7 +39,7 @@ DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B
 - **Dependencies:** Phase 1 và phê duyệt triển khai.
 - **Deliverables:** Hướng dẫn môi trường, connection contract và kết quả kiểm tra quyền.
 - **Acceptance Criteria:** Source chỉ đọc; đích sẵn sàng và môi trường local có thể tái lập theo hướng dẫn; không lộ credential, commit backup hoặc sửa WWI gốc.
-- **Status:** Not Started.
+- **Status:** IN_PROGRESS — Authorized theo APPROVAL-03/04, ban đầu chỉ WWI-05/M1A verification. Source/target operational readiness chưa được xác minh; không tự bắt đầu M2/M3.
 
 ## Phase 3: Sales Ingestion & Incremental Loading
 
@@ -173,7 +173,7 @@ Owner task “DW-03C Stage 3 — Owner D1–D3 Approvals & Final Design Acceptan
 
 [Final Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections14–18 ghi **18/18 mandatory design criteria PASS → DW-03C DONE — Design** theo conditional authority sau actual QA, không runtime approval. Stage1/2/Pending/15PASS+3PARTIAL evidence giữ history. CP-01–06 vẫn Approved — Logical Policy; CP-T01–30 NOT RUN; G01–08/RG01–12/CG01–10/B5 và per-action evidence còn gates trước relevant normal publication/use. Không tự revoke/reinstate/rollback hoặc implement. DW-04 TODO/ready-for-Owner-task, WWI-04/Phase1 IN_PROGRESS,Phase2–9 Not Started. Current authority cho one focused docs commit sau staged checks, no push/remote/DB/Docker/B9 changes; không bắt đầu DW-04.
 
-## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (hiện hành)
+## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (lịch sử trước Owner closure)
 
 **DW-04 DONE — Design Acceptance**,20/20 criteria và static/staged QA PASS. [Assessment](docs/data-models/wwi-dw-04-assessment.md), [Implementation Gate Register](docs/data-models/wwi-implementation-gate-register.md) và [Readiness/Handoff](docs/data-models/wwi-implementation-readiness-handoff.md) đối chiếu11 source populations/16 models/22 KPI/12 BRD,31 original gates,18 readiness components và72 planned tests NOT RUN. Approved DW-01/02/03A/03B/03C/B9/INC/CP/D1–D3 giữ nguyên; không thêm business/physical defaults.
 
@@ -184,3 +184,9 @@ Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN
 [Handoff M1–M9](docs/data-models/wwi-implementation-readiness-handoff.md) giữ goal/inputs/deliverables/deps/tests/gates/DoD/demo cho từng milestone. Trình tự ưu tiên M1→M2→M3→M4→M5→M7→M8→M9→M6 phù hợp WWI-07/08→WWI-09→WWI-10→WWI-11; M5/M7 có thể chạy theo dependencies riêng khi được giao. M5 đã cần minimum Customer/Product SCD2 registry/lookup cho Sales; M8 mở rộng change/restatement/recovery/certification controls. M6 là nghiệm thu Sales mart/Power BI sau orchestration/quality, rồi WWI-12 Customer và WWI-13 Inventory.
 
 Basic DQ/CI/tests đi cùng code đầu tiên, correctness tests bắt buộc trước relevant publication, không dời sang Phase6/9. M8 controls không tự certify mart thiếu M6/B5/E evidence. Milestones không thay phase gates hoặc cấp quyền triển khai. Bước đầu đề xuất WWI-05/M1A local readiness và secure connection-contract verification, chỉ sau Owner overall review/authorization Phase2.
+
+## Owner Closure & Phase 2 Authorization — 2026-11-16 (hiện hành)
+
+Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử.
+
+[Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md) là authority mới cho APPROVAL-01–05; nguồn là task trực tiếp của Project Owner, không chữ ký điện tử/hệ thống approval bên ngoài. Checkpoint A ghi nhận và commit sau QA, rồi Checkpoint B mới thực hiện M1A chỉ đọc. G01–08/RG01–12/CG01–10/B5 giữ nguyên31 entries;72 runtime scenarios NOT RUN. Approval không cho DML/DDL, infrastructure/identity/config changes, install dependencies, pipeline, M2/M3 hoặc push. Các status/no-start notes của DW-04 phía trên là lịch sử trước approval này.

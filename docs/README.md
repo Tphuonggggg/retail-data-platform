@@ -44,3 +44,7 @@ Không trình bày thành phần planned như implemented.
 
 ## 14. Current Status
 Tài liệu kiến trúc và ADR WWI đã có; [Phase 1.1](data-models/wwi-phase-1-1-assessment.md), [Phase 1.2](data-models/wwi-phase-1-2-assessment.md), [Phase 1.3](data-models/wwi-phase-1-3-assessment.md), [Phase 1.4](data-models/wwi-phase-1-4-assessment.md) và [Phase 1.5](requirements/wwi-phase-1-5-assessment.md) đã được chấp thuận ở mức tài liệu. WWI-02/03 `DONE`; KPI business definitions được duyệt, physical warehouse và pipeline chưa triển khai. Kết quả kiểm thử chức năng: Not implemented yet.
+
+## Owner closure và checkpoint được phép
+
+Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Approval record](architecture/wwi-phase-1-closure-approval.md). Runtime source/target readiness được kiểm ở M1A sau Checkpoint A commit, không suy từ design acceptance.

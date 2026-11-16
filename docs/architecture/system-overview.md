@@ -2,7 +2,7 @@
 
 ## Status
 
-**Planned — Not implemented yet.** SQL Server WWI đã được khảo sát trong các assessment trước; sơ đồ là kiến trúc được duyệt, không phải pipeline đã chạy. [DW-04 Assessment](../data-models/wwi-dw-04-assessment.md) đối chiếu thiết kế liên giai đoạn; [Gate Register](../data-models/wwi-implementation-gate-register.md) tách physical/runtime prerequisites. WWI-04/Phase1 In Progress; Phase2–9 Not Started.
+**Planned — Not implemented yet.** SQL Server WWI đã được khảo sát trong các assessment trước; sơ đồ là kiến trúc được duyệt, không phải pipeline đã chạy. [DW-04 Assessment](../data-models/wwi-dw-04-assessment.md) đối chiếu thiết kế liên giai đoạn; [Gate Register](../data-models/wwi-implementation-gate-register.md) tách physical/runtime prerequisites. WWI-04 DONE — Design; Phase1 Completed — Requirements & Source Design; Phase2 IN_PROGRESS — Authorized, chỉ M1A; Phase3–9 Not Started theo [Owner approval](wwi-phase-1-closure-approval.md). Kiến trúc chưa triển khai.
 
 ```mermaid
 flowchart LR
