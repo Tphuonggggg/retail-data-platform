@@ -72,6 +72,14 @@ def findings(setup: str, verify: str) -> list[str]:
     for expected in ("BEGIN TRANSACTION", "COMMIT TRANSACTION", "ROLLBACK TRANSACTION", "XACT_STATE()"):
         if expected not in setup_code:
             errors.append("setup: failure cleanup " + expected)
+    connect_batch = (
+        r"DECLARE\s+@ConnectSql\s+nvarchar\(max\)\s*=\s*"
+        r"N'USE \[master\]; GRANT CONNECT SQL TO '\s*\+\s*@LoginQuoted\s*"
+        r"\+\s*N'; USE \[WideWorldImporters\]; GRANT CONNECT TO '\s*"
+        r"\+\s*@UserQuoted\s*\+\s*N';';"
+    )
+    if not re.search(connect_batch, without_comments(setup), re.I):
+        errors.append("setup: server/database CONNECT grant contexts")
     if re.search(r"(?i)GRANT\s+(?:ALL|CONTROL|INSERT|UPDATE|DELETE|VIEW|EXECUTE)|ALTER\s+ROLE|sp_addrolemember", without_comments(setup)):
         errors.append("setup: grant outside CONNECT/object SELECT package")
     if re.search(r"(?i)\b(?:INSERT|UPDATE|DELETE|MERGE|CREATE|ALTER|DROP|GRANT|REVOKE|DENY|EXEC|EXECUTE|BACKUP|RESTORE|TRUNCATE)\b", code_only(verify)):
@@ -132,6 +140,18 @@ class PreparedSourceSecurityTests(unittest.TestCase):
 
     def test_read_only_diagnostic_rights_not_granted(self) -> None:
         self.assertNotRegex(without_comments(self.setup), r"(?i)GRANT\s+VIEW\s+SERVER")
+
+    def test_connect_grant_context_mutations_rejected(self) -> None:
+        for old, new in (
+            ("USE [master]; GRANT CONNECT SQL", "GRANT CONNECT SQL"),
+            ("USE [master]; GRANT CONNECT SQL", "USE [WideWorldImporters]; GRANT CONNECT SQL"),
+            ("USE [WideWorldImporters]; GRANT CONNECT TO", "GRANT CONNECT TO"),
+            ("USE [WideWorldImporters]; GRANT CONNECT TO", "USE [master]; GRANT CONNECT TO"),
+        ):
+            with self.subTest(replacement=new):
+                self.assertIn(old, self.setup)
+                self.assertIn("setup: server/database CONNECT grant contexts",
+                              findings(self.setup.replace(old, new), self.verify))
 
 
 if __name__ == "__main__":

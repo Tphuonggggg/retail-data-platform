@@ -102,8 +102,10 @@ DECLARE @LoginSql nvarchar(max) = N'CREATE LOGIN ' + @LoginQuoted
     + N' FROM WINDOWS WITH DEFAULT_DATABASE = [WideWorldImporters];';
 DECLARE @UserSql nvarchar(max) = N'CREATE USER ' + @UserQuoted
     + N' FOR LOGIN ' + @LoginQuoted + N';';
-DECLARE @ConnectSql nvarchar(max) = N'GRANT CONNECT SQL TO ' + @LoginQuoted
-    + N'; GRANT CONNECT TO ' + @UserQuoted + N';';
+-- Server-scope GRANT requires master; restore the approved database for CONNECT.
+-- Context switches stay inside this dynamic batch and the existing transaction.
+DECLARE @ConnectSql nvarchar(max) = N'USE [master]; GRANT CONNECT SQL TO ' + @LoginQuoted
+    + N'; USE [WideWorldImporters]; GRANT CONNECT TO ' + @UserQuoted + N';';
 
 SET NOCOUNT ON;
 SET XACT_ABORT ON;

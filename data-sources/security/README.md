@@ -43,7 +43,7 @@ README,2 standalone .sql files. Không migration registration,CI hooks,SQLCMD in
 
 1. Review actual names/SIDs/new-vs-reuse mode vàpopulated artifact diff/hash;Owner approve exact change package. Các defaults hiện tại phải stop.
 2. OS owner provision/verify account riêng;không local-admin/group elevation;không giả account đã có.
-3. DBA session dùng approved secure source/database context;review DDL policies/triggers vàprivilege closure trước apply. Chạy toàn bộ reviewed setup batch,không selected fragments hoặc thêm batch separators.
+3. DBA session dùng approved secure source/database context;review DDL policies/triggers vàprivilege closure trước apply. Tuân thủ [protected staging PS01–08](../../docs/architecture/wwi-source-dba-owner-checklist.md#protected-staging-procedure--proposed-chưa-thực-hiện): tách khỏi repository/venv, restricted named-principal ACL, controlled copy với exact-byte hashes và independent approved manifest, trusted installed SQL client, logs/output riêng. Kiểm ACL và SHA256 ngay trước chạy; không auto-execute từ development folders. Chạy toàn bộ reviewed setup batch,không selected fragments hoặc thêm batch separators.
 4. Setup chỉ hỗ trợ **new identity**;nếu login/user tồn tại thì stop. Reuse/metadata VIEW DEFINITION cần proposal riêng,không bật broad grants.
 5. Verification bằng fresh real Windows extraction session,không developer/admin/EXECUTE AS. Điền approved negative user-DB target vàexternal TLS/group evidence;placeholders/default0 hoặcNULL đều không là authority.
 6. Capture mọi resultset/error/NULL vàper-test outcomes;không coi ending EVIDENCE_ONLY marker hoặc process exit0 là G02 PASS. Permission/cross-DB/module/Windows closure còn cần DBA review.
@@ -60,7 +60,7 @@ $env:PYTHONDONTWRITEBYTECODE='1'
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p 'source_security_static.py' -v
 ```
 
-12 static tests PASS,bao gồm disabled guards,11-object allowlist/H,QUOTENAME,one batch,read-only verify vàunsafe-mutation rejection. Không import DB driver,run SQL,subprocess hoặc thay dependencies;không compiler/formal proof.
+13 static tests PASS ngày2026-11-16,bao gồm disabled guards,11-object allowlist/H,QUOTENAME,one batch,read-only verify,CONNECT grant contexts vàunsafe-mutation rejection. Regression mới từ chối server GRANT ngoài master hoặc database GRANT không quay về WideWorldImporters. Không import DB driver,run SQL,subprocess hoặc thay dependencies;không compiler/formal proof.
 
 ## 12. Acceptance Criteria
 
@@ -70,6 +70,12 @@ Prepared artifacts đúng11 allowlist,no secrets/no actual Windows names,fail-cl
 
 Prepared,technically reviewed statically;**DBA review vàexecution approval outstanding**. M1B-Approval IN_PROGRESS,WWI-05/Phase2 IN_PROGRESS,M1C/M2/M3 Not Started.
 
+Final EX01/EX02 review: **BLOCKED / BLOCKED**, xem [DBA/Owner Checklist §7](../../docs/architecture/wwi-source-dba-owner-checklist.md#7-final-security-execution-review--2026-11-16). Actual principal/SID, named operators, protected handoff và populated script authorization chưa có. Setup được sửa đúng phạm vi lỗi CONNECT grant context; verify không đổi. Hash hiện hành nằm trong checklist; hash setup cũ trong Owner Record là bằng chứng package trước review, không áp dụng cho bản sửa này. Không G02 PASS hoặc EX03 execution request.
+
+[Owner authorization package §8](../../docs/architecture/wwi-source-dba-owner-checklist.md#8-security-preparation-finalization--owner-authorization-package) bổ sung finalization: principal `DESKTOP-OBDFK6B\wwi_extract` và DB user `wwi_extract` vẫn **PROPOSED**; intended DBA/operator chưa supplied. Task follow-up chỉ cho hoàn thiện bốn existing review files và một local commit sau QA PASS, không approve identities/grants/staging execution. Không tạo staging folder, copy privileged executable artifacts, đổi ACL hoặc chạy SQL. Template hashes không thay populated execution hashes; mọi edit/line-ending conversion đều cần kiểm và review hash mới. G01/G02 giữ Pending/BLOCKED.
+
 ## 14. Reference semantics
 
 [Microsoft CREATE LOGIN](https://learn.microsoft.com/en-us/sql/t-sql/statements/create-login-transact-sql?view=sql-server-ver17) mô tả transactional login creation;không đảm bảo rollback external DDL-trigger/audit side effects. [QUOTENAME](https://learn.microsoft.com/en-us/sql/t-sql/functions/quotename-transact-sql?view=sql-server-ver17) giới hạn128 characters vàdelimits identifiers;script kiểm length/NULL trước dynamic identifiers. [Object GRANT](https://learn.microsoft.com/en-us/sql/t-sql/statements/grant-object-permissions-transact-sql?view=sql-server-ver17) là reference cho per-object SELECT,không cấp actual execution approval.
+
+[Server GRANT](https://learn.microsoft.com/en-us/sql/t-sql/statements/grant-server-permissions-transact-sql?view=sql-server-ver17) yêu cầu context master. Setup giữ outer context/source guard WideWorldImporters; chỉ dynamic CONNECT batch chuyển sang master cho CONNECT SQL rồi về WideWorldImporters cho CONNECT database, trong transaction hiện có. Không thêm quyền hoặc batch separator; engine compilation/execution vẫn NOT RUN.
