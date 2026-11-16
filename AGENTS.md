@@ -111,8 +111,14 @@ M1A **DONE — Verification Checkpoint**, không operational acceptance: secure 
 
 [Environment Report](docs/architecture/wwi-m1a-environment-readiness.md), [Secure Contract](docs/architecture/wwi-secure-connection-contract.md), [26-check Evidence Matrix](docs/architecture/wwi-m1a-gate-evidence.md), [M1A Handoff](docs/architecture/wwi-m1a-handoff.md). Metadata/connectivity là subset, không nghiệm thu IT01 hoặc72 scenarios;31 original gates giữ nguyên. Không source/target writes/infrastructure/identity/dependency changes, B9 sandbox giữ nguyên. Mọi next remediation/provision cần Owner giao task riêng; không tự M2/M3/push.
 
-## WWI-05 / M1B — Source Identity & Consistency Planning, 2026-11-16
+## WWI-05 / M1B — Source Identity & Consistency Planning, 2026-11-16 (trước OD01–03)
 
 Task Owner M1B chỉ cho review/metadata SELECT và documentation commit sau QA. M1B **DONE — Planning Review** sau acceptance/QA; không identity/grant/config/source/infrastructure changes. [Assessment](docs/architecture/wwi-m1b-assessment.md), [Identity proposal](docs/architecture/wwi-source-identity-proposal.md), [Consistency proposal](docs/architecture/wwi-source-consistency-proposal.md), [DBA/Owner checklist](docs/architecture/wwi-source-dba-owner-checklist.md).
 
 G01/G02/RG01/RG02/CG08 vẫn Pending/BLOCKED; current developer identity FAIL suitability. Recommended static no-writes window A và identity package **PROPOSED — Pending Owner/DBA Approval**, B consistent copy fallback cần separate approval, không tạo copy. M1B planning không operational PASS, không đóng WWI-05/Phase2; M1A DONE Verification/Phase1 Completed/WWI-04 DONE Design giữ nguyên. Original31 gates/72 NOT RUN scenarios/B9 không đổi; M1C/M2/M3 chưa được giao.
+
+## M1B-Approval — Owner Direction & Execution Preparation,2026-11-16
+
+[M1B-OD01–03](docs/architecture/wwi-m1b-owner-decisions.md): dedicated non-admin Windows/minimum object SELECT direction APPROVED;preferred Option A static no-writes APPROVED;Codex chỉ documentation/scripts/test preparation vàlocal static QA/commit. Actual names/grants/window/operator/execution approval chưa có. [DBA scripts](data-sources/security/README.md) PREPARED,NOT RUN;không auto-execute hoặcsource connection ởtask này.
+
+WWI-04 DONE Design,Phase1 Completed,Phase2/WWI-05 IN_PROGRESS,M1A DONE Verification,M1B DONE Planning Review;**M1B-Approval IN_PROGRESS tớiOwner acceptance**,M1C/M2/M3 NOT STARTED. G01/G02 Pending/BLOCKED,31 original gates/72 NOT RUN scenarios vàB9/INC/CP/D1–D4 unchanged. Không administrative/source/settings/infra/dependency/ingestion changes hoặcpush.

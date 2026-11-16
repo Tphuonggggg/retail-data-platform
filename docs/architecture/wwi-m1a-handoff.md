@@ -53,3 +53,8 @@ Commit B chỉ sau QA PASS: `docs: record M1A environment readiness and connecti
 ## M1B follow-up — 2026-11-16
 
 Owner đã giao riêng M1B source identity/consistency review. [Identity proposal](wwi-source-identity-proposal.md), [Consistency proposal](wwi-source-consistency-proposal.md), [DBA/Owner checklist](wwi-source-dba-owner-checklist.md), [M1B assessment](wwi-m1b-assessment.md) giải quyết phần planning,không runtime prerequisites. M1B DONE — Planning Review sau QA; D01–D05 Pending Owner/DBA Approval,G01/G02 không PASS;WWI-05/Phase2 IN_PROGRESS. Các next-action “chưa thực hiện” ở §4 nay có proposal chi tiết,administrative actions vẫn chưa chạy. Không bắt đầu M1C/M2/M3.
+
+
+## M1B-Approval follow-up — 2026-11-16
+
+[OD01–03](wwi-m1b-owner-decisions.md) nay approve dedicated non-admin Windows direction/preferredA vàpreparation only,khôngactual source remediation. [Scripts](../../data-sources/security/README.md),[window procedure](wwi-source-consistency-proposal.md#7-static-no-writes-operating-procedure--prepared-not-executed),[EX01–04 request](wwi-source-dba-owner-checklist.md#6-compact-execution-authorization-request--ready-for-review-not-authorized) prepared. G01/G02 cònblocked,M1B-Approval IN_PROGRESS,M1C/M2/M3 chưađượcgiao. Previous Pending D01–05 notes làsnapshot trướcapproval direction;actual names/package/operator/window approvals vẫnmissing.

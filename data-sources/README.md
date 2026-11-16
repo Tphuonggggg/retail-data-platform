@@ -34,7 +34,7 @@ SQL Server là nguồn OLTP; Python/SQL sẽ đọc theo contract khi triển kh
 
 ## 9. Directory Structure
 
-Thư mục này chỉ giữ README điều hướng; dữ liệu WWI nằm trong SQL Server local, không được sao chép vào repository trong WWI-01.
+README điều hướng và[security/](security/README.md) chứa prepared DBA setup/read-only verify scripts;không migration/auto-run. WWI data vẫn ngoàiGit trongSQLServer,không CSV/backup/extract mới.
 
 ## 10. Planned Workflow
 
@@ -60,3 +60,8 @@ Source contracts/WWI-02 đã nghiệm thu ở mức tài liệu. M1A secure deve
 ## M1B — Source identity và consistency proposals
 
 [Identity](../docs/architecture/wwi-source-identity-proposal.md), [Consistency](../docs/architecture/wwi-source-consistency-proposal.md), [DBA/Owner actions](../docs/architecture/wwi-source-dba-owner-checklist.md), [Assessment](../docs/architecture/wwi-m1b-assessment.md) ghi required per-object privileges/current+H,metadata/TLS limits,safe negative tests và A/B proof plans. Chỉ review/metadata,không tạo/sửa identities/grants. M1B planning DONE sau QA,method/identity PROPOSED và G01/G02 vẫn BLOCKED; production adapter Not implemented yet.
+
+
+## M1B-Approval — prepared source-security artifacts
+
+[OD01–03](../docs/architecture/wwi-m1b-owner-decisions.md) approve direction/preferredA vàpreparation only. [Setup/verify README](security/README.md) mô tảguards/placeholder inputs/no automation/manual future authorization;[EX01–04](../docs/architecture/wwi-source-dba-owner-checklist.md#6-compact-execution-authorization-request--ready-for-review-not-authorized) cầnOwner/DBA review trướcWindows/SQL/window/runtime actions. Scripts NOT RUN,production adapter Not implemented yet,G01/G02 Pending/BLOCKED.

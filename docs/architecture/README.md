@@ -15,3 +15,6 @@ M1A hiện hành: [Local Environment Readiness](wwi-m1a-environment-readiness.md
 
 
 M1B planning: [Identity privilege proposal](wwi-source-identity-proposal.md), [Consistency options](wwi-source-consistency-proposal.md), [DBA/Owner checklist](wwi-source-dba-owner-checklist.md), [Assessment/evidence](wwi-m1b-assessment.md). Review DONE sau QA; all concrete identity/method approvals Pending,source operational readiness vẫn BLOCKED. Không thay original policies/gates.
+
+
+M1B-Approval hiện hành: [Owner decisions](wwi-m1b-owner-decisions.md),[prepared security scripts](../../data-sources/security/README.md),[static-window procedure](wwi-source-consistency-proposal.md#7-static-no-writes-operating-procedure--prepared-not-executed),[execution authorization request](wwi-source-dba-owner-checklist.md#6-compact-execution-authorization-request--ready-for-review-not-authorized). Direction/preferred approach approved,actual package/window execution pending;task IN_PROGRESS,chưa M1C/M2/M3 hoặcG01/G02 PASS.

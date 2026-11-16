@@ -1,6 +1,6 @@
 # WWI-05 / M1B — SQL Server Extraction Identity Proposal
 
-**PROPOSED — PENDING OWNER/DBA APPROVAL, 2026-11-16.** Task M1B chỉ cho review/SELECT metadata và documentation commit; không tạo/sửa login/user/role/grants. [M1A Secure Contract](wwi-secure-connection-contract.md) giữ general connection/security boundaries; tài liệu này chuyên biệt object-level privilege package và acceptance tests, không tạo connector hoặc duplicate source contracts.
+**M1B-OD01 APPROVED — Logical/Security Direction,2026-11-16. Exact identity/scripts/execution còn DBA/Owner review.** Task M1B chỉ cho review/SELECT metadata và documentation commit; không tạo/sửa login/user/role/grants. [M1A Secure Contract](wwi-secure-connection-contract.md) giữ general connection/security boundaries; tài liệu này chuyên biệt object-level privilege package và acceptance tests, không tạo connector hoặc duplicate source contracts.
 
 Liên kết: [Consistency proposal](wwi-source-consistency-proposal.md), [DBA/Owner checklist](wwi-source-dba-owner-checklist.md), [M1B actual evidence/acceptance](wwi-m1b-assessment.md), [31 original gates](../data-models/wwi-implementation-gate-register.md). G02/RG02/CG08 vẫn BLOCKED/Pending cho intended extraction profile.
 
@@ -74,3 +74,14 @@ Query TLS của M1A/M1B dùng sys.dm_exec_connections dưới current admin. WHE
 | LP12 | Fresh Windows session/token sau DBA-approved changes, re-evaluate all paths; unknown/missing proof chặn G02 release | NOT RUN |
 
 Safe negative checks là metadata rights/allowlist rejection và bounded zero-row SELECT ở objects không nhạy cảm đã được DBA chỉ định. Không tạo database/table giả, không đổi grants, impersonate hoặc thực thi executable module để thử khả năng ghi. Rights-zero không tự chứng minh toàn bộ source không có writers; G01 tách riêng.
+
+
+## 5. Owner approval / prepared scripts — current follow-up
+
+[M1B-OD01–03](wwi-m1b-owner-decisions.md) approve dedicated non-admin Windows vàminimum object-level11-population direction,không approve actual account/login/user/metadata extras hoặc apply. [Setup](../../data-sources/security/wwi_extraction_identity_setup.sql),[read-only verify](../../data-sources/security/wwi_extraction_identity_verify.sql),[script README](../../data-sources/security/README.md) đã prepared cho review,NOT RUN. New-identity-only package là proposal;reuse existing cần alternate reviewed package,không tự alter.
+
+Setup chỉCONNECT SQL/CONNECT DB/object SELECT,không role assignment/broad reader/write/admin/VIEW DEFINITION grant. Metadata gaps phải independently justify scope sau LP07. Windows account provisioning là separate OS-owner prerequisite;Windows/SQL names giữ placeholders. Guards0/NULL rejection/source checks/QUOTENAME/new-principal collision rejection vàtransaction cleanup đã static-reviewed,không SQL engine validation.
+
+LP01–12 mapping: verify guard+identity/role-token/effective-permission reports;11 object rights+constant read probes bao gồm2 H;metadata columns/hidden definitions/current-H binding;column subentity permissions;negativeDB metadata;client TLS/group/code/log evidence external. VisibleColumns/hidden-definition counts0 không chứng minh metadata complete,phải so contract. Standard public metadata permissions ngoàiCONNECT được báo DBA_REVIEW_REQUIRED,không tự globally revoke hoặc silently allow;actual exception package còn review. Application-module/Windows-group/ownership closure vẫn DBA evidence,không dựa duy nhất role predicates hay single negative DB.
+
+SQL scripts nằm ngoài migration/CI vàkhông được auto-execute. Offline [static tests](../../tests/source_security_static.py) chỉ đọc/mutate strings,không import DB driver hoặc execute SQL. G02 vẫn Pending/BLOCKED tới actual approved extraction logon verification.

@@ -139,3 +139,10 @@ Actual staged QA PASS:10 Markdown blobs khớp working content sau Git line-endi
 Operational source readiness **BLOCKED**: G02 approved identity/effective rights chưa verified;G01 concrete method/evidence chưa approved/executed. D01–D05 pending; A preferred có điều kiện,B fallback separately approved. PostgreSQL target/reproducibility blockers của M1A không được giải quyết bởi M1B.
 
 Next recommendation: Owner review proposals,approve exact source identity/grant scope và concrete consistency proof plan,rồi giao DBA action/re-verification task riêng trong WWI-05. Không bắt đầu M1C/M2/M3,copy creation,target setup hoặc ingestion. Planning completion không cấp quyền remediation.
+
+
+## 8. Owner approval / preparation follow-up — 2026-11-16
+
+Current [M1B-OD01–03](wwi-m1b-owner-decisions.md) resolve dedicated Windows/object-level direction vàpreferred static-window A,cho script/test/procedure preparation only. Scope “pending direction” và28 metadata SELECT ở§2–5 làhistorical M1B trướcapproval;currenttask không mở SQLServer/PostgreSQL connection hoặcDocker commands.
+
+[Setup/verify artifacts](../../data-sources/security/README.md),[operator procedure](wwi-source-consistency-proposal.md#7-static-no-writes-operating-procedure--prepared-not-executed) và[EX01–04 request](wwi-source-dba-owner-checklist.md#6-compact-execution-authorization-request--ready-for-review-not-authorized) prepared,chưaDBA/Owner approve filled scripts/names/operators/window execution. G01/G02 không PASS;actual runtime/setup/verify/window/SQL-engine-compile NOT RUN,31 gates/72 inherited scenarios unchanged.12 offline static tests PASS không thayruntime evidence. M1B DONE Planning Review;M1B-Approval IN_PROGRESS — awaiting acceptance.
