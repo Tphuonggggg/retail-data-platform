@@ -167,8 +167,20 @@ Owner đã approve **CP-01–CP-06 — Logical Policy** tại [Register](docs/da
 [Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections9–13: design acceptance **PARTIAL**, DW-03C **IN_PROGRESS**; no finalization commit/staging/push. AP01–AP06 logical evidence contracts reviewed, CP-R01–12 và CP-T01–30 được rà; runtime tests **NOT RUN**. G01–G08/RG01–RG12/CG01–10/B5 vẫn gated, không numeric/physical defaults. DW-04 TODO/chưa bắt đầu; WWI-04/Phase1 IN_PROGRESS, Phase2–9 Not Started. Approved DW-01/02/03A/03B/B9/business scope không đổi; không DB/Docker/B9 sandbox/code changes.
 
 
-### DW-03C Stage 3 — Final Design Acceptance, 2026-11-16 (hiện hành)
+### DW-03C Stage 3 — Final Design Acceptance, 2026-11-16 (lịch sử trước DW-04)
 
 Owner task “DW-03C Stage 3 — Owner D1–D3 Approvals & Final Design Acceptance” cấp **D1/D2 Approved — Logical Policy, D3 Approved — Governance Policy; D4 Confirmed**. [Register](docs/data-models/wwi-dw-03c-decision-register.md) ghi exact scope/authority; [Specification](docs/data-models/wwi-dw-03c-change-propagation-design-proposal.md) tích hợp explicit frozen four-anchor selected set, dependency-complete subject/view+joint consumer manifest và DQ/Owner/Operator lifecycle governance. Không phát hiện conflict với accepted DW-02; no Type2/source-measure/history-meaning changes.
 
 [Final Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections14–18 ghi **18/18 mandatory design criteria PASS → DW-03C DONE — Design** theo conditional authority sau actual QA, không runtime approval. Stage1/2/Pending/15PASS+3PARTIAL evidence giữ history. CP-01–06 vẫn Approved — Logical Policy; CP-T01–30 NOT RUN; G01–08/RG01–12/CG01–10/B5 và per-action evidence còn gates trước relevant normal publication/use. Không tự revoke/reinstate/rollback hoặc implement. DW-04 TODO/ready-for-Owner-task, WWI-04/Phase1 IN_PROGRESS,Phase2–9 Not Started. Current authority cho one focused docs commit sau staged checks, no push/remote/DB/Docker/B9 changes; không bắt đầu DW-04.
+
+## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (hiện hành)
+
+**DW-04 DONE — Design Acceptance**,20/20 criteria và static/staged QA PASS. [Assessment](docs/data-models/wwi-dw-04-assessment.md), [Implementation Gate Register](docs/data-models/wwi-implementation-gate-register.md) và [Readiness/Handoff](docs/data-models/wwi-implementation-readiness-handoff.md) đối chiếu11 source populations/16 models/22 KPI/12 BRD,31 original gates,18 readiness components và72 planned tests NOT RUN. Approved DW-01/02/03A/03B/03C/B9/INC/CP/D1–D3 giữ nguyên; không thêm business/physical defaults.
+
+Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN_PROGRESS**, Phase2–9 **Not Started**; production modules **Not implemented yet**. Không tự bắt đầu task/phase sau; chỉ task tài liệu và một focused commit sau QA theo Owner DW-04 authority, không push/remote/DB/Docker/B9 changes.
+
+### Implementation handoff — work packages, chưa bắt đầu
+
+[Handoff M1–M9](docs/data-models/wwi-implementation-readiness-handoff.md) giữ goal/inputs/deliverables/deps/tests/gates/DoD/demo cho từng milestone. Trình tự ưu tiên M1→M2→M3→M4→M5→M7→M8→M9→M6 phù hợp WWI-07/08→WWI-09→WWI-10→WWI-11; M5/M7 có thể chạy theo dependencies riêng khi được giao. M5 đã cần minimum Customer/Product SCD2 registry/lookup cho Sales; M8 mở rộng change/restatement/recovery/certification controls. M6 là nghiệm thu Sales mart/Power BI sau orchestration/quality, rồi WWI-12 Customer và WWI-13 Inventory.
+
+Basic DQ/CI/tests đi cùng code đầu tiên, correctness tests bắt buộc trước relevant publication, không dời sang Phase6/9. M8 controls không tự certify mart thiếu M6/B5/E evidence. Milestones không thay phase gates hoặc cấp quyền triển khai. Bước đầu đề xuất WWI-05/M1A local readiness và secure connection-contract verification, chỉ sau Owner overall review/authorization Phase2.

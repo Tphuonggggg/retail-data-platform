@@ -59,13 +59,13 @@ SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCa
 | Nhóm | Quyết định chưa chốt | Gate |
 | --- | --- | --- |
 | KPI triển khai | Population/filter theo kỳ, precision/rounding, credit note tương lai, kiểm thử đối soát các measure đã duyệt; không mở lại revenue recognition ngoài MVP | WWI-04 và trước mart |
-| Customer | Mapping kỹ thuật buyer/bill-to vào fact/dimension, as-of/restatement; role nghiệp vụ đã duyệt | WWI-04 và trước schema |
+| Customer | Logical role/grain/SCD2/lookup/restatement đã duyệt tại DW-01/02/03; physical registry/member/lookup/selected-set implementation và per-request proof còn pending | CG02/CG05/CG09 trước use; không mở lại buyer/bill-to |
 | Warehouse | Physical schema và policy từ logical mapping DW-01 đã nghiệm thu; bốn fact/conformed dims theo constraints Owner đã giao; official COGS/Gross Profit deferred | Trước schema |
 | SCD2 | D01–D06/B1–B8 approved architecture/logical policies; physical encoding/member/algorithm, concrete day/basis evidence và thresholds còn pending | DW-03 trước conversion/runtime/correction; thresholds trước Certified publication |
 | Incremental | INC-01–INC-06 đã Approved — Logical Policy; exact algorithms/U selection, numeric lookback/cadence, delete action procedure và sandbox/runtime proof còn gates | Trước algorithm/scheduling/action/publication use theo DW-03B |
 | Inventory | Đối soát movements/current holdings; daily balance và stockout risk ngoài MVP | Trước inventory mart |
 | Propagation/publication | CP-01–06 và D1/D2 Logical Approved; D3 Governance Approved. Physical manifests/registry/lookup/consumer/RBAC/transaction/recovery proof, B5 numerical thresholds và per-action authorization vẫn gated | Before relevant normal publication/action use theo DW-03C, không automatic implementation |
-| Data quality | Ngưỡng, mức cảnh báo/chặn batch và ngoại lệ nguồn | WWI-04 |
+| Data quality | B5 tiered logical policy đã duyệt; numeric row/value thresholds theo KPI/view, alert/block values và exception approval còn pending | B5/RG11/CG06 trước Certified publication; basic correctness từ ingestion |
 | Git publication | Quyền phân phối dữ liệu, license và chính sách công khai repository trước khi tạo remote/push | Chủ dự án quyết định trước publish |
 
 ## Change control
@@ -105,8 +105,14 @@ Owner đã approve **CP-01–CP-06 — Logical Policy** tại [Register](docs/da
 [Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections9–13: design acceptance **PARTIAL**, DW-03C **IN_PROGRESS**; no finalization commit/staging/push. AP01–AP06 logical evidence contracts reviewed, CP-R01–12 và CP-T01–30 được rà; runtime tests **NOT RUN**. G01–G08/RG01–RG12/CG01–10/B5 vẫn gated, không numeric/physical defaults. DW-04 TODO/chưa bắt đầu; WWI-04/Phase1 IN_PROGRESS, Phase2–9 Not Started. Approved DW-01/02/03A/03B/B9/business scope không đổi; không DB/Docker/B9 sandbox/code changes.
 
 
-## DW-03C Stage 3 — Final Design Acceptance, 2026-11-16 (hiện hành)
+## DW-03C Stage 3 — Final Design Acceptance, 2026-11-16 (lịch sử trước DW-04)
 
 Owner task “DW-03C Stage 3 — Owner D1–D3 Approvals & Final Design Acceptance” cấp **D1/D2 Approved — Logical Policy, D3 Approved — Governance Policy; D4 Confirmed**. [Register](docs/data-models/wwi-dw-03c-decision-register.md) ghi exact scope/authority; [Specification](docs/data-models/wwi-dw-03c-change-propagation-design-proposal.md) tích hợp explicit frozen four-anchor selected set, dependency-complete subject/view+joint consumer manifest và DQ/Owner/Operator lifecycle governance. Không phát hiện conflict với accepted DW-02; no Type2/source-measure/history-meaning changes.
 
 [Final Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections14–18 ghi **18/18 mandatory design criteria PASS → DW-03C DONE — Design** theo conditional authority sau actual QA, không runtime approval. Stage1/2/Pending/15PASS+3PARTIAL evidence giữ history. CP-01–06 vẫn Approved — Logical Policy; CP-T01–30 NOT RUN; G01–08/RG01–12/CG01–10/B5 và per-action evidence còn gates trước relevant normal publication/use. Không tự revoke/reinstate/rollback hoặc implement. DW-04 TODO/ready-for-Owner-task, WWI-04/Phase1 IN_PROGRESS,Phase2–9 Not Started. Current authority cho one focused docs commit sau staged checks, no push/remote/DB/Docker/B9 changes; không bắt đầu DW-04.
+
+## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (hiện hành)
+
+**DW-04 DONE — Design Acceptance**,20/20 criteria và static/staged QA PASS. [Assessment](docs/data-models/wwi-dw-04-assessment.md), [Implementation Gate Register](docs/data-models/wwi-implementation-gate-register.md) và [Readiness/Handoff](docs/data-models/wwi-implementation-readiness-handoff.md) đối chiếu11 source populations/16 models/22 KPI/12 BRD,31 original gates,18 readiness components và72 planned tests NOT RUN. Approved DW-01/02/03A/03B/03C/B9/INC/CP/D1–D3 giữ nguyên; không thêm business/physical defaults.
+
+Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN_PROGRESS**, Phase2–9 **Not Started**; production modules **Not implemented yet**. Không tự bắt đầu task/phase sau; chỉ task tài liệu và một focused commit sau QA theo Owner DW-04 authority, không push/remote/DB/Docker/B9 changes.

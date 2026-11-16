@@ -6,11 +6,11 @@ Dự án portfolio Data Engineering dùng **WideWorldImporters (WWI) trên SQL S
 
 ## Business Problems and MVP
 
-Dữ liệu order, invoice, customer transaction và stock movement có grain/ý nghĩa khác nhau. Báo cáo cần phân biệt đặt hàng, xuất hóa đơn, thu tiền và biến động hàng để tránh đếm trùng và đối soát được. MVP gồm **Sales/Invoicing, Customer Analytics, Inventory Movements**; hoàn thiện Sales end-to-end trước. Purchasing, Finance và BigQuery chỉ là extensions có kiểm soát. BRD-01–BRD-12 đã được duyệt ở mức nghiệp vụ; [KPI Catalog](analytics/kpi-definitions/wwi-kpi-candidate-catalog.md) phân loại KPI MVP và loại trừ. DW-01 fact/dimension grains và DW-02 B1–B8 logical policies đã duyệt; physical design, incremental algorithms và numerical quality thresholds còn pending.
+Dữ liệu order, invoice, customer transaction và stock movement có grain/ý nghĩa khác nhau. Báo cáo cần phân biệt đặt hàng, xuất hóa đơn, thu tiền và biến động hàng để tránh đếm trùng và đối soát được. MVP gồm **Sales/Invoicing, Customer Analytics, Inventory Movements**; hoàn thiện Sales end-to-end trước. Purchasing, Finance và BigQuery chỉ là extensions có kiểm soát. BRD-01–BRD-12 đã được duyệt ở mức nghiệp vụ; [KPI Catalog](analytics/kpi-definitions/wwi-kpi-candidate-catalog.md) phân loại KPI MVP và loại trừ. DW-01 grains, DW-02 B1–B8, DW-03A/B/C logical policies và scoped B9 physical temporal representation đã duyệt; concrete physical/runtime choices và numerical quality thresholds còn gates.
 
 ## Planned Architecture
 
-`SQL Server WWI (read-only) → Python ingestion → PostgreSQL raw/staging → dbt/SQL → PostgreSQL warehouse → data marts → Power BI`. Airflow điều phối; quality/reconciliation, logging/monitoring và failure recovery xuyên suốt. Kiểm tra cơ bản bắt đầu từ ingestion/warehouse; Phase 6 bổ sung quality gates và failure nâng cao. Xem [system overview](docs/architecture/system-overview.md) và [data flow](docs/architecture/data-flow.md).
+`SQL Server WWI (read-only) → Python ingestion → PostgreSQL Raw → dbt Staging → Core DW → Analytics Marts → Power BI`. Airflow điều phối; quality/reconciliation, logging/monitoring và failure recovery xuyên suốt. Kiểm tra cơ bản bắt đầu từ ingestion/warehouse; Phase 6 bổ sung quality gates và failure nâng cao. Xem [system overview](docs/architecture/system-overview.md) và [data flow](docs/architecture/data-flow.md).
 
 ## Technology Stack
 
@@ -51,6 +51,12 @@ Hiện chưa có lệnh chạy dự án. Sau khi source contract, kết nối, s
 **DW-03B DONE — Design**, INC-01–INC-06 **Approved — Logical Policy** theo conditional design acceptance/QA của Owner. [Specification](docs/data-models/wwi-dw-03b-incremental-design-proposal.md), [Register](docs/data-models/wwi-dw-03b-decision-register.md), [Assessment](docs/data-models/wwi-dw-03b-assessment.md) và [Runtime gates](docs/data-models/wwi-dw-03b-work-plan.md). Mục tiêu Current-State Convergence trên verified consistent source state; không full CDC/intermediate-event guarantee. Full comparison vẫn đọc full source. Numeric/physical/runtime details pending, IT01–IT21 NOT RUN, production pipeline Not implemented yet. DW-03A/B9 approvals giữ nguyên; DW-03C DONE — Design (Stage3 approvals), DW-04 TODO, WWI-04/Phase 1 IN_PROGRESS. Không tự triển khai task tiếp.
 
 
-## DW-03C Stage 3 — 2026-11-16
+## DW-03C Stage 3 — 2026-11-16 (lịch sử trước DW-04)
 
 **DW-03C DONE — Design** sau conditional18/18 criteria/QA. CP-01–CP-06/D1/D2 **Approved — Logical Policy**, D3 **Approved — Governance Policy**, D4 confirmed; [Register](docs/data-models/wwi-dw-03c-decision-register.md), [Final Specification](docs/data-models/wwi-dw-03c-change-propagation-design-proposal.md), [Assessment](docs/data-models/wwi-dw-03c-assessment.md) và [Runtime gates](docs/data-models/wwi-dw-03c-work-plan.md). CP-T01–30 NOT RUN, production modules Not implemented yet; B5 values/physical enforcement/runtime/per-action proof pending. DW-04 TODO/ready-for-Owner-task, WWI-04/Phase1 IN_PROGRESS. Không implementation hoặc tự start DW-04; no push.
+
+## DW-04 — Design Acceptance & Implementation Handoff, 2026-11-16 (hiện hành)
+
+**DW-04 DONE — Design Acceptance**,20/20 criteria và static/staged QA PASS. [Assessment](docs/data-models/wwi-dw-04-assessment.md), [Implementation Gate Register](docs/data-models/wwi-implementation-gate-register.md) và [Readiness/Handoff](docs/data-models/wwi-implementation-readiness-handoff.md) đối chiếu11 source populations/16 models/22 KPI/12 BRD,31 original gates,18 readiness components và72 planned tests NOT RUN. Approved DW-01/02/03A/03B/03C/B9/INC/CP/D1–D3 giữ nguyên; không thêm business/physical defaults.
+
+Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN_PROGRESS**, Phase2–9 **Not Started**; production modules **Not implemented yet**. Không tự bắt đầu task/phase sau; chỉ task tài liệu và một focused commit sau QA theo Owner DW-04 authority, không push/remote/DB/Docker/B9 changes.

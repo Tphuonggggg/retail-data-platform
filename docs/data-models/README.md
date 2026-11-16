@@ -10,7 +10,7 @@ Ghi metadata, profile, quan hệ nguồn và source contracts làm đầu vào c
 
 ## 3. Scope
 
-Chín bảng MVP thuộc Sales/Invoicing, Customer và Inventory; Purchasing chỉ là dependency ở các phép đối soát đã nêu. KPI nghiệp vụ Phase 1.5 đã duyệt; DW-01 đề xuất logical dimensional models theo bốn grain/conformed dimensions đã được Owner định hướng. Physical schema và incremental/SCD2 policy chi tiết còn mở.
+Chín bảng MVP thuộc Sales/Invoicing, Customer và Inventory; Purchasing chỉ là dependency ở các phép đối soát đã nêu. KPI Phase1.5, DW-01 logical models và DW-02/03 logical policies đã nghiệm thu; scoped B9 physical temporal representation đã duyệt. Concrete physical schema/algorithms/values/runtime proof còn gates.
 
 ## 4. Responsibilities
 
@@ -21,6 +21,8 @@ Phân biệt constraint nguồn với snapshot quan sát, ghi SQL evidence và g
 SQL Server WWI chỉ đọc, [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md), [TASKS.md](../../TASKS.md) và quyết định của Project Owner.
 
 ## 6. Outputs
+
+- DW-04 hiện hành (2026-11-16): [Overall Assessment](wwi-dw-04-assessment.md), [Implementation Gate Register](wwi-implementation-gate-register.md), [Readiness & Milestone Handoff](wwi-implementation-readiness-handoff.md). DONE — Design Acceptance sau20/20 criteria/static/staged QA;31 original gates pending implementation,72 runtime scenarios NOT RUN; không production readiness/phase transition.
 
 - Phase 1.1: [database inventory](wwi-database-inventory.md), [metadata dictionary](wwi-metadata-dictionary.md), [temporal/index assessment](wwi-temporal-index-assessment.md), [metadata queries](wwi-metadata-queries.md), [assessment](wwi-phase-1-1-assessment.md).
 - Phase 1.2: [profiling tổng hợp](wwi-data-profiling.md), [Sales](wwi-sales-profiling.md), [Customer/temporal](wwi-customer-temporal-profiling.md), [Inventory/integrity](wwi-inventory-integrity-profiling.md), [profiling SQL](wwi-profiling-queries.md), [assessment](wwi-phase-1-2-assessment.md).
@@ -34,7 +36,7 @@ SQL Server WWI chỉ đọc, [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md), [TASKS.
 
 DW-03A **DONE — Design**, scoped **B9 Approved — Physical Raw Temporal Representation** theo Owner2026-11-15. [Work Plan/G01–G08](wwi-dw-03a-work-plan.md),[Full/Raw Design](wwi-dw-03a-full-raw-design-proposal.md),[Decision Register](wwi-dw-03a-decision-register.md),[Final Assessment](wwi-dw-03a-assessment.md)§15,[Evidence](wwi-dw-03a-evidence-approval-readiness.md)§15 và [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md) giữ current authority. F2/str-None/parameterized psycopg/TEXT/C exact comparator approved;actual source14/169/18/PG14/15/order169/equality14/ranges5,12 unit methods PASS. A01–A06/B1–B8 unchanged;physical full schema/index/retention/security/adapters/runtime/publication còn gates. Historical Pending/BLOCKED notes giữ theo milestones; không production pipeline.
 
-[ADR index](../adr/README.md) là nguồn quyết định D01–D06. [DW-02E Work Plan](wwi-dw-02e-work-plan.md) giữ backlog B1–B9; [Final SCD2 Specification](wwi-final-scd2-design-specification.md) và [DW-02E Assessment](wwi-dw-02e-assessment.md) ghi kết quả review E1–E5, B1–B8 logical approved, E/DW-02 design DONE sau QA; B9 physical pending, không runtime.
+[ADR index](../adr/README.md) là nguồn quyết định D01–D06. [DW-02E Work Plan](wwi-dw-02e-work-plan.md) giữ backlog B1–B9; [Final SCD2 Specification](wwi-final-scd2-design-specification.md) và [DW-02E Assessment](wwi-dw-02e-assessment.md) ghi kết quả review E1–E5, B1–B8 logical approved, E/DW-02 design DONE sau QA; B9 ở mốc DW-02E còn pending; sau đó DW-03A phê duyệt scoped physical temporal representation như trên, không production runtime.
 
 
 DW-02C/D: [Source Identity/SK/Precision](wwi-scd-identity-key-design.md), [Historical Lookup & Unresolved](wwi-scd-historical-lookup-design.md), [Forward Tracking/Cutover/Recovery](wwi-scd-forward-cutover-design.md), [Assessment/Test Matrix](wwi-dw-02cd-assessment.md). C/D đã nghiệm thu theo sáu ADR Accepted Architecture Direction; B1–B8 được duyệt ở mức logic ngày 2026-11-15; physical procedures và numerical thresholds pending, runtime NOT RUN.
@@ -60,7 +62,7 @@ Các truy vấn đọc/tái kiểm chứng nằm trong tài liệu SQL tương �
 
 ## 11. Tasks
 
-WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A DONE — Design, scoped B9 physical representation approved; DW-03B DONE — Design theo Owner Stage 2 conditional acceptance ngày 2026-11-16, DW-03C DONE — Design sau Stage3 approvals/QA, DW-04 TODO. Theo dõi [TASKS.md](../../TASKS.md).
+WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A DONE — Design, scoped B9 physical representation approved; DW-03B DONE — Design theo Owner Stage 2 conditional acceptance ngày 2026-11-16, DW-03C DONE — Design sau Stage3 approvals/QA, DW-04 DONE — Design Acceptance sau20/20 criteria/static/staged QA. Theo dõi [TASKS.md](../../TASKS.md).
 
 ## 12. Testing Strategy
 
