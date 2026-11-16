@@ -1,6 +1,6 @@
 # WWI-05 / EX01 — Windows Identity Execution Evidence & Handoff
 
-**2026-11-16 — EX01 BLOCKED — Post-Provisioning Review.** Account đã được Owner tạo; local inspection xác nhận identity/SID/profile, nhưng PasswordRequired=False chưa đạt acceptance và target privilege inventory chưa đủ. **§7 là kết quả hiện hành; §1–6/E01–E12 giữ nguyên hồ sơ trước manual provisioning**, bao gồm lý do bị chặn lúc đó. [Owner Record](wwi-m1b-owner-decisions.md#7-owner-ex01-authorization--2026-11-16), [Checklist](wwi-source-dba-owner-checklist.md#10-ex01-post-provisioning-review--acceptance-blocked), [Identity proposal](wwi-source-identity-proposal.md#6-ex01-owner-approval-và-execution-handoff), [TASKS](../../TASKS.md).
+**2026-11-16 — EX01 DONE — OS Identity Verification.** Current evidence tại **§9** resolve hai findings sau Owner EX01-R01: PasswordRequired=True và target privilege listing đã supplied; mandatory criteria/final documentation QA **PASS** tại §10 theo conditional Owner authority. §1–8/E01–E21 giữ nguyên lịch sử trước remediation. [Owner Record](wwi-m1b-owner-decisions.md#8-ex01-r01-owner-remediation-record-và-final-review-authority), [Checklist](wwi-source-dba-owner-checklist.md#11-ex01-final-acceptance--os-identity-verification), [Identity proposal](wwi-source-identity-proposal.md#7-ex01-final-os-identity-handoff), [TASKS](../../TASKS.md). Không G02 PASS hoặc EX02 execution authority.
 
 ## 1. Authority và preflight
 
@@ -185,3 +185,67 @@ EX02 và G02 **BLOCKED**, G01 pending;31 runtime gates/72 NOT RUN scenarios và 
 QA trước Git staging **PASS**: 13/13 existing offline security tests, 143 visible files/134 Markdown/1.148 local Markdown links và anchors không lỗi; đúng 4 existing documentation paths,139 protected baseline hashes không đổi,0 secret-pattern findings, `git diff --check` đạt. Owner Record/AGENTS/ADRs/identity proposal/security README và SQL setup/verify/checker không đổi; original EX01 acceptance row/status,31 gates và72 NOT RUN scenarios giữ nguyên. §5–6 là QA/acceptance lịch sử trước review này, không dùng các số liệu đó để thay kết quả hiện hành.
 
 Documentation QA PASS không làm password-required hoặc target privilege criteria PASS. Staged content/scope/secrets/size/diff và hooks được kiểm trước commit `docs: verify EX01 windows extraction identity`; commit SHA/final tree báo sau actual commit, không tự ghi runtime acceptance. Không OS/SQL security changes, target authentication hoặc push.
+
+## 9. Final EX01 Acceptance — OS Identity Verification
+
+### Authority và provenance của bằng chứng
+
+Owner task “WWI-05 / EX01 Final Acceptance & Evidence Update” ngày2026-11-16 cung cấp completion evidence của **Owner-authorized EX01-R01**, cho phép read-only verification và conditional EX01 acceptance nếu mọi mandatory criterion đạt, rồi một local documentation commit sau QA. Baseline **PASS**: main/`c6b097e0ed6b80f6c22534dabb88e2b01c5a83fb`, clean working tree/index. Đây không phải permission cho Codex thực hiện remediation hoặc EX02.
+
+R01 authority/completion được ghi từ **Owner-provided statement trong task này**, không có external signature, original R01 command, execution timestamp hoặc OS-wide audit log được cung cấp. Remediation scope được ghi nhận là password-required requirement của exact existing principal/SID; không rewrite prior approvals hoặc mô tả Codex đã execute R01. Owner cung cấp successful interactive runas/profile, whoami /user đúng SID và target whoami /priv đầy đủ năm entries dưới đây; không tiết lộ password. Supplied group/no-Administrators/Medium integrity evidence E14 của cùng approved identity được giữ cùng latest SID/privilege evidence, không chỉ suy non-admin từ privilege names.
+
+Independent read-only observation dưới inspector `DESKTOP-OBDFK6B\PC` tại UTC **2026-11-16T15:13:31.3174828Z**, tương ứng **2026-11-16 22:13:31.3174828+07:00** (Asia/Bangkok). Không authenticate target hoặc truy cập password để kiểm chứng.
+
+| Evidence ID | Actual result / source | Classification |
+| --- | --- | --- |
+| EX01-E22 | Git/host đúng baseline, DESKTOP-OBDFK6B, PartOfDomain=false | PASS — independent preflight |
+| EX01-E23 | Get-LocalUser và CIM cùng PasswordRequired=True; trước R01 E17=False | PASS — independent result corroborates Owner-reported remediation |
+| EX01-E24 | Name=wwi_extract, Enabled=True, PrincipalSource=Local; SID trước/sau/CIM đều S-1-5-21-2164258108-3044412014-540060861-1007; CIM LocalAccount=True, Disabled=False, Lockout=False, Status=OK | PASS — independent; same identity, không recreate |
+| EX01-E25 |17 local groups đọc không lỗi,0 direct target memberships/no direct Administrators match; Owner target-token group evidence E14 không privileged groups/Administrators, Medium | PASS — independent direct check + supplied target session; không claim Codex đọc fresh target token |
+| EX01-E26 | Owner whoami /user xác nhận approved SID; whoami /priv chỉ có năm entries ở bảng dưới, không elevated administrative privileges xuất hiện | PASS — Owner-provided target runtime evidence, không inspector-token substitution |
+| EX01-E27 | Profile same SID tại C:\Users\wwi_extract, Loaded=True, Special=False, Status=0; Owner interactive runas logon succeeded | PASS — independent profile metadata + supplied logon evidence |
+| EX01-E28 | SID/name/enabled/local/groups/profile/lockout/password-changeability/expiry flags khớp E15–E20; observed captured-property delta là PasswordRequired False→True | PASS — bounded comparison + Owner R01 scope attestation; không OS-wide forensic change audit |
+| EX01-E29 | Codex chỉ metadata inspection/docs/Git; target Python/ODBC/TLS/SQL verification, scheduled/service execution không chạy | PASS scope preservation; downstream runtime tests NOT RUN, không EX01 implementation claim |
+
+Commands tái kiểm chỉ đọc: Get-LocalUser exact approved name trước/sau; CIM Win32_ComputerSystem/Win32_UserAccount exact local name/Win32_UserProfile exact SID; Get-LocalGroup/Get-LocalGroupMember. Không properties setter, password reset, group/right/ACL change, SQL connection, source/infra changes hoặc dependency installation.
+
+### Target privileges — Owner-supplied, bound to approved SID
+
+| Privilege | Supplied state | Assessment trong EX01 interactive model |
+| --- | --- | --- |
+| SeShutdownPrivilege | Disabled | Không unexpected administrative privilege được evidenced |
+| SeChangeNotifyPrivilege | Enabled | Accepted standard Windows privilege trong supplied listing |
+| SeUndockPrivilege | Disabled | Không unexpected administrative privilege được evidenced |
+| SeIncreaseWorkingSetPrivilege | Disabled | Không unexpected administrative privilege được evidenced |
+| SeTimeZonePrivilege | Disabled | Không unexpected administrative privilege được evidenced |
+
+Không quyền admin/elevation khác xuất hiện trong supplied complete listing; không coi chỉ Disabled là đủ chứng minh mọi privilege an toàn. Assessment dùng cả exact SID, group/no-Administrators/Medium evidence, direct membership inspection và privilege inventory. Codex không lấy target password/token hoặc thực hiện independent runas; no expiry/lockout/policy guarantee cho mọi thời điểm tương lai.
+
+### Independent EX01 acceptance matrix
+
+| Mandatory criterion | Evidence | Result | Limit / downstream boundary |
+| --- | --- | --- | --- |
+| Approved scope, exact host và Git baseline | Owner authority/E22 | PASS | Giữ previous approvals và read-only review |
+| Exact principal/local/enabled/SID stable | E24 | PASS | Identity verified ở observation này |
+| PasswordRequired=True sau R01 | E23 | PASS | Không đọc hoặc assert giá trị password |
+| Direct/inherited privileged group membership không evidenced | E25 và supplied target group/token evidence | PASS — independent/supplied | Không claim exhaustive all-machine security audit hoặc SQL effective permissions |
+| No unexpected target privileges | E26 và bảng năm privileges | PASS — Owner-supplied | Hai mandatory evidence gaps của §7 đã resolve |
+| Profile và intended interactive logon hoạt động | E27 | PASS — independent/supplied | Không cần grant thêm logon rights; scheduled/service model ngoài EX01 |
+| R01 limited account requirement | Owner statement + E28 comparison | PASS — attested/corroborated | Original command/full machine audit NOT RUN; chỉ claim captured delta đúng scope, không fabricate absence proof cho mọi tài nguyên |
+| Future Python process identity model được phân biệt | §4/E29 | PASS — assessment | Developer Python không tự thành target; protected runtime/ODBC/TLS tests còn implementation gates |
+| No unauthorized changes hoặc credential exposure trong review | E29/action scope | PASS | Không password collected, không OS/SQL mutations |
+| Docs/static/security/scope QA | Final QA record §10 | PASS chỉ sau actual QA | Không thay runtime findings bằng documentation-only PASS |
+
+Conditional Owner authority đủ để ghi **EX01 = DONE — OS Identity Verification** sau final QA PASS; không còn mandatory EX01 finding chưa xử lý từ hai vòng review. Đây không là SQL least-privilege account/connection validation hoặc ingestion acceptance. Không cần thêm Windows group/logon/privilege grants cho đã-verified interactive model. Không thực hiện thêm R01 action trong review này.
+
+### Remaining execution boundaries
+
+**EX02 = BLOCKED / Pending Authorization; G02 = Pending Runtime Verification; G01 = Pending Source Consistency Proof; WWI-05 = IN_PROGRESS; M1C/M2/M3 = NOT STARTED.**31 original gates/72 runtime scenarios không tự PASS hoặc đổi policy. G02 source SQL login/user mapping/effective rights/TLS chưa được test; EX01 không là G02 PASS. Không query SQL Server trong task này.
+
+Next EX02 cần named actual DBA Windows principal/SID/confirmed grant authority; protected staging PS01–08/trusted client; populated exact source-specific setup diff/hash/expected security delta và Owner execution/rollback authorization. Source allowlist9 current+2 physical archives không đổi. Sau setup được authorize riêng mới có separate actual-identity read-only verify authority/negative DB/TLS/group/module/ownership evidence. Không tự populate scripts, cấp SELECT/metadata privileges, khởi tạo SQL login/user hoặc authorize no-writes window. Runtime Python protected code/venv/access và client trust còn prerequisites triển khai tương lai, không mở lại EX01 OS acceptance.
+
+## 10. Final Acceptance QA & Status Record
+
+Actual final QA trước Git staging **PASS**: 13/13 existing offline static tests;143 visible files/134 Markdown/1.153 local links và anchors không lỗi; đúng7 existing Markdown paths,136 protected baseline hashes giữ nguyên;0 secret-pattern findings, `git diff --check` đạt. Original EX01 dependencies/acceptance criteria giữ nguyên, chỉ status BLOCKED→DONE; mọi prior task rows/status khác và31 gates/72 NOT RUN scenarios giữ nguyên. Original Owner OD01–03/EX01 approval text được bảo toàn, R01 record được append; SQL setup/verify/checker, AGENTS và ADRs không đổi.
+
+Mandatory EX01 criteria và QA đều PASS → **EX01 DONE — OS Identity Verification** theo conditional Owner authority; không còn current EX01 blocker. Staged file/content/secret/size/diff/hook checks bắt buộc trước một local commit `docs: accept EX01 windows extraction identity`. Commit SHA/final tree báo sau actual commit, không push. EX02 BLOCKED/Pending Authorization, G02 Pending Runtime Verification, G01 Pending Source Consistency Proof; WWI-05 IN_PROGRESS, M1C/M2/M3 NOT STARTED. Không account/SQL/infra mutation, credential collection hoặc target reauthentication trong review.

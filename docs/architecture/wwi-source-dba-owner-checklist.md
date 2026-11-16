@@ -2,7 +2,7 @@
 
 **OD01/OD02 direction approved; exact execution package PREPARED — DBA REVIEW REQUIRED,2026-11-16.** M1B chỉ review/metadata SELECT/documentation, không Windows/SQL identity/grant/config changes. [Identity](wwi-source-identity-proposal.md), [Consistency](wwi-source-consistency-proposal.md), [M1B evidence](wwi-m1b-assessment.md), [existing Owner authority](wwi-phase-1-closure-approval.md). Recommendation không là APPROVED.
 
-Hiện hành sau Owner manual provisioning: xem [EX01 post-provisioning review §10](#10-ex01-post-provisioning-review--acceptance-blocked). Các pending-name/absent-account/prior-blocker notes §1–9 là milestone history, không thay local observations mới.
+Hiện hành sau EX01-R01: xem [EX01 final OS acceptance §11](#11-ex01-final-acceptance--os-identity-verification). §1–10 giữ milestone history, bao gồm PasswordRequired=False ở vòng review trước; không dùng chúng thay current acceptance evidence.
 
 ## 1. Pending decisions
 
@@ -224,3 +224,11 @@ Local account `DESKTOP-OBDFK6B\wwi_extract` Enabled/Local, SID `S-1-5-21-2164258
 **EX01 vẫn BLOCKED**: cả Get-LocalUser/CIM trả **PasswordRequired=False**, trái explicit requirement, dù Owner đã nhập password. Flag không chứng minh password rỗng. Thiếu thêm sanitized target whoami /user và /priv để hoàn tất no-unnecessary-privileges criterion; inspector-token evidence không thay target proof. Remediation flag cần Owner authority riêng, giữ same SID/credentials/groups; không reset/recreate hoặc tự sửa property trong task review. Không có observed need cấp thêm rights cho interactive mode đã chạy; service/batch/runtime/TLS/protected files là downstream prerequisites riêng.
 
 EX02/G02 BLOCKED, G01 pending, WWI-05/Phase2 IN_PROGRESS; chưa M1C/M2/M3. Next EX02 vẫn cần EX01 acceptance, actual DBA execution identity/privileges và approved protected populated artifacts/hash/rollback + explicit execution/verification authority. Review chỉ metadata/docs/Git, không Windows/SQL/security/infrastructure changes hoặc secret collection.
+
+## 11. EX01 Final Acceptance — OS Identity Verification
+
+[EX01 final evidence E22–E29/acceptance matrix](wwi-ex01-windows-identity-evidence.md#9-final-ex01-acceptance--os-identity-verification) ghi Owner-reported approval/completion **EX01-R01**, latest target whoami /user SID và năm whoami /priv entries; independent read-back xác nhận PasswordRequired=True ở Get-LocalUser/CIM, same SID-1007, Enabled/Local và profile đúng.17 local groups đọc không lỗi, no direct target/Administrators membership; supplied group/no-Administrators/Medium + latest target SID/privileges không có inherited privileged path được evidenced. Giữ distinction Owner-supplied vs Codex-observed, không independent target reauthentication.
+
+Owner statement và before/after captured fields corroborate R01 chỉ đổi password-required requirement, không recreate/name/SID/group change được thấy; không claim đã audit mọi OS change hoặc review original R01 command. Current task không mutate account/rights/ACL/SQL hoặc thu password. Hai remaining mandatory findings §10 đã resolve; final QA PASS → **EX01 DONE — OS Identity Verification** theo conditional Owner task, không approve EX02.
+
+Current handoff: **EX02 BLOCKED / Pending Authorization; G02 Pending Runtime Verification; G01 Pending Source Consistency Proof; WWI-05 IN_PROGRESS; M1C/M2/M3 NOT STARTED.** DBA exact execution identity/SID/rights, protected staging/client, populated artifacts/diff/hashes, exact execution/rollback và separate read-only verification approvals còn thiếu. Không source-window operations/ingestion;31 gates/72 scenarios giữ nguyên. OS identity PASS không là source effective-SELECT/TLS/runtime PASS.

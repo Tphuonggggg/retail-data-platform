@@ -18,7 +18,7 @@ DBA review/populate/approve execution riêng;OS owner xác nhận account vàgro
 
 ## 5. Inputs
 
-Windows name `DESKTOP-OBDFK6B\wwi_extract` và future DB-user name `wwi_extract` đã được Owner approve cho EX01; actual target SID/runtime proof, SQL change/verification references và execution authority **chưa có**. SQL templates vẫn giữ placeholders. Inputs còn gồm11-object allowlist,reviewed client TLS/profile vàexternal non-admin/group/negative-database evidence.
+Windows principal `DESKTOP-OBDFK6B\wwi_extract`, actual SID `S-1-5-21-2164258108-3044412014-540060861-1007` và OS identity evidence đã có qua EX01; future DB-user name `wwi_extract` chưa là SQL mapping/runtime proof. SQL change/verification references, actual DBA execution identity, protected populated artifacts và execution authority **chưa có**; templates giữ placeholders. Inputs còn gồm11-object allowlist,reviewed client TLS/profile vàexternal group/module/negative-database evidence.
 
 ## 6. Outputs
 
@@ -74,7 +74,7 @@ Final EX01/EX02 review: **BLOCKED / BLOCKED**, xem [DBA/Owner Checklist §7](../
 
 [Owner authorization package §8](../../docs/architecture/wwi-source-dba-owner-checklist.md#8-security-preparation-finalization--owner-authorization-package) bổ sung finalization: principal `DESKTOP-OBDFK6B\wwi_extract` và DB user `wwi_extract` vẫn **PROPOSED**; intended DBA/operator chưa supplied. Task follow-up chỉ cho hoàn thiện bốn existing review files và một local commit sau QA PASS, không approve identities/grants/staging execution. Không tạo staging folder, copy privileged executable artifacts, đổi ACL hoặc chạy SQL. Template hashes không thay populated execution hashes; mọi edit/line-ending conversion đều cần kiểm và review hash mới. G01/G02 giữ Pending/BLOCKED.
 
-**Current EX01 follow-up:** [Owner approval](../../docs/architecture/wwi-m1b-owner-decisions.md#7-owner-ex01-authorization--2026-11-16) supersede PROPOSED-name notes ở đoạn lịch sử trên, chỉ approve Windows provisioning/verification; Owner là OS Operator/DBA. [EX01 evidence/manual handoff](../../docs/architecture/wwi-ex01-windows-identity-evidence.md) ghi provisioning **BLOCKED trước creation** do token không elevated/verified delegated authority và không secure interactive password channel; target SID chưa có. EX02 vẫn BLOCKED, actual SQL login/user/grant operations NOT RUN; G01/G02 pending. Scripts/checker không đổi, không populate names/guards, không account/ACL/policy/DB changes; không bắt đầu M1C/M2/M3.
+**Current EX01 final handoff:** [EX01-R01 Owner record](../../docs/architecture/wwi-m1b-owner-decisions.md#8-ex01-r01-owner-remediation-record-và-final-review-authority) và [final acceptance matrix](../../docs/architecture/wwi-ex01-windows-identity-evidence.md#9-final-ex01-acceptance--os-identity-verification) xác nhận PasswordRequired=True/same SID và target privilege evidence sau remediation; final QA PASS → **EX01 DONE — OS Identity Verification**. Prior PROPOSED/BLOCKED/absent notes ở milestones trên là history. **EX02 BLOCKED / Pending Authorization; G02 Pending Runtime Verification; G01 Pending Source Consistency Proof**. SQL login/user/grant operations NOT RUN; scripts/checker không đổi, không populate names/guards, không execute staging hoặc account/ACL/policy/DB changes trong review; M1C/M2/M3 NOT STARTED.
 
 ## 14. Reference semantics
 
