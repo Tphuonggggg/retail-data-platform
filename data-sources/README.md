@@ -54,4 +54,4 @@ Contract đúng bảng/cột/grain đã kiểm chứng; quyền đọc tối thi
 
 ## 14. Current Status
 
-Database WWI local đã được khảo sát metadata trực tiếp, chỉ đọc trong Phase 1.1. Chưa có source adapter, contract WWI hoàn chỉnh hoặc pipeline được kiểm thử trong repository. Not implemented yet.
+Source contracts/WWI-02 đã nghiệm thu ở mức tài liệu. M1A secure developer SQL connection/11 bounded reads PASS, nhưng current identity sysadmin không phù hợp extraction; approved least-privilege profile và source consistency proof còn blocked. [Secure Contract](../docs/architecture/wwi-secure-connection-contract.md), [Evidence](../docs/architecture/wwi-m1a-gate-evidence.md), [Handoff](../docs/architecture/wwi-m1a-handoff.md). Không source write/config/identity changes; production adapter/pipeline Not implemented yet.

@@ -42,4 +42,4 @@ Kiểm tra quyền đọc, kết nối, khởi động và tái lập môi trư�
 Môi trường tái lập được, không commit secret, nguồn giữ quyền chỉ đọc.
 
 ## 14. Current Status
-Chưa có Docker Compose hoặc cấu hình runtime dự án. Not implemented yet.
+M1A đã kiểm environment/driver/Docker/Compose và phân loại target; xem [Environment Report](../docs/architecture/wwi-m1a-environment-readiness.md), [Secure Contract](../docs/architecture/wwi-secure-connection-contract.md), [Evidence](../docs/architecture/wwi-m1a-gate-evidence.md), [Handoff](../docs/architecture/wwi-m1a-handoff.md). Native PG service có nhưng Raw target chưa approved/verified, B9 không dùng lại. Chưa có project Compose/bootstrap/physical Raw; operational BLOCKED, WWI-05 IN_PROGRESS. Runtime module Not implemented yet.

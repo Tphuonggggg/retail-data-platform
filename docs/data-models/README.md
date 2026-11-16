@@ -74,4 +74,6 @@ Mỗi kết luận quan trọng có evidence hoặc nhãn Unverified/Proposed; �
 
 ## 14. Current Status
 
-Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner approval](../architecture/wwi-phase-1-closure-approval.md).
+Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner approval](../architecture/wwi-phase-1-closure-approval.md).
+
+[M1A Handoff](../architecture/wwi-m1a-handoff.md) ghi verification hoàn tất nhưng operational prerequisites còn blocked; không thay accepted data models/31 gates/72 scenarios.

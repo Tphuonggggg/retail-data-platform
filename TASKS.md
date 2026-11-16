@@ -1,6 +1,6 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. DONE cần acceptance evidence; Owner quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md).
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`. DONE cần acceptance evidence; Owner quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md).
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
@@ -158,7 +158,7 @@ Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN
 
 DW-04 acceptance evidence:20/20 mandatory design criteria PASS;11 source/16 model/22 KPI/12 BRD coverage,31 original gates/18 components/M1–M9/72 NOT RUN scenarios;128 visible files/122 Markdown/946 local links/0 broken,115 protected hashes unchanged,secret/size/scope/staged/diff checks PASS. Conditional Owner authority chỉ nghiệm thu DW-04 — Design Acceptance; original acceptance criteria/dependencies giữ nguyên. “Owner nghiệm thu WWI-04” là parent overall review checkpoint, không tự đóng parent bằng subtask acceptance. Candidate M1–M9 trong Handoff không thay task IDs hoặc dependencies WWI-05–16.
 
-## Owner Closure & Phase 2 Authorization — 2026-11-16 (hiện hành)
+## Owner Closure & Phase 2 Authorization — 2026-11-16 (Checkpoint A, trước verification)
 
 Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử.
 
@@ -168,6 +168,12 @@ Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; W
 
 | ID | Description / module | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
-| M1A | Local Readiness & Secure Connection-Contract Verification — infrastructure/data-sources/storage/docs | WWI-04/Phase1 closure APPROVAL-01/02; Phase2/task APPROVAL-03/04; Checkpoint A QA+commit | Inventory, secure connectivity/identity, target classification, contracts/evidence/handoff và QA đầy đủ; missing prerequisites ghi BLOCKED/NOT RUN; checkpoint completion khác operational readiness | IN_PROGRESS |
+| M1A | Local Readiness & Secure Connection-Contract Verification (DONE — Verification Checkpoint) — infrastructure/data-sources/storage/docs | WWI-04/Phase1 closure APPROVAL-01/02; Phase2/task APPROVAL-03/04; Checkpoint A QA+commit | Inventory, secure connectivity/identity, target classification, contracts/evidence/handoff và QA đầy đủ; missing prerequisites ghi BLOCKED/NOT RUN; checkpoint completion khác operational readiness | DONE |
 
 M1A là child checkpoint của WWI-05, không thay official WWI-05 Definition of Done. Authorization không làm WWI-05 DONE; M2 và các milestone sau NOT STARTED.
+
+## WWI-05 / M1A — Verification Report, 2026-11-16 (hiện hành)
+
+M1A **DONE — Verification Checkpoint**, không operational acceptance: secure developer SQL/TLS và11 bounded source reads PASS; tested identity có sysadmin/write permissions nên FAIL suitability, approved extraction profile/consistency/Raw target/reproducibility còn BLOCKED. WWI-05/Phase2 **IN_PROGRESS**; WWI-04 DONE — Design, Phase1 Completed theo Owner approval; M2/M3+ NOT STARTED.
+
+[Environment Report](docs/architecture/wwi-m1a-environment-readiness.md), [Secure Contract](docs/architecture/wwi-secure-connection-contract.md), [26-check Evidence Matrix](docs/architecture/wwi-m1a-gate-evidence.md), [M1A Handoff](docs/architecture/wwi-m1a-handoff.md). Metadata/connectivity là subset, không nghiệm thu IT01 hoặc72 scenarios;31 original gates giữ nguyên. Không source/target writes/infrastructure/identity/dependency changes, B9 sandbox giữ nguyên. Mọi next remediation/provision cần Owner giao task riêng; không tự M2/M3/push.

@@ -1,6 +1,6 @@
 # Roadmap
 
-Chủ dự án quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). Task/evidence ở [TASKS.md](TASKS.md).
+Chủ dự án quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). Task/evidence ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai
 
@@ -39,7 +39,7 @@ DW-02A/B đã nghiệm thu khảo sát và ghi SCD-01–07 trong [assessment A/B
 - **Dependencies:** Phase 1 và phê duyệt triển khai.
 - **Deliverables:** Hướng dẫn môi trường, connection contract và kết quả kiểm tra quyền.
 - **Acceptance Criteria:** Source chỉ đọc; đích sẵn sàng và môi trường local có thể tái lập theo hướng dẫn; không lộ credential, commit backup hoặc sửa WWI gốc.
-- **Status:** IN_PROGRESS — Authorized theo APPROVAL-03/04, ban đầu chỉ WWI-05/M1A verification. Source/target operational readiness chưa được xác minh; không tự bắt đầu M2/M3.
+- **Status:** IN_PROGRESS — Authorized theo APPROVAL-03/04. M1A verification checkpoint hoàn tất với operational readiness BLOCKED; WWI-05 IN_PROGRESS. Không tự bắt đầu M2/M3; xem [M1A evidence/handoff](docs/architecture/wwi-m1a-handoff.md).
 
 ## Phase 3: Sales Ingestion & Incremental Loading
 
@@ -185,8 +185,14 @@ Design acceptance khác implementation/operational readiness. WWI-04/Phase1 **IN
 
 Basic DQ/CI/tests đi cùng code đầu tiên, correctness tests bắt buộc trước relevant publication, không dời sang Phase6/9. M8 controls không tự certify mart thiếu M6/B5/E evidence. Milestones không thay phase gates hoặc cấp quyền triển khai. Bước đầu đề xuất WWI-05/M1A local readiness và secure connection-contract verification, chỉ sau Owner overall review/authorization Phase2.
 
-## Owner Closure & Phase 2 Authorization — 2026-11-16 (hiện hành)
+## Owner Closure & Phase 2 Authorization — 2026-11-16 (Checkpoint A, trước verification)
 
 Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05/M1A **IN_PROGRESS — Authorized**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử.
 
 [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md) là authority mới cho APPROVAL-01–05; nguồn là task trực tiếp của Project Owner, không chữ ký điện tử/hệ thống approval bên ngoài. Checkpoint A ghi nhận và commit sau QA, rồi Checkpoint B mới thực hiện M1A chỉ đọc. G01–08/RG01–12/CG01–10/B5 giữ nguyên31 entries;72 runtime scenarios NOT RUN. Approval không cho DML/DDL, infrastructure/identity/config changes, install dependencies, pipeline, M2/M3 hoặc push. Các status/no-start notes của DW-04 phía trên là lịch sử trước approval này.
+
+## WWI-05 / M1A — Verification Report, 2026-11-16 (hiện hành)
+
+M1A **DONE — Verification Checkpoint**, không operational acceptance: secure developer SQL/TLS và11 bounded source reads PASS; tested identity có sysadmin/write permissions nên FAIL suitability, approved extraction profile/consistency/Raw target/reproducibility còn BLOCKED. WWI-05/Phase2 **IN_PROGRESS**; WWI-04 DONE — Design, Phase1 Completed theo Owner approval; M2/M3+ NOT STARTED.
+
+[Environment Report](docs/architecture/wwi-m1a-environment-readiness.md), [Secure Contract](docs/architecture/wwi-secure-connection-contract.md), [26-check Evidence Matrix](docs/architecture/wwi-m1a-gate-evidence.md), [M1A Handoff](docs/architecture/wwi-m1a-handoff.md). Metadata/connectivity là subset, không nghiệm thu IT01 hoặc72 scenarios;31 original gates giữ nguyên. Không source/target writes/infrastructure/identity/dependency changes, B9 sandbox giữ nguyên. Mọi next remediation/provision cần Owner giao task riêng; không tự M2/M3/push.
