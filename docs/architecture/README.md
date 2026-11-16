@@ -12,3 +12,6 @@ Current governance: [Phase1 closure/Phase2 authorization](wwi-phase-1-closure-ap
 
 
 M1A hiện hành: [Local Environment Readiness](wwi-m1a-environment-readiness.md), [Secure Connection Contract](wwi-secure-connection-contract.md), [Gate/Evidence Matrix](wwi-m1a-gate-evidence.md), [Implementation Handoff](wwi-m1a-handoff.md). Checkpoint DONE — Verification, operational readiness BLOCKED; no M2/M3.
+
+
+M1B planning: [Identity privilege proposal](wwi-source-identity-proposal.md), [Consistency options](wwi-source-consistency-proposal.md), [DBA/Owner checklist](wwi-source-dba-owner-checklist.md), [Assessment/evidence](wwi-m1b-assessment.md). Review DONE sau QA; all concrete identity/method approvals Pending,source operational readiness vẫn BLOCKED. Không thay original policies/gates.

@@ -48,3 +48,8 @@ G03–05 bounded B9 lịch sử không actual Raw adapter/regression proof; G06/
 ## 6. Git và điểm dừng
 
 Commit B chỉ sau QA PASS: `docs: record M1A environment readiness and connection verification`. Không amend/reset commit A, không push/remote. Chỉ4 M1A docs và related trackers/index/module READMEs; không source/config/dependency/runtime code changes. Dừng sau Checkpoint B reporting, không M2/M3.
+
+
+## M1B follow-up — 2026-11-16
+
+Owner đã giao riêng M1B source identity/consistency review. [Identity proposal](wwi-source-identity-proposal.md), [Consistency proposal](wwi-source-consistency-proposal.md), [DBA/Owner checklist](wwi-source-dba-owner-checklist.md), [M1B assessment](wwi-m1b-assessment.md) giải quyết phần planning,không runtime prerequisites. M1B DONE — Planning Review sau QA; D01–D05 Pending Owner/DBA Approval,G01/G02 không PASS;WWI-05/Phase2 IN_PROGRESS. Các next-action “chưa thực hiện” ở §4 nay có proposal chi tiết,administrative actions vẫn chưa chạy. Không bắt đầu M1C/M2/M3.

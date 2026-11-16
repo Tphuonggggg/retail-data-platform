@@ -55,3 +55,8 @@ Contract đúng bảng/cột/grain đã kiểm chứng; quyền đọc tối thi
 ## 14. Current Status
 
 Source contracts/WWI-02 đã nghiệm thu ở mức tài liệu. M1A secure developer SQL connection/11 bounded reads PASS, nhưng current identity sysadmin không phù hợp extraction; approved least-privilege profile và source consistency proof còn blocked. [Secure Contract](../docs/architecture/wwi-secure-connection-contract.md), [Evidence](../docs/architecture/wwi-m1a-gate-evidence.md), [Handoff](../docs/architecture/wwi-m1a-handoff.md). Không source write/config/identity changes; production adapter/pipeline Not implemented yet.
+
+
+## M1B — Source identity và consistency proposals
+
+[Identity](../docs/architecture/wwi-source-identity-proposal.md), [Consistency](../docs/architecture/wwi-source-consistency-proposal.md), [DBA/Owner actions](../docs/architecture/wwi-source-dba-owner-checklist.md), [Assessment](../docs/architecture/wwi-m1b-assessment.md) ghi required per-object privileges/current+H,metadata/TLS limits,safe negative tests và A/B proof plans. Chỉ review/metadata,không tạo/sửa identities/grants. M1B planning DONE sau QA,method/identity PROPOSED và G01/G02 vẫn BLOCKED; production adapter Not implemented yet.

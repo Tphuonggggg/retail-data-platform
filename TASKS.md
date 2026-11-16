@@ -177,3 +177,15 @@ M1A là child checkpoint của WWI-05, không thay official WWI-05 Definition of
 M1A **DONE — Verification Checkpoint**, không operational acceptance: secure developer SQL/TLS và11 bounded source reads PASS; tested identity có sysadmin/write permissions nên FAIL suitability, approved extraction profile/consistency/Raw target/reproducibility còn BLOCKED. WWI-05/Phase2 **IN_PROGRESS**; WWI-04 DONE — Design, Phase1 Completed theo Owner approval; M2/M3+ NOT STARTED.
 
 [Environment Report](docs/architecture/wwi-m1a-environment-readiness.md), [Secure Contract](docs/architecture/wwi-secure-connection-contract.md), [26-check Evidence Matrix](docs/architecture/wwi-m1a-gate-evidence.md), [M1A Handoff](docs/architecture/wwi-m1a-handoff.md). Metadata/connectivity là subset, không nghiệm thu IT01 hoặc72 scenarios;31 original gates giữ nguyên. Không source/target writes/infrastructure/identity/dependency changes, B9 sandbox giữ nguyên. Mọi next remediation/provision cần Owner giao task riêng; không tự M2/M3/push.
+
+## WWI-05 / M1B — Source Identity & Consistency Planning, 2026-11-16
+
+Task Owner M1B chỉ cho review/metadata SELECT và documentation commit sau QA. M1B **DONE — Planning Review** sau acceptance/QA; không identity/grant/config/source/infrastructure changes. [Assessment](docs/architecture/wwi-m1b-assessment.md), [Identity proposal](docs/architecture/wwi-source-identity-proposal.md), [Consistency proposal](docs/architecture/wwi-source-consistency-proposal.md), [DBA/Owner checklist](docs/architecture/wwi-source-dba-owner-checklist.md).
+
+G01/G02/RG01/RG02/CG08 vẫn Pending/BLOCKED; current developer identity FAIL suitability. Recommended static no-writes window A và identity package **PROPOSED — Pending Owner/DBA Approval**, B consistent copy fallback cần separate approval, không tạo copy. M1B planning không operational PASS, không đóng WWI-05/Phase2; M1A DONE Verification/Phase1 Completed/WWI-04 DONE Design giữ nguyên. Original31 gates/72 NOT RUN scenarios/B9 không đổi; M1C/M2/M3 chưa được giao.
+
+| ID | Description / module | Dependencies | Acceptance criteria | Status |
+| --- | --- | --- | --- | --- |
+| M1B | Secure Source Identity & Consistency Readiness — docs/source-security review (DONE — Planning Review) | M1A verification evidence,Owner task M1B,DW-03A/B accepted policies | Required privileges và LP tests;evaluate A/B consistency,preferred option PROPOSED,Owner/DBA checklist,accurate gates và documentation QA;không source operational PASS | DONE |
+
+M1B child checkpoint chỉ planning; G01/G02 runtime closure cần approved identity/method và actual proof. WWI-05 IN_PROGRESS,không tự M1C/M2/M3.
