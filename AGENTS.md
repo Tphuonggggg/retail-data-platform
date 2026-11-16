@@ -59,15 +59,36 @@ Phase 0 — Project Initialization: Completed. Phase 1 — WWI Requirements & So
 
 ## DW-03A/B9 follow-up — 2026-11-15
 
-DW-03A **DONE — Design** theo conditional Owner final-review authority sau14 design criteria/actual B9 tests/QA đạt. B9 **Approved — Physical Raw Temporal Representation**: F2→Python str/None→bound psycopg→authoritative TEXT/C exact comparator;không whole Raw/index/retention/runtime approval. A01–A06/B1–B8 giữ nguyên; WWI-04/Phase1 IN_PROGRESS, DW-03B DONE — Design theo Stage 2 conditional acceptance ngày 2026-11-16, DW-03C/DW-04 TODO, Phase2–9 Not Started. Chỉ isolated B9 PoC Implemented/Tested,production modules Not implemented yet. Xem current assessment/work-plan G01–G08; không tự bắt đầu task tiếp.
+DW-03A **DONE — Design** theo conditional Owner final-review authority sau14 design criteria/actual B9 tests/QA đạt. B9 **Approved — Physical Raw Temporal Representation**: F2→Python str/None→bound psycopg→authoritative TEXT/C exact comparator;không whole Raw/index/retention/runtime approval. A01–A06/B1–B8 giữ nguyên; WWI-04/Phase1 IN_PROGRESS, DW-03B DONE — Design theo Stage 2 conditional acceptance ngày 2026-11-16, DW-03C DONE — Design theo Stage3 conditional acceptance ngày 2026-11-16, D1/D2 Logical+D3 Governance Approved, DW-04 TODO, Phase2–9 Not Started. Chỉ isolated B9 PoC Implemented/Tested,production modules Not implemented yet. Xem current assessment/work-plan G01–G08; không tự bắt đầu task tiếp.
 
 ## DW-03B Stage 1 — 2026-11-16 (lịch sử trước Stage 2)
 
 Owner chỉ giao Incremental Discovery & Design Proposal. Xem [work plan](docs/data-models/wwi-dw-03b-work-plan.md). INC-01–INC-06 đều PROPOSED — PENDING PROJECT OWNER APPROVAL; không chốt algorithm/window/delete policy hoặc sửa accepted decisions. Chỉ tài liệu, không DB/Docker/B9 sandbox/pipeline changes, stage/commit/push, đóng DW-03B hoặc bắt đầu DW-03C.
 
 
-## DW-03B Stage 2 — Logical Approval & Design Acceptance, 2026-11-16 (hiện hành)
+## DW-03B Stage 2 — Logical Approval & Design Acceptance, 2026-11-16 (mốc trước DW-03C)
 
 Owner task “DW-03B Stage 2 — Owner Logical Approval & Design Finalization” cấp **INC-01–INC-06 Approved — Logical Policy**. [Specification](docs/data-models/wwi-dw-03b-incremental-design-proposal.md) và [Register](docs/data-models/wwi-dw-03b-decision-register.md) chốt mục tiêu **Current-State Convergence** so với verified consistent source state; candidate windows/temporal history không là complete CDC. Full comparison có full source-read cost dù chỉ ghi changed rows. Exact algorithms/U selection, numeric duration/cadence/quality thresholds và physical/runtime mechanisms chưa tự chốt.
 
 [Assessment](docs/data-models/wwi-dw-03b-assessment.md) sections 9–13 ghi mandatory design criteria/QA và conditional acceptance: **DW-03B DONE — Design**. [RG01–RG12](docs/data-models/wwi-dw-03b-work-plan.md) có reason/owner/target/proof/publication blocker, giữ G01–G08/B5. IT01–IT21 **NOT RUN**, production incremental Not implemented yet. DW-03A/B9/A01–A06/B1–B8 không đổi; **DW-03C/DW-04 TODO, WWI-04/Phase 1 IN_PROGRESS, Phase 2–9 Not Started**. Không bắt đầu task tiếp. Current authorization cho một focused documentation commit sau staged QA; không push hoặc DB/Docker/B9 sandbox changes.
+
+
+## DW-03C Stage 1 — Discovery & Design Proposal, 2026-11-16 (lịch sử trước Stage 2)
+
+Owner đã giao DW-03C **IN_PROGRESS**. [Work plan](docs/data-models/wwi-dw-03c-work-plan.md), [Change Propagation Proposal](docs/data-models/wwi-dw-03c-change-propagation-design-proposal.md), [CP-01–CP-06](docs/data-models/wwi-dw-03c-decision-register.md) và [Assessment](docs/data-models/wwi-dw-03c-assessment.md) là hồ sơ Stage 1. Tất cả CP decisions **PROPOSED — PENDING PROJECT OWNER APPROVAL**; không thay approved DW-01/02/03A/03B/B9 hoặc business scope. Source/model impact, old/new groups, SCD2/fact/mart/publication/recovery và test scenarios chỉ là design proposals.
+
+DW-01/DW-02/DW-03A/DW-03B DONE Design; DW-04 TODO; WWI-04/Phase 1 IN_PROGRESS; Phase 2–9 Not Started. Inherited G01–G08/RG01–RG12/B5 vẫn pending; CP runtime tests NOT RUN, production modules Not implemented yet. Không SQL/DB/Docker/B9 sandbox/code/dependency changes; **không stage/commit/push, không đóng DW-03C hoặc bắt đầu DW-04**.
+
+
+## DW-03C Stage 2 — Owner Logical Approval & Final Design Review, 2026-11-16 (lịch sử trước Stage 3)
+
+Owner đã approve **CP-01–CP-06 — Logical Policy** tại [Register](docs/data-models/wwi-dw-03c-decision-register.md). [Specification](docs/data-models/wwi-dw-03c-change-propagation-design-proposal.md) section10 ghi D1–D4: **D1 Type1 selection reference/mode, D2 analytical publication unit/shared consumer compatibility, D3 revocation/rollback authority còn PENDING OWNER APPROVAL**; D4 full affected-mart rebuild baseline CONFIRMED theo CP-04, không cần approve lại. Six logical approvals không tự resolve D1–D3.
+
+[Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections9–13: design acceptance **PARTIAL**, DW-03C **IN_PROGRESS**; no finalization commit/staging/push. AP01–AP06 logical evidence contracts reviewed, CP-R01–12 và CP-T01–30 được rà; runtime tests **NOT RUN**. G01–G08/RG01–RG12/CG01–10/B5 vẫn gated, không numeric/physical defaults. DW-04 TODO/chưa bắt đầu; WWI-04/Phase1 IN_PROGRESS, Phase2–9 Not Started. Approved DW-01/02/03A/03B/B9/business scope không đổi; không DB/Docker/B9 sandbox/code changes.
+
+
+## DW-03C Stage 3 — Final Design Acceptance, 2026-11-16 (hiện hành)
+
+Owner task “DW-03C Stage 3 — Owner D1–D3 Approvals & Final Design Acceptance” cấp **D1/D2 Approved — Logical Policy, D3 Approved — Governance Policy; D4 Confirmed**. [Register](docs/data-models/wwi-dw-03c-decision-register.md) ghi exact scope/authority; [Specification](docs/data-models/wwi-dw-03c-change-propagation-design-proposal.md) tích hợp explicit frozen four-anchor selected set, dependency-complete subject/view+joint consumer manifest và DQ/Owner/Operator lifecycle governance. Không phát hiện conflict với accepted DW-02; no Type2/source-measure/history-meaning changes.
+
+[Final Assessment](docs/data-models/wwi-dw-03c-assessment.md) sections14–18 ghi **18/18 mandatory design criteria PASS → DW-03C DONE — Design** theo conditional authority sau actual QA, không runtime approval. Stage1/2/Pending/15PASS+3PARTIAL evidence giữ history. CP-01–06 vẫn Approved — Logical Policy; CP-T01–30 NOT RUN; G01–08/RG01–12/CG01–10/B5 và per-action evidence còn gates trước relevant normal publication/use. Không tự revoke/reinstate/rollback hoặc implement. DW-04 TODO/ready-for-Owner-task, WWI-04/Phase1 IN_PROGRESS,Phase2–9 Not Started. Current authority cho one focused docs commit sau staged checks, no push/remote/DB/Docker/B9 changes; không bắt đầu DW-04.
