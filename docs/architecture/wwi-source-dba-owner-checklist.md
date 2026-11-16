@@ -2,6 +2,8 @@
 
 **OD01/OD02 direction approved; exact execution package PREPARED — DBA REVIEW REQUIRED,2026-11-16.** M1B chỉ review/metadata SELECT/documentation, không Windows/SQL identity/grant/config changes. [Identity](wwi-source-identity-proposal.md), [Consistency](wwi-source-consistency-proposal.md), [M1B evidence](wwi-m1b-assessment.md), [existing Owner authority](wwi-phase-1-closure-approval.md). Recommendation không là APPROVED.
 
+Hiện hành sau Owner manual provisioning: xem [EX01 post-provisioning review §10](#10-ex01-post-provisioning-review--acceptance-blocked). Các pending-name/absent-account/prior-blocker notes §1–9 là milestone history, không thay local observations mới.
+
 ## 1. Pending decisions
 
 | Decision ID | Vấn đề / options | Khuyến nghị và lý do | Required authority | Status |
@@ -212,3 +214,13 @@ Current follow-up ngày2026-11-16 supersede pending-name/operator-role notes ở
 [EX01-E01–E12 evidence và manual handoff](wwi-ex01-windows-identity-evidence.md) ghi đúng expected Git baseline/host, target account chưa tồn tại, process PC không elevated administrator token, stdin/stdout redirected và secure OS Operator password channel chưa có. Theo task §5–6 dừng trước account creation. **EX01 BLOCKED**, target SID/groups/non-admin/logon/profile NOT RUN; không dùng operator token làm target evidence. Không SQL/OS account/policy/ACL changes hoặc password collection trong task này.
 
 Next action: Owner dùng private elevated Windows console theo manual procedure trong evidence; account collision → inspect only, error/missing verification → stop, không reset/recreate hoặc tự grant logon/group rights. Không cần duyệt lại exact EX01 name; cần actual execution evidence trước acceptance. EX02 vẫn BLOCKED đến khi EX01 proof/actual DBA identity+grant authority/protected staging+trusted client/populated diff/hash/rollback+separate execution approval đầy đủ. G01/G02 pending; không đề nghị EX03 operations hoặc bắt đầu M1C/M2/M3. Một local documentation/evidence commit được task EX01 cho phép sau QA PASS kể cả provisioning BLOCKED; các commit/no-commit notes trước đây là lịch sử.
+
+## 10. EX01 Post-Provisioning Review — Acceptance BLOCKED
+
+Owner task ngày2026-11-16 cung cấp successful manual account/session evidence và cho review chỉ đọc, conditional EX01 acceptance cùng một local documentation commit sau QA. [Current evidence/acceptance matrix](wwi-ex01-windows-identity-evidence.md#7-post-provisioning-evidence-review--acceptance) phân biệt Owner narrative với independent local E13–E21. Giữ nguyên Owner approvals và original acceptance criteria, không thực hiện EX02.
+
+Local account `DESKTOP-OBDFK6B\wwi_extract` Enabled/Local, SID `S-1-5-21-2164258108-3044412014-540060861-1007` khớp Owner và ổn định qua reads; profile SID/path khớp.17 local groups đọc không lỗi,0 direct memberships/no direct Administrators. Users token theo Owner không mâu thuẫn: BUILTIN\Users chứa Authenticated Users/INTERACTIVE. Successful PowerShell/Medium/no Administrators token là **Owner-supplied**, không do Codex authenticate.
+
+**EX01 vẫn BLOCKED**: cả Get-LocalUser/CIM trả **PasswordRequired=False**, trái explicit requirement, dù Owner đã nhập password. Flag không chứng minh password rỗng. Thiếu thêm sanitized target whoami /user và /priv để hoàn tất no-unnecessary-privileges criterion; inspector-token evidence không thay target proof. Remediation flag cần Owner authority riêng, giữ same SID/credentials/groups; không reset/recreate hoặc tự sửa property trong task review. Không có observed need cấp thêm rights cho interactive mode đã chạy; service/batch/runtime/TLS/protected files là downstream prerequisites riêng.
+
+EX02/G02 BLOCKED, G01 pending, WWI-05/Phase2 IN_PROGRESS; chưa M1C/M2/M3. Next EX02 vẫn cần EX01 acceptance, actual DBA execution identity/privileges và approved protected populated artifacts/hash/rollback + explicit execution/verification authority. Review chỉ metadata/docs/Git, không Windows/SQL/security/infrastructure changes hoặc secret collection.
