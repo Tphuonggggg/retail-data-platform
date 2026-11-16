@@ -59,4 +59,15 @@ Phase 0 — Project Initialization: Completed. Phase 1 — WWI Requirements & So
 
 ## DW-03A/B9 follow-up — 2026-11-15
 
-DW-03A **DONE — Design** theo conditional Owner final-review authority sau14 design criteria/actual B9 tests/QA đạt. B9 **Approved — Physical Raw Temporal Representation**: F2→Python str/None→bound psycopg→authoritative TEXT/C exact comparator;không whole Raw/index/retention/runtime approval. A01–A06/B1–B8 giữ nguyên; WWI-04/Phase1 IN_PROGRESS,DW-03B/C/DW-04 TODO,Phase2–9 Not Started. Chỉ isolated B9 PoC Implemented/Tested,production modules Not implemented yet. Xem current assessment/work-plan G01–G08; không tự bắt đầu task tiếp.
+DW-03A **DONE — Design** theo conditional Owner final-review authority sau14 design criteria/actual B9 tests/QA đạt. B9 **Approved — Physical Raw Temporal Representation**: F2→Python str/None→bound psycopg→authoritative TEXT/C exact comparator;không whole Raw/index/retention/runtime approval. A01–A06/B1–B8 giữ nguyên; WWI-04/Phase1 IN_PROGRESS, DW-03B DONE — Design theo Stage 2 conditional acceptance ngày 2026-11-16, DW-03C/DW-04 TODO, Phase2–9 Not Started. Chỉ isolated B9 PoC Implemented/Tested,production modules Not implemented yet. Xem current assessment/work-plan G01–G08; không tự bắt đầu task tiếp.
+
+## DW-03B Stage 1 — 2026-11-16 (lịch sử trước Stage 2)
+
+Owner chỉ giao Incremental Discovery & Design Proposal. Xem [work plan](docs/data-models/wwi-dw-03b-work-plan.md). INC-01–INC-06 đều PROPOSED — PENDING PROJECT OWNER APPROVAL; không chốt algorithm/window/delete policy hoặc sửa accepted decisions. Chỉ tài liệu, không DB/Docker/B9 sandbox/pipeline changes, stage/commit/push, đóng DW-03B hoặc bắt đầu DW-03C.
+
+
+## DW-03B Stage 2 — Logical Approval & Design Acceptance, 2026-11-16 (hiện hành)
+
+Owner task “DW-03B Stage 2 — Owner Logical Approval & Design Finalization” cấp **INC-01–INC-06 Approved — Logical Policy**. [Specification](docs/data-models/wwi-dw-03b-incremental-design-proposal.md) và [Register](docs/data-models/wwi-dw-03b-decision-register.md) chốt mục tiêu **Current-State Convergence** so với verified consistent source state; candidate windows/temporal history không là complete CDC. Full comparison có full source-read cost dù chỉ ghi changed rows. Exact algorithms/U selection, numeric duration/cadence/quality thresholds và physical/runtime mechanisms chưa tự chốt.
+
+[Assessment](docs/data-models/wwi-dw-03b-assessment.md) sections 9–13 ghi mandatory design criteria/QA và conditional acceptance: **DW-03B DONE — Design**. [RG01–RG12](docs/data-models/wwi-dw-03b-work-plan.md) có reason/owner/target/proof/publication blocker, giữ G01–G08/B5. IT01–IT21 **NOT RUN**, production incremental Not implemented yet. DW-03A/B9/A01–A06/B1–B8 không đổi; **DW-03C/DW-04 TODO, WWI-04/Phase 1 IN_PROGRESS, Phase 2–9 Not Started**. Không bắt đầu task tiếp. Current authorization cho một focused documentation commit sau staged QA; không push hoặc DB/Docker/B9 sandbox changes.

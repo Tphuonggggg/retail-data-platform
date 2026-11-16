@@ -45,3 +45,7 @@ Hiện chưa có lệnh chạy dự án. Sau khi source contract, kết nối, s
 ## Documentation Navigation
 
 [Quy tắc AI](AGENTS.md) · [Scope](PROJECT_SCOPE.md) · [Roadmap](ROADMAP.md) · [Tasks](TASKS.md) · [Architecture](docs/architecture/README.md) · [Migration ADR](docs/adr/wwi-source-migration.md) · [Changelog](CHANGELOG.md).
+
+## DW-03B Stage 2 — 2026-11-16
+
+**DW-03B DONE — Design**, INC-01–INC-06 **Approved — Logical Policy** theo conditional design acceptance/QA của Owner. [Specification](docs/data-models/wwi-dw-03b-incremental-design-proposal.md), [Register](docs/data-models/wwi-dw-03b-decision-register.md), [Assessment](docs/data-models/wwi-dw-03b-assessment.md) và [Runtime gates](docs/data-models/wwi-dw-03b-work-plan.md). Mục tiêu Current-State Convergence trên verified consistent source state; không full CDC/intermediate-event guarantee. Full comparison vẫn đọc full source. Numeric/physical/runtime details pending, IT01–IT21 NOT RUN, production pipeline Not implemented yet. DW-03A/B9 approvals giữ nguyên; DW-03C/DW-04 TODO, WWI-04/Phase 1 IN_PROGRESS. Không tự triển khai task tiếp.

@@ -26,6 +26,7 @@ SQL Server WWI chỉ đọc, [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md), [TASKS.
 - Phase 1.2: [profiling tổng hợp](wwi-data-profiling.md), [Sales](wwi-sales-profiling.md), [Customer/temporal](wwi-customer-temporal-profiling.md), [Inventory/integrity](wwi-inventory-integrity-profiling.md), [profiling SQL](wwi-profiling-queries.md), [assessment](wwi-phase-1-2-assessment.md).
 - Phase 1.3: [relationships](wwi-source-relationships.md), [source ERD](wwi-source-erd.md), [business data flow](wwi-business-data-flow.md), [relationship SQL](wwi-relationship-validation-sql.md), [assessment](wwi-phase-1-3-assessment.md).
 - Phase 1.4: [source contracts](wwi-source-contracts.md), [extraction matrix](wwi-extraction-requirements-matrix.md), [assessment](wwi-phase-1-4-assessment.md); [raw requirements](../requirements/wwi-raw-layer-requirements.md) và [validation matrix](../requirements/wwi-source-validation-matrix.md) thuộc requirements.
+- DW-03B Stage 2 (2026-11-16): [work plan/runtime gates](wwi-dw-03b-work-plan.md), [logical incremental specification](wwi-dw-03b-incremental-design-proposal.md), [INC-01–INC-06 register](wwi-dw-03b-decision-register.md), [final assessment](wwi-dw-03b-assessment.md). DW-03B DONE — Design theo conditional acceptance/QA; six INC Approved — Logical Policy; physical/numeric/runtime gates pending, IT01–21 NOT RUN.
 
 ## 7. Dependencies
 
@@ -57,7 +58,7 @@ Các truy vấn đọc/tái kiểm chứng nằm trong tài liệu SQL tương �
 
 ## 11. Tasks
 
-WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A DONE — Design, scoped B9 physical representation approved; DW-03B/C và DW-04 TODO. Theo dõi [TASKS.md](../../TASKS.md).
+WWI-02/03 `DONE` ở mức tài liệu. Phase 1.6/WWI-04 `IN_PROGRESS`, DW-02 `DONE` ở mức thiết kế, DW-01 và DW-02A/B `DONE`; hồ sơ A/B ghi SCD-01–07 Approved Principles; sáu ADR sau đó chốt D01–D06, B1–B8 logical policies đã duyệt; physical procedures/thresholds pending. C/D DONE ở mức thiết kế sau targeted review; E DONE ở mức thiết kế sau QA theo quyền nghiệm thu có điều kiện ngày 2026-11-15; DW-03A DONE — Design, scoped B9 physical representation approved; DW-03B DONE — Design theo Owner Stage 2 conditional acceptance ngày 2026-11-16, DW-03C và DW-04 TODO. Theo dõi [TASKS.md](../../TASKS.md).
 
 ## 12. Testing Strategy
 

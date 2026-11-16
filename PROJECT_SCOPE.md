@@ -62,7 +62,7 @@ SCD-01–07 đã duyệt nguyên tắc: Customer Type 2 direction cho CustomerCa
 | Customer | Mapping kỹ thuật buyer/bill-to vào fact/dimension, as-of/restatement; role nghiệp vụ đã duyệt | WWI-04 và trước schema |
 | Warehouse | Physical schema và policy từ logical mapping DW-01 đã nghiệm thu; bốn fact/conformed dims theo constraints Owner đã giao; official COGS/Gross Profit deferred | Trước schema |
 | SCD2 | D01–D06/B1–B8 approved architecture/logical policies; physical encoding/member/algorithm, concrete day/basis evidence và thresholds còn pending | DW-03 trước conversion/runtime/correction; thresholds trước Certified publication |
-| Incremental | Watermark/tie-breaker, delete, replay, môi trường thử nghiệm độc lập | WWI-04 |
+| Incremental | INC-01–INC-06 đã Approved — Logical Policy; exact algorithms/U selection, numeric lookback/cadence, delete action procedure và sandbox/runtime proof còn gates | Trước algorithm/scheduling/action/publication use theo DW-03B |
 | Inventory | Đối soát movements/current holdings; daily balance và stockout risk ngoài MVP | Trước inventory mart |
 | Data quality | Ngưỡng, mức cảnh báo/chặn batch và ngoại lệ nguồn | WWI-04 |
 | Git publication | Quyền phân phối dữ liệu, license và chính sách công khai repository trước khi tạo remote/push | Chủ dự án quyết định trước publish |
@@ -76,4 +76,15 @@ Chỉ chủ dự án phê duyệt business rules, schema, công nghệ, phase v�
 
 Ngày2026-11-15, Owner approve scoped authoritative Raw representation cho relevant datetime2(7): F2 fixed27/seven digits→Python str/None→parameterized psycopg→PostgreSQL TEXT;COLLATE C cho canonical ordering/comparison,NULL/min/max/sentinel/100ns giữ nguyên,derived timestamp/search forms secondary,không business-effective inference. [ADR-SCD-05](docs/adr/scd-05-exact-temporal-precision.md) ghi ten constraints/exclusions. Không approve toàn Raw DDL/index/retention periods/publication/crash/performance.
 
-[DW-03A final assessment](docs/data-models/wwi-dw-03a-assessment.md) nghiệm thu **DONE — Design** theo conditional authority sau14 mandatory design checks/tests/QA. G07 conceptual Raw/evidence/replay/retention protections đủ guide implementation-specific proposal; concrete source consistency/least-privilege/adapters/physical DDL-retention/runtime publication theo [G01–G08](docs/data-models/wwi-dw-03a-work-plan.md),không deferred test PASS. WWI-04/Phase1 **In Progress**,DW-03B/C/DW-04 TODO;không production pipeline hoặc tự chuyển phase. Existing MVP/BRD/SCD/grains/technology scope không đổi.
+[DW-03A final assessment](docs/data-models/wwi-dw-03a-assessment.md) nghiệm thu **DONE — Design** theo conditional authority sau14 mandatory design checks/tests/QA. G07 conceptual Raw/evidence/replay/retention protections đủ guide implementation-specific proposal; concrete source consistency/least-privilege/adapters/physical DDL-retention/runtime publication theo [G01–G08](docs/data-models/wwi-dw-03a-work-plan.md),không deferred test PASS. WWI-04/Phase1 **In Progress**, DW-03B DONE — Design theo Stage 2 ngày 2026-11-16, DW-03C/DW-04 TODO; không production pipeline hoặc tự chuyển phase. Existing MVP/BRD/SCD/grains/technology scope không đổi.
+
+## DW-03B Stage 1 — trạng thái thiết kế, 2026-11-16 (lịch sử trước Stage 2)
+
+[Incremental proposal](docs/data-models/wwi-dw-03b-incremental-design-proposal.md) và [INC-01–INC-06](docs/data-models/wwi-dw-03b-decision-register.md) chỉ là PROPOSED — PENDING PROJECT OWNER APPROVAL. Bao phủ 9 current + 2 associated H, không thêm nguồn/subject area. Timestamp/period không mặc định complete CDC; state reconciliation không chứng minh mọi intermediate event. Lookback/cadence/delete confirmation/checkpoint algorithm và writable test environment chưa chốt; không thay các FR/BRD/SCD đã duyệt hoặc triển khai runtime.
+
+
+## DW-03B Stage 2 — Logical Approval & Design Acceptance, 2026-11-16 (hiện hành)
+
+Owner task “DW-03B Stage 2 — Owner Logical Approval & Design Finalization” cấp **INC-01–INC-06 Approved — Logical Policy**. [Specification](docs/data-models/wwi-dw-03b-incremental-design-proposal.md) và [Register](docs/data-models/wwi-dw-03b-decision-register.md) chốt mục tiêu **Current-State Convergence** so với verified consistent source state; candidate windows/temporal history không là complete CDC. Full comparison có full source-read cost dù chỉ ghi changed rows. Exact algorithms/U selection, numeric duration/cadence/quality thresholds và physical/runtime mechanisms chưa tự chốt.
+
+[Assessment](docs/data-models/wwi-dw-03b-assessment.md) sections 9–13 ghi mandatory design criteria/QA và conditional acceptance: **DW-03B DONE — Design**. [RG01–RG12](docs/data-models/wwi-dw-03b-work-plan.md) có reason/owner/target/proof/publication blocker, giữ G01–G08/B5. IT01–IT21 **NOT RUN**, production incremental Not implemented yet. DW-03A/B9/A01–A06/B1–B8 không đổi; **DW-03C/DW-04 TODO, WWI-04/Phase 1 IN_PROGRESS, Phase 2–9 Not Started**. Không bắt đầu task tiếp. Current authorization cho một focused documentation commit sau staged QA; không push hoặc DB/Docker/B9 sandbox changes.

@@ -2,6 +2,8 @@
 
 **DW-01 logical change-impact requirements accepted; không chốt thuật toán incremental.** L01–L05 là constraints đã duyệt; tách bốn lớp: **detection** ở nguồn, **propagation** tới row/group phụ thuộc, **SCD2 version change** của attributes và **mart restatement**. Có thể phải propagation dù fact nguồn không đổi timestamp. [Fact dictionary](wwi-fact-dimension-dictionary.md), [marts](wwi-logical-data-marts.md), [extraction candidates](wwi-extraction-requirements-matrix.md).
 
+**DW-03B Stage 2 follow-up — 2026-11-16:** [INC-01–INC-06](wwi-dw-03b-decision-register.md) đã Approved — Logical Policy; [Incremental Specification](wwi-dw-03b-incremental-design-proposal.md) sections 1–2/7–9 ghi source-state boundary C, 11 contracts, P0/ACK guards và header-only change envelope cho DW-03C. Mục tiêu Current-State Convergence, không full CDC; complete snapshot absence chỉ candidate theo B8. Bảng impact đã nghiệm thu dưới đây giữ nguyên. Propagation/rekey/restatement execution và physical checkpoints chưa triển khai; [RG01–RG12](wwi-dw-03b-work-plan.md) giữ proof/usage gates. DW-03C chưa bắt đầu.
+
 | Source change / detection candidate | Fact/dimension/intermediate chịu ảnh hưởng | Required action logic / SCD2 | Mart restatement | Verification trước triển khai |
 | --- | --- | --- | --- | --- |
 | InvoiceLines INSERT; watermark candidate | fact_invoice_line | Resolve header/product/role; insert đúng InvoiceLineID; không tạo invoice count mỗi line | sales daily/product/customer groups của invoice | PK unique; count/sums khớp source; rerun không nhân row |
