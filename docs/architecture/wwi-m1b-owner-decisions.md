@@ -96,3 +96,11 @@ Preparation checks PASS không phảiOwner acceptance:M1B-Approval vẫnIN_PROGR
 Actual staged validation PASS:16 blobs khớp working content sau Git line-ending normalization,0 staged secret findings,diff --cached --check đạt,no active hooks/no remote. Script normalization hashes ở§4 đã đối chiếu đúng.12 static tests không load/execute SQL;setup/verify/window/SQL compilation vẫnNOT RUN. Final staged check được lặp sau record này trướccommit.
 
 Authorized commit sau QA: `docs: approve M1B directions and prepare source access execution`. Commit không close M1B-Approval hoặc approve executable changes;không push. Dừng sau preparation/report,không M1C/M2/M3.
+
+## 7. Owner EX01 Authorization — 2026-11-16
+
+Task trực tiếp “WWI-05 / EX01 — Windows Extraction Identity Provisioning & Verification” approve **EX01 Windows provisioning/verification only** cho `DESKTOP-OBDFK6B\wwi_extract`; future database user name `wwi_extract`. Project Owner là OS Operator và DBA local development. Không chữ ký từ hệ thống khác; không coi role assignment là proof current process elevated. OD01–03 giữ nguyên và các sections trước là lịch sử trước EX01 task, không còn diễn giải rằng exact Windows name chưa được duyệt.
+
+Cho phép inspect/create exact local account nếu chưa tồn tại, secure credential collection chỉ trong OS Operator console, SID/groups/non-admin/logon/profile checks khi an toàn, sanitized docs/evidence và một local documentation commit sau QA PASS. Existing account → inspect only, không reset/recreate/change properties. Không SQL login/user/grants, group-policy changes, OS changes ngoài exact identity hoặc ACL ngoài account-creation necessity; không install/PG/Docker/ingestion/push. Thiếu privilege hoặc secure prompt → stop trước provisioning, manual handoff; blocked-documentation commit được phép nếu valid/useful.
+
+[EX01 evidence](wwi-ex01-windows-identity-evidence.md) ghi actual baseline `main/a2f0ae2ac00303a32e1baeef37c60ef27f3070a7` clean, đúng máy, target absent; current token không elevated và input/output redirected. **EX01 BLOCKED before provisioning**, không create attempt, target SID chưa có. EX02 BLOCKED và không execution approval; G01/G02 pending, WWI-05 IN_PROGRESS. M1B-Approval không tự DONE và không mở M1C/M2/M3. Principal name được approve không tự bật hoặc populate SQL guards.

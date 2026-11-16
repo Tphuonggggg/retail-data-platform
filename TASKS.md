@@ -199,3 +199,13 @@ WWI-04 DONE Design,Phase1 Completed,Phase2/WWI-05 IN_PROGRESS,M1A DONE Verificat
 | ID | Description / module | Dependencies | Acceptance criteria | Status |
 | --- | --- | --- | --- | --- |
 | M1B-Approval | Owner Decision Recording & DBA Execution Preparation — docs/source-security | M1B DONE Planning Review,Owner OD01–03 task | Exact approval record,11-object prepared gated setup/read-only verify,OptionA proof procedure,EX01–04 handoff,static QA/commit;DBA/Owner package acceptance còn pending,no G01/G02 runtime PASS | IN_PROGRESS |
+
+## WWI-05 / EX01 — Windows Identity Provisioning & Verification
+
+Owner task ngày2026-11-16 approve Windows principal `DESKTOP-OBDFK6B\wwi_extract`, future DB-user name `wwi_extract`; Project Owner là OS Operator và local DBA. [Authority](docs/architecture/wwi-m1b-owner-decisions.md#7-owner-ex01-authorization--2026-11-16), [EX01 evidence/handoff](docs/architecture/wwi-ex01-windows-identity-evidence.md). Approval không cho EX02 SQL security changes hoặc phase transition; các pending-name notes ở milestones trước là lịch sử.
+
+| ID | Description / module | Dependencies | Acceptance criteria | Status |
+| --- | --- | --- | --- | --- |
+| EX01 | Windows Extraction Identity Provisioning & Verification — OS identity/docs | M1A/M1B evidence, prepared package commit a2f0ae2, exact Owner EX01 authority, approved machine, secure OS Operator input và provisioning privileges | Exact local account/SID/enabled/password-required được verify; groups/non-admin/effective logon/profile phù hợp; sanitized evidence và QA; không unrelated OS/SQL changes hoặc credential exposure | BLOCKED |
+
+Actual EX01-E01–E12: baseline/host/command inventory/target absence verified; no elevated current token/verified delegated provisioning authority và stdin/stdout redirected, secure password channel chưa có. Dừng trước create; target SID và mandatory account/groups/logon/authentication/Python-under-target verification NOT RUN, không DONE/PASS. Owner manual procedure có trong evidence, không yêu cầu approve lại tên đã duyệt. EX02 BLOCKED; G01/G02 pending, WWI-05/Phase2 IN_PROGRESS, M1B-Approval không tự DONE, M1C/M2/M3 NOT STARTED. Documentation-only commit sau QA PASS được task hiện tại cho phép, kể cả provisioning BLOCKED.
