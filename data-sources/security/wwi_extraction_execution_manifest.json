@@ -1,0 +1,314 @@
+{
+  "schema_version": 1,
+  "package_id": "WWI05-EX02-20261117-01",
+  "review_date": "2026-11-17",
+  "status": "PENDING_EXECUTION_AUTHORIZATION",
+  "baseline_commit": "3f03f19fd78bab59beaa63ab74fdbe568ff814c6",
+  "setup_executed": false,
+  "verification_executed": false,
+  "extractor": {
+    "windows_principal": "DESKTOP-OBDFK6B\\wwi_extract",
+    "sid": "S-1-5-21-2164258108-3044412014-540060861-1007",
+    "sid_hex": "0x0105000000000005150000003CF5FF806E0A76B5BDAC3020EF030000",
+    "sql_login": "DESKTOP-OBDFK6B\\wwi_extract",
+    "database_user": "wwi_extract",
+    "ex01_status": "DONE_OS_IDENTITY_VERIFICATION"
+  },
+  "proposed_operator": {
+    "windows_principal": "DESKTOP-OBDFK6B\\PC",
+    "sid": "S-1-5-21-2164258108-3044412014-540060861-1001",
+    "sid_hex": "0x0105000000000005150000003CF5FF806E0A76B5BDAC3020E9030000",
+    "assignment_status": "PROPOSED_FOR_EX02_OWNER_APPROVAL",
+    "observed_sql_sysadmin": 1,
+    "observed_context": "Existing Windows Integrated DBA; không dùng làm extractor, không cấp thêm quyền operator"
+  },
+  "source": {
+    "endpoint": "tcp:DESKTOP-OBDFK6B,1433",
+    "machine": "DESKTOP-OBDFK6B",
+    "instance": "SQLEXPRESS",
+    "instance_name": "DESKTOP-OBDFK6B\\SQLEXPRESS",
+    "database": "WideWorldImporters",
+    "observed_product_version": "17.0.1000.7",
+    "authentication": "Windows Integrated",
+    "encrypt": true,
+    "trust_server_certificate": false
+  },
+  "select_allowlist": [
+    [
+      "Sales",
+      "Customers"
+    ],
+    [
+      "Sales",
+      "Orders"
+    ],
+    [
+      "Sales",
+      "OrderLines"
+    ],
+    [
+      "Sales",
+      "Invoices"
+    ],
+    [
+      "Sales",
+      "InvoiceLines"
+    ],
+    [
+      "Sales",
+      "CustomerTransactions"
+    ],
+    [
+      "Warehouse",
+      "StockItems"
+    ],
+    [
+      "Warehouse",
+      "StockItemHoldings"
+    ],
+    [
+      "Warehouse",
+      "StockItemTransactions"
+    ],
+    [
+      "Sales",
+      "Customers_Archive"
+    ],
+    [
+      "Warehouse",
+      "StockItems_Archive"
+    ]
+  ],
+  "expected_security_delta": {
+    "mode": "NEW_IDENTITY_ONLY",
+    "server_permissions": [
+      "CONNECT SQL"
+    ],
+    "database_permissions": [
+      "CONNECT"
+    ],
+    "object_permission": "SELECT",
+    "object_count": 11,
+    "expected_grant_statements": 13,
+    "role_assignments": [],
+    "grant_option": false,
+    "metadata_grants": [],
+    "writes_to_business_tables": false,
+    "preexisting_extractor_login_user": "NONE_OBSERVED",
+    "scope_note": "Existing name hoặc SID collision thì STOP; không alter/reuse/revoke existing principals"
+  },
+  "negative_database": {
+    "name": "Retail_EX02_DeniedAccess_20261117",
+    "database_id": 11,
+    "database_guid": "E5CDE2F8-8281-4138-9441-59793F62F8B9",
+    "create_date_sql_server_local": "2026-11-17 10:49:34.067000",
+    "owner_sid_hex": "0x0105000000000005150000003CF5FF806E0A76B5BDAC3020E9030000",
+    "user_tables_observed": 0,
+    "guest_connect_grants_observed": 0,
+    "state": "CREATED_EMPTY_RETAINED_FOR_PENDING_TEST",
+    "authority": "Owner follow-up: Tu tao 1 database de test di. Lam xong het thi delete",
+    "cleanup_authorized_after_test": true,
+    "cleanup_complete": false,
+    "cleanup_conditions": [
+      "Actual target verification đã hoàn tất và sanitized evidence được giữ",
+      "Exact name, database_id, database_guid, create_date và owner SID khớp",
+      "Không user tables/payload, unexpected users/ownership/dependencies hoặc active connections",
+      "Không SINGLE_USER/ROLLBACK IMMEDIATE/KILL; mismatch thì STOP, không xóa database khác"
+    ],
+    "cleanup_action": "Chỉ DROP DATABASE [Retail_EX02_DeniedAccess_20261117] sau các điều kiện trên; không filesystem delete; không drop trong preparation vì verification còn NOT RUN"
+  },
+  "staging": {
+    "status": "PROPOSED_NOT_CREATED",
+    "admin_root": "C:\\ProgramData\\RetailDataPlatform\\SecurityReview\\WWI05-EX02-20261117-01",
+    "verify_root": "C:\\ProgramData\\RetailDataPlatform\\SecurityVerify\\WWI05-EX02-20261117-01",
+    "evidence_root": "C:\\ProgramData\\RetailDataPlatform\\SecurityEvidence\\WWI05-EX02-20261117-01",
+    "acl_changes_executed": false,
+    "copy_executed": false,
+    "proposed_acl": [
+      {
+        "principal": "NT AUTHORITY\\SYSTEM",
+        "sid": "S-1-5-18",
+        "rights": "FullControl"
+      },
+      {
+        "principal": "BUILTIN\\Administrators",
+        "sid": "S-1-5-32-544",
+        "rights": "FullControl"
+      },
+      {
+        "principal": "DESKTOP-OBDFK6B\\PC",
+        "sid": "S-1-5-21-2164258108-3044412014-540060861-1001",
+        "rights": "Modify trong chuẩn bị; approved read-only execution copy sau freeze"
+      }
+    ],
+    "extractor_access": "Không administrative setup area; ReadAndExecute chỉ verification-only copy; writable logs riêng, không sửa scripts/manifests",
+    "required_owner_action": "Owner xác nhận operator/path/access list rồi tự tạo targeted protected directories/ACL bằng approved OS session; kiểm effective parent/file ACL, owner/reparse paths; không broad inherited write, không copy repository/venv"
+  },
+  "trusted_client": {
+    "path": "C:\\Program Files\\Microsoft SQL Server\\Client SDK\\ODBC\\180\\Tools\\Binn\\SQLCMD.EXE",
+    "version": "17.0.1000.7",
+    "signature_status_observed": "Valid",
+    "signer": "Microsoft Corporation",
+    "sha256": "5d5b6c6d6109594659cf04413b5eb234d19a19c8b9672f6516006e0e405531a0",
+    "common_arguments": [
+      "-S",
+      "tcp:DESKTOP-OBDFK6B,1433",
+      "-d",
+      "WideWorldImporters",
+      "-E",
+      "-Nm",
+      "-X1",
+      "-x",
+      "-b",
+      "-r1",
+      "-f",
+      "65001",
+      "-l",
+      "5",
+      "-t",
+      "20"
+    ],
+    "safety": "Không -C/-P/-U/-A; dùng absolute signed/pinned client, secure TLS, không startup script/env/substitution",
+    "working_directory_rule": "DBA d?ng staging.admin_root; extractor d?ng staging.verify_root; kh?ng repo/venv ho?c untrusted current directory"
+  },
+  "preparation_observations": {
+    "source_metadata": {
+      "MachineName": "DESKTOP-OBDFK6B",
+      "InstanceName": "SQLEXPRESS",
+      "DatabaseName": "WideWorldImporters",
+      "ProductVersion": "17.0.1000.7",
+      "OperatorLogin": "DESKTOP-OBDFK6B\\PC",
+      "OperatorSidHex": "0x0105000000000005150000003CF5FF806E0A76B5BDAC3020E9030000",
+      "OperatorSysadmin": 1,
+      "CanCreateDatabase": 1,
+      "ObservedAtUtc": "2026-11-17 03:48:55.684772"
+    },
+    "existing_login_matches": 0,
+    "existing_user_matches": 0,
+    "enabled_server_ddl_triggers": 0,
+    "enabled_wwi_ddl_triggers": 0,
+    "temporal_bindings": [
+      {
+        "CurrentSchema": "Sales",
+        "CurrentTable": "Customers",
+        "HistorySchema": "Sales",
+        "HistoryTable": "Customers_Archive"
+      },
+      {
+        "CurrentSchema": "Warehouse",
+        "CurrentTable": "StockItems",
+        "HistorySchema": "Warehouse",
+        "HistoryTable": "StockItems_Archive"
+      }
+    ],
+    "security_runtime_tests": "NOT_RUN",
+    "sql_compilation": "NOT_RUN",
+    "exception_to_original_no_infra_changes": "Chỉ empty negative database CREATE được Owner follow-up cho phép; không source business changes hoặc EX02 security setup"
+  },
+  "execution_order": [
+    "Owner duyệt manifest revision/guarded và activated hashes, proposed DBA identity, staging/access/client, setup và separate verification/rollback scope",
+    "DBA recheck source/operator/SID, Windows identity, no login/user name/SID collision, metadata/group/public/module/ownership/trigger baseline; negative DB GUID/state khớp",
+    "OS Owner tạo approved protected staging/access và independent approval record; copy exact guarded SQL bytes, kiểm hashes, freeze access; không auto execute",
+    "Chỉ sau Owner setup authority: manual activation đúng năm edits setup, SHA256 phải khớp activated_sha256; fresh real proposed DBA context chạy whole batch bằng trusted client",
+    "Capture commit/rollback/ambiguous result và before/after security delta; ambiguous outcome STOP/inspect, không blind retry",
+    "DBA kiểm external Windows-group/client TLS/negative-target proof; chỉ sau separate verification authority, activate verify đúng năm edits/hash và chạy fresh real extractor context",
+    "Lưu mọi LP01-12 results/errors/NULLs, DBA corroborate column/public/group/module/ownership/cross-DB closure; không process-exit/outcome-marker gate PASS",
+    "Sau actual tests/evidence và resource identity/dependency checks, Owner/DBA cleanup đúng negative DB theo follow-up authority; nếu tests chưa chạy thì giữ để test",
+    "Reviewer đánh giá G02 riêng; EX02 preparation/EX01 DONE không G02 PASS, không EX03/source window/ingestion/M1C/M2/M3"
+  ],
+  "verification_procedure": {
+    "identity": "Original login/current login/database user và SID phải exact extractor; không developer/admin/EXECUTE AS",
+    "expected": "SELECT=1 trên11 objects; DML/ALTER/CONTROL/ownership/broad powers=0; no reader/writer/admin roles; negative DB access=0; NULL/error NOT VERIFIED",
+    "evidence": "Own permissions/tokens/column visibility/current-H mappings và11 constant TOP(1) probes; source payload không xuất. TLS certificate validation và Windows/module/ownership closure có external evidence",
+    "negative_scope": "HAS_DBACCESS chỉ kiểm existing approved database, không DML-negative; one denied DB không chứng minh isolation mọi DB"
+  },
+  "rollback_procedure": [
+    "Trước commit: XACT_ABORT/TRY transaction rollback/rethrow cho SQL security metadata; external DDL/audit side effects không được claim rollback",
+    "Sau commit: chỉ theo exact rollback authority, xác minh same newly created login/user SID và before/after grants/dependencies/owned objects/active sessions; nếu shared hoặc ambiguous thì STOP",
+    "Dừng authorized use theo plan, revoke đúng11 direct object SELECT + database CONNECT khi approved, drop đúng newly created user rồi login sau dependency checks; không global public/roles/DENY hoặc Windows account changes",
+    "Fresh-session permission/access verification sau revocation; không KILL/auto disable/drop shared principal; retain failure evidence",
+    "Negative DB cleanup là hành động riêng, chỉ exact pinned empty test resource sau actual tests; không đồng nghĩa rollback source security"
+  ],
+  "stop_conditions": [
+    "Owner execution/verification/operator/staging approval chưa có",
+    "Identity/SID/source/database/client/artifact hash hoặc negative DB GUID khác manifest",
+    "Unresolved input, preexisting name/SID, metadata visibility thiếu hoặc unexpected privilege/grant/trigger/dependency",
+    "Không protected effective ACL/independent approved hashes; scripts nằm ở writable checkout/venv",
+    "SQL error/NULL/ambiguous commit hoặc TLS certificate failure; không fallback/elevation/auto-retry",
+    "Không đủ cleanup prerequisites; không drop/overwrite unrelated database"
+  ],
+  "owner_decisions_remaining": [
+    "Approve concrete proposed DESKTOP-OBDFK6B\\PC DBA identity/SID cho EX02",
+    "Approve exact manifest/artifact activated hashes và conditional activation/check evidence",
+    "Authorize setup execution, protected staging/ACL/copy/client và exact rollback scope",
+    "Authorize separate target read-only verification/evidence retention; no EX03/window/Full Load"
+  ],
+  "gate_status": {
+    "EX01": "DONE_OS_IDENTITY_VERIFICATION",
+    "EX02": "PENDING_EXECUTION_AUTHORIZATION",
+    "G02": "BLOCKED",
+    "G01": "PENDING_CONSISTENCY_PROOF",
+    "WWI05": "IN_PROGRESS",
+    "M1C_M2_M3": "NOT_STARTED"
+  },
+  "artifacts": {
+    "setup": {
+      "path": "data-sources/security/wwi_extraction_identity_setup.sql",
+      "guarded_sha256": "a3c0f5aefb666978839c02bba1b4c0d1ce3b4612e0b0da8966c0f02ae4401af8",
+      "activated_sha256": "07809529b151ed045b37fbbcfaea963e324c00ccc706c7a7f5fff4becce8977f",
+      "encoding": "UTF-8 no BOM / LF / exact bytes",
+      "activation_edits": [
+        {
+          "from": "DECLARE @DbaReviewed bit = 0;",
+          "to": "DECLARE @DbaReviewed bit = 1;"
+        },
+        {
+          "from": "DECLARE @OwnerExecutionAuthorized bit = 0;",
+          "to": "DECLARE @OwnerExecutionAuthorized bit = 1;"
+        },
+        {
+          "from": "DECLARE @WindowsAccountProvisioned bit = 0;",
+          "to": "DECLARE @WindowsAccountProvisioned bit = 1;"
+        },
+        {
+          "from": "DECLARE @WindowsNonAdminAttested bit = 0;",
+          "to": "DECLARE @WindowsNonAdminAttested bit = 1;"
+        },
+        {
+          "from": "DECLARE @ExecutionConfirmation nvarchar(80) = N'DO_NOT_EXECUTE';",
+          "to": "DECLARE @ExecutionConfirmation nvarchar(80) = N'EXECUTE_APPROVED_WWI_IDENTITY_SETUP';"
+        }
+      ],
+      "activated_file_written": false
+    },
+    "verify": {
+      "path": "data-sources/security/wwi_extraction_identity_verify.sql",
+      "guarded_sha256": "060ba5d9b5925a33615ae71f3f33a2ce4584516bb5e0fca44449b75fc3d5f38d",
+      "activated_sha256": "aa46961cadb7338ed41754ee057ad031b132d436682ce263b3adfefb7d2461fc",
+      "encoding": "UTF-8 no BOM / LF / exact bytes",
+      "activation_edits": [
+        {
+          "from": "DECLARE @VerificationAuthorized bit = 0;",
+          "to": "DECLARE @VerificationAuthorized bit = 1;"
+        },
+        {
+          "from": "DECLARE @DbaWindowsGroupReviewComplete bit = 0;",
+          "to": "DECLARE @DbaWindowsGroupReviewComplete bit = 1;"
+        },
+        {
+          "from": "DECLARE @ClientTlsProofReviewed bit = 0;",
+          "to": "DECLARE @ClientTlsProofReviewed bit = 1;"
+        },
+        {
+          "from": "DECLARE @NegativeDatabaseExistsAttested bit = 0;",
+          "to": "DECLARE @NegativeDatabaseExistsAttested bit = 1;"
+        },
+        {
+          "from": "DECLARE @VerificationConfirmation nvarchar(80) = N'DO_NOT_EXECUTE';",
+          "to": "DECLARE @VerificationConfirmation nvarchar(80) = N'EXECUTE_APPROVED_READ_ONLY_VERIFICATION';"
+        }
+      ],
+      "activated_file_written": false
+    }
+  }
+}

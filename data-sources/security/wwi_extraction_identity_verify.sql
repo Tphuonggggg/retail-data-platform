@@ -10,10 +10,11 @@ DECLARE @DbaWindowsGroupReviewComplete bit = 0;
 DECLARE @ClientTlsProofReviewed bit = 0;
 DECLARE @NegativeDatabaseExistsAttested bit = 0;
 DECLARE @VerificationConfirmation nvarchar(80) = N'DO_NOT_EXECUTE';
-DECLARE @VerificationReference nvarchar(256) = N'<APPROVED_VERIFICATION_REFERENCE>';
-DECLARE @WindowsPrincipal nvarchar(256) = N'<APPROVED_WINDOWS_PRINCIPAL>';
-DECLARE @DatabaseUser nvarchar(256) = N'<APPROVED_DATABASE_USER>';
-DECLARE @NegativeDatabase nvarchar(256) = N'<APPROVED_NEGATIVE_DATABASE>';
+DECLARE @VerificationReference nvarchar(256) = N'WWI05-EX02-20261117-01-VERIFY';
+DECLARE @WindowsPrincipal nvarchar(256) = N'DESKTOP-OBDFK6B\wwi_extract';
+DECLARE @DatabaseUser nvarchar(256) = N'wwi_extract';
+DECLARE @NegativeDatabase nvarchar(256) = N'Retail_EX02_DeniedAccess_20261117';
+DECLARE @ExpectedWindowsSid varbinary(85) = 0x0105000000000005150000003CF5FF806E0A76B5BDAC3020EF030000;
 
 IF COALESCE(@VerificationAuthorized, 0) <> 1 OR COALESCE(@DbaWindowsGroupReviewComplete, 0) <> 1
    OR COALESCE(@ClientTlsProofReviewed, 0) <> 1 OR COALESCE(@NegativeDatabaseExistsAttested, 0) <> 1
@@ -43,12 +44,20 @@ IF ORIGINAL_LOGIN() <> @WindowsPrincipal OR SUSER_SNAME() <> @WindowsPrincipal
    OR USER_NAME() <> @DatabaseUser
    OR SUSER_SID() IS NULL OR SUSER_SID(@WindowsPrincipal) IS NULL
    OR SUSER_SID() <> SUSER_SID(@WindowsPrincipal)
+   OR SUSER_SID() <> @ExpectedWindowsSid
     THROW 51204, N'Actual login/user mismatch or impersonation; stop.', 1;
+IF NOT EXISTS
+(
+    SELECT 1 FROM sys.database_principals
+    WHERE name = @DatabaseUser AND type = 'U' AND sid = @ExpectedWindowsSid
+)
+    THROW 51207, N'Expected database user SID/type mapping required.', 1;
 IF @@TRANCOUNT <> 0
     THROW 51205, N'Use a fresh verification session without ambient transaction.', 1;
 IF COALESCE(IS_SRVROLEMEMBER(N'sysadmin'), 1) <> 0
    OR COALESCE(IS_SRVROLEMEMBER(N'securityadmin'), 1) <> 0
    OR COALESCE(IS_ROLEMEMBER(N'db_owner'), 1) <> 0
+   OR COALESCE(IS_ROLEMEMBER(N'db_datareader'), 1) <> 0
    OR COALESCE(IS_ROLEMEMBER(N'db_datawriter'), 1) <> 0
    OR COALESCE(IS_ROLEMEMBER(N'db_ddladmin'), 1) <> 0
    OR COALESCE(IS_ROLEMEMBER(N'db_securityadmin'), 1) <> 0

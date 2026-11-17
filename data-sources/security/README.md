@@ -2,7 +2,7 @@
 
 ## 1. Overview
 
-**DBA REVIEW REQUIRED — DO NOT AUTO-EXECUTE.** Chỉ artifacts chuẩn bị theo [M1B-OD01–03](../../docs/architecture/wwi-m1b-owner-decisions.md). SQL setup/verify **NOT RUN**;production extraction Not implemented yet.
+**DBA REVIEW REQUIRED — DO NOT AUTO-EXECUTE.** Ngày2026-11-17, EX02 populated candidate **Pending Execution Authorization**. [Execution manifest](wwi_extraction_execution_manifest.json) pin actual identities/SIDs,paths/11-object scope,guarded/activated hashes/operator/staging/rollback/stop conditions. [Current review](../../docs/architecture/wwi-source-dba-owner-checklist.md#12-ex02-populated-package--final-authorization-review) ghi actual metadata và ngoại lệ Owner cho empty negative database. Setup/verify **NOT RUN**, production extraction Not implemented yet; EX01 DONE không G02 PASS.
 
 ## 2. Purpose
 
@@ -14,16 +14,17 @@ Original SQLEXPRESS/WideWorldImporters,9 current+2 physical H;không Raw schema,
 
 ## 4. Responsibilities
 
-DBA review/populate/approve execution riêng;OS owner xác nhận account vàgroups;Source Owner kiểm soát writers;DQ review proof. Codex task này chỉ file preparation/static tests.
+DBA review/populate/approve execution riêng;OS owner xác nhận account vàgroups;Source Owner kiểm soát writers;DQ review proof. Current task gồm preparation/static tests và metadata SELECT; Owner follow-up cho riêng empty negative database CREATE, không EX02 security execution.
 
 ## 5. Inputs
 
-Windows principal `DESKTOP-OBDFK6B\wwi_extract`, actual SID `S-1-5-21-2164258108-3044412014-540060861-1007` và OS identity evidence đã có qua EX01; future DB-user name `wwi_extract` chưa là SQL mapping/runtime proof. SQL change/verification references, actual DBA execution identity, protected populated artifacts và execution authority **chưa có**; templates giữ placeholders. Inputs còn gồm11-object allowlist,reviewed client TLS/profile vàexternal group/module/negative-database evidence.
+Windows principal `DESKTOP-OBDFK6B\wwi_extract`, SID-1007, DB user `wwi_extract`, reference `WWI05-EX02-20261117-01` và negative target `Retail_EX02_DeniedAccess_20261117` đã populated; không unresolved placeholders. Proposed DBA là PC/SID-1001, phải được Owner duyệt cho EX02. Staging/client/group/TLS/approval evidence là external prerequisites. Repo confirmations vẫn0/DO_NOT_EXECUTE.
 
 ## 6. Outputs
 
 - [Setup](wwi_extraction_identity_setup.sql): proposed new Windows SQL login/user,CONNECT vàobject SELECT;disabled by default.
 - [Verify](wwi_extraction_identity_verify.sql): own-context rights/roles/columns/H links/constant read/cross-DB/TLS evidence queries;disabled by default.
+- [Execution manifest](wwi_extraction_execution_manifest.json): guarded/activated SHA256,exact activation edits và bounded sandbox/cleanup record; không execution authority.
 
 Không output nào là executed/G01/G02 PASS.
 
@@ -37,19 +38,20 @@ T-SQL preparation;offline standard-library Python unittest. Không SQL parser/en
 
 ## 9. Structure
 
-README,2 standalone .sql files. Không migration registration,CI hooks,SQLCMD include files hoặc bootstrap runner. Static checker ở [tests/source_security_static.py](../../tests/source_security_static.py) chỉ đọc/mutate strings trong memory,không execute SQL.
+README,2 standalone .sql files và1 JSON manifest. Không migration registration,CI hooks,SQLCMD include files hoặc bootstrap runner. Static checker ở [tests/source_security_static.py](../../tests/source_security_static.py) chỉ đọc/mutate strings trong memory,không execute SQL hoặc viết activated files.
 
 ## 10. Execution — FUTURE SEPARATE APPROVAL REQUIRED
 
-1. Review actual names/SIDs/new-vs-reuse mode vàpopulated artifact diff/hash;Owner approve exact change package. Các defaults hiện tại phải stop.
-2. OS owner provision/verify account riêng;không local-admin/group elevation;không giả account đã có.
-3. DBA session dùng approved secure source/database context;review DDL policies/triggers vàprivilege closure trước apply. Tuân thủ [protected staging PS01–08](../../docs/architecture/wwi-source-dba-owner-checklist.md#protected-staging-procedure--proposed-chưa-thực-hiện): tách khỏi repository/venv, restricted named-principal ACL, controlled copy với exact-byte hashes và independent approved manifest, trusted installed SQL client, logs/output riêng. Kiểm ACL và SHA256 ngay trước chạy; không auto-execute từ development folders. Chạy toàn bộ reviewed setup batch,không selected fragments hoặc thêm batch separators.
-4. Setup chỉ hỗ trợ **new identity**;nếu login/user tồn tại thì stop. Reuse/metadata VIEW DEFINITION cần proposal riêng,không bật broad grants.
-5. Verification bằng fresh real Windows extraction session,không developer/admin/EXECUTE AS. Điền approved negative user-DB target vàexternal TLS/group evidence;placeholders/default0 hoặcNULL đều không là authority.
-6. Capture mọi resultset/error/NULL vàper-test outcomes;không coi ending EVIDENCE_ONLY marker hoặc process exit0 là G02 PASS. Permission/cross-DB/module/Windows closure còn cần DBA review.
-7. Failure trong setup transaction có rollback/rethrow;post-commit revoke/disable/drop chỉ theo separate reviewed rollback request,không tự xóa principal/grants đang được dùng.
+1. Owner review manifest ID WWI05-EX02-20261117-01, exact proposed PC/SID-1001 operator, staging/access/client/rollback và cả guarded/activated hashes. Chưa setup/verify execution approval.
+2. Reverify exact existing EX01 principal/SID-1007 và source/negative DB identity; không provision/reset account. DBA recheck collision/metadata/public/group/module/ownership/trigger baseline; missing/unknown proof thì STOP.
+3. Owner phải approve và tự tạo protected staging tại C:\ProgramData\RetailDataPlatform\SecurityReview\WWI05-EX02-20261117-01, verification-only sibling SecurityVerify và log/evidence sibling SecurityEvidence. Restricted named-principal ACL/effective parent/file/owner/reparse checks theo manifest/PS01–08; không broad inherited write, không repo/venv hoặc PATH helper. Hiện chưa directories/ACL/copy nào được tạo.
+4. **Exact-byte activation:** repo chỉ lưu flags0/DO_NOT_EXECUTE. Manifest pin actual guarded hash và derived activated hash, đúng5 edits/script. Owner approve activated hash và external prerequisites; flags không tự chứng minh authority. Custodian copy guarded bytes, kiểm hash với independent protected approval record, trusted editor sửa đúng5 lines rồi activated hash phải khớp trước execute. Không dùng privileged Python/venv runner. Edit khác, BOM hoặc LF↔CRLF change → STOP/new review; không authorize arbitrary post-hash edits.
+5. Named DBA dùng absolute signed/pinned SQLCMD17.0.1000.7 trong manifest, fresh real Windows context và protected working directory ngoài checkout/venv; proposed args: -S tcp:DESKTOP-OBDFK6B,1433 -d WideWorldImporters -E -Nm -X1 -x -b -r1 -f 65001 -l 5 -t 20. Input là whole reviewed activated protected copy, logs riêng/unique/no overwrite. Không -C/-P/-U/-A/startup/env/substitution/selected fragments. Chỉ offline -? đã chạy, không -i/-Q/setup/verify execution.
+6. Setup new-only: existing name/SID → STOP, không alter/reuse. CONNECT SQL trong master, database CONNECT và11 object SELECT trong WWI; type U/expected SID pin. XACT_ABORT/transaction rollback/rethrow; ambiguous outcome inspect state trước mọi retry. Postcommit revoke/drop/rollback cần exact authority/dependency/active-use checks; không global public/Windows changes hoặc KILL.
+7. Separate verification authority: fresh actual extractor context, external group/client TLS/negative DB proof trước activation; chạy read-only verify,giữ mọi result/error/NULL và LP01–12 reviewer outcomes. No DML negative tests,diagnostic elevation hoặc process-exit/marker G02 PASS. Metadata gaps trình exact request riêng.
+8. **Owner-authorized sandbox exception:** đã CREATE empty Retail_EX02_DeniedAccess_20261117, ID11/GUID E5CDE2F8-8281-4138-9441-59793F62F8B9,0 user tables/guest CONNECT grants. Không source payload/user/grant. Owner yêu cầu tạo test DB và xóa khi hoàn tất. Actual target tests còn NOT RUN nên giữ DB để test; sau tests/evidence, recheck name/ID/GUID/create_date/owner/empty/dependencies/no active sessions rồi chỉ DROP đúng database đó. Không SINGLE_USER/ROLLBACK IMMEDIATE/KILL hoặc filesystem delete. Creation không là denied-access PASS.
 
-Không SQL execution command được nối vào normal project automation. Không chạy setup/verify ở task hiện tại. Client TLS giữ Driver18/Encrypt=yes/TrustServerCertificate=no;SQL không tự chứng minh client certificate validation. Optional DMV không biện minh cấp server-state rights.
+Source TLS giữ ODBC18/Encrypt=yes/TrustServerCertificate=no; client/server-state diagnostics không tự chứng minh certificate validation. Optional DMV NOT RUN khi thiếu quyền; không cấp broad rights để làm test xanh. Không auto-execution hook/CI/ingestion/source-window operation. Xem [platform sqlcmd](https://learn.microsoft.com/en-us/sql/tools/sqlcmd/sqlcmd-utility?view=sql-server-ver17); actual command support được đối chiếu offline với client cài sẵn.
 
 ## 11. Testing
 
@@ -60,21 +62,15 @@ $env:PYTHONDONTWRITEBYTECODE='1'
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p 'source_security_static.py' -v
 ```
 
-13 static tests PASS ngày2026-11-16,bao gồm disabled guards,11-object allowlist/H,QUOTENAME,one batch,read-only verify,CONNECT grant contexts vàunsafe-mutation rejection. Regression mới từ chối server GRANT ngoài master hoặc database GRANT không quay về WideWorldImporters. Không import DB driver,run SQL,subprocess hoặc thay dependencies;không compiler/formal proof.
+18 tests PASS ngày2026-11-17: disabled guards,populated values/SIDs/operator/refs,11-object/H coverage,CONNECT contexts/QUOTENAME/SID collisions/read-only verify,extra SELECT/role/wrong SID mutations và manifest exact hashes/activation recipe. Tests không DB drivers/subprocess/SQL execution/dependency changes; không compiler/formal proof. Activated bytes chỉ derive trong memory.
 
 ## 12. Acceptance Criteria
 
-Prepared artifacts đúng11 allowlist,no secrets/no actual Windows names,fail-closed guards;setup/verify tách biệt;external prerequisites rõ;no automation executes admin SQL;static QA PASS. Actual setup/verify/window tests giữ NOT RUN.
+Populated names/SIDs/refs đúng,không unresolved placeholders hoặc secrets; exact11 allowlist,no broad/admin grants,disabled guards và new-only transaction behavior; manifest pin guarded/activated bytes,external execution prerequisites rõ;static QA PASS. Actual SQL setup/verify/window NOT RUN, không auto gate PASS.
 
 ## 13. Status
 
-Prepared,technically reviewed statically;**DBA review vàexecution approval outstanding**. M1B-Approval IN_PROGRESS,WWI-05/Phase2 IN_PROGRESS,M1C/M2/M3 Not Started.
-
-Final EX01/EX02 review: **BLOCKED / BLOCKED**, xem [DBA/Owner Checklist §7](../../docs/architecture/wwi-source-dba-owner-checklist.md#7-final-security-execution-review--2026-11-16). Actual principal/SID, named operators, protected handoff và populated script authorization chưa có. Setup được sửa đúng phạm vi lỗi CONNECT grant context; verify không đổi. Hash hiện hành nằm trong checklist; hash setup cũ trong Owner Record là bằng chứng package trước review, không áp dụng cho bản sửa này. Không G02 PASS hoặc EX03 execution request.
-
-[Owner authorization package §8](../../docs/architecture/wwi-source-dba-owner-checklist.md#8-security-preparation-finalization--owner-authorization-package) bổ sung finalization: principal `DESKTOP-OBDFK6B\wwi_extract` và DB user `wwi_extract` vẫn **PROPOSED**; intended DBA/operator chưa supplied. Task follow-up chỉ cho hoàn thiện bốn existing review files và một local commit sau QA PASS, không approve identities/grants/staging execution. Không tạo staging folder, copy privileged executable artifacts, đổi ACL hoặc chạy SQL. Template hashes không thay populated execution hashes; mọi edit/line-ending conversion đều cần kiểm và review hash mới. G01/G02 giữ Pending/BLOCKED.
-
-**Current EX01 final handoff:** [EX01-R01 Owner record](../../docs/architecture/wwi-m1b-owner-decisions.md#8-ex01-r01-owner-remediation-record-và-final-review-authority) và [final acceptance matrix](../../docs/architecture/wwi-ex01-windows-identity-evidence.md#9-final-ex01-acceptance--os-identity-verification) xác nhận PasswordRequired=True/same SID và target privilege evidence sau remediation; final QA PASS → **EX01 DONE — OS Identity Verification**. Prior PROPOSED/BLOCKED/absent notes ở milestones trên là history. **EX02 BLOCKED / Pending Authorization; G02 Pending Runtime Verification; G01 Pending Source Consistency Proof**. SQL login/user/grant operations NOT RUN; scripts/checker không đổi, không populate names/guards, không execute staging hoặc account/ACL/policy/DB changes trong review; M1C/M2/M3 NOT STARTED.
+**EX01 DONE; EX02 Pending Execution Authorization; G02 BLOCKED; G01 Pending Consistency Proof; WWI-05/Phase2 IN_PROGRESS; M1C/M2/M3 NOT STARTED.** Ready for Owner review của exact candidate manifest, không executable authorization. M1B-Approval không tự DONE. Original unpopulated hashes/decisions trong Owner Record là history, current hashes lấy manifest; SQL setup/verify chưa chạy. Chỉ empty negative database đã tạo theo Owner exception, giữ cho pending tests rồi cleanup theo exact manifest conditions.
 
 ## 14. Reference semantics
 

@@ -11,9 +11,13 @@ DECLARE @OwnerExecutionAuthorized bit = 0;
 DECLARE @WindowsAccountProvisioned bit = 0;
 DECLARE @WindowsNonAdminAttested bit = 0;
 DECLARE @ExecutionConfirmation nvarchar(80) = N'DO_NOT_EXECUTE';
-DECLARE @ChangeReference nvarchar(256) = N'<APPROVED_CHANGE_REFERENCE>';
-DECLARE @WindowsPrincipal nvarchar(256) = N'<APPROVED_WINDOWS_PRINCIPAL>';
-DECLARE @DatabaseUser nvarchar(256) = N'<APPROVED_DATABASE_USER>';
+DECLARE @ChangeReference nvarchar(256) = N'WWI05-EX02-20261117-01';
+DECLARE @WindowsPrincipal nvarchar(256) = N'DESKTOP-OBDFK6B\wwi_extract';
+DECLARE @DatabaseUser nvarchar(256) = N'wwi_extract';
+DECLARE @ExpectedWindowsSid varbinary(85) = 0x0105000000000005150000003CF5FF806E0A76B5BDAC3020EF030000;
+-- Concrete proposed operator; Owner must approve this identity with the manifest.
+DECLARE @ExecutionOperator nvarchar(256) = N'DESKTOP-OBDFK6B\PC';
+DECLARE @ExpectedOperatorSid varbinary(85) = 0x0105000000000005150000003CF5FF806E0A76B5BDAC3020E9030000;
 
 IF COALESCE(@DbaReviewed, 0) <> 1 OR COALESCE(@OwnerExecutionAuthorized, 0) <> 1
    OR COALESCE(@WindowsAccountProvisioned, 0) <> 1 OR COALESCE(@WindowsNonAdminAttested, 0) <> 1
@@ -49,10 +53,13 @@ IF DB_NAME() <> N'WideWorldImporters'
     THROW 51104, N'Source instance/database allowlist mismatch.', 1;
 IF @@TRANCOUNT <> 0
     THROW 51105, N'Use a clean dedicated DBA session, no ambient transaction.', 1;
+IF ORIGINAL_LOGIN() <> @ExecutionOperator OR SUSER_SNAME() <> @ExecutionOperator
+   OR SUSER_SID() IS NULL OR SUSER_SID() <> @ExpectedOperatorSid
+    THROW 51112, N'Approved real DBA execution identity/SID required; no impersonation.', 1;
 
 -- New-identity-only package. Reuse requires another reviewed package, not edits here.
-IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = @WindowsPrincipal)
-   OR EXISTS (SELECT 1 FROM sys.database_principals WHERE name = @DatabaseUser)
+IF EXISTS (SELECT 1 FROM sys.server_principals WHERE name = @WindowsPrincipal OR sid = @ExpectedWindowsSid)
+   OR EXISTS (SELECT 1 FROM sys.database_principals WHERE name = @DatabaseUser OR sid = @ExpectedWindowsSid)
     THROW 51106, N'Principal already exists; stop, do not alter or reuse automatically.', 1;
 
 DECLARE @Allowlist TABLE
@@ -116,6 +123,7 @@ BEGIN TRY
     (
         SELECT 1 FROM sys.server_principals
         WHERE name = @WindowsPrincipal AND type = 'U' AND is_disabled = 0
+          AND sid = @ExpectedWindowsSid
     )
         THROW 51110, N'Expected a Windows user login, not a group/SQL login.', 1;
     EXEC sys.sp_executesql @UserSql;
@@ -123,6 +131,7 @@ BEGIN TRY
     (
         SELECT 1 FROM sys.database_principals
         WHERE name = @DatabaseUser AND type = 'U'
+          AND sid = @ExpectedWindowsSid
           AND sid = SUSER_SID(@WindowsPrincipal)
     )
         THROW 51111, N'Windows login/database-user SID mapping mismatch.', 1;
