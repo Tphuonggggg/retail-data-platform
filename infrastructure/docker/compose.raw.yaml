@@ -1,0 +1,32 @@
+name: retail-raw
+
+services:
+  postgres:
+    image: postgres:18
+    restart: "no"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: retail_raw
+      POSTGRES_PASSWORD: ${RAW_PG_ADMIN_PASSWORD:?Set a private RAW_PG_ADMIN_PASSWORD}
+      RAW_PG_INGEST_PASSWORD: ${RAW_PG_PASSWORD:?Set a private RAW_PG_PASSWORD}
+      POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:${RAW_PG_PORT:-55434}:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql
+      - type: bind
+        source: ../../storage/raw/bootstrap.sql
+        target: /docker-entrypoint-initdb.d/010-retail-raw.sql
+        read_only: true
+        bind:
+          create_host_path: false
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 15s
+    stop_grace_period: 30s
+
+volumes:
+  pg_data:

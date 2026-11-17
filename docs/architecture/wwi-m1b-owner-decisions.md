@@ -1,5 +1,19 @@
 # WWI-05 / M1B — Owner Decisions & Execution Preparation
 
+## MVP-SIMPLIFICATION-01 — Trusted Local MVP
+
+**APPROVED — Owner direction, 2026-11-17.** Nguồn là task trực tiếp “Retail Data Platform — Simplify Governance & Resume Data Engineering Implementation”; baseline `main/f1d1fc433ef32d32aa77c90e8335a9f2a45c8c9a` sạch. Đây là current local MVP authority, supersede mandatory protected staging/custom NTFS ACL/multi-layer remediation/SHA256 execution manifests/repeated Owner-DBA checkpoints. Các mục đó là **optional future hardening**, EX02-S1 **DEFERRED — OPTIONAL SECURITY HARDENING**, không MVP blocker. Layout sibling có thể giữ làm hướng tương lai, không tạo staging hoặc apply ACL.
+
+Giữ WWI read-only, dedicated `DESKTOP-OBDFK6B\wwi_extract`/SID-1007, đúng11 object SELECT và no broad/admin extraction, source TLS/no Git secrets; BRD/KPI/accepted DW/SCD2/B9/INC/CP, consistency/reconciliation/fidelity/idempotency/recovery vẫn nguyên nghĩa. Detailed31 gates/72 test scenarios giữ reference/status, **không** tự chuyển PASS. [MVP-G01–06](../../TASKS.md#mvp-operational-milestones) là operational view, không mapping G01 cũ thành MVP-G01 mới.
+
+Task này cho phép chỉnh tài liệu tối thiểu, guarded SQL local procedure, isolated Raw Compose/bootstrap/checker preparation, offline tests và một local commit. **Không authorize SQL security execution, start/stop container/service, create volume/database, ACL changes, source writes/ingestion hoặc push.** Runtime cần một targeted authorization cho actual action/config, không dựng lại chuỗi approval hành chính. SQL guarded files vẫn0/DO_NOT_EXECUTE; không activated SQL copy được tạo.
+
+Current result: Raw foundation PREPARED/OFFLINE TESTED; runtime NOT RUN. EX01 DONE,EX02 Pending SQL Execution Authorization,G02 detailed chưa runtime PASS,G01 consistency pending,WWI-05 IN_PROGRESS. [EX02 local guide](../../data-sources/security/README.md#10-local-mvp-setup--pending-runtime-authorization) và [Raw runtime commands](../../infrastructure/docker/README.md) là handoff hiện hành. Toàn bộ sections OD01–03/EX01/R01/manifest/hardening phía dưới giữ nguyên bằng chứng lịch sử; các mandatory staging/hash clauses không còn bắt buộc cho local MVP.
+
+Actual preparation QA:15 Raw offline tests (config/probe mocks/SQL contracts/real Compose parser) và18 SQL security regression tests PASS; Python syntax6 files,1.238 local links/anchors và secret scan đạt. Scope26 paths (22 existing+4 new),132 original files ngoài scope giữ canonical Git content, gồm BRD/KPI/mappings/accepted designs/gates/B9/SQL scripts+manifest. Account read-back vẫn Enabled/PasswordRequired=True/SID-1007; D:/Code/parent/repo before-SDDL không đổi, staging và activated SQL directory absent. Docker CLI29.8.2/Compose5.5.1 có sẵn nhưng Engine unavailable; không start/stop hoặc tạo resource. Bootstrap SQL chưa engine compilation/execute, probe chỉ mock/offline, source/runtime NOT RUN. Staged secret/blob/scope/diff checks phải đạt trước one local preparation commit; không push.
+
+## Hồ sơ lịch sử — M1B và EX01/EX02
+
 **Authority: Project Owner; decision date2026-11-16.** Nguồn là task trực tiếp “WWI-05 / M1B-Approval — Owner Decision Recording & DBA Execution Preparation” trong phiên này; không chữ ký điện tử hoặc approval từ hệ thống khác. Initial main/HEAD `fe0099e6d409252628af6ce48e0248ef2abbd7f3`,working tree sạch.
 
 **M1B-Approval IN_PROGRESS — preparation ready for Owner/DBA review, chưa accepted.** WWI-04 DONE Design,Phase1 Completed,Phase2/WWI-05 IN_PROGRESS,M1A DONE Verification,M1B DONE Planning Review;M1C/M2/M3 NOT STARTED.

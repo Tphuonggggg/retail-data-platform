@@ -2,6 +2,12 @@
 
 Áp dụng cho toàn bộ repository. Chủ dự án quyết định scope, architecture, tính năng, ưu tiên, chuyển phase và nghiệm thu. Tài liệu dùng tiếng Việt; tên thư mục, tệp và định danh code dùng tiếng Anh.
 
+## Chính sách MVP hiện hành — MVP-SIMPLIFICATION-01, 2026-11-17
+
+Owner đã supersede mandatory protected staging/custom NTFS ACL/multi-layer remediation/SHA256 execution manifests/repeated local approval checkpoints: **optional future hardening**, không MVP blocker. EX02-S1 **DEFERRED — OPTIONAL SECURITY HARDENING**, giữ package/evidence lịch sử, không chạy ACL scripts. [Owner record](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) và [MVP milestones](TASKS.md#mvp-operational-milestones) là hướng triển khai local hiện hành; các no-start/preparation-only notes phía dưới giữ bối cảnh task cũ, không phủ nhận authority mới.
+
+Giữ WWI read-only/dedicated identity/đúng11 objects/no sysadmin extraction, source TLS, no Git secrets, consistency/reconciliation/type fidelity/100ns/idempotency/recovery/SCD2/BRD/KPI. Không đổi accepted Phase1 design hoặc tự ghi runtime PASS. Task hiện tại cho Compose/Raw bootstrap/checker preparation và offline tests/local commit; **không** SQL permission changes, start/stop Docker, create volume/database, source ingestion, ACL changes hoặc push. Runtime cần targeted Owner authorization, không một dây chuyền admin approvals mới.
+
 ## RULE 01 — SCOPE CONTROL
 Chỉ làm đúng task được giao; không tự mở rộng tính năng.
 

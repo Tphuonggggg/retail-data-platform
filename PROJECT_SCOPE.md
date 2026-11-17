@@ -1,5 +1,7 @@
 # Project Scope
 
+**Local MVP policy hiện hành:** Owner [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) giữ architecture/BRD/KPI/data correctness, nhưng protected staging/ACL remediation/mandatory execution-hash manifests và repeated local admin checkpoints nay optional hardening. Không là MVP blocker, không đồng nghĩa SQL/runtime authorization. EX02-S1 DEFERRED; [MVP-G01–06](TASKS.md#mvp-operational-milestones) là operational view, không chuyển detailed gates thành PASS. PostgreSQL Raw Compose/bootstrap/checker được chuẩn bị offline trong WWI-05; chưa service/database/ingestion runtime. Source read-only/least privilege/TLS/temporal fidelity/reconciliation/recovery giữ nguyên.
+
 ## Trạng thái
 
 Nguồn OLTP là SQL Server WWI chỉ đọc, warehouse PostgreSQL do dự án tự xây. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md).

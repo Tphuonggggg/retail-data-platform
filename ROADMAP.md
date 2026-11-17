@@ -1,5 +1,11 @@
 # Roadmap
 
+## Hướng triển khai MVP hiện hành
+
+Theo Owner [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp): hoàn tất EX02 dedicated read-only access → start isolated PostgreSQL Raw → Python Full Load → Incremental → dbt DW/SCD2 → marts/Power BI → Airflow/e2e demo. Sales end-to-end trước, rồi Customer/Inventory như scope đã duyệt. [MVP-G01–06](TASKS.md#mvp-operational-milestones) gộp các operational outcomes; source consistency/data fidelity/reconciliation/idempotency/recovery vẫn phải có actual evidence.
+
+Protected staging/ACL remediation và mandatory execution-hash manifests **DEFERRED — OPTIONAL SECURITY HARDENING**, không chặn MVP. Detailed gates/phase history phía dưới giữ tham khảo và không tự PASS. Task hiện tại chỉ chuẩn bị [Raw Compose](infrastructure/docker/README.md), bootstrap/run tracking và connectivity checker, chưa runtime. Phase2/WWI-05 IN_PROGRESS; WWI-06+ chưa chạy. SQL grants và Compose startup/volume creation cần targeted Owner authorization; không bắt đầu Full Load runtime trong task này.
+
 Chủ dự án quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). Task/evidence ở [TASKS.md](TASKS.md).
 
 ## Nguyên tắc triển khai

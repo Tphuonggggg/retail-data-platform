@@ -1,7 +1,7 @@
 # scripts
 
 ## 1. Overview
-Module **Lệnh hỗ trợ dự án**. Status: Not Implemented. Not implemented yet.
+Module **Lệnh hỗ trợ dự án**. [Raw checker](check_raw_connection.py) PREPARED/OFFLINE TESTED; actual connection NOT RUN.
 
 ## 2. Purpose
 Chứa script vận hành chỉ khi có nhu cầu và được giao.
@@ -25,19 +25,19 @@ Các module liên quan theo từng script.
 Python 3.12 hoặc shell phù hợp khi được duyệt.
 
 ## 9. Directory Structure
-Chưa có thư mục con; các script sẽ được thêm theo task được giao.
+- [check_raw_connection.py](check_raw_connection.py): đọc environment/optional dotenv, offline config validation hoặc explicit readonly Raw probe; không ingestion/schema writes.
 
 ## 10. Planned Workflow
-Viết script tối thiểu → mô tả tham số → kiểm thử. Hướng dẫn thực thi: chưa có lệnh chạy; sẽ bổ sung sau khi triển khai.
+Raw checker: từ root chạy `.\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env --check-config` để chỉ kiểm config. Bỏ `--check-config` là database connection, chỉ chạy khi Owner authorize runtime. [Raw instructions](../infrastructure/docker/README.md) có target/roles/TLS boundaries.
 
 ## 11. Development Tasks
-Chưa có script; bổ sung theo task cụ thể. Theo dõi ID và trạng thái tại [TASKS.md](../TASKS.md).
+WWI-05 Raw foundation; WWI-06 ingestion là task kế tiếp, chưa triển khai. Theo dõi [TASKS.md](../TASKS.md).
 
 ## 12. Testing Strategy
-Kiểm tra chạy lại, lỗi đầu vào và tác động dữ liệu. Hướng dẫn kiểm thử: chưa có lệnh test vì module chưa triển khai.
+Kiểm config thiếu/placeholder/secrets/target sai, offline mode không gọi probe và sanitized exception output tại [offline suite](../tests/raw_foundation_static.py). Không runtime writes.
 
 ## 13. Acceptance Criteria
 Mỗi script có mục đích và cách dùng rõ, không thao tác phá hủy mặc định.
 
 ## 14. Current Status
-Status: Not Implemented. Not implemented yet. Chưa có chức năng hoặc kết quả kiểm thử.
+Checker/config implemented và offline tested; actual Raw connection, startup/persistence và ingestion NOT RUN. Existing local Python3.12/psycopg3.3.9 dùng lại; không install dependency.

@@ -1,5 +1,7 @@
 # EX02-S1 — Đánh giá ACL và chuẩn bị protected staging
 
+**Current status: DEFERRED — OPTIONAL SECURITY HARDENING.** Owner [MVP-SIMPLIFICATION-01](wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) supersede protected-staging/ACL/mandatory execution-manifest blockers cho trusted local MVP. Không cần resolve ancestor/inheritance findings để tiếp tục MVP; không apply ACL/tạo staging. Sections1–8 và SHA256 bên dưới là **historical preparation evidence tại commit f1d1fc4**, không current execution approval hoặc hashes của deferred status metadata mới. Giữ nguyên findings để revisit hardening khi có scope riêng; [local EX02](../../data-sources/security/README.md#10-local-mvp-setup--pending-runtime-authorization) là current handoff.
+
 Ngày: 2026-11-17. **PREPARED — BLOCKED FOR IMPLEMENTATION.** Đây là hồ sơ chuẩn bị theo task Owner “Protected Staging ACL Remediation & Execution Preparation”, không phải chấp thuận chạy ACL hoặc EX02. Các quyết định M1B-OD01–03, EX01/R01 và kiến trúc đã duyệt giữ nguyên.
 
 ## 1. Preflight và ranh giới bằng chứng

@@ -1,7 +1,7 @@
 # storage
 
 ## 1. Overview
-Module **Phân lớp dữ liệu**. Status: Not Implemented. Not implemented yet.
+Module **Phân lớp dữ liệu**. Raw namespace/run tracking [bootstrap](raw/README.md) đã PREPARED/OFFLINE TESTED; storage runtime/payload/warehouse Not implemented yet.
 
 ## 2. Purpose
 Định nghĩa ranh giới raw, staging và warehouse.
@@ -30,16 +30,16 @@ PostgreSQL local; BigQuery ở Phase 8; Parquet khi cần.
 - [`warehouse/`](warehouse/README.md) — xem trách nhiệm và trạng thái của thư mục.
 
 ## 10. Planned Workflow
-Raw lưu dấu vết → staging chuẩn hóa → warehouse phục vụ phân tích. Hướng dẫn thực thi: chưa có lệnh chạy; sẽ bổ sung sau khi triển khai.
+Raw lưu dấu vết → staging chuẩn hóa → warehouse phục vụ phân tích. Foundation bootstrap/startup instructions tại [raw](raw/README.md), execution cần Owner runtime authority; chưa có ingestion hoặc serving publication.
 
 ## 11. Development Tasks
 Định nghĩa schema/storage contracts khi vào phase tương ứng. Theo dõi ID và trạng thái tại [TASKS.md](../TASKS.md).
 
 ## 12. Testing Strategy
-Kiểm tra keys, constraints, lineage và đối soát với nguồn. Hướng dẫn kiểm thử: chưa có lệnh test vì module chưa triển khai.
+Kiểm tra keys/constraints/lineage và đối soát nguồn. Foundation có offline SQL-contract/Compose/config tests tại [Raw README](raw/README.md); chưa có PostgreSQL execution hoặc source-to-Raw reconciliation runtime.
 
 ## 13. Acceptance Criteria
 Mỗi layer có grain/ownership rõ, không có dữ liệu sai âm thầm.
 
 ## 14. Current Status
-Status: Not Implemented. Not implemented yet. Chưa có chức năng hoặc kết quả kiểm thử.
+Raw foundation prepared/offline tested. Payload tables, capture/batch/chunk/publication ledger, staging/Core và actual SQL execution **Not implemented yet**; không coi metadata invocation tables là complete Raw protocol.

@@ -1,5 +1,7 @@
 # WWI-05 / M1A — Secure Connection Contract
 
+**MVP follow-up,2026-11-17:** [MVP-SIMPLIFICATION-01](wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) cho isolated Raw foundation preparation. [Local profile](../../infrastructure/docker/README.md) đề xuất database retail_raw/app retail_ingest, PostgreSQL18/loopback55434/UTF8+C, tách B9/native và bootstrap identity. Target `sslmode=disable` là **proposed local-only exception có lý do**: chỉ IPv4 loopback trong trusted development machine, SCRAM password; Owner review cùng targeted startup authorization, chưa actual connection/exception runtime approval. Không áp dụng cho remote/production. Source ODBC18/Integrated/Encrypt=yes/TrustServerCertificate=no giữ nguyên. §3 bên dưới là pre-proposal M1A history, không cấm code-only preparation được giao hiện nay; chưa runtime PASS hoặc source consistency proof.
+
 **2026-11-16; documentation contract, production connector Not implemented yet.** [Approval](wwi-phase-1-closure-approval.md), [actual evidence](wwi-m1a-gate-evidence.md), [readiness report](wwi-m1a-environment-readiness.md). Phân biệt Verified checkpoint settings với Proposed future configuration; không tự triển khai adapter/retry/schema hoặc cấp quyền.
 
 ## 1. Identity boundaries

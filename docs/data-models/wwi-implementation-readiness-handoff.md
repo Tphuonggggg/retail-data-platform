@@ -1,5 +1,7 @@
 # WWI Implementation Readiness & Milestone Handoff — DW-04
 
+**Current implementation handoff,2026-11-17:** [MVP-SIMPLIFICATION-01](../architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) supersede protected staging/custom ACL/mandatory execution manifests/repeated admin checkpoints cho trusted local MVP. EX02-S1 deferred, không chặn [MVP-G01–06](../../TASKS.md#mvp-operational-milestones). Current next actions: authorize EX02 guarded setup/fresh extractor verification, rồi isolated [Raw Compose/bootstrap](../../infrastructure/docker/README.md) runtime; foundation/code đã PREPARED/OFFLINE TESTED, runtime NOT RUN. Source consistency/precision/reconciliation/recovery/BRD/KPI/accepted manifests và publication semantics giữ nguyên. Toàn bộ DW-04 matrices/gates/test plans bên dưới giữ reference/historical statuses, không tự PASS; không cần thêm một layer hardening report trước khi viết pipeline.
+
 **2026-11-16. Design handoff only.** Không authorize code/provisioning/phase transition, không runtime evidence mới. [DW-04 Assessment](wwi-dw-04-assessment.md) giữ architecture/source/model/KPI traceability và conditional acceptance; [Gate Register](wwi-implementation-gate-register.md) giữ31 original gates. Original [TASKS](../../TASKS.md)/[ROADMAP](../../ROADMAP.md) là phase/dependency authority.
 
 ## 1. Implementation readiness khác operational readiness

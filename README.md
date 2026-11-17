@@ -1,5 +1,7 @@
 # Retail Data Platform & Analytics Warehouse
 
+**Current local MVP:** [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) ưu tiên pipeline/data correctness/runtime evidence; protected staging/ACL work là optional hardening. EX01 DONE, EX02 chưa provision; PostgreSQL Raw [Compose/bootstrap](infrastructure/docker/README.md) và [checker](scripts/check_raw_connection.py) **PREPARED / OFFLINE TESTED**, runtime NOT RUN. [MVP-G01–06](TASKS.md#mvp-operational-milestones) theo dõi access → Raw → Full/Incremental → DW → Analytics/Orchestration; không tự PASS historical gates.
+
 ## Project Overview
 
 Dự án portfolio Data Engineering dùng SQL Server WideWorldImporters chỉ đọc làm OLTP, xây warehouse PostgreSQL và phục vụ Power BI. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
@@ -36,11 +38,11 @@ Python 3.12, SQL Server nguồn, PostgreSQL đích, SQL, dbt Core, Apache Airflo
 
 ## Folder Structure and Status
 
-Mỗi module hiện có README điều hướng; cấu trúc giữ lại để tái sử dụng. Chưa có Python ingestion, PostgreSQL schema của dự án, dbt project, Airflow DAG, Docker Compose, Power BI report, BigQuery deployment hoặc test result. Git repository local đã được khởi tạo trong P0-06; không có remote hoặc push. Đối chiếu trạng thái ở [TASKS.md](TASKS.md).
+Mỗi module có README điều hướng. Đã có Raw Compose/bootstrap/readonly checker và offline tests; chưa chạy service hoặc tạo PostgreSQL schema thực tế. Chưa có Python ingestion, dbt project, Airflow DAG hoặc Power BI report. Git local hoạt động, chưa push. Đối chiếu [TASKS.md](TASKS.md).
 
 ## Getting Started (planned)
 
-Hiện chưa có lệnh chạy dự án. Sau khi source contract, kết nối, schema và quyền được duyệt, các phase triển khai sẽ bổ sung hướng dẫn cấu hình từ `.env.example`, nạp dữ liệu, kiểm thử và khôi phục. WWI gốc luôn chỉ đọc; môi trường thử nghiệm INSERT/UPDATE cho incremental phải độc lập và được duyệt trước khi tạo.
+Hướng dẫn [EX02 local setup](data-sources/security/README.md#10-local-mvp-setup--pending-runtime-authorization) và [Raw startup](infrastructure/docker/README.md) đã chuẩn bị; runtime cần Owner authorize riêng. Chỉ offline tests được chạy ở task hiện tại. WWI gốc luôn read-only; incremental INSERT/UPDATE tests phải dùng môi trường độc lập, không bịa CDC.
 
 ## Documentation Navigation
 

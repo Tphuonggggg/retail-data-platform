@@ -1,5 +1,9 @@
 # tests
 
+## Current Local MVP Checks
+
+[raw_foundation_static.py](raw_foundation_static.py) kiểm config/secret omission/target isolation/metadata SQL và actual Compose parser; [source_security_static.py](source_security_static.py) giữ11-object SQL guards regression. Chạy explicit `unittest discover -s tests -p 'raw_foundation_static.py' -v` hoặc `source_security_static.py` trong existing venv, không DB runtime. [Raw README](../infrastructure/docker/README.md) có commands. EX02-S1 ACL tests phía dưới là **DEFERRED — OPTIONAL SECURITY HARDENING** theo MVP-SIMPLIFICATION-01; không pipeline gate hoặc prerequisite. Không claim SQL compilation/service/runtime từ static PASS.
+
 ## 1. Overview
 Module **kiểm thử xuyên module**. Isolated [B9 precision PoC](integration/b9_precision/README.md) đã Implemented/Tested cho source→Python→PG candidate transport/persistence. Production/pipeline integration và end-to-end suites: Not implemented yet.
 

@@ -1,7 +1,7 @@
 # infrastructure
 
 ## 1. Overview
-Module **môi trường thực thi cho nguồn WWI chỉ đọc và warehouse PostgreSQL**. Status: Not Implemented. Not implemented yet.
+Module **môi trường thực thi cho nguồn WWI chỉ đọc và warehouse PostgreSQL**. Isolated Raw Compose/bootstrap **PREPARED / OFFLINE TESTED**; runtime Not implemented yet.
 
 ## 2. Purpose
 Quản lý cấu hình local/cloud theo phase mà không đưa credentials vào repository.
@@ -30,7 +30,7 @@ SQL Server nguồn; PostgreSQL đích; Docker/Docker Compose và BigQuery ở ph
 - [cloud/](cloud/README.md)
 
 ## 10. Planned Workflow
-Xác minh nguồn read-only → thiết kế local → kiểm tra tái lập → chỉ xét cloud theo task riêng. Chưa có lệnh chạy.
+Xác minh source read-only và chuẩn bị Raw song song → Owner authorize runtime → kiểm connectivity/restart/persistence → Full Load task riêng. [Docker README](docker/README.md) có exact startup/shutdown commands, chưa được chạy.
 
 ## 11. Development Tasks
 WWI-05 cho môi trường local; WWI-15 cho BigQuery nếu được duyệt. Theo dõi [TASKS.md](../TASKS.md).
@@ -42,4 +42,4 @@ Kiểm tra quyền đọc, kết nối, khởi động và tái lập môi trư�
 Môi trường tái lập được, không commit secret, nguồn giữ quyền chỉ đọc.
 
 ## 14. Current Status
-M1A đã kiểm environment/driver/Docker/Compose và phân loại target; xem [Environment Report](../docs/architecture/wwi-m1a-environment-readiness.md), [Secure Contract](../docs/architecture/wwi-secure-connection-contract.md), [Evidence](../docs/architecture/wwi-m1a-gate-evidence.md), [Handoff](../docs/architecture/wwi-m1a-handoff.md). Native PG service có nhưng Raw target chưa approved/verified, B9 không dùng lại. Chưa có project Compose/bootstrap/physical Raw; operational BLOCKED, WWI-05 IN_PROGRESS. Runtime module Not implemented yet.
+Current [Raw package](docker/README.md): PostgreSQL18, loopback55434, new project/volume, healthcheck, bootstrap và readonly probe prepared/offline tested; Engine desktop-linux unavailable ở inspection mới, resource collisions chưa kiểm được. Không start/stop service hoặc tạo volume/database. Native5432 và B9 không sửa. WWI-05 IN_PROGRESS, runtime NOT RUN; historical M1A evidence giữ nguyên.

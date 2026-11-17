@@ -1,5 +1,7 @@
 # EX02-S1 — Chuẩn bị ACL protected staging
 
+**DEFERRED — OPTIONAL SECURITY HARDENING**, theo Owner [MVP-SIMPLIFICATION-01](../../../docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp). Protected staging không cần cho trusted local MVP; có thể revisit khi triển khai theo production-oriented security. Không execute ACL scripts/tạo staging/sửa permissions. Nội dung, guards, tests và hashes phía dưới là historical preparation tại commit f1d1fc4, **không MVP dependency hoặc runtime instruction hiện hành**. [EX02 local procedure](../README.md#10-local-mvp-setup--pending-runtime-authorization) thay mandatory staging workflow.
+
 ## Mục đích và phạm vi
 
 Chuẩn bị remediation tối thiểu cho parent `D:\Code\Retail_Data_Platform` và protected staging sibling `Retail_EX02_Protected_Staging`. Repository sibling giữ nguyên vị trí; không đổi ACL Code/repo/venv. Đây là source package để review, **không phải protected staging thực tế**.

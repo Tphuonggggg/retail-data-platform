@@ -1,5 +1,7 @@
 # WWI-05 / M1B — DBA & Owner Action Checklist
 
+**Current local MVP handoff — MVP-SIMPLIFICATION-01,2026-11-17:** dùng [EX02 local procedure](../../data-sources/security/README.md#10-local-mvp-setup--pending-runtime-authorization) và [MVP-G01–06](../../TASKS.md#mvp-operational-milestones). EX02-S1 **DEFERRED — OPTIONAL SECURITY HARDENING**; mandatory staging/ACL/hashes/multiple local admin checkpoints ở các sections lịch sử dưới đây **không còn MVP dependency**. Giữ exact11 SELECT/source TLS/no admin extraction, guarded defaults, actual least-privilege evidence và consistency proof. Một targeted Owner authorization cho SQL execution vẫn cần; task simplification không cấp quyền thực thi. Không source/ACL/DB changes. Historical decisions/evidence và manifest giữ nguyên để truy vết, không bắt sửa old staging paths trước local MVP.
+
 **OD01/OD02 direction approved; exact execution package PREPARED — DBA REVIEW REQUIRED,2026-11-16.** M1B chỉ review/metadata SELECT/documentation, không Windows/SQL identity/grant/config changes. [Identity](wwi-source-identity-proposal.md), [Consistency](wwi-source-consistency-proposal.md), [M1B evidence](wwi-m1b-assessment.md), [existing Owner authority](wwi-phase-1-closure-approval.md). Recommendation không là APPROVED.
 
 Hiện hành sau EX01-R01: xem [EX01 final OS acceptance §11](#11-ex01-final-acceptance--os-identity-verification). §1–10 giữ milestone history, bao gồm PasswordRequired=False ở vòng review trước; không dùng chúng thay current acceptance evidence.

@@ -1,6 +1,9 @@
 {
   "plan_id": "WWI05-EX02-S1-ACL-20261117-01",
-  "status": "PREPARED_BLOCKED_IMPLEMENTATION",
+  "status": "DEFERRED_OPTIONAL_SECURITY_HARDENING",
+  "superseded_by": "MVP-SIMPLIFICATION-01",
+  "mvp_blocker": false,
+  "historical_preparation_commit": "f1d1fc433ef32d32aa77c90e8335a9f2a45c8c9a",
   "review_date": "2026-11-17",
   "machine": "DESKTOP-OBDFK6B",
   "operator": "DESKTOP-OBDFK6B\\PC",
