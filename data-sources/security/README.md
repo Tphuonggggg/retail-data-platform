@@ -4,6 +4,8 @@
 
 **DBA REVIEW REQUIRED — DO NOT AUTO-EXECUTE.** Ngày2026-11-17, EX02 populated candidate **Pending Execution Authorization**. [Execution manifest](wwi_extraction_execution_manifest.json) pin actual identities/SIDs,paths/11-object scope,guarded/activated hashes/operator/staging/rollback/stop conditions. [Current review](../../docs/architecture/wwi-source-dba-owner-checklist.md#12-ex02-populated-package--final-authorization-review) ghi actual metadata và ngoại lệ Owner cho empty negative database. Setup/verify **NOT RUN**, production extraction Not implemented yet; EX01 DONE không G02 PASS.
 
+**EX02-S1 follow-up:** Owner yêu cầu repo và protected staging làm siblings dưới `D:\Code\Retail_Data_Platform`. [ACL assessment](../../docs/architecture/wwi-ex02-s1-acl-assessment.md) và [prepared staging package](staging/README.md) ghi exact proposal và ancestor/inheritance blockers; **chưa áp dụng ACL hoặc tạo staging**. Paths C:\ProgramData trong SQL manifest là proposal lịch sử, cần amendment riêng trước execution; không dùng chúng để vượt Owner location requirement mới. EX02/G02 vẫn BLOCKED, package chỉ chuẩn bị để review.
+
 ## 2. Purpose
 
 Chuẩn bị dedicated non-admin Windows identity/mapping/object SELECT vàsafe read-only verification,tách khỏi ingestion vàB9.
@@ -40,11 +42,13 @@ T-SQL preparation;offline standard-library Python unittest. Không SQL parser/en
 
 README,2 standalone .sql files và1 JSON manifest. Không migration registration,CI hooks,SQLCMD include files hoặc bootstrap runner. Static checker ở [tests/source_security_static.py](../../tests/source_security_static.py) chỉ đọc/mutate strings trong memory,không execute SQL hoặc viết activated files.
 
+Thư mục [staging/](staging/README.md) bổ sung prepared native PowerShell ACL procedures/plan; không production hoặc SQL execution runner, không tự register hooks.
+
 ## 10. Execution — FUTURE SEPARATE APPROVAL REQUIRED
 
 1. Owner review manifest ID WWI05-EX02-20261117-01, exact proposed PC/SID-1001 operator, staging/access/client/rollback và cả guarded/activated hashes. Chưa setup/verify execution approval.
 2. Reverify exact existing EX01 principal/SID-1007 và source/negative DB identity; không provision/reset account. DBA recheck collision/metadata/public/group/module/ownership/trigger baseline; missing/unknown proof thì STOP.
-3. Owner phải approve và tự tạo protected staging tại C:\ProgramData\RetailDataPlatform\SecurityReview\WWI05-EX02-20261117-01, verification-only sibling SecurityVerify và log/evidence sibling SecurityEvidence. Restricted named-principal ACL/effective parent/file/owner/reparse checks theo manifest/PS01–08; không broad inherited write, không repo/venv hoặc PATH helper. Hiện chưa directories/ACL/copy nào được tạo.
+3. Owner review [EX02-S1](../../docs/architecture/wwi-ex02-s1-acl-assessment.md): target hiện hành là `D:\Code\Retail_Data_Platform\Retail_EX02_Protected_Staging`, sibling với repo. Ancestor namespace/parent inheritance preservation chưa resolve; không tạo/copy hoặc execute. SQL manifest C:\ProgramData/verification/log proposal cũ cần amendment riêng sau exact ACL/location/client review. Restricted named-principal ACL/effective parent/file/owner/reparse checks vẫn bắt buộc; không elevated helper từ repo/venv hoặc writable PATH. Hiện chưa staging/ACL/copy nào được tạo.
 4. **Exact-byte activation:** repo chỉ lưu flags0/DO_NOT_EXECUTE. Manifest pin actual guarded hash và derived activated hash, đúng5 edits/script. Owner approve activated hash và external prerequisites; flags không tự chứng minh authority. Custodian copy guarded bytes, kiểm hash với independent protected approval record, trusted editor sửa đúng5 lines rồi activated hash phải khớp trước execute. Không dùng privileged Python/venv runner. Edit khác, BOM hoặc LF↔CRLF change → STOP/new review; không authorize arbitrary post-hash edits.
 5. Named DBA dùng absolute signed/pinned SQLCMD17.0.1000.7 trong manifest, fresh real Windows context và protected working directory ngoài checkout/venv; proposed args: -S tcp:DESKTOP-OBDFK6B,1433 -d WideWorldImporters -E -Nm -X1 -x -b -r1 -f 65001 -l 5 -t 20. Input là whole reviewed activated protected copy, logs riêng/unique/no overwrite. Không -C/-P/-U/-A/startup/env/substitution/selected fragments. Chỉ offline -? đã chạy, không -i/-Q/setup/verify execution.
 6. Setup new-only: existing name/SID → STOP, không alter/reuse. CONNECT SQL trong master, database CONNECT và11 object SELECT trong WWI; type U/expected SID pin. XACT_ABORT/transaction rollback/rethrow; ambiguous outcome inspect state trước mọi retry. Postcommit revoke/drop/rollback cần exact authority/dependency/active-use checks; không global public/Windows changes hoặc KILL.

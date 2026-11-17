@@ -55,3 +55,7 @@ $env:PYTHONDONTWRITEBYTECODE='1'
 ./.venv/Scripts/python.exe -m unittest discover -s tests -p 'source_security_static.py' -v
 ```
 SQL setup/verify/window tests và72 inherited runtime scenarios vẫnNOT RUN;B9 evidence không đổi.
+
+## EX02-S1 ACL offline checks
+
+[staging_acl_static.py](staging_acl_static.py) có13 standard-library contract/mutation tests; [staging_acl_offline.ps1](staging_acl_offline.ps1) parse5 prepared operator/helper files và kiểm10 unsafe fixtures trong memory. Commands và giới hạn tại [staging README](../data-sources/security/staging/README.md). Không chạy operator entry scripts, không ACL/SQL writes, không là effective-access hoặc ancestor race proof. EX02/G02 runtime vẫn BLOCKED.
