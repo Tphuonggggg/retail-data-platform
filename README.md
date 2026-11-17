@@ -1,6 +1,6 @@
 # Retail Data Platform & Analytics Warehouse
 
-**Current local MVP:** [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) ưu tiên pipeline/data correctness/runtime evidence; protected staging/ACL work là optional hardening. EX01 DONE, EX02 chưa provision; PostgreSQL Raw [Compose/bootstrap](infrastructure/docker/README.md) và [checker](scripts/check_raw_connection.py) **PREPARED / OFFLINE TESTED**, runtime NOT RUN. [MVP-G01–06](TASKS.md#mvp-operational-milestones) theo dõi access → Raw → Full/Incremental → DW → Analytics/Orchestration; không tự PASS historical gates.
+**Current local MVP:** [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) ưu tiên pipeline/data correctness/runtime evidence; protected staging/ACL work là optional hardening. EX01 DONE, EX02 chưa provision theo tracker. Raw server18.7 đang chạy nhưng bootstrap FAILED, schemas/role absent; [fix và recovery A](infrastructure/docker/README.md#bootstrap-failure-và-recovery-a) prepared/offline tested, chưa apply. [MVP-G01–06](TASKS.md#mvp-operational-milestones) theo dõi access → Raw → Full/Incremental → DW → Analytics/Orchestration; không tự PASS historical gates.
 
 ## Project Overview
 

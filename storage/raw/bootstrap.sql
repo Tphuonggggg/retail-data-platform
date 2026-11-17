@@ -1,19 +1,38 @@
 -- PREPARED, NOT EXECUTED. Only the new isolated retail-raw Compose database.
 -- psql input: credentials come from container environment, never SQL literals.
 \set ON_ERROR_STOP on
+\set ingest_password ''
 \getenv ingest_password RAW_PG_INGEST_PASSWORD
 SELECT current_database() = 'retail_raw' AND current_user = 'postgres' AS correct_target \gset
 \if :correct_target
 \else
-    \echo 'STOP: bootstrap requires the isolated retail_raw database and postgres owner.'
-    \quit 1
+    DO $guard$ BEGIN
+        RAISE EXCEPTION USING ERRCODE = '22023',
+            MESSAGE = 'STOP: bootstrap requires the isolated retail_raw database and postgres owner.';
+    END $guard$;
 \endif
 SELECT length(:'ingest_password') >= 16
    AND :'ingest_password' !~* '^(CHANGE_ME|YOUR_|example)' AS usable_password \gset
 \if :usable_password
 \else
-    \echo 'STOP: provide a private ingestion password of at least 16 characters.'
-    \quit 1
+    -- psql 18 ignores an argument to \quit; raise a SQL error for exit status 3.
+    -- The exception text is constant and never contains the password.
+    DO $guard$ BEGIN
+        RAISE EXCEPTION USING ERRCODE = '22023',
+            MESSAGE = 'STOP: provide a private ingestion password of at least 16 characters and no placeholder prefix.';
+    END $guard$;
+\endif
+
+-- First application only. Never silently reuse an existing role/schema/table.
+SELECT to_regnamespace('raw') IS NULL
+   AND to_regnamespace('ingestion_meta') IS NULL
+   AND NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'retail_ingest') AS new_target \gset
+\if :new_target
+\else
+    DO $guard$ BEGIN
+        RAISE EXCEPTION USING ERRCODE = '55000',
+            MESSAGE = 'STOP: Raw objects or ingestion role already exist; inspect before retrying.';
+    END $guard$;
 \endif
 
 BEGIN;

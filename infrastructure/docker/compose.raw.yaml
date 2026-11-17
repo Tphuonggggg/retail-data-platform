@@ -21,7 +21,19 @@ services:
         bind:
           create_host_path: false
     healthcheck:
-      test: [CMD-SHELL, 'pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      test:
+        - CMD-SHELL
+        - >-
+          pg_isready -h 127.0.0.1 -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}" >/dev/null &&
+          test "$$(psql -X -h /var/run/postgresql -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"
+          -v ON_ERROR_STOP=1 -Atqc
+          "SELECT to_regnamespace('raw') IS NOT NULL
+          AND to_regnamespace('ingestion_meta') IS NOT NULL
+          AND to_regclass('ingestion_meta.runs') IS NOT NULL
+          AND to_regclass('ingestion_meta.object_runs') IS NOT NULL
+          AND EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'retail_ingest'
+          AND rolcanlogin AND NOT rolsuper AND NOT rolcreatedb AND NOT rolcreaterole
+          AND NOT rolreplication AND NOT rolbypassrls)")" = t
       interval: 5s
       timeout: 3s
       retries: 12

@@ -42,4 +42,4 @@ Kiểm tra quyền đọc, kết nối, khởi động và tái lập môi trư�
 Môi trường tái lập được, không commit secret, nguồn giữ quyền chỉ đọc.
 
 ## 14. Current Status
-Current [Raw package](docker/README.md): PostgreSQL18, loopback55434, new project/volume, healthcheck, bootstrap và readonly probe prepared/offline tested; Engine desktop-linux unavailable ở inspection mới, resource collisions chưa kiểm được. Không start/stop service hoặc tạo volume/database. Native5432 và B9 không sửa. WWI-05 IN_PROGRESS, runtime NOT RUN; historical M1A evidence giữ nguyên.
+Current [Raw package/recovery](docker/README.md): server18.7 đã chạy trong retail-raw-postgres-1/volume retail-raw_pg_data/loopback55434 theo Owner và readonly inspection. Bootstrap FAILED, raw/meta/role absent; fix + recovery A prepared, chưa apply. Old health healthy không là bootstrap PASS. Task fix không start/stop/recreate/delete resource, không native5432/B9/SQLServer changes. WWI-05 IN_PROGRESS, MVP-G02 BLOCKED; historical M1A evidence giữ nguyên.

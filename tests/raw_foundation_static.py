@@ -20,6 +20,11 @@ assert spec and spec.loader
 raw = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = raw
 spec.loader.exec_module(raw)
+recovery_spec = importlib.util.spec_from_file_location("raw_bootstrap_recovery", ROOT / "scripts/recover_raw_bootstrap.py")
+assert recovery_spec and recovery_spec.loader
+recovery = importlib.util.module_from_spec(recovery_spec)
+with patch.dict(sys.modules, {"check_raw_connection": raw}):
+    recovery_spec.loader.exec_module(recovery)
 
 
 def fixture_env() -> dict[str, str]:
@@ -144,6 +149,88 @@ class RawBootstrapTests(unittest.TestCase):
         self.assertEqual(len(actual), 11)
         self.assertEqual(set(actual), expected)
 
+    def test_validation_failure_raises_error_instead_of_successful_quit(self) -> None:
+        import re
+        prefix = self.sql.split("\nBEGIN;", 1)[0]
+        self.assertNotRegex(prefix, r"(?im)^\s*\\(?:quit|q)\b")
+        self.assertEqual(len(re.findall(r"RAISE EXCEPTION USING ERRCODE", prefix)), 3)
+        self.assertIn("length(:'ingest_password') >= 16", prefix)
+        self.assertIn("!~* '^(CHANGE_ME|YOUR_|example)'", prefix)
+        self.assertIn("\\set ingest_password ''", prefix)
+        self.assertIn("AS new_target \\gset", prefix)
+        for block in re.findall(r"DO \$guard\$(.*?)END \$guard\$;", prefix, re.S):
+            self.assertNotIn(":'ingest_password'", block)
+            self.assertNotIn("%", block)
+
+
+class RecoveryOfflineTests(unittest.TestCase):
+    def ready_database(self) -> dict[str, object]:
+        return {"database": "retail_raw", "user": "postgres", "raw_exists": False,
+                "metadata_exists": False, "ingest_role_exists": False,
+                "custom_schema_count": 0, "user_relation_count": 0, "custom_role_count": 0}
+
+    def target_metadata(self) -> dict[str, object]:
+        return {"id": "f" * 64, "name": "/retail-raw-postgres-1", "image": "postgres:18",
+                "running": True, "project": "retail-raw", "service": "postgres",
+                "ports": {"5432/tcp": [{"HostIp": "127.0.0.1", "HostPort": "55434"}]},
+                "mounts": [{"Type": "volume", "Name": "retail-raw_pg_data",
+                            "Destination": "/var/lib/postgresql"}]}
+
+    def test_target_rejects_unrelated_name_volume_or_binding(self) -> None:
+        cases = ({}, {"name": "/retail-b9-pg-poc"}, {"ports": None}, {"project": "other"},
+                 {"mounts": [{"Type": "volume", "Name": "unrelated", "Destination": "/var/lib/postgresql"}]})
+        for changes in cases:
+            target = {**self.target_metadata(), **changes}
+            with patch.object(recovery, "run_private", return_value=json.dumps(target).encode()):
+                if changes:
+                    with self.assertRaises(ValueError):
+                        recovery.inspect_target()
+                else:
+                    self.assertEqual(recovery.inspect_target(), "f" * 64)
+
+    def test_existing_objects_roles_or_unknown_evidence_block_recovery(self) -> None:
+        recovery.assert_new_database(self.ready_database())
+        for changes in ({"raw_exists": True}, {"ingest_role_exists": True}, {"user_relation_count": 1},
+                        {"custom_role_count": 1}, {"database": "other"}, {"metadata_exists": None}):
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                recovery.assert_new_database({**self.ready_database(), **changes})
+
+    def test_default_is_preflight_only(self) -> None:
+        with patch.object(recovery, "read_env_file", return_value=fixture_env()), \
+                patch.object(recovery, "inspect_target", return_value="f" * 64), \
+                patch.object(recovery, "run_private", return_value=json.dumps(self.ready_database()).encode()) as execute:
+            result = recovery.recover(Path("not-read.env"))
+            self.assertFalse(result["database_mutated"])
+            self.assertEqual(execute.call_count, 1)
+            self.assertIn(b"BEGIN READ ONLY", execute.call_args.kwargs["data"])
+
+    def test_apply_uses_private_child_env_not_password_argv(self) -> None:
+        with patch.object(recovery, "read_env_file", return_value=fixture_env()), \
+                patch.object(recovery, "inspect_target", return_value="f" * 64), \
+                patch.object(recovery, "run_private", side_effect=[json.dumps(self.ready_database()).encode(), b""]) as execute:
+            result = recovery.recover(Path("not-read.env"), apply=True)
+            self.assertEqual(result["status"], "BOOTSTRAP_APPLIED_VERIFICATION_REQUIRED")
+            args = execute.call_args.args[0]
+            self.assertNotIn("i" * 24, " ".join(args))
+            self.assertIn("f" * 64, args)
+            self.assertIn("RAW_PG_INGEST_PASSWORD", args)
+            self.assertEqual(execute.call_args.kwargs["environment"]["RAW_PG_INGEST_PASSWORD"], "i" * 24)
+
+    def test_short_password_blocks_before_any_docker_call(self) -> None:
+        with patch.object(recovery, "read_env_file", return_value={"RAW_PG_PASSWORD": "short"}), \
+                patch.object(recovery, "inspect_target") as inspect:
+            with self.assertRaises(ValueError):
+                recovery.recover(Path("not-read.env"), apply=True)
+            inspect.assert_not_called()
+
+    def test_nonzero_exit_is_not_swallowed_or_logged_with_private_output(self) -> None:
+        result = subprocess.CompletedProcess(["fixture"], 3, b"private-output", b"private-output")
+        with patch.object(recovery.subprocess, "run", return_value=result), \
+                self.assertRaises(RuntimeError) as caught:
+            recovery.run_private(["fixture"])
+        self.assertIn("exit 3", str(caught.exception))
+        self.assertNotIn("private-output", str(caught.exception))
+
 
 class ComposeOfflineTests(unittest.TestCase):
     def test_real_compose_parser_and_resource_isolation(self) -> None:
@@ -169,6 +256,9 @@ class ComposeOfflineTests(unittest.TestCase):
         self.assertEqual(mounts["/var/lib/postgresql"]["type"], "volume")
         self.assertTrue(mounts["/docker-entrypoint-initdb.d/010-retail-raw.sql"]["read_only"])
         self.assertIn("pg_isready", " ".join(service["healthcheck"]["test"]))
+        for fragment in ("psql -X", "ON_ERROR_STOP=1", "to_regclass('ingestion_meta.runs')",
+                         "to_regclass('ingestion_meta.object_runs')", "rolname = 'retail_ingest'", ")\" = t"):
+            self.assertIn(fragment, service["healthcheck"]["test"][1])
         self.assertEqual(service["restart"], "no")
 
 

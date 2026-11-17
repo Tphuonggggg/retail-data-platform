@@ -2,7 +2,7 @@
 
 ## Purpose, scope và responsibilities
 
-Chuẩn bị namespace Raw và invocation/object-run tracking cho target Compose riêng. **PREPARED / OFFLINE TESTED; chưa tạo database hoặc table thực tế.** [Bootstrap](bootstrap.sql) không tạo WWI payload tables, batch/chunk/publication ledger, checkpoint, warehouse hoặc SCD2; ingestion/publication runtime Not implemented yet.
+Namespace Raw và invocation/object-run tracking cho target Compose riêng. **Server retail_raw đã chạy, nhưng bootstrap FAILED và schemas/tables/ingestion role chưa tồn tại theo readonly inspection2026-11-17.** [Bootstrap](bootstrap.sql) đã sửa failure exit và chuẩn bị recovery, chưa apply. Không tạo WWI payload tables, batch/chunk/publication ledger, checkpoint, warehouse hoặc SCD2; ingestion/publication runtime Not implemented yet.
 
 ## Inputs, outputs và dependencies
 
@@ -26,10 +26,10 @@ Giữ [approved Full/Raw design](../../docs/data-models/wwi-dw-03a-full-raw-desi
 
 ## Technology, structure và execution
 
-PostgreSQL18 SQL/psql; một [bootstrap.sql](bootstrap.sql), không extension/dependency mới. Script chỉ dành first start của new isolated Compose volume; transaction/new-only role/schema creation fail closed, không `IF NOT EXISTS` che drift. Startup/shutdown/recovery ở [Docker README](../../infrastructure/docker/README.md); không chạy script trên native PG hoặc B9.
+PostgreSQL18 SQL/psql; [bootstrap.sql](bootstrap.sql), không extension/dependency mới. Script dùng first start hoặc authorized recovery A trên target new-only; role/schema collision → STOP, không `IF NOT EXISTS` che drift. Guard invalid target/password/collision dùng constant SQL exception với ON_ERROR_STOP → exit3, không `\quit 1`. CREATE/GRANT nằm trong transaction; không sửa schema/permission scope đã định nghĩa. [Recovery A/B và exact commands](../../infrastructure/docker/README.md#bootstrap-failure-và-recovery-a); không chạy trên native PG hoặc B9.
 
 ## Testing, acceptance và status
 
 [Offline suite](../../tests/raw_foundation_static.py) kiểm SQL allowlist, counts/status constraints, no destructive reset và config/Compose. Chưa engine compilation, SQL execution hoặc real connection; không dùng text checks để claim constraint runtime PASS. Sau Owner cho phép startup, chạy [readonly probe](../../scripts/check_raw_connection.py), kiểm role/schema và persistence rồi mới xét MVP-G02. Dữ liệu payload/idempotency/recovery thuộc MVP-G03/04, chưa triển khai.
 
-[Parent storage module](../README.md). Current status: foundation prepared; ingestion/publication **Not implemented yet**.
+[Parent storage module](../README.md). Current status: fix offline tested và guard-only read-only probes verified; **full bootstrap/recovery not applied**, app permissions chưa runtime verified; ingestion/publication **Not implemented yet**.

@@ -26,6 +26,7 @@ Python 3.12 hoặc shell phù hợp khi được duyệt.
 
 ## 9. Directory Structure
 - [check_raw_connection.py](check_raw_connection.py): đọc environment/optional dotenv, offline config validation hoặc explicit readonly Raw probe; không ingestion/schema writes.
+- [recover_raw_bootstrap.py](recover_raw_bootstrap.py): recovery A cho đúng Raw container/volume; default preflight-only, `--apply` là database mutation cần Owner authorize riêng. Không reset/recreate resources hoặc log credentials. [Exact commands/limits](../infrastructure/docker/README.md#bootstrap-failure-và-recovery-a).
 
 ## 10. Planned Workflow
 Raw checker: từ root chạy `.\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env --check-config` để chỉ kiểm config. Bỏ `--check-config` là database connection, chỉ chạy khi Owner authorize runtime. [Raw instructions](../infrastructure/docker/README.md) có target/roles/TLS boundaries.

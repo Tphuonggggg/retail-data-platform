@@ -2,7 +2,7 @@
 
 ## Purpose, scope và responsibilities
 
-Chuẩn bị PostgreSQL Raw riêng cho MVP; quản lý service, persistent volume và first-start bootstrap. Không quản lý SQL Server, B9, PostgreSQL native, dbt hoặc Airflow trong package này. **PREPARED / OFFLINE TESTED; runtime NOT RUN.** Chỉ chạy sau Owner cho phép runtime riêng.
+Quản lý PostgreSQL Raw riêng cho MVP, persistent volume và first-start bootstrap. Không quản lý SQL Server, B9, PostgreSQL native, dbt hoặc Airflow trong package này. **Server đã chạy theo Owner evidence; bootstrap FAILED/BLOCKED.** Bản sửa và recovery A đã chuẩn bị, chưa apply database changes. Runtime bootstrap PASS chỉ sau actual initialization và verification.
 
 ## Inputs, outputs, dependencies và technology
 
@@ -37,7 +37,7 @@ docker compose -p retail-raw --env-file .env -f infrastructure/docker/compose.ra
 .\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env
 ```
 
-Probe dùng role `retail_ingest`, readonly transaction, kiểm database/identity/schema/metadata và no-admin flags; không nạp dữ liệu. `pg_isready` chỉ chứng minh server nhận kết nối, không chứng minh bootstrap/schema/DQ hoàn tất. MVP-G02 cần actual probe và restart/persistence evidence, không chỉ healthy.
+Probe dùng role `retail_ingest`, readonly transaction, kiểm database/identity/schema/metadata và no-admin flags; không nạp dữ liệu. Healthcheck sửa mới yêu cầu `pg_isready` **và** Raw/metadata schemas, hai metadata tables, non-admin login role. Existing container chưa nhận health definition mới; không tự recreate để cập nhật nó. Healthy không thay kiểm permissions/constraints/persistence và MVP-G02 evidence.
 
 `--check-config` trước startup kiểm cả bootstrap/app passwords. Normal probe/ingestion chỉ cần app password; không cấp bootstrap `postgres` credential cho extraction runtime. Có thể truyền riêng app environment/config file ở task ingestion, không bắt runtime giữ admin secret.
 
@@ -63,6 +63,73 @@ $env:PYTHONDONTWRITEBYTECODE = '1'
 
 Tests kiểm config, secret omission, target rejection, SQL contracts và actual Compose parser với synthetic values trong memory; không start service/connect DB. Bootstrap chưa PostgreSQL compile/execute, không runtime PASS.
 
-Observed preparation: Docker CLI29.8.2/Compose5.5.1 có sẵn, context `desktop-linux`, Engine named pipe unavailable. Native5432 đang listening, không listener55433/55434 tại thời điểm inspection; resource names/volumes **chưa xác minh được** do Engine unavailable. Không tự khởi động Docker Desktop. Owner runtime task phải recheck collisions trước `up`.
+Historical preparation tại38d15a6: Engine unavailable. **Inspection hiện tại,2026-11-17:** container `retail-raw-postgres-1` chạy PostgreSQL18.7, port127.0.0.1:55434, volume `retail-raw_pg_data`, old healthcheck healthy. SELECT trong transaction read-only xác nhận Raw/metadata schemas/tables và `retail_ingest` đều absent. Container ingestion password nonempty nhưng min-length check FALSE; blocked-prefix FALSE. Git `.env` không tồn tại tại inspection, nên nguồn private input ban đầu/host-vs-container value equality chưa xác minh; không suy giá trị password hoặc in credentials.
 
-Acceptance runtime: dedicated target khởi động/khởi động lại ổn định, đúng role/encoding/collation/schema/metadata, connectivity PASS và volume giữ state; source/B9/native không đổi. Current status **PREPARED — runtime NOT RUN**. [MVP milestones](../../TASKS.md#mvp-operational-milestones) là operational checklist; [parent module](../README.md).
+## Bootstrap failure và recovery A
+
+Root cause có ba phần: input ingestion password dưới16 ký tự bị guard từ chối đúng; bootstrap cũ dùng `\quit 1` dù psql18 không hỗ trợ exit-code argument nên kết thúc bình thường; health cũ chỉ `pg_isready`. [psql18 docs](https://www.postgresql.org/docs/18/app-psql.html) mô tả `\quit` không có argument và SQL error với ON_ERROR_STOP trả exit3. Bản sửa dùng constant `RAISE EXCEPTION`, guard missing env/default rỗng, new-only collision check và giữ transaction DDL. Không hạ password policy hoặc bỏ prefix validation. Compose mapping vẫn `RAW_PG_PASSWORD` → `RAW_PG_INGEST_PASSWORD`; container nhận đúng tên biến, không có bằng chứng lỗi `\getenv`.
+
+**Ưu tiên A: apply corrected bootstrap vào existing database, giữ container/volume.** [recover_raw_bootstrap.py](../../scripts/recover_raw_bootstrap.py) mặc định chỉ preflight; kiểm Compose labels/image/loopback/volume, dùng immutable container ID, SELECT read-only để từ chối existing target objects/custom roles. Kiểm này không chứng minh toàn bộ volume trống. `--apply` là mutation cần Owner approve riêng, không chạy trong task fix. Script lấy private app password từ explicit env file, truyền qua child process environment và Docker `--env NAME`, không password argv/logs; stale container password không được dùng lại. Không cần sửa admin password hoặc recreate container.
+
+Exact PowerShell commands từ root cho Owner/future authorized task:
+
+```powershell
+Set-Location 'D:\Code\Retail_Data_Platform\project1_Retail_Data_platform'
+if (-not (Test-Path -LiteralPath .env)) { Copy-Item -LiteralPath .env.example -Destination .env }
+notepad .env
+# Owner tự đặt RAW_PG_PASSWORD riêng, >=16 ký tự, không placeholder prefix.
+# Không gửi password qua chat; không tự đặt lại admin password của cluster đã init.
+.\.venv\Scripts\python.exe scripts/recover_raw_bootstrap.py --env-file .env
+if ($LASTEXITCODE -ne 0) { throw 'STOP: private config/target/preflight chưa đạt' }
+
+# CHỈ SAU EXPLICIT OWNER AUTHORIZATION CHO RECOVERY A:
+.\.venv\Scripts\python.exe scripts/recover_raw_bootstrap.py --env-file .env --apply
+if ($LASTEXITCODE -ne 0) { throw 'STOP: inspect actual state; không retry mù' }
+
+# Chỉ bỏ process-level stale app-password override, không đổi OS/system config.
+Remove-Item -LiteralPath Env:RAW_PG_PASSWORD -ErrorAction SilentlyContinue
+.\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env
+if ($LASTEXITCODE -ne 0) { throw 'STOP: app connectivity chưa được verify' }
+```
+
+Recovery A không dùng `--check-config` global trước startup vì mode đó yêu cầu cả admin password; recovery chỉ cần private app password để tạo role mới qua existing Docker-local DBA session. Các config host/database/user/port giữ template. Sau apply, Docker Config.Env vẫn có giá trị cũ; thay `.env` hoặc exec env không tự rotate `postgres` password hay cập nhật container definition. Với future Compose recreation cần actual admin credential/config riêng, không đoán hoặc reset password.
+
+Post-recovery permission/ownership verification, chỉ đọc, **chưa chạy để tuyên bố PASS**:
+
+```powershell
+@'
+BEGIN READ ONLY;
+SELECT nspname, pg_get_userbyid(nspowner) AS owner
+FROM pg_namespace WHERE nspname IN ('raw','ingestion_meta') ORDER BY nspname;
+SELECT tablename, tableowner FROM pg_tables
+WHERE schemaname = 'ingestion_meta' ORDER BY tablename;
+SELECT rolname, rolcanlogin, rolsuper, rolcreatedb, rolcreaterole, rolreplication, rolbypassrls
+FROM pg_roles WHERE rolname = 'retail_ingest';
+SELECT has_database_privilege('retail_ingest','retail_raw','CONNECT') AS connect_ok,
+       has_database_privilege('retail_ingest','retail_raw','CREATE') AS forbidden_db_create,
+       has_database_privilege('retail_ingest','retail_raw','TEMP') AS forbidden_temp,
+       has_schema_privilege('retail_ingest','raw','USAGE') AS raw_usage_ok,
+       has_schema_privilege('retail_ingest','raw','CREATE') AS forbidden_raw_create;
+SELECT table_name,
+       has_table_privilege('retail_ingest',table_name,'SELECT') AS select_ok,
+       has_table_privilege('retail_ingest',table_name,'INSERT') AS insert_ok,
+       has_table_privilege('retail_ingest',table_name,'UPDATE') AS update_ok,
+       has_table_privilege('retail_ingest',table_name,'DELETE') AS forbidden_delete,
+       has_table_privilege('retail_ingest',table_name,'TRUNCATE') AS forbidden_truncate
+FROM (VALUES ('ingestion_meta.runs'),('ingestion_meta.object_runs')) AS t(table_name);
+ROLLBACK;
+'@ | docker exec -i retail-raw-postgres-1 psql -X -h /var/run/postgresql -U postgres -d retail_raw -v ON_ERROR_STOP=1 -f -
+if ($LASTEXITCODE -ne 0) { throw 'STOP: permission verification failed' }
+```
+
+Expected: schema/table owner postgres; login true và năm administrative role flags false; các `*_ok` true, mọi `forbidden_*` false. Sau đó Owner kiểm restart/persistence khi được authorize riêng. Không coi helper exit0/healthy/count0 là complete Raw hoặc ingestion PASS.
+
+**Failure/rollback:** DDL+role/grants trong một transaction; lỗi trước commit rollback khi session đóng. Sau successful/ambiguous commit không tự DROP/REVOKE/retry: re-inspect role/schema/permissions; helper new-only sẽ từ chối rerun. Existing object/data → review migration riêng, không `IF NOT EXISTS` che drift. Không có automatic postcommit rollback vì chưa biết dependencies/usage.
+
+**Option B — không chọn hiện tại:** chỉ reinitialize exact container `retail-raw-postgres-1` và volume `retail-raw_pg_data` sau separate Owner approval, inventory mọi database/objects và xác nhận không valuable data hoặc có verified backup/restore plan. Empty app table list không chứng minh volume rỗng. Xóa volume sẽ mất toàn cluster (cả postgres DB, roles/settings/objects ngoài Raw); không rollback nếu không có backup hợp lệ. Không broad prune hoặc thao tác B9/native. Task này không cung cấp automatic deletion/recreation runner và chưa tạo backup.
+
+Actual fix validation:22 offline Raw tests +18 SQL regression PASS; Compose parse PASS. Guard-only read-only fixtures empty/short/placeholder trả3, valid synthetic trả0; phần CREATE/GRANT không chạy. New health command đánh giá read-only trên current missing-schema database trả1 đúng; existing container health config không đổi. Full bootstrap/role creation/app authentication/permission verification vẫn **NOT RUN**; MVP-G02 **BLOCKED** tới recovery thực tế.
+
+QA bổ sung: ba negative guard fixtures xác nhận SQLSTATE22023, không chỉ exit code; health probe không stderr lỗi SQL. Python syntax7 files,1.240 local links/anchors và secret scan đạt; đúng11 paths (10 existing+1 recovery helper),148 original files ngoài scope giữ canonical content. Phần DDL/permissions từ BEGIN đến COMMIT trong bootstrap giữ nguyên so với38d15a6; chỉ guard/failure handling đổi. Chưa `.env`/credential/backup artifact nào được tạo trong task; staged scope/blob/secret/diff checks phải đạt trước local commit, không push.
+
+Acceptance runtime: dedicated target khởi động/khởi động lại ổn định, đúng role/encoding/collation/schema/metadata, connectivity PASS và volume giữ state; source/B9/native không đổi. Current status **FIX PREPARED — RECOVERY NOT APPLIED**. [MVP milestones](../../TASKS.md#mvp-operational-milestones) là operational checklist; [parent module](../README.md).
