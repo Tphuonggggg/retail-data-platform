@@ -1,5 +1,7 @@
 # ingestion — WWI-06A Full Load
 
+**WWI-06B provisioning follow-up2026-11-18:** live retail_raw = **NOT APPLIED** cho full_load.sql: chỉ runs/object_runs,0/15 new tables và0/11 views; [exact inventory/permissions/evidence](../storage/raw/README.md#wwi-06b--live-provisioning-verification-2026-11-18). Strict TLS dưới actual wwi_extract PASS theo Owner trong task mới; Codex/PC không independently rerun source. CLI selected preflight tại PC dừng DEDICATED_SOURCE_IDENTITY_REQUIRED, independent target preflight dừng TARGET_DDL_REQUIRED. Archive exception vẫn pending; first load NOT READY. Notes TLS trust/remediation bên dưới là prior review/proposals, không yêu cầu sửa certificate sau Owner-reported PASS. Không rerun provisioning hoặc load trong task hiện tại.
+
 ## Trạng thái và phạm vi
 
 2026-11-18: **Implemented / Offline Tested / REVIEW**. Full Load cho đúng11 populations đã có code/test; **runtime Full Load NOT RUN**, MVP-G03 chưa nghiệm thu. MVP-G02 foundation verified; source TLS certificate và hai archive effective INSERT vẫn là blocker MVP-G01. Task hiện tại chỉ cho code/offline tests, không cho chạy các lệnh load/provision dưới đây.
@@ -47,7 +49,9 @@ Actual role chỉ có raw USAGE, không CREATE; payload/control mới chưa prov
 Sau Owner review và **riêng target DDL/grants authorization**, lệnh PowerShell tương lai:
 
 ~~~powershell
-Get-Content -LiteralPath storage/raw/full_load.sql -Raw | docker exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
+if ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name -ine 'DESKTOP-OBDFK6B\PC') { throw 'STOP: Docker requires PC operator' }
+$dockerExe = 'C:\Users\PC\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe'
+Get-Content -LiteralPath storage/raw/full_load.sql -Raw -Encoding UTF8 | & $dockerExe exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
 ~~~
 
 Lệnh **NOT RUN**, không áp dụng native PostgreSQL/B9 hoặc đổi bootstrap. CLI load không tự provisioning.
@@ -245,9 +249,14 @@ Prepared SQL:11 Raw tables,2 technical identity columns mỗi table + source col
 **Provisioning command cần Owner authorization riêng, NOT RUN** (PC/local DBA; inspect đúng Docker context/target và existing state trước):
 
 ~~~powershell
-docker inspect retail-raw-postgres-1 --format '{{.Config.Image}}|{{json .NetworkSettings.Ports}}|{{range .Mounts}}{{.Name}}:{{.Destination}} {{end}}'
+if ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name -ine 'DESKTOP-OBDFK6B\PC') { throw 'STOP: Docker requires PC operator' }
+$dockerExe = 'C:\Users\PC\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe'
+if (-not (Test-Path -LiteralPath $dockerExe)) { throw 'STOP: approved Docker CLI absent' }
+& $dockerExe inspect retail-raw-postgres-1 --format '{{.Config.Image}}|{{json .NetworkSettings.Ports}}|{{json .Mounts}}'
+if ($LASTEXITCODE -ne 0) { throw 'STOP: Docker target inspection failed' }
+# Future separately authorized apply only; NOT RUN in provisioning verification task.
 Get-Content -LiteralPath storage/raw/full_load.sql -Raw -Encoding UTF8 |
-    docker exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
+    & $dockerExe exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
 if ($LASTEXITCODE -ne 0) { throw 'STOP: provisioning failed; inspect, do not reset/retry blindly' }
 ~~~
 

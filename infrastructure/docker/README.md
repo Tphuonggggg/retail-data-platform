@@ -6,6 +6,27 @@ Owner đã apply bootstrap ngoài task code-fix trước. Fresh readonly inspect
 
 Sau kiểm0 RUNNING runs và0 other client backends, đã thực hiện **một** Owner-authorized restart riêng retail-raw-postgres-1 bằng immutable container ID. Trở lại healthy; same container/volume/binding127.0.0.1:55434; schema/table owners+OIDs và metadata counts [0,0] giữ nguyên, role/permissions không đổi; fresh app TCP probe PASS. Không sentinel data insertion, payload DDL/grants hoặc Full Load. **MVP-G02 DONE** cho foundation/persistence/connectivity, không whole ingestion readiness. Sections failure/recovery bên dưới giữ historical evidence; không chạy recovery lại trên initialized target.
 
+## WWI-06B — Read-only Docker CLI verification
+
+Latest provisioning task2026-11-18 chỉ cho Docker inspection/Raw queries; không restart/recreate hoặc provisioning rerun. Operator PC và approved per-user Docker CLI đã verified, server29.8.2/Linux/context desktop-linux; retail-raw-postgres-1 healthy, Compose retail-raw/postgres,127.0.0.1:55434 và retail-raw_pg_data đúng. [Live payload verification = NOT APPLIED](../../storage/raw/README.md#wwi-06b--live-provisioning-verification-2026-11-18); foundation PASS không thay payload verification.
+
+PowerShell preparation/inspection dưới **PC**, không dùng extractor để quản lý Docker. Nếu PATH thiếu chỉ sửa current session; không system-wide PATH hoặc install/reinstall. Không dump container Env/unfiltered Compose config chứa credentials.
+
+~~~powershell
+whoami
+if ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name -ine 'DESKTOP-OBDFK6B\PC') { throw 'STOP: wrong Docker operator' }
+$dockerBin = 'C:\Users\PC\AppData\Local\Programs\DockerDesktop\resources\bin'
+$dockerExe = Join-Path $dockerBin 'docker.exe'
+if (-not (Test-Path -LiteralPath $dockerExe)) { throw 'STOP: approved Docker CLI absent' }
+if (-not (Get-Command docker.exe -ErrorAction SilentlyContinue)) { $env:Path = "$dockerBin;$env:Path" }
+& $dockerExe version
+& $dockerExe ps -a
+& $dockerExe inspect retail-raw-postgres-1 --format '{{.Id}}|{{.Config.Image}}|{{json .Config.Labels}}|{{json .NetworkSettings.Ports}}|{{json .Mounts}}|{{if .State.Health}}{{.State.Health.Status}}{{end}}'
+& $dockerExe volume inspect retail-raw_pg_data --format '{{.Name}}|{{json .Labels}}'
+~~~
+
+Dùng JSON Mounts để xem cả bind/volume; không truy cập .Name trực tiếp trên mọi mount vì bind mount không có key đó. Commands ở runbooks startup/recovery phía dưới là task lịch sử/future authorization, không quyền thực hiện trong verification hiện tại.
+
 ## Purpose, scope và responsibilities
 
 Quản lý PostgreSQL Raw riêng cho MVP, persistent volume và first-start bootstrap. Không quản lý SQL Server, B9, PostgreSQL native, dbt hoặc Airflow trong package này. **Server đã chạy theo Owner evidence; bootstrap FAILED/BLOCKED.** Bản sửa và recovery A đã chuẩn bị, chưa apply database changes. Runtime bootstrap PASS chỉ sau actual initialization và verification.
