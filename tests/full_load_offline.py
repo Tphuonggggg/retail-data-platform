@@ -257,6 +257,15 @@ class EngineTests(unittest.TestCase):
         self.assertEqual(target.runs[rid]['status'],'SUCCEEDED')
         target.commit_ack_lost=False
         self.assertEqual(run_full_load(self.source(),target,self.objects,run_id=rid)['status'],'ALREADY_VALIDATED_NO_RELOAD')
+    def test_registration_ack_unknown_keeps_running_record_for_inspection(self):
+        target=FakeTarget();rid=uuid4();original=target.begin_run
+        def lost_ack(*args,**kwargs):
+            original(*args,**kwargs)
+            raise ConnectionError('synthetic registration ACK loss')
+        target.begin_run=lost_ack
+        with self.assertRaisesRegex(PipelineError,'RUN_REGISTRATION_OUTCOME_UNKNOWN'):
+            run_full_load(self.source(),target,self.objects,run_id=rid)
+        self.assertEqual(target.runs[rid]['status'],'RUNNING');self.assertFalse(target.payload)
     def test_preflight_failure_has_no_run_side_effect(self):
         source=self.source();target=FakeTarget();source.preflight=MagicMock(side_effect=PipelineError('SOURCE_EFFECTIVE_PERMISSIONS_UNRESOLVED'))
         with self.assertRaises(PipelineError):run_full_load(source,target,self.objects)
@@ -279,6 +288,62 @@ class EngineTests(unittest.TestCase):
         target=FakeTarget()
         with self.assertRaisesRegex(PipelineError,'GEOGRAPHY'):run_full_load(FakeSource(data),target,objects,evidence=proof,publish=True)
         self.assertFalse(target.payload)
+
+
+class ReadinessDiagnosticsTests(unittest.TestCase):
+    def connection(self, *, schema_drift=False):
+        from scripts.inspect_wwi_source import COLUMN_SQL,KEY_SQL,TEMPORAL_SQL,PERMISSION_SQL
+        from ingestion.common.config import SOURCE_SID
+        connection=MagicMock();cursor=connection.cursor.return_value.__enter__.return_value
+        def execute(sql,*params):
+            result=MagicMock()
+            if 'ORIGINAL_LOGIN()' in sql:
+                rows=[(SOURCE_PRINCIPAL,SOURCE_PRINCIPAL,SOURCE_SID,'wwi_extract','WideWorldImporters','17.0.1000.7',0)]
+            else:
+                obj=catalog()[params[0]] if params else next(o for o in catalog().values() if o.ms_table in sql)
+                if sql==COLUMN_SQL:
+                    rows=[]
+                    for c in obj.columns:
+                        kind=c.source_type.split('(')[0];length=0;precision=0;scale=0
+                        if kind=='nvarchar':length=-1 if 'max' in c.source_type else int(c.source_type[9:-1])*2
+                        elif kind=='varbinary':length=-1
+                        elif kind=='decimal':precision,scale=map(int,c.source_type[8:-1].split(','))
+                        elif kind=='datetime2':scale=7
+                        rows.append((c.name,kind,length,precision,scale,c.nullable))
+                    if schema_drift and obj.name=='Sales.Orders':
+                        rows[0]=(rows[0][0],'bigint',8,19,0,False)
+                elif sql==KEY_SQL:rows=[(obj.primary_key,)] if obj.primary_key else []
+                elif sql==TEMPORAL_SQL:rows=[('HISTORY_TABLE' if obj.origin=='HISTORY' else 'NON_TEMPORAL_TABLE',None)]
+                elif sql==PERMISSION_SQL:rows=[(1,1 if obj.origin=='HISTORY' else 0,0,0,0,0)]
+                elif sql.startswith('SELECT TOP (1) '):rows=[fixture_row(obj)]
+                else:raise AssertionError('Unexpected diagnostic SQL')
+            result.fetchall.return_value=rows;result.fetchone.return_value=rows[0] if rows else None
+            return result
+        cursor.execute.side_effect=execute
+        return connection,cursor
+    def test_diagnostic_default_never_connects(self):
+        from scripts.inspect_wwi_source import main as diagnostic_main
+        with patch('pyodbc.connect') as connect,redirect_stdout(io.StringIO()):
+            self.assertEqual(diagnostic_main([]),0)
+        connect.assert_not_called()
+    def test_readonly_diagnostics_report_history_permission_without_gate_approval(self):
+        from scripts.inspect_wwi_source import inspect
+        connection,cursor=self.connection();result=inspect(connection,samples=True)
+        self.assertEqual(len(result['objects']),11)
+        self.assertTrue(all(o['schema_match'] and o['key_match'] and o['projection_sample']=='PASS' for o in result['objects']))
+        history=next(o for o in result['objects'] if o['object']=='Sales.Customers_Archive')
+        self.assertEqual(history['own_context_rights_select_insert_update_delete_alter_control'],[1,1,0,0,0,0])
+        self.assertEqual(result['identity_scope'],'EXTRACTOR_DIAGNOSTIC_NOT_GATE_PASS')
+        self.assertFalse(result['full_load_executed'])
+        self.assertTrue(all(call.args[0].startswith('SELECT ') for call in cursor.execute.call_args_list))
+        self.assertNotIn('synthetic-profile',json.dumps(result))
+    def test_diagnostic_schema_drift_is_reported_and_not_sampled(self):
+        from scripts.inspect_wwi_source import inspect
+        connection,cursor=self.connection(schema_drift=True);result=inspect(connection,samples=True)
+        order=next(o for o in result['objects'] if o['object']=='Sales.Orders')
+        self.assertFalse(order['schema_match']);self.assertEqual(order['projection_sample'],'NOT_RUN')
+        self.assertFalse(any(call.args[0].startswith('SELECT TOP') and '[Sales].[Orders]' in call.args[0]
+                             for call in cursor.execute.call_args_list))
 
 
 class SecurityAndDriverTests(unittest.TestCase):
@@ -387,6 +452,25 @@ class SecurityAndDriverTests(unittest.TestCase):
         with patch('ingestion.full_load.PostgresTarget') as target,redirect_stdout(stream):
             self.assertEqual(main(['load','--all']),1);target.assert_not_called()
         self.assertIn('EXPLICIT_EXECUTION_FLAG_REQUIRED',stream.getvalue())
+    def test_cli_reports_generated_run_id_after_unknown_commit(self):
+        from uuid import UUID
+        stream=io.StringIO()
+        with patch('ingestion.full_load.settings',return_value=self.config()), \
+             patch('ingestion.full_load.PostgresTarget'),patch('ingestion.full_load.SqlServerSource'), \
+             patch('ingestion.full_load.run_full_load',side_effect=PipelineError('COMMIT_OUTCOME_UNKNOWN_INSPECT_RUN_ID')) as load, \
+             redirect_stdout(stream):
+            self.assertEqual(main(['load','--object','Warehouse.StockItemHoldings','--execute']),1)
+        reported=json.loads(stream.getvalue())
+        self.assertEqual(UUID(reported['run_id']),load.call_args.kwargs['run_id'])
+        self.assertEqual(reported['error_category'],'COMMIT_OUTCOME_UNKNOWN_INSPECT_RUN_ID')
+    def test_cli_reports_explicit_run_id_when_connection_fails(self):
+        rid=uuid4();stream=io.StringIO()
+        with patch('ingestion.full_load.settings',return_value=self.config()), \
+             patch('ingestion.full_load.PostgresTarget') as target,redirect_stdout(stream):
+            target.return_value.connect.side_effect=RuntimeError('synthetic-secret-credential')
+            self.assertEqual(main(['load','--all','--execute','--run-id',str(rid)]),1)
+        self.assertEqual(json.loads(stream.getvalue())['run_id'],str(rid))
+        self.assertNotIn('synthetic-secret-credential',stream.getvalue())
     def test_cli_driver_error_does_not_leak_password_or_driver_text(self):
         stream=io.StringIO()
         with patch('ingestion.full_load.settings',return_value=self.config()), \

@@ -39,7 +39,14 @@ def run_full_load(source: Any, target: Any, objects: tuple[SourceObject, ...], *
     if previous is not None: raise PipelineError("RUN_ID_REUSE_REQUIRES_INSPECTION")
     source.connect(); source.preflight(objects)  # No metadata writes on TLS/identity/schema/permission failure.
     start=clock(); started=time.monotonic()
-    target.begin_run(run_id,uuid4(),objects,retry_of,getattr(source,'context',{'kind':'OFFLINE_FIXTURE_ONLY'}))
+    try:
+        target.begin_run(run_id,uuid4(),objects,retry_of,getattr(source,'context',{'kind':'OFFLINE_FIXTURE_ONLY'}))
+    except PipelineError:
+        raise
+    except Exception:
+        # The small registration transaction may have committed before its ACK
+        # was lost. There is no capture rollback to acknowledge at this point.
+        raise PipelineError("RUN_REGISTRATION_OUTCOME_UNKNOWN_INSPECT_RUN_ID") from None
     body_complete=False
     results=[]; publication_id=None; progress={}
     try:
@@ -119,6 +126,10 @@ def main(argv: list[str] | None = None) -> int:
             raise PipelineError("EXPLICIT_EXECUTION_FLAG_REQUIRED")
         if args.command in {"reconcile","abandon"} and args.run_id is None:
             raise PipelineError("RUN_ID_REQUIRED")
+        # Allocate the CLI id before any connection: an unknown COMMIT outcome must
+        # still identify the run even when the caller omitted --run-id.
+        if args.command=="load" and args.run_id is None:
+            args.run_id=uuid4()
         config=settings(args.env_file,args.batch_size)
         if args.command=="config": print(json.dumps(config.summary())); return 0
         target=PostgresTarget(config); target.connect()
@@ -142,8 +153,10 @@ def main(argv: list[str] | None = None) -> int:
         print(json.dumps(output));return 0
     except Exception as error:
         # Never print str(error), repr(connection) or traceback: drivers may include secrets/PII.
-        print(json.dumps({"status":"FAIL_STOP","error_category":error.code if isinstance(error,PipelineError)
-            else "CONFIGURATION_OR_DRIVER_FAILURE","error_type":type(error).__name__}));return 1
+        output={"status":"FAIL_STOP","error_category":error.code if isinstance(error,PipelineError)
+            else "CONFIGURATION_OR_DRIVER_FAILURE","error_type":type(error).__name__}
+        if args.run_id is not None: output["run_id"]=str(args.run_id)
+        print(json.dumps(output));return 1
     finally:
         close_failed=False
         for resource in (source,target):
@@ -151,7 +164,8 @@ def main(argv: list[str] | None = None) -> int:
                 try: resource.close()
                 except Exception:
                     close_failed=True
-                    print(json.dumps({"status":"CLOSE_FAILED_INSPECT_RUN_NO_RETRY","resource_type":type(resource).__name__}))
+                    print(json.dumps({"status":"CLOSE_FAILED_INSPECT_RUN_NO_RETRY","resource_type":type(resource).__name__,
+                                      "run_id":str(args.run_id) if args.run_id else None}))
         if close_failed: return 1
 
 
