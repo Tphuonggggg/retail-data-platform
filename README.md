@@ -1,5 +1,7 @@
 # Retail Data Platform & Analytics Warehouse
 
+**2026-11-18:** MVP-G02 DONE — Raw18.7 app TCP/permissions/restart persistence verified; [evidence](infrastructure/docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Historical bootstrap-failed notes bên dưới giữ context. Source TLS validation và hai archive effective INSERT exceptions còn mở; không Full Load đã chạy.
+
 **Current local MVP:** [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) ưu tiên pipeline/data correctness/runtime evidence; protected staging/ACL work là optional hardening. EX01 DONE, EX02 chưa provision theo tracker. Raw server18.7 đang chạy nhưng bootstrap FAILED, schemas/role absent; [fix và recovery A](infrastructure/docker/README.md#bootstrap-failure-và-recovery-a) prepared/offline tested, chưa apply. [MVP-G01–06](TASKS.md#mvp-operational-milestones) theo dõi access → Raw → Full/Incremental → DW → Analytics/Orchestration; không tự PASS historical gates.
 
 ## Project Overview

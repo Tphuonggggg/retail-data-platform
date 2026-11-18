@@ -77,8 +77,19 @@ def probe(config: RawConfig) -> dict[str, object]:
         application_name="retail_raw_readonly_check",
     ) as connection:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT current_database(), current_user, session_user, version(), "
-                           "current_setting('server_encoding'), current_setting('lc_collate')")
+            cursor.execute("""
+            SELECT
+                current_database(),
+                current_user,
+                session_user,
+                version(),
+                current_setting('server_encoding'),
+                (
+                    SELECT datcollate
+                    FROM pg_database
+                    WHERE datname = current_database()
+                )
+            """)
             database, user, session_user, version, encoding, collation = cursor.fetchone()
             if (database, user, session_user) != (config.database, config.user, config.user):
                 raise RuntimeError("Unexpected target identity")

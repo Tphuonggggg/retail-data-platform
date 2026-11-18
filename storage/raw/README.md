@@ -1,5 +1,7 @@
 # Raw foundation
 
+**Current2026-11-18:** MVP-G02 DONE — schemas/metadata/role/permissions/TCP và bounded restart persistence đã verified; [evidence](../../infrastructure/docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Failure/recovery notes phía dưới là history trước Owner recovery. App vẫn không có Raw CREATE; payload/Full Load objects và privileges chưa provision, không tự grant.
+
 ## Purpose, scope và responsibilities
 
 Namespace Raw và invocation/object-run tracking cho target Compose riêng. **Server retail_raw đã chạy, nhưng bootstrap FAILED và schemas/tables/ingestion role chưa tồn tại theo readonly inspection2026-11-17.** [Bootstrap](bootstrap.sql) đã sửa failure exit và chuẩn bị recovery, chưa apply. Không tạo WWI payload tables, batch/chunk/publication ledger, checkpoint, warehouse hoặc SCD2; ingestion/publication runtime Not implemented yet.

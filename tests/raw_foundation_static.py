@@ -113,6 +113,10 @@ class RawConfigTests(unittest.TestCase):
                 config = raw.load_config(fixture_env())
                 if expected_pass:
                     self.assertEqual(raw.probe(config)["status"], "PASS_READONLY_CONNECTIVITY")
+                    identity_query = cursor.execute.call_args_list[0].args[0]
+                    self.assertIn("FROM pg_database", identity_query)
+                    self.assertIn("datcollate", identity_query)
+                    self.assertNotIn("current_setting('lc_collate')", identity_query)
                 else:
                     with self.assertRaises(RuntimeError):
                         raw.probe(config)

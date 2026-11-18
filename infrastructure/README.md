@@ -1,5 +1,7 @@
 # infrastructure
 
+**Current2026-11-18:** MVP-G02 verified — app TCP/schema/role/permissions và one authorized Raw-only restart/persistence PASS; [evidence](docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Historical bootstrap failure bên dưới đã được Owner recover; không chạy repair lại. Source TLS và archive effective INSERT exception vẫn block Full Load runtime.
+
 ## 1. Overview
 Module **môi trường thực thi cho nguồn WWI chỉ đọc và warehouse PostgreSQL**. Isolated Raw Compose/bootstrap **PREPARED / OFFLINE TESTED**; runtime Not implemented yet.
 

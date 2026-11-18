@@ -1,5 +1,11 @@
 # PostgreSQL Raw — local Compose
 
+## Phase A — MVP-G02 Verified, 2026-11-18
+
+Owner đã apply bootstrap ngoài task code-fix trước. Fresh readonly inspection xác nhận raw/ingestion_meta schemas owner postgres; runs/object_runs đúng22 columns, role retail_ingest không admin, Raw USAGE=true/CREATE=false, metadata SELECT/INSERT/UPDATE=true và DELETE/TRUNCATE=false trên từng bảng. App TCP checker **PASS_READONLY_CONNECTIVITY**: retail_raw/retail_ingest/PostgreSQL18.7/UTF8/C/sslmode disable. Checker dùng `pg_database.datcollate`; `lc_collate` không là runtime GUC phù hợp cho PostgreSQL18.
+
+Sau kiểm0 RUNNING runs và0 other client backends, đã thực hiện **một** Owner-authorized restart riêng retail-raw-postgres-1 bằng immutable container ID. Trở lại healthy; same container/volume/binding127.0.0.1:55434; schema/table owners+OIDs và metadata counts [0,0] giữ nguyên, role/permissions không đổi; fresh app TCP probe PASS. Không sentinel data insertion, payload DDL/grants hoặc Full Load. **MVP-G02 DONE** cho foundation/persistence/connectivity, không whole ingestion readiness. Sections failure/recovery bên dưới giữ historical evidence; không chạy recovery lại trên initialized target.
+
 ## Purpose, scope và responsibilities
 
 Quản lý PostgreSQL Raw riêng cho MVP, persistent volume và first-start bootstrap. Không quản lý SQL Server, B9, PostgreSQL native, dbt hoặc Airflow trong package này. **Server đã chạy theo Owner evidence; bootstrap FAILED/BLOCKED.** Bản sửa và recovery A đã chuẩn bị, chưa apply database changes. Runtime bootstrap PASS chỉ sau actual initialization và verification.
