@@ -1,10 +1,10 @@
 # ingestion — WWI-06A Full Load
 
-**WWI-06B provisioning follow-up2026-11-18:** live retail_raw = **NOT APPLIED** cho full_load.sql: chỉ runs/object_runs,0/15 new tables và0/11 views; [exact inventory/permissions/evidence](../storage/raw/README.md#wwi-06b--live-provisioning-verification-2026-11-18). Strict TLS dưới actual wwi_extract PASS theo Owner trong task mới; Codex/PC không independently rerun source. CLI selected preflight tại PC dừng DEDICATED_SOURCE_IDENTITY_REQUIRED, independent target preflight dừng TARGET_DDL_REQUIRED. Archive exception vẫn pending; first load NOT READY. Notes TLS trust/remediation bên dưới là prior review/proposals, không yêu cầu sửa certificate sau Owner-reported PASS. Không rerun provisioning hoặc load trong task hiện tại.
+**WWI-06B current2026-11-18:** [approved Raw provisioning/runtime evidence](../storage/raw/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18) = **RAW_PAYLOAD_PROVISIONING_PASS**. Owner duyệt exact SHA256/target/postgres; initializer chạy nguyên bản một lần exit0.11 payload+4 controls+11 views/248 columns/constraints/indexes/grants verified; target-only preflight(all11) PASS, foundation unchanged. Chưa Full Load/smoke/publication. Archive permission exception vẫn pending; không source guard bypass hoặc tự load. NOT APPLIED/TARGET_DDL_REQUIRED và TLS trust-remediation notes phía dưới là prior states/proposals.
 
 ## Trạng thái và phạm vi
 
-2026-11-18: **Implemented / Offline Tested / REVIEW**. Full Load cho đúng11 populations đã có code/test; **runtime Full Load NOT RUN**, MVP-G03 chưa nghiệm thu. MVP-G02 foundation verified; source TLS certificate và hai archive effective INSERT vẫn là blocker MVP-G01. Task hiện tại chỉ cho code/offline tests, không cho chạy các lệnh load/provision dưới đây.
+2026-11-18: **Implemented / Offline Tested / REVIEW**. Full Load cho đúng11 populations đã có code/test; **runtime Full Load NOT RUN**, MVP-G03 chưa nghiệm thu. MVP-G02 foundation và Owner-authorized Raw schema provisioning verified; source strict TLS PASS theo Owner, archive effective INSERT decision vẫn pending. Quyền mới nhất chỉ đã cho exact Raw initializer và readonly verification, không Full Load/smoke hoặc rerun provisioning.
 
 Module đọc SQL Server WWI → PostgreSQL Raw, quản lý run/capture, fidelity/count/digest và publication. Không tính KPI, không dbt/DW/SCD2/Airflow hoặc incremental; các phần đó **Not implemented yet**. Sales → Customer → Inventory giữ thứ tự nghiệp vụ; nạp11 source populations chỉ chuẩn bị Raw.
 
@@ -42,11 +42,11 @@ Source fetchmany, target COPY từng batch, read-back bằng **server-side named
 
 ## Target initialization và quyền
 
-[full_load.sql](../storage/raw/full_load.sql) là **artifact chưa thực thi**, sinh từ [schema.py](loaders/schema.py):11 typed payload tables,11 views, bốn control tables. DDL new-only transaction trên retail_raw; Owner dùng postgres chỉ khi cấp quyền provisioning riêng. Collision → rollback; không DROP/TRUNCATE/IF-NOT-EXISTS che drift. Runtime luôn retail_ingest, không auto CREATE/GRANT/escalation.
+[full_load.sql](../storage/raw/full_load.sql) là **artifact đã Owner-authorized execution/runtime verified**, sinh từ [schema.py](loaders/schema.py):11 typed payload tables,11 views, bốn control tables. DDL new-only transaction trên retail_raw; Owner dùng postgres chỉ khi cấp quyền provisioning riêng. Collision → rollback; không DROP/TRUNCATE/IF-NOT-EXISTS che drift. Runtime luôn retail_ingest, không auto CREATE/GRANT/escalation.
 
-Actual role chỉ có raw USAGE, không CREATE; payload/control mới chưa provision. Preflight sẽ TARGET_DDL_REQUIRED. Grant proposal chỉ SELECT/INSERT payload; controls SELECT/INSERT hoặc pointer SELECT/UPDATE; views SELECT. Metadata nền runs/object_runs giữ SELECT/INSERT/UPDATE; app không DELETE/TRUNCATE. Không nới quyền để đạt PASS.
+Actual role có raw USAGE, không CREATE; payload/control/views và exact grants đã provision. Target-only preflight(all11) PASS. Grants chỉ SELECT/INSERT payload; controls SELECT/INSERT hoặc pointer SELECT/UPDATE; views SELECT. Metadata nền runs/object_runs giữ SELECT/INSERT/UPDATE; app không DELETE/TRUNCATE. Không nới quyền để đạt PASS.
 
-Sau Owner review và **riêng target DDL/grants authorization**, lệnh PowerShell tương lai:
+**Historical reviewed command — đã execute theo Owner approval, không rerun trên target hiện tại:**
 
 ~~~powershell
 if ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name -ine 'DESKTOP-OBDFK6B\PC') { throw 'STOP: Docker requires PC operator' }
@@ -54,7 +54,7 @@ $dockerExe = 'C:\Users\PC\AppData\Local\Programs\DockerDesktop\resources\bin\doc
 Get-Content -LiteralPath storage/raw/full_load.sql -Raw -Encoding UTF8 | & $dockerExe exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
 ~~~
 
-Lệnh **NOT RUN**, không áp dụng native PostgreSQL/B9 hoặc đổi bootstrap. CLI load không tự provisioning.
+Actual execution dùng exact bytes qua approved Docker-local psql, không rerun command ví dụ này; không áp dụng native PostgreSQL/B9 hoặc đổi bootstrap. CLI load không tự provisioning.
 
 ## Transaction, metadata và publication
 
@@ -142,6 +142,8 @@ Kết quả WWI-06A2026-11-18 (trước readiness review dưới đây): Python3
 WWI-06A acceptance: runnable CLI/code/type contracts + reproducible offline tests + safe failure/recovery/privilege boundaries; Owner review pending. WWI-06B: resolve source TLS/archive INSERT; actual full projection/archive metadata/geography proof; review/provision target artifact; dedicated runtime preflight; selected smoke/full candidate trong verified window; actual COPY/rollback/reconnect/idempotency/count+value/atomic views và remaining chunk/attempt recovery requirements. WWI-06B readiness review được giao ở phần dưới; actual load và các milestone sau chưa bắt đầu.
 
 ## WWI-06B — Runtime readiness review, 2026-11-18
+
+**Historical review trước approved Raw provisioning.** Target schema/grants đã PASS theo latest linked evidence; các blockers TARGET_DDL_REQUIRED/NOT APPLIED phía dưới giữ historical context. Source/archive gate và runtime load authorization chưa được thay đổi.
 
 **Kết luận: NOT READY FOR SELECTED-OBJECT LOAD.** Đây là review/read-only diagnostics + bounded offline fixes, không runtime authorization. WWI-06A vẫn REVIEW; WWI-06/MVP-G03 chưa nghiệm thu. Git đầu task: main / 36d5ab05b4d4b17cbf041e2c1daf2637bcc05b36, clean.
 

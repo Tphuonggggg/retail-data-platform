@@ -8,7 +8,7 @@ Sau kiểm0 RUNNING runs và0 other client backends, đã thực hiện **một*
 
 ## WWI-06B — Read-only Docker CLI verification
 
-Latest provisioning task2026-11-18 chỉ cho Docker inspection/Raw queries; không restart/recreate hoặc provisioning rerun. Operator PC và approved per-user Docker CLI đã verified, server29.8.2/Linux/context desktop-linux; retail-raw-postgres-1 healthy, Compose retail-raw/postgres,127.0.0.1:55434 và retail-raw_pg_data đúng. [Live payload verification = NOT APPLIED](../../storage/raw/README.md#wwi-06b--live-provisioning-verification-2026-11-18); foundation PASS không thay payload verification.
+Latest Owner approval2026-11-18 đã cho exact Raw SQL execution: apply một lần exit0, [RAW_PAYLOAD_PROVISIONING_PASS](../../storage/raw/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18), target app preflight và health/TCP PASS. Operator PC/approved per-user Docker CLI/server29.8.2/Linux/context desktop-linux; same healthy container/Compose/loopback55434/retail-raw_pg_data. Không restart/recreate/volume/certificate changes, không ingestion; initializer new-only không rerun. Prior NOT APPLIED inspection giữ historical evidence.
 
 PowerShell preparation/inspection dưới **PC**, không dùng extractor để quản lý Docker. Nếu PATH thiếu chỉ sửa current session; không system-wide PATH hoặc install/reinstall. Không dump container Env/unfiltered Compose config chứa credentials.
 
@@ -29,7 +29,7 @@ Dùng JSON Mounts để xem cả bind/volume; không truy cập .Name trực ti�
 
 ## Purpose, scope và responsibilities
 
-Quản lý PostgreSQL Raw riêng cho MVP, persistent volume và first-start bootstrap. Không quản lý SQL Server, B9, PostgreSQL native, dbt hoặc Airflow trong package này. **Server đã chạy theo Owner evidence; bootstrap FAILED/BLOCKED.** Bản sửa và recovery A đã chuẩn bị, chưa apply database changes. Runtime bootstrap PASS chỉ sau actual initialization và verification.
+Quản lý PostgreSQL Raw riêng cho MVP, persistent volume và first-start bootstrap. Không quản lý SQL Server, B9, PostgreSQL native, dbt hoặc Airflow trong package này. **Foundation và Owner-approved payload schema đã runtime verified** theo evidence đầu tài liệu/Raw runbook; chưa ingestion. Bootstrap FAILED/recovery preparation bên dưới là historical context, không current failure hoặc quyền rerun.
 
 ## Inputs, outputs, dependencies và technology
 
@@ -159,4 +159,4 @@ Actual fix validation:22 offline Raw tests +18 SQL regression PASS; Compose pars
 
 QA bổ sung: ba negative guard fixtures xác nhận SQLSTATE22023, không chỉ exit code; health probe không stderr lỗi SQL. Python syntax7 files,1.240 local links/anchors và secret scan đạt; đúng11 paths (10 existing+1 recovery helper),148 original files ngoài scope giữ canonical content. Phần DDL/permissions từ BEGIN đến COMMIT trong bootstrap giữ nguyên so với38d15a6; chỉ guard/failure handling đổi. Chưa `.env`/credential/backup artifact nào được tạo trong task; staged scope/blob/secret/diff checks phải đạt trước local commit, không push.
 
-Acceptance runtime: dedicated target khởi động/khởi động lại ổn định, đúng role/encoding/collation/schema/metadata, connectivity PASS và volume giữ state; source/B9/native không đổi. Current status **FIX PREPARED — RECOVERY NOT APPLIED**. [MVP milestones](../../TASKS.md#mvp-operational-milestones) là operational checklist; [parent module](../README.md).
+Acceptance runtime: dedicated target khởi động/khởi động lại ổn định, đúng role/encoding/collation/schema/metadata, connectivity PASS và volume giữ state; source/B9/native không đổi. FIX PREPARED/RECOVERY NOT APPLIED là trạng thái lịch sử của section này; current foundation/payload schema PASS theo evidence đầu tài liệu, không rerun recovery/provisioning. [MVP milestones](../../TASKS.md#mvp-operational-milestones) là operational checklist; [parent module](../README.md).

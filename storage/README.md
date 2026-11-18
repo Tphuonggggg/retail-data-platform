@@ -1,7 +1,7 @@
 # storage
 
 ## 1. Overview
-Module **Phân lớp dữ liệu**. [Raw foundation](raw/README.md) đã runtime verified/MVP-G02 DONE. WWI-06A typed payload/control/view SQL đã prepared/offline tested, chưa apply. Warehouse/staging runtime Not implemented yet.
+Module **Phân lớp dữ liệu**. [Raw foundation](raw/README.md) đã runtime verified/MVP-G02 DONE. Typed payload/control/view SQL đã Owner-approved execution/runtime verified, RAW_PAYLOAD_PROVISIONING_PASS; actual ingestion chưa chạy. Warehouse/staging runtime Not implemented yet.
 
 ## 2. Purpose
 Định nghĩa ranh giới raw, staging và warehouse.
@@ -30,7 +30,7 @@ PostgreSQL local; BigQuery ở Phase 8; Parquet khi cần.
 - [`warehouse/`](warehouse/README.md) — xem trách nhiệm và trạng thái của thư mục.
 
 ## 10. Planned Workflow
-Raw lưu dấu vết → staging chuẩn hóa → warehouse phục vụ phân tích. [Full Load code/runbook](../ingestion/README.md) đã có; payload/publication runtime chưa chạy và provisioning cần Owner giao riêng. Không suy code offline PASS thành operational acceptance.
+Raw lưu dấu vết → staging chuẩn hóa → warehouse phục vụ phân tích. [Full Load code/runbook](../ingestion/README.md) đã có; Raw schema/grants đã Owner-approved provisioning/runtime verified, payload capture/publication chưa chạy. Actual ingestion cần Owner giao riêng; không suy schema PASS thành Full Load acceptance.
 
 ## 11. Development Tasks
 Định nghĩa schema/storage contracts khi vào phase tương ứng. Theo dõi ID và trạng thái tại [TASKS.md](../TASKS.md).
@@ -42,4 +42,4 @@ Kiểm tra keys/constraints/lineage và đối soát nguồn. [Raw README](raw/R
 Mỗi layer có grain/ownership rõ, không có dữ liệu sai âm thầm.
 
 ## 14. Current Status
-Raw foundation verified/MVP-G02 DONE. Payload/control/view SQL và Python loader Implemented/Offline Tested nhưng chưa provision/chạy; persisted sealed-chunk/attempt replay, staging/Core **Not implemented yet**. Không coi hai metadata nền hoặc code-only PASS là complete operational Raw protocol.
+Raw foundation verified/MVP-G02 DONE. Payload/control/views đã provision/runtime verified; Python loader chỉ Implemented/Offline Tested, chưa chạy real load; persisted sealed-chunk/attempt replay, staging/Core **Not implemented yet**. Không coi hai metadata nền hoặc code-only PASS là complete operational Raw protocol.
