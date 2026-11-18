@@ -291,6 +291,64 @@ class EngineTests(unittest.TestCase):
 
 
 class ReadinessDiagnosticsTests(unittest.TestCase):
+    def history_connection(self, *, wrong_identity=False, denied_query=False):
+        from ingestion.common.config import SOURCE_SID
+        from scripts.inspect_wwi_source import HISTORY_RIGHTS,HISTORY_PARENTS
+        connection=MagicMock();cursor=connection.cursor.return_value.__enter__.return_value
+        who={'original_login':SOURCE_PRINCIPAL,'effective_login':SOURCE_PRINCIPAL,'sid':'0x'+SOURCE_SID.hex(),
+             'database_user':'wwi_extract','database_name':'WideWorldImporters','machine':'DESKTOP-OBDFK6B',
+             'instance':'SQLEXPRESS','version':'17.0.1000.7'}
+        if wrong_identity:who['original_login']='DESKTOP-OBDFK6B\\PC'
+        def execute(statement,*parameters):
+            if 'ORIGINAL_LOGIN() AS' in statement:rows=[who]
+            elif statement.startswith('SELECT HAS_PERMS_BY_NAME') and "'OBJECT'" in statement:
+                rights={key:0 for key in HISTORY_RIGHTS};rights['SELECT']=1
+                if parameters[0] in HISTORY_PARENTS:rights['INSERT']=1
+                rows=[rights]
+            elif denied_query and "fn_my_permissions(?,'OBJECT')" in statement:
+                raise RuntimeError('synthetic-secret-driver-message')
+            else:rows=[{'metadata_only':'synthetic'}]
+            cursor.description=[(key,) for key in rows[0]] if rows else []
+            cursor.fetchall.return_value=[tuple(row.values()) for row in rows]
+            return cursor
+        cursor.execute.side_effect=execute
+        return connection,cursor
+
+    def test_history_mode_rejects_pc_before_any_source_connection(self):
+        from scripts.inspect_wwi_source import main as diagnostic_main
+        stream=io.StringIO()
+        with patch('scripts.inspect_wwi_source.windows_principal',return_value='DESKTOP-OBDFK6B\\PC'), \
+             patch('pyodbc.connect') as connect,redirect_stdout(stream):
+            self.assertEqual(diagnostic_main(['--execute','--history-permissions']),1)
+        connect.assert_not_called();self.assertIn('DEDICATED_SOURCE_IDENTITY_REQUIRED',stream.getvalue())
+
+    def test_history_collection_keeps_exact_matrix_and_does_not_claim_root_cause(self):
+        from scripts.inspect_wwi_source import history_permissions,HISTORY_PARENTS
+        connection,cursor=self.history_connection();result=history_permissions(connection)
+        self.assertEqual(len(result['object_permissions']),11)
+        self.assertTrue(result['ordinary_objects_no_dml_alter_control_ownership'])
+        self.assertFalse(result['all11_match_existing_strict_permission_matrix'])
+        self.assertEqual({r['object'] for r in result['object_permissions'] if r['rights']['INSERT']==1},set(HISTORY_PARENTS))
+        self.assertEqual(result['root_cause'],'UNDETERMINED_REQUIRES_EVIDENCE_REVIEW')
+        self.assertFalse(result['production_security_policy_changed']);self.assertFalse(result['source_write_probe_executed'])
+        for call in cursor.execute.call_args_list:
+            self.assertTrue(call.args[0].startswith(('SELECT ','WITH ')))
+            self.assertNotIn('EXECUTE AS',call.args[0]);self.assertNotIn('FROM [Sales]',call.args[0])
+            self.assertNotIn('FROM [Warehouse]',call.args[0])
+
+    def test_history_collection_requires_actual_login_sid_and_mapping(self):
+        from scripts.inspect_wwi_source import history_permissions
+        connection,cursor=self.history_connection(wrong_identity=True)
+        with self.assertRaisesRegex(PipelineError,'DEDICATED_SOURCE_IDENTITY_REQUIRED'):history_permissions(connection)
+        self.assertEqual(cursor.execute.call_count,1)
+
+    def test_history_denied_metadata_is_not_masked_or_leaked(self):
+        from scripts.inspect_wwi_source import history_permissions
+        connection,_=self.history_connection(denied_query=True);result=history_permissions(connection)
+        self.assertEqual(len(result['unverified_queries']),4)
+        self.assertTrue(all(result['evidence'][key]['status']=='NOT_VERIFIED' for key in result['unverified_queries']))
+        self.assertNotIn('synthetic-secret-driver-message',json.dumps(result))
+
     def connection(self, *, schema_drift=False):
         from scripts.inspect_wwi_source import COLUMN_SQL,KEY_SQL,TEMPORAL_SQL,PERMISSION_SQL
         from ingestion.common.config import SOURCE_SID

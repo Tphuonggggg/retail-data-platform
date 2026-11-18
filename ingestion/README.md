@@ -1,5 +1,7 @@
 # ingestion — WWI-06A Full Load
 
+**WWI-06C hiện hành2026-11-18:** [history permission investigation](#wwi-06c--history-permission-investigation-2026-11-18) vẫn **BLOCKED**. Đã có SELECT-only evidence dưới actual wwi_extract qua PowerShell/ODBC18:9 current tables không quyền ghi được kiểm, hai bound histories cùng effective INSERT=1. Chưa xác định được nguyên nhân; Python preflight chưa chạy được do base interpreter nằm trong profile PC. Một kết nối strict TLS thành công, kết nối mới thất bại; không suy current source readiness PASS. Production guard giữ nguyên, chưa smoke/ingestion/publication.
+
 **WWI-06B current2026-11-18:** [approved Raw provisioning/runtime evidence](../storage/raw/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18) = **RAW_PAYLOAD_PROVISIONING_PASS**. Owner duyệt exact SHA256/target/postgres; initializer chạy nguyên bản một lần exit0.11 payload+4 controls+11 views/248 columns/constraints/indexes/grants verified; target-only preflight(all11) PASS, foundation unchanged. Chưa Full Load/smoke/publication. Archive permission exception vẫn pending; không source guard bypass hoặc tự load. NOT APPLIED/TARGET_DDL_REQUIRED và TLS trust-remediation notes phía dưới là prior states/proposals.
 
 ## Trạng thái và phạm vi
@@ -270,7 +272,7 @@ Chọn **Warehouse.StockItemHoldings**, chỉ227 current rows/9 columns ở obse
 
 Observation source dưới PC, không fixed acceptance constants: rows227/distinct StockItemID227; SUM(bigint QuantityOnHand)=30343296; SUM(decimal38,2 LastCostPrice)=5107.92; NULL counts cả9 columns=0; F2 min2016-05-31T07:00:00.0000000/max2016-05-31T12:00:00.0000000. Đây là field controls, **không KPI/COGS definition**. Fresh smoke phải remeasure, không hardcode snapshot cũ.
 
-Trình tự sau khi Owner cho phép provisioning và **riêng selected-object load**, dưới wwi_extract. Hiện các lệnh này phải STOP vì source gate chưa resolve/target schema chưa có:
+Trình tự sau khi Owner cho phép **riêng selected-object load**, dưới wwi_extract. Target đã provision/PASS ở WWI-06B; hiện phải STOP vì source gate chưa resolve. WWI-06C bổ sung Python execution/TLS prerequisites ở cuối tài liệu; các lệnh load dưới đây vẫn PREPARED, NOT RUN:
 
 ~~~powershell
 Set-Location -LiteralPath 'D:\Code\Retail_Data_Platform\project1_Retail_Data_platform'
@@ -333,10 +335,63 @@ Known failure: rollback toàn capture, no payload/audit/publication for failed r
 
 | Mục tiêu | Sealed-chunk/attempt replay thiếu có chặn không? |
 | --- | --- |
-| A. Selected-object smoke, unpublished | Không tự nó chặn controlled smoke: transaction rollback/new-capture retry đủ kiểm basic path. Source rights/TLS/target provisioning vẫn bắt buộc và hiện chưa đạt |
+| A. Selected-object smoke, unpublished | Không tự nó chặn controlled smoke: transaction rollback/new-capture retry đủ kiểm basic path. Target provisioning đã PASS; source rights/TLS/execution context vẫn chưa đủ điều kiện |
 | B. Full all11 candidate, unpublished | Không tự nó cấm disposable candidate nếu Owner chấp nhận full restart cost; chưa được giao/executed. Không gọi đây exact resume/replay hoặc operationally accepted full load |
 | C. MVP-G03/WWI-06 final acceptance | Có: accepted persisted chunk/attempt/retained-content replay requirements còn thiếu, cần implementation + tests hoặc explicit Owner scope decision; không tự giảm criteria |
 
-Source READ_WRITE, RCSI OFF, SNAPSHOT isolation OFF vừa rechecked. Không tự bật isolation options hoặc dùng snapshot semantics chưa có. Full candidate publication còn cần external verified consistency/full-scope geography adapter/persistence proof và actual runtime reconciliation/recovery. **Critical blockers cho first selected load chỉ gồm:** fresh extractor TLS/least privilege (archive anomaly decision), target DDL/grants absent, và Owner selected-load authorization. Không thêm governance/staging/ACL gates mới.
+Source READ_WRITE, RCSI OFF, SNAPSHOT isolation OFF đã được quan sát ở review này. Không tự bật isolation options hoặc dùng snapshot semantics chưa có. Full candidate publication còn cần external verified consistency/full-scope geography adapter/persistence proof và actual runtime reconciliation/recovery. **Current blockers cho first selected load:** executable Python environment dưới extractor, repeatable strict TLS/least privilege (archive anomaly decision), và Owner selected-load authorization. Target DDL/grants đã PASS ở WWI-06B. Không thêm governance/staging/ACL gates mới.
 
 Validation:44 Full Load/readiness +22 Raw foundation +18 source security +12 B9 offline tests; kết quả actual được xác minh trước commit. Diagnostics/code test không phải privileged SQL execution. Không commit source rows, private config/password hoặc certificate private key.
+
+## WWI-06C — History permission investigation, 2026-11-18
+
+**BLOCKED — chưa đủ điều kiện selected-object smoke.** Bắt đầu main/cf94d05247ba9ac0d3fe7f440c2e73156076cfaf, working tree clean. Chỉ bổ sung diagnostics/tests và cập nhật runbook/tracker; không sửa production extractor, permission contract hoặc accepted temporal semantics. Không source/target writes, grants, certificate/ACL changes, dependency installation, Full Load hoặc publication.
+
+### Runtime evidence và giới hạn
+
+Project-local .venv trỏ base Python3.12.10 tại `C:\Users\PC\AppData\Local\Programs\Python\Python312\python.exe`. Launch bằng credential riêng trả Win32 access error5 và stderr `No Python at ...Python312...`; ACL đọc được của base executable/directory chỉ có SYSTEM/Administrators/PC. **Python production preflight dưới wwi_extract = NOT RUN**, không gán cho nó một SQL runtime error chưa quan sát. Không dùng PC/DBA hoặc EXECUTE AS thay extractor, không copy Python/install package/sửa ACL để vượt prerequisite.
+
+Để thu thập subset độc lập, đã chạy Windows PowerShell System.Data.Odbc với Driver18/Integrated Auth/Encrypt=yes/TrustServerCertificate=no dưới actual Windows SID đã duyệt. Adapter dùng SELECT queries/parameters từ [collector](../scripts/inspect_wwi_source.py), không chạy loader. Lượt đầu verified27/30 queries;3 queries role/grant closure NOT_VERIFIED, không coi là empty grants. Collector sau đó dùng active `sys.user_token` cho effective role/grant scope; các query sửa này chưa được live-verify do kết nối mới fail TLS.
+
+| Kiểm tra | Bằng chứng actual / kết quả |
+| --- | --- |
+| Windows identity | DESKTOP-OBDFK6B\wwi_extract; SID S-1-5-21-2164258108-3044412014-540060861-1007 |
+| SQL identity/target | ORIGINAL_LOGIN() = SUSER_SNAME() = cùng Windows principal; SQL SID khớp; USER_NAME()=wwi_extract; WideWorldImporters / DESKTOP-OBDFK6B / SQLEXPRESS; ProductVersion17.0.1000.7 |
+| 9 current objects | HAS_PERMS: SELECT=1; INSERT/UPDATE/DELETE/ALTER/CONTROL/TAKE OWNERSHIP=0 trên từng object, VIEW DEFINITION=0 |
+| Sales.Customers_Archive | SELECT/INSERT=1; UPDATE/DELETE/ALTER/CONTROL/TAKE OWNERSHIP=0; fn_my_permissions OBJECT-level trả SELECT và INSERT |
+| Warehouse.StockItems_Archive | Cùng effective rights và fn_my_permissions OBJECT-level như Customers_Archive |
+| Temporal bindings | Customers_Archive object1010102639/type1 ← Customers802101898/type2; StockItems_Archive1458104235/type1 ← StockItems1314103722/type2; mỗi parent_history_id khớp, history owner dbo |
+| Roles/token | sysadmin/securityadmin/db_owner/db_datareader/db_datawriter/db_ddladmin/db_securityadmin=0; database token chỉ wwi_extract/public; visible server role edges rỗng; không admin role trong captured SQL token |
+| Broad rights | CONTROL SERVER/SELECT ALL USER SECURABLES/IMPERSONATE ANY LOGIN/ALTER ANY LOGIN=0 |
+| Database/schema | DATABASE effective CONNECT và hai VIEW ANY COLUMN ... KEY DEFINITION; SCHEMA Sales/Warehouse fn_my_permissions rỗng. Không coi metadata visibility rights là write grant |
+| Visible server grants | CONNECT SQL cho wwi_extract và BUILTIN\Users; public endpoint CONNECT và VIEW ANY DATABASE. Không phải full global grant audit |
+| Object grant/inheritance audit | NOT_VERIFIED cho hai object-grant queries và role-closure query đầu tiên; chưa có current extractor evidence đủ để kết luận không tồn tại grant path |
+| Strict TLS | Một fresh connection PASS với msodbcsql18.dll; fresh connection kế tiếp FAIL SQLSTATE08001/native -2146893019. Giữ cả hai kết quả, chưa repeatable PASS; không fallback trust bypass |
+
+Local sanitized evidence được giữ trong ignored `.local`, không chứa password/payload: `wwi06c-odbc-first-pass.json` SHA256 `0936d6a761c5922605c0051709020dd70139e06283573d2d0bdef7f27944247f`; `wwi06c-odbc-tls-failed.json` SHA256 `2ff82ac29f0c970716405bf05fddfe3484f89dc66a03ad9a2a4058db6b358cc6`. Đây là traceability của local results, không tạo lại mandatory execution manifest. Không coi temporary adapter là supported production preflight hoặc thay TLS/role acceptance bằng offline test.
+
+**Owner-run follow-up:** Owner xác nhận đã chạy collector trong interactive wwi_extract session. File observed_at `2026-11-18T16:39:46.0755421+00:00` xác nhận Windows principal/SID-1007; ODBC fail trước metadata,0 queries với SQLSTATE08001/native -2146893019. `certutil -error 0x80090325` xác nhận SEC_E_UNTRUSTED_ROOT / certificate chain not trusted; đây là TLS observation, không kết luận về SQL permissions. Preserved `wwi06c-owner-tls-failed.json` SHA256 `2c753ccc1cc5c127e728e3f7ee1b103f73e1734805ea6b45435b33c16d0ef006` trong ignored .local.
+
+Read-only PC corroboration vẫn thấy configured thumbprint BAB7BCF8CEEFD64DB354180B5D2A92439BFDB7EB, LocalMachine/My public DER SHA256 BF957C2D7D78A5A613BB9EFCEC4C6E273694FAC0F9E924647D1E152F93067726 và còn validity; LocalMachine/Root không có. Hive SID-1007 hiện visible và Root registry entry cùng thumbprint **có tồn tại**. Registry presence không chứng minh current-user logical store/chain tin cậy chứng chỉ; không tự import lặp hoặc kết luận certificate absent. Không xác nhận live server-presented certificate chỉ từ configured store entry.
+
+Temporary `.local/wwi06c-odbc-runtime.ps1` đã bổ sung read-only exact-certificate store/hash/chain diagnostics, PowerShell parser PASS; **runtime phần bổ sung NOT RUN**, Owner hiện chưa thể chạy thêm. Diagnostic chain dùng NoCheck riêng cho revocation inspection, không sửa strict ODBC TLS và không chứng minh revocation PASS. Chỉ đọc public certificate, không export private key/import/remove/trust mutation. Khi Owner chạy lại, dùng absolute script path vì .NET ReadAllText relative path theo process working directory, có thể khác PowerShell Set-Location. Source blocker và production policy giữ nguyên.
+
+### Kết luận permission và remediation
+
+**Verified:** anomaly effective INSERT ở đúng hai linked history objects tồn tại trong actual extractor context, không phải kết quả PC/sysadmin hoặc chỉ một hàm. **Unverified:** cơ chế tạo effective INSERT; có grant path ngoài phần visibility đã thu hay không; executable DML capability chưa thử và không được phép thử. Mức tin cậy cao cho observation, chưa đủ cho root-cause classification hoặc exception approval.
+
+[HAS_PERMS_BY_NAME](https://learn.microsoft.com/en-us/sql/t-sql/functions/has-perms-by-name-transact-sql?view=sql-server-ver17) kiểm effective permission của caller. [Temporal limitations](https://learn.microsoft.com/en-us/sql/relational-databases/tables/temporal/considerations-limitations?view=sql-server-ver17) cấm sửa trực tiếp history data khi bound versioning hoạt động; quy tắc engine đó không giải thích riêng nguồn gốc permission bit. Không gọi đây harmless bug, không suy đã chứng minh no-write capability hoặc least-privilege gate PASS.
+
+**Khuyến nghị hiện tại:** giữ blocker và strict-zero production guard. Trước tiên cần Python environment đọc/chạy được bởi approved identity và strict TLS lặp lại ổn định trong chính context đó; không tự sửa OS trust/ACL. Sau đó chạy collector/preflight bằng commands dưới đây để hoàn tất own-token object grants/role evidence. Nếu tìm được unintended grant cụ thể: trình exact REVOKE delta cho Owner trước thao tác. Chỉ khi evidence đủ chứng minh temporal-specific behavior mới trình exception cho đúng hai named histories, verified type1/type2 binding, mọi ordinary-table DML và archive UPDATE/DELETE/ALTER/CONTROL vẫn0, NULL/missing/drift phải fail closed. Đây vẫn là **PROPOSED, NOT IMPLEMENTED** và cần Owner duyệt material security-contract change; không cần thêm quyền để chẩn đoán.
+
+~~~powershell
+# Trong actual wwi_extract session, sau khi Python execution prerequisite được resolve.
+# Collector exit0 = collection complete; exit2 = metadata query NOT_VERIFIED; không gate approval.
+.venv\Scripts\python.exe -X utf8 scripts/inspect_wwi_source.py --execute --history-permissions
+# Chỉ SELECT/preflight, không load; unchanged guard vẫn reject archive INSERT=1.
+.venv\Scripts\python.exe -X utf8 -m ingestion.full_load preflight --object Warehouse.StockItemHoldings --env-file .env
+~~~
+
+Existing [smoke procedure](#selected-object-smoke-procedure--prepared-not-run) giữ target Warehouse.StockItemHoldings/batch64/new run ID/retail_ingest/unpublished. Chạy sau riêng Owner load authorization và source gate PASS; so fresh source/Raw count, distinct PK, numeric totals, NULL distribution, F2/digest, durable audit/metadata, unchanged publication pointer. Snapshot227 rows/totals cũ chỉ tham khảo, không acceptance constants. Smoke **NOT RUN**; target provisioning PASS giữ evidence WWI-06B, không re-provision.
+
+Offline regressions:48 Full Load/readiness,22 Raw foundation,18 source security,12 B9 và4 Raw readonly-verifier tests PASS. Bốn tests mới kiểm real-identity fence, preserved all11 matrix/no invented cause, SQL SID/user mapping và denied metadata/no-secret handling. Existing archive-INSERT blocker/TLS-no-bypass tests giữ nguyên; không nâng MVP-G01, WWI-06B hoặc WWI-06C thành DONE từ offline PASS.
