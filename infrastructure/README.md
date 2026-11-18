@@ -28,8 +28,8 @@ SQL Server nguồn; PostgreSQL đích; Docker/Docker Compose và BigQuery ở ph
 
 ## 9. Directory Structure
 - [docker/](docker/README.md)
-- [local/](local/README.md)
-- [cloud/](cloud/README.md)
+- [local/](README.md)
+- [cloud/](README.md)
 
 ## 10. Planned Workflow
 Xác minh source read-only và chuẩn bị Raw song song → Owner authorize runtime → kiểm connectivity/restart/persistence → Full Load task riêng. [Docker README](docker/README.md) có exact startup/shutdown commands, chưa được chạy.
@@ -45,3 +45,8 @@ Môi trường tái lập được, không commit secret, nguồn giữ quyền 
 
 ## 14. Current Status
 Current [Raw package/recovery](docker/README.md): server18.7 đã chạy trong retail-raw-postgres-1/volume retail-raw_pg_data/loopback55434 theo Owner và readonly inspection. Bootstrap FAILED, raw/meta/role absent; fix + recovery A prepared, chưa apply. Old health healthy không là bootstrap PASS. Task fix không start/stop/recreate/delete resource, không native5432/B9/SQLServer changes. WWI-05 IN_PROGRESS, MVP-G02 BLOCKED; historical M1A evidence giữ nguyên.
+
+
+## MVP-RESET-01 consolidation
+
+Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.

@@ -1,11 +1,11 @@
-"""Dedicated Windows identity, metadata fences, SELECT-only streamed extraction."""
+"""Current-user Windows authentication and selected SELECT-only extraction."""
 from __future__ import annotations
 
 import ctypes
 import os
 from typing import Iterator, Any
 
-from ingestion.common.config import Settings, SOURCE_PRINCIPAL, SOURCE_SID
+from ingestion.common.config import Settings
 from ingestion.common.contracts import SourceObject, catalog
 from ingestion.common.errors import PipelineError
 
@@ -30,8 +30,6 @@ class SqlServerSource:
         self.context: dict[str, Any] = {}
 
     def connect(self) -> None:
-        if windows_principal().casefold() != SOURCE_PRINCIPAL.casefold():
-            raise PipelineError("DEDICATED_SOURCE_IDENTITY_REQUIRED")
         import pyodbc
         self.connection = pyodbc.connect(self.config.source_connection_string,
             timeout=self.config.login_timeout, autocommit=True, attrs_before={101: 1})
@@ -42,31 +40,29 @@ class SqlServerSource:
                 "CONVERT(nvarchar(128), SERVERPROPERTY('InstanceName')), "
                 "IS_SRVROLEMEMBER('sysadmin'), IS_SRVROLEMEMBER('securityadmin'), "
                 "IS_ROLEMEMBER('db_owner'), IS_ROLEMEMBER('db_datareader'), IS_ROLEMEMBER('db_datawriter'), USER_NAME()").fetchone()
-            if (row[0].casefold() != SOURCE_PRINCIPAL.casefold() or row[1].casefold() != SOURCE_PRINCIPAL.casefold()
-                    or bytes(row[2]) != SOURCE_SID or tuple(row[3:6]) != ("WideWorldImporters", "DESKTOP-OBDFK6B", "SQLEXPRESS")
-                    or any(value != 0 for value in row[6:11]) or row[11]!="wwi_extract"):
-                raise PipelineError("SOURCE_IDENTITY_OR_ADMIN_PRIVILEGE")
+            if tuple(row[3:6]) != ("WideWorldImporters", "DESKTOP-OBDFK6B", "SQLEXPRESS"):
+                raise PipelineError("SOURCE_TARGET_MISMATCH")
+            if any(value is None for value in row[6:11]):
+                raise PipelineError("SOURCE_ROLE_UNVERIFIED")
+            if any(value != 0 for value in row[6:11]) and not (self.config.development and self.config.allow_admin_source):
+                raise PipelineError("ADMIN_SOURCE_REQUIRES_EXPLICIT_DEVELOPMENT_OPT_IN")
             version,collation=cursor.execute("SELECT CONVERT(varchar(128),SERVERPROPERTY('ProductVersion')), "
                                               "CONVERT(varchar(128),SERVERPROPERTY('Collation'))").fetchone()
             self.context={"endpoint":"tcp:DESKTOP-OBDFK6B,1433","instance":"SQLEXPRESS","database":"WideWorldImporters",
                           "product_version":version,"collation":collation,"source_snapshot_id":None,
                           "geography_encoding":"SQL_SERVER_NATIVE_VARBINARY_NOT_WKB",
-                          "pyodbc_version":pyodbc.version,"ingestion_settings":self.config.summary()}
+                          "actual_login":row[0], "database_user":row[11],
+                          "admin_source_opt_in":self.config.allow_admin_source, "pyodbc_version":pyodbc.version,"ingestion_settings":self.config.summary()}
 
     def preflight(self, objects: tuple[SourceObject, ...]) -> None:
-        # Always check the complete identity allowlist, including known archive INSERT exceptions.
         with self.connection.cursor() as cursor:
-            for obj in catalog().values():
-                row = cursor.execute("SELECT HAS_PERMS_BY_NAME(?, 'OBJECT', 'SELECT'), "
-                    "HAS_PERMS_BY_NAME(?, 'OBJECT', 'INSERT'), HAS_PERMS_BY_NAME(?, 'OBJECT', 'UPDATE'), "
-                    "HAS_PERMS_BY_NAME(?, 'OBJECT', 'DELETE'), HAS_PERMS_BY_NAME(?, 'OBJECT', 'ALTER'), "
-                    "HAS_PERMS_BY_NAME(?, 'OBJECT', 'CONTROL')", *([obj.name] * 6)).fetchone()
-                if tuple(row) != (1, 0, 0, 0, 0, 0):
-                    raise PipelineError("SOURCE_EFFECTIVE_PERMISSIONS_UNRESOLVED")
-            powers = cursor.execute("SELECT HAS_PERMS_BY_NAME(NULL,NULL,'CONTROL SERVER'), "
-                                    "HAS_PERMS_BY_NAME(NULL,NULL,'SELECT ALL USER SECURABLES')").fetchone()
-            if tuple(powers) != (0, 0): raise PipelineError("SOURCE_BROAD_PERMISSION")
             for obj in objects:
+                if catalog().get(obj.name) != obj: raise PipelineError("SOURCE_NOT_ALLOWLISTED")
+                permission = cursor.execute("SELECT HAS_PERMS_BY_NAME(?, 'OBJECT', 'SELECT')", obj.name).fetchone()
+                if permission is None or tuple(permission) != (1,):
+                    raise PipelineError("SOURCE_SELECT_PERMISSION_REQUIRED")
+                # Compile the selected projection, including computed/spatial columns, without fetching rows.
+                cursor.execute("SELECT TOP (0) " + obj.query.split("SELECT ", 1)[1].split(" ORDER BY", 1)[0])
                 rows = cursor.execute("SELECT c.name, TYPE_NAME(CASE WHEN c.system_type_id=240 THEN c.user_type_id "
                     "ELSE c.system_type_id END), c.max_length,c.precision,c.scale,c.is_nullable "
                     "FROM sys.columns c WHERE c.object_id=OBJECT_ID(?, 'U') ORDER BY c.column_id", obj.name).fetchall()

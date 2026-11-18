@@ -31,4 +31,4 @@ Tiếp tục kiến trúc nguồn mô phỏng trước đây: Project Owner khô
 
 ## Quyết định còn mở
 
-Revenue recognition/tax và ngày invoice so với ngày delivery; `CustomerID` so với `BillToCustomerID`; grain và schema của fact/dimension; profit/COGS; thuộc tính và khoảng hiệu lực SCD2; incremental extraction/deletes/môi trường thử nghiệm; inventory daily balance; ngưỡng data quality. Xem [Open Decisions](../../PROJECT_SCOPE.md#open-decisions).
+Revenue recognition/tax và ngày invoice so với ngày delivery; `CustomerID` so với `BillToCustomerID`; grain và schema của fact/dimension; profit/COGS; thuộc tính và khoảng hiệu lực SCD2; incremental extraction/deletes/môi trường thử nghiệm; inventory daily balance; ngưỡng data quality. Xem [Open Decisions](../archive/pre-reset/PROJECT_SCOPE.md#open-decisions).

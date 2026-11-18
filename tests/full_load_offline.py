@@ -431,23 +431,31 @@ class SecurityAndDriverTests(unittest.TestCase):
         self.assertEqual(len(list(target.rows(obj,uuid4()))),1)
         self.assertTrue(target.connection.cursor.call_args.kwargs['name'].startswith('wwi_verify_'))
         cursor.fetchall.assert_not_called();cursor.fetchmany.assert_called_with(2)
-    def test_no_source_connection_under_dba_windows_identity(self):
-        with patch('ingestion.extractors.sqlserver.windows_principal',return_value='DESKTOP-OBDFK6B\\PC'),patch('pyodbc.connect') as connect:
-            with self.assertRaisesRegex(PipelineError,'DEDICATED'):SqlServerSource(self.config()).connect()
-            connect.assert_not_called()
-    def test_effective_archive_insert_is_a_real_preflight_blocker(self):
+    def test_missing_selected_select_stops(self):
         source=SqlServerSource(self.config());source.connection=MagicMock()
         cursor=source.connection.cursor.return_value.__enter__.return_value
-        rights=[(1,0,0,0,0,0) for _ in catalog()]
-        names=list(catalog());rights[names.index('Sales.Customers_Archive')]=(1,1,0,0,0,0)
-        cursor.execute.return_value.fetchone.side_effect=rights
-        with self.assertRaisesRegex(PipelineError,'SOURCE_EFFECTIVE_PERMISSIONS_UNRESOLVED'):
+        cursor.execute.return_value.fetchone.return_value=(0,)
+        with self.assertRaisesRegex(PipelineError,'SOURCE_SELECT_PERMISSION_REQUIRED'):
             source.preflight(select_objects(['Sales.Orders']))
+    def test_unrelated_history_not_checked_for_selected_load(self):
+        from scripts.inspect_wwi_source import COLUMN_SQL
+        obj=catalog()['Sales.Orders'];source=SqlServerSource(self.config());source.connection=MagicMock()
+        cursor=source.connection.cursor.return_value.__enter__.return_value
+        cursor.execute.return_value.fetchone.return_value=(1,)
+        rows=[]
+        for c in obj.columns:
+            kind=c.source_type.split('(')[0];length=0;precision=0;scale=0
+            if kind=='nvarchar':length=-1 if '(max)' in c.source_type else int(c.source_type.split('(')[1][:-1])*2
+            if kind=='datetime2':scale=7
+            rows.append((c.name,kind,length,precision,scale,c.nullable))
+        cursor.execute.return_value.fetchall.return_value=rows
+        source.preflight((obj,))
+        self.assertFalse(any('Archive' in str(call.args) for call in cursor.execute.call_args_list))
         self.assertTrue(all(call.args[0].startswith('SELECT ') for call in cursor.execute.call_args_list))
     def test_source_schema_mismatch_stops_before_payload_extraction(self):
         source=SqlServerSource(self.config());source.connection=MagicMock()
         cursor=source.connection.cursor.return_value.__enter__.return_value
-        cursor.execute.return_value.fetchone.side_effect=[(1,0,0,0,0,0)]*11+[(0,0)]
+        cursor.execute.return_value.fetchone.side_effect=[(1,)]
         cursor.execute.return_value.fetchall.return_value=[]
         with self.assertRaisesRegex(PipelineError,'SOURCE_SCHEMA_MISMATCH'):source.preflight(select_objects(['Sales.Orders']))
         self.assertFalse(any('COUNT_BIG' in call.args[0] for call in cursor.execute.call_args_list))
@@ -456,6 +464,22 @@ class SecurityAndDriverTests(unittest.TestCase):
         self.assertNotIn('i'*24,repr(config));self.assertNotIn('i'*24,json.dumps(config.summary()))
         with patch.dict('os.environ',{'RAW_PG_PASSWORD':'i'*24,'WWI_SQLSERVER_TRUST_SERVER_CERTIFICATE':'yes'},clear=True):
             with self.assertRaises(PipelineError):settings(None)
+    def test_development_trust_and_admin_opt_in(self):
+        with patch.dict('os.environ',{'RAW_PG_PASSWORD':'i'*24,'APP_ENV':'development',
+             'WWI_SQLSERVER_TRUST_SERVER_CERTIFICATE':'yes','WWI_ALLOW_ADMIN_SOURCE':'yes'},clear=True):
+            config=settings(None)
+        self.assertIn('TrustServerCertificate=yes',config.source_connection_string)
+        self.assertTrue(config.summary()['allow_admin_source'])
+        self.assertTrue(config.development)
+    def test_admin_role_never_silently_accepted(self):
+        connection=MagicMock();cursor=connection.cursor.return_value.__enter__.return_value
+        cursor.execute.return_value.fetchone.return_value=('dev','dev',b'x','WideWorldImporters','DESKTOP-OBDFK6B','SQLEXPRESS',1,0,0,0,0,'dbo')
+        with patch('pyodbc.connect',return_value=connection):
+            with self.assertRaisesRegex(PipelineError,'ADMIN_SOURCE_REQUIRES'):
+                SqlServerSource(self.config()).connect()
+    def test_admin_opt_in_rejected_in_production(self):
+        with patch.dict('os.environ',{'RAW_PG_PASSWORD':'i'*24,'WWI_ALLOW_ADMIN_SOURCE':'yes'},clear=True):
+            with self.assertRaisesRegex(PipelineError,'DEVELOPMENT_ONLY_SETTING'):settings(None)
     def test_streaming_source_does_not_fetch_all_payload(self):
         obj=catalog()['Sales.Orders'];source=SqlServerSource(self.config());source.connection=MagicMock()
         cursor=source.connection.cursor.return_value.__enter__.return_value

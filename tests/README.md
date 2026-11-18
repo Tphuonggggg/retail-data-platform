@@ -35,7 +35,7 @@ pytest, dbt tests và SQL validation; công cụ cụ thể chỉ được dùng
 ## 9. Directory Structure
 - [source_security_static.py](source_security_static.py): explicit offline text-contract tests,no DB connection hoặcSQL execution.
 - [integration/](integration/README.md)
-- [e2e/](e2e/README.md)
+- [e2e/](README.md)
 
 ## 10. Planned Workflow
 Workflow pipeline dự kiến: môi trường tách biệt → chạy pipeline → so nguồn/đích → báo lỗi. Chưa triển khai pipeline tests. B9 dùng project-local ignored venv và unittest/SELECT-only; commands ở README PoC. Không thực hiện INSERT/UPDATE trên WWI gốc.
@@ -67,3 +67,8 @@ SQL setup/verify/window tests và72 inherited runtime scenarios vẫnNOT RUN;B9 
 ## EX02-S1 ACL offline checks
 
 [staging_acl_static.py](staging_acl_static.py) có13 standard-library contract/mutation tests; [staging_acl_offline.ps1](staging_acl_offline.ps1) parse5 prepared operator/helper files và kiểm10 unsafe fixtures trong memory. Commands và giới hạn tại [staging README](../data-sources/security/staging/README.md). Không chạy operator entry scripts, không ACL/SQL writes, không là effective-access hoặc ancestor race proof. EX02/G02 runtime vẫn BLOCKED.
+
+
+## MVP-RESET-01 consolidation
+
+Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.

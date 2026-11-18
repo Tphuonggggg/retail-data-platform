@@ -1,5 +1,7 @@
 # System Overview
 
+**MVP-RESET-01 hi?n h?nh:** data/business/fidelity contracts gi? nguy?n; historical dedicated-identity/global permission/ACL/security approval prerequisites ???c supersede b?i current PROJECT_SCOPE.md/AGENTS.md. Sales-first MVP; advanced incremental/SCD2/recovery l? milestones sau, kh?ng claim runtime implemented.
+
 ## Status
 
 **Planned — Not implemented yet.** SQL Server WWI đã được khảo sát trong các assessment trước; sơ đồ là kiến trúc được duyệt, không phải pipeline đã chạy. [DW-04 Assessment](../data-models/wwi-dw-04-assessment.md) đối chiếu thiết kế liên giai đoạn; [Gate Register](../data-models/wwi-implementation-gate-register.md) tách physical/runtime prerequisites. WWI-04 DONE — Design; Phase1 Completed — Requirements & Source Design; Phase2 IN_PROGRESS — Authorized, chỉ M1A; Phase3–9 Not Started theo [Owner approval](wwi-phase-1-closure-approval.md). Kiến trúc chưa triển khai.
@@ -36,4 +38,4 @@ Kimball [logical model](../data-models/wwi-logical-dw-design.md) giữ2 headers,
 
 BRD-01–12, DW-01/L01–05, DW-02/B1–B8, DW-03A/A01–A06 theo đúng conditional/direction scope, INC-01–06, CP-01–06, D1/D2 Logical và D3 Governance đã ghi nhận; D4 confirmed. B9 chỉ Approved Physical Raw Temporal Representation, không entire Raw schema. [SCD Final Spec](../data-models/wwi-final-scd2-design-specification.md) và [DW-03C Register](../data-models/wwi-dw-03c-decision-register.md) giữ authority chi tiết.
 
-[Open Decisions](../../PROJECT_SCOPE.md#open-decisions) hiện là concrete consistency/least-privilege profiles, physical schema/adapters/algorithms/intervals/reference contracts, numeric thresholds và per-action runtime approvals. Không mở lại approved business/SCD/incremental/propagation policies. Source WWI vẫn read-only; source consistency cần actual proof theo A02, không suy từ read-only client/PoC hoặc old timestamps.
+[Open Decisions](../archive/pre-reset/PROJECT_SCOPE.md#open-decisions) hiện là concrete consistency/least-privilege profiles, physical schema/adapters/algorithms/intervals/reference contracts, numeric thresholds và per-action runtime approvals. Không mở lại approved business/SCD/incremental/propagation policies. Source WWI vẫn read-only; source consistency cần actual proof theo A02, không suy từ read-only client/PoC hoặc old timestamps.

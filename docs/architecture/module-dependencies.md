@@ -1,5 +1,7 @@
 # Module Dependencies
 
+**MVP-RESET-01 hi?n h?nh:** data/business/fidelity contracts gi? nguy?n; historical dedicated-identity/global permission/ACL/security approval prerequisites ???c supersede b?i current PROJECT_SCOPE.md/AGENTS.md. Sales-first MVP; advanced incremental/SCD2/recovery l? milestones sau, kh?ng claim runtime implemented.
+
 **Planned — Not implemented yet.** Mũi tên là phụ thuộc thiết kế, không phải import code đã tồn tại.
 
 ```mermaid

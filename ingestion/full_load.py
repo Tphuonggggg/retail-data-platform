@@ -132,6 +132,9 @@ def main(argv: list[str] | None = None) -> int:
             args.run_id=uuid4()
         config=settings(args.env_file,args.batch_size)
         if args.command=="config": print(json.dumps(config.summary())); return 0
+        from importlib.util import find_spec
+        if any(find_spec(name) is None for name in ("pyodbc", "psycopg")):
+            raise PipelineError("MISSING_RUNTIME_DEPENDENCY_INSTALL_ROOT_REQUIREMENTS")
         target=PostgresTarget(config); target.connect()
         if args.command in {"reconcile","abandon"}:
             target.preflight(objects)

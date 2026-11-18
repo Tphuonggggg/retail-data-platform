@@ -25,8 +25,8 @@ data-sources, ingestion, storage, transformation và docs/requirements.
 pytest, dbt tests, custom SQL validation theo phase được duyệt.
 
 ## 9. Directory Structure
-- [validations/](validations/README.md)
-- [reconciliation/](reconciliation/README.md)
+- [validations/](README.md)
+- [reconciliation/](README.md)
 
 ## 10. Planned Workflow
 Kiểm tra trong ingestion/staging → kiểm tra dbt/warehouse → đối soát cùng grain/kỳ → Phase 6 gates/monitoring tập trung. Chưa có lệnh chạy.
@@ -42,3 +42,7 @@ Sai lệch thử nghiệm được phát hiện và báo lý do rõ; ngưỡng c
 
 ## 14. Current Status
 Chưa có validation/reconciliation code hoặc kết quả kiểm thử. Not implemented yet.
+
+## MVP-RESET-01 consolidation
+
+Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.

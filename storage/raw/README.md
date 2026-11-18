@@ -97,7 +97,7 @@ retail_raw/retail_ingest/session_user retail_ingest/UTF8/C verified qua TCP55434
 
 ### Exact next steps và smoke command
 
-Owner cần review execution context/output lần COMMIT trước, rồi giao riêng bounded provisioning/remediation đúng retail_raw nếu tiếp tục; **không có quyền apply/rerun trong task này**. Script new-only: không chạy lại chỉ để xem có qua không. [Docker operator/PATH và exact reviewed provisioning command](../../ingestion/README.md#schematype-và-raw-provisioning-review) dành cho future authorization; cần verify lại objects sau apply, không chỉ exit0/COMMIT.
+Owner cần review execution context/output lần COMMIT trước, rồi giao riêng bounded provisioning/remediation đúng retail_raw nếu tiếp tục; **không có quyền apply/rerun trong task này**. Script new-only: không chạy lại chỉ để xem có qua không. [Docker operator/PATH và exact reviewed provisioning command](../../docs/archive/pre-reset/ingestion-history.md#schematype-và-raw-provisioning-review) dành cho future authorization; cần verify lại objects sau apply, không chỉ exit0/COMMIT.
 
 Sau target verification PASS và Owner giải quyết archive security decision, fresh wwi_extract session phải chạy selected CLI preflight; PC chỉ Docker operator. Smoke vẫn cần Owner authorize riêng, source Windows identity wwi_extract, target retail_ingest, strict TLS, không publication:
 
@@ -113,7 +113,7 @@ $candidateRun
 if ($LASTEXITCODE -ne 0) { throw ('STOP: inspect '+$candidateRun+'; no automatic retry') }
 ~~~
 
-Commands trên **PREPARED / NOT RUN**. [Existing smoke plan](../../ingestion/README.md#selected-object-smoke-procedure--prepared-not-run) có source before/after profile, numeric/NULL/time controls, digest/fresh-session reconciliation/metadata lifecycle/failure/unchanged publication checks. Baseline227/227/30343296/5107.92 chỉ historical; không remeasure source dưới PC trong task này. Không --publish, không declare source snapshot consistency.
+Commands trên **PREPARED / NOT RUN**. [Existing smoke plan](../../docs/archive/pre-reset/ingestion-history.md#selected-object-smoke-procedure--prepared-not-run) có source before/after profile, numeric/NULL/time controls, digest/fresh-session reconciliation/metadata lifecycle/failure/unchanged publication checks. Baseline227/227/30343296/5107.92 chỉ historical; không remeasure source dưới PC trong task này. Không --publish, không declare source snapshot consistency.
 
 Validation thực chạy:44 Full Load/readiness +22 Raw foundation +18 source security +12 B9 offline tests PASS; syntax/secret/link/Git scope checks trước commit. Không code/schema/security policy changes hoặc source queries; chỉ read-only Docker/Raw metadata và CLI guard checks, minimal docs. Không restart/recreate/delete resource, mutate DB/permissions/certificates, hoặc Full Load. WWI-06B/WWI-06 vẫn IN_PROGRESS, MVP-G03 chưa acceptance.
 

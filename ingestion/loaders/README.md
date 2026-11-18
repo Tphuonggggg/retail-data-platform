@@ -1,6 +1,6 @@
 # loaders
 
-**Status:** WWI-06A Implemented / Offline Tested; DDL/COPY/publication runtime NOT RUN.
+**Status:** WWI-06A Implemented / Offline Tested; Raw DDL provisioning verified; COPY/publication runtime NOT RUN.
 
 Purpose/scope: [postgres.py](postgres.py) ghi immutable Raw captures/metadata/read-back/reconcile/atomic pointer/recovery cho [Full Load](../README.md). Inputs: typed batches/run scope/proof; outputs: candidate hoặc all11 publication. Không business upsert/warehouse/marts/SCD2.
 

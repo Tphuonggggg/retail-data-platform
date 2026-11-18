@@ -1,5 +1,7 @@
 # WWI Source Contracts — Phase 1.4
 
+**MVP-RESET-01 hi?n h?nh:** data/business/fidelity contracts gi? nguy?n; historical dedicated-identity/global permission/ACL/security approval prerequisites ???c supersede b?i current PROJECT_SCOPE.md/AGENTS.md. Sales-first MVP; advanced incremental/SCD2/recovery l? milestones sau, kh?ng claim runtime implemented.
+
 **Trạng thái: Project Owner đã chấp thuận tài liệu Phase 1.4; các extraction policies vẫn Proposed.** Contract logic cho đúng chín bảng MVP trong `WideWorldImporters` trên SQL Server chỉ đọc; chưa phải quyền/chính sách extraction đã triển khai. Danh sách **toàn bộ cột, SQL datatype, nullable, default, PK/FK** nằm tại [Metadata Dictionary](wwi-metadata-dictionary.md), mục cùng tên bảng. Tài liệu này dẫn chiếu thay vì lặp lại định nghĩa cột. Số liệu snapshot và NULL lấy từ [Phase 1.2](wwi-data-profiling.md); quan hệ và cardinality từ [Phase 1.3](wwi-source-relationships.md). Kiến nghị vận hành ở [Extraction Requirements Matrix](wwi-extraction-requirements-matrix.md).
 
 ## Quy ước chung

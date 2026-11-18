@@ -26,8 +26,8 @@ PostgreSQL local; BigQuery ở Phase 8; Parquet khi cần.
 
 ## 9. Directory Structure
 - [`raw/`](raw/README.md) — xem trách nhiệm và trạng thái của thư mục.
-- [`staging/`](staging/README.md) — xem trách nhiệm và trạng thái của thư mục.
-- [`warehouse/`](warehouse/README.md) — xem trách nhiệm và trạng thái của thư mục.
+- [`staging/`](README.md) — xem trách nhiệm và trạng thái của thư mục.
+- [`warehouse/`](README.md) — xem trách nhiệm và trạng thái của thư mục.
 
 ## 10. Planned Workflow
 Raw lưu dấu vết → staging chuẩn hóa → warehouse phục vụ phân tích. [Full Load code/runbook](../ingestion/README.md) đã có; Raw schema/grants đã Owner-approved provisioning/runtime verified, payload capture/publication chưa chạy. Actual ingestion cần Owner giao riêng; không suy schema PASS thành Full Load acceptance.
@@ -43,3 +43,8 @@ Mỗi layer có grain/ownership rõ, không có dữ liệu sai âm thầm.
 
 ## 14. Current Status
 Raw foundation verified/MVP-G02 DONE. Payload/control/views đã provision/runtime verified; Python loader chỉ Implemented/Offline Tested, chưa chạy real load; persisted sealed-chunk/attempt replay, staging/Core **Not implemented yet**. Không coi hai metadata nền hoặc code-only PASS là complete operational Raw protocol.
+
+
+## MVP-RESET-01 consolidation
+
+Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.

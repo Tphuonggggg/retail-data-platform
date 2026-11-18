@@ -25,9 +25,9 @@ orchestration, ingestion, data-quality.
 Python logging, Apache Airflow.
 
 ## 9. Directory Structure
-- [`logging/`](logging/README.md) — xem trách nhiệm và trạng thái của thư mục.
-- [`metrics/`](metrics/README.md) — xem trách nhiệm và trạng thái của thư mục.
-- [`alerts/`](alerts/README.md) — xem trách nhiệm và trạng thái của thư mục.
+- [`logging/`](README.md) — xem trách nhiệm và trạng thái của thư mục.
+- [`metrics/`](README.md) — xem trách nhiệm và trạng thái của thư mục.
+- [`alerts/`](README.md) — xem trách nhiệm và trạng thái của thư mục.
 
 ## 10. Planned Workflow
 Thu tín hiệu → phát hiện lỗi → thông báo/điều tra. Hướng dẫn thực thi: chưa có lệnh chạy; sẽ bổ sung sau khi triển khai.
@@ -43,3 +43,8 @@ Có thể xác định batch, bước lỗi và nguyên nhân.
 
 ## 14. Current Status
 Status: Not Implemented. Not implemented yet. Chưa có chức năng hoặc kết quả kiểm thử.
+
+
+## MVP-RESET-01 consolidation
+
+Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.

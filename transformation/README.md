@@ -25,8 +25,8 @@ storage, docs/requirements, data-quality; quyết định WWI-02/03/04.
 dbt Core, SQL, PostgreSQL.
 
 ## 9. Directory Structure
-- [dbt/](dbt/README.md)
-- [sql/](sql/README.md)
+- [dbt/](README.md)
+- [sql/](README.md)
 
 ## 10. Planned Workflow
 Staging → dimensions/facts → kiểm tra grain/relationships → reconciliation. Chưa có lệnh chạy.
@@ -42,3 +42,7 @@ Fact/dim đúng grain, KPI không double count, lịch sử dimension chỉ kh�
 
 ## 14. Current Status
 Chưa có dbt project, SQL model hoặc kết quả kiểm thử. Not implemented yet.
+
+## MVP-RESET-01 consolidation
+
+Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.

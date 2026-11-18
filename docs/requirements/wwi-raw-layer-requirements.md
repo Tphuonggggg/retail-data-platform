@@ -1,5 +1,7 @@
 # WWI Raw Layer Requirements — Phase 1.4
 
+**MVP-RESET-01 hi?n h?nh:** data/business/fidelity contracts gi? nguy?n; historical dedicated-identity/global permission/ACL/security approval prerequisites ???c supersede b?i current PROJECT_SCOPE.md/AGENTS.md. Sales-first MVP; advanced incremental/SCD2/recovery l? milestones sau, kh?ng claim runtime implemented.
+
 **Trạng thái: Project Owner đã chấp thuận tài liệu Phase 1.4; physical design và policies vẫn Proposed.** Yêu cầu logic để thiết kế ingestion/raw của chín bảng WWI MVP. Không tạo PostgreSQL table, DDL, storage layout, partition, retention policy hay code. SQL Server WWI chỉ đọc. Xem [Source Contracts](../data-models/wwi-source-contracts.md), [Extraction Matrix](../data-models/wwi-extraction-requirements-matrix.md) và [Validation Matrix](wwi-source-validation-matrix.md).
 
 **Follow-up hiện hành, 2026-11-15:** DW-03A A01–A06 approved đúng cấp; B9 **Approved — Physical Raw Temporal Representation**: F2 → Python str/None → bound psycopg → authoritative TEXT/C comparison, exact27/seven digits. [ADR-SCD-05](../adr/scd-05-exact-temporal-precision.md) và [Full/Raw design](../data-models/wwi-dw-03a-full-raw-design-proposal.md) là current design authority. Pending/Proposed statements phía dưới giữ snapshot Phase1.4; physical full Raw schema/index/retention và runtime gates vẫn pending, không phủ nhận approved logical capture/archive/identity/publication hoặc scoped B9.
