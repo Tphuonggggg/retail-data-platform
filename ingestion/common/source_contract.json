@@ -1,0 +1,1191 @@
+{
+  "revision": "wwi06a-1",
+  "source": "docs/data-models/wwi-metadata-dictionary.md; approved full physical current/history scope",
+  "objects": [
+    {
+      "schema": "Sales",
+      "table": "Customers",
+      "primary_key": "CustomerID",
+      "order_by": [
+        "CustomerID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "CustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerName",
+          "source_type": "nvarchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "BillToCustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerCategoryID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "BuyingGroupID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "PrimaryContactPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "AlternateContactPersonID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryMethodID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryCityID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PostalCityID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CreditLimit",
+          "source_type": "decimal(18,2)",
+          "nullable": true
+        },
+        {
+          "name": "AccountOpenedDate",
+          "source_type": "date",
+          "nullable": false
+        },
+        {
+          "name": "StandardDiscountPercentage",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "IsStatementSent",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "IsOnCreditHold",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "PaymentDays",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PhoneNumber",
+          "source_type": "nvarchar(20)",
+          "nullable": false
+        },
+        {
+          "name": "FaxNumber",
+          "source_type": "nvarchar(20)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryRun",
+          "source_type": "nvarchar(5)",
+          "nullable": true
+        },
+        {
+          "name": "RunPosition",
+          "source_type": "nvarchar(5)",
+          "nullable": true
+        },
+        {
+          "name": "WebsiteURL",
+          "source_type": "nvarchar(256)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryAddressLine1",
+          "source_type": "nvarchar(60)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryAddressLine2",
+          "source_type": "nvarchar(60)",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryPostalCode",
+          "source_type": "nvarchar(10)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryLocation",
+          "source_type": "geography",
+          "nullable": true
+        },
+        {
+          "name": "PostalAddressLine1",
+          "source_type": "nvarchar(60)",
+          "nullable": false
+        },
+        {
+          "name": "PostalAddressLine2",
+          "source_type": "nvarchar(60)",
+          "nullable": true
+        },
+        {
+          "name": "PostalPostalCode",
+          "source_type": "nvarchar(10)",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ValidFrom",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        },
+        {
+          "name": "ValidTo",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Sales",
+      "table": "Orders",
+      "primary_key": "OrderID",
+      "order_by": [
+        "OrderID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "OrderID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "SalespersonPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PickedByPersonID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "ContactPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "BackorderOrderID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "OrderDate",
+          "source_type": "date",
+          "nullable": false
+        },
+        {
+          "name": "ExpectedDeliveryDate",
+          "source_type": "date",
+          "nullable": false
+        },
+        {
+          "name": "CustomerPurchaseOrderNumber",
+          "source_type": "nvarchar(20)",
+          "nullable": true
+        },
+        {
+          "name": "IsUndersupplyBackordered",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "Comments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryInstructions",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "InternalComments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "PickingCompletedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": true
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Sales",
+      "table": "OrderLines",
+      "primary_key": "OrderLineID",
+      "order_by": [
+        "OrderLineID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "OrderLineID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "OrderID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "StockItemID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "Description",
+          "source_type": "nvarchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "PackageTypeID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "Quantity",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "UnitPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": true
+        },
+        {
+          "name": "TaxRate",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "PickedQuantity",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PickingCompletedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": true
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Sales",
+      "table": "Invoices",
+      "primary_key": "InvoiceID",
+      "order_by": [
+        "InvoiceID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "InvoiceID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "BillToCustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "OrderID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryMethodID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ContactPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "AccountsPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "SalespersonPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PackedByPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "InvoiceDate",
+          "source_type": "date",
+          "nullable": false
+        },
+        {
+          "name": "CustomerPurchaseOrderNumber",
+          "source_type": "nvarchar(20)",
+          "nullable": true
+        },
+        {
+          "name": "IsCreditNote",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "CreditNoteReason",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "Comments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryInstructions",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "InternalComments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "TotalDryItems",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "TotalChillerItems",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryRun",
+          "source_type": "nvarchar(5)",
+          "nullable": true
+        },
+        {
+          "name": "RunPosition",
+          "source_type": "nvarchar(5)",
+          "nullable": true
+        },
+        {
+          "name": "ReturnedDeliveryData",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "ConfirmedDeliveryTime",
+          "source_type": "datetime2(7)",
+          "nullable": true
+        },
+        {
+          "name": "ConfirmedReceivedBy",
+          "source_type": "nvarchar(4000)",
+          "nullable": true
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Sales",
+      "table": "InvoiceLines",
+      "primary_key": "InvoiceLineID",
+      "order_by": [
+        "InvoiceLineID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "InvoiceLineID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "InvoiceID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "StockItemID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "Description",
+          "source_type": "nvarchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "PackageTypeID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "Quantity",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "UnitPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": true
+        },
+        {
+          "name": "TaxRate",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "TaxAmount",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "LineProfit",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "ExtendedPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Sales",
+      "table": "CustomerTransactions",
+      "primary_key": "CustomerTransactionID",
+      "order_by": [
+        "CustomerTransactionID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "CustomerTransactionID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "TransactionTypeID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "InvoiceID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "PaymentMethodID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "TransactionDate",
+          "source_type": "date",
+          "nullable": false
+        },
+        {
+          "name": "AmountExcludingTax",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "TaxAmount",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "TransactionAmount",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "OutstandingBalance",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "FinalizationDate",
+          "source_type": "date",
+          "nullable": true
+        },
+        {
+          "name": "IsFinalized",
+          "source_type": "bit",
+          "nullable": true
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Warehouse",
+      "table": "StockItems",
+      "primary_key": "StockItemID",
+      "order_by": [
+        "StockItemID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "StockItemID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "StockItemName",
+          "source_type": "nvarchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "SupplierID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ColorID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "UnitPackageID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "OuterPackageID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "Brand",
+          "source_type": "nvarchar(50)",
+          "nullable": true
+        },
+        {
+          "name": "Size",
+          "source_type": "nvarchar(20)",
+          "nullable": true
+        },
+        {
+          "name": "LeadTimeDays",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "QuantityPerOuter",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "IsChillerStock",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "Barcode",
+          "source_type": "nvarchar(50)",
+          "nullable": true
+        },
+        {
+          "name": "TaxRate",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "UnitPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "RecommendedRetailPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": true
+        },
+        {
+          "name": "TypicalWeightPerUnit",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "MarketingComments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "InternalComments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "Photo",
+          "source_type": "varbinary(max)",
+          "nullable": true
+        },
+        {
+          "name": "CustomFields",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "Tags",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "SearchDetails",
+          "source_type": "nvarchar(max)",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ValidFrom",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        },
+        {
+          "name": "ValidTo",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Warehouse",
+      "table": "StockItemHoldings",
+      "primary_key": "StockItemID",
+      "order_by": [
+        "StockItemID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "StockItemID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "QuantityOnHand",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "BinLocation",
+          "source_type": "nvarchar(20)",
+          "nullable": false
+        },
+        {
+          "name": "LastStocktakeQuantity",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastCostPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "ReorderLevel",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "TargetStockLevel",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Warehouse",
+      "table": "StockItemTransactions",
+      "primary_key": "StockItemTransactionID",
+      "order_by": [
+        "StockItemTransactionID"
+      ],
+      "origin": "CURRENT",
+      "columns": [
+        {
+          "name": "StockItemTransactionID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "StockItemID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "TransactionTypeID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "InvoiceID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "SupplierID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "PurchaseOrderID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "TransactionOccurredWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        },
+        {
+          "name": "Quantity",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedWhen",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Sales",
+      "table": "Customers_Archive",
+      "primary_key": null,
+      "order_by": [
+        "CustomerID",
+        "ValidFrom",
+        "ValidTo"
+      ],
+      "origin": "HISTORY",
+      "columns": [
+        {
+          "name": "CustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerName",
+          "source_type": "nvarchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "BillToCustomerID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CustomerCategoryID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "BuyingGroupID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "PrimaryContactPersonID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "AlternateContactPersonID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryMethodID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryCityID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PostalCityID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "CreditLimit",
+          "source_type": "decimal(18,2)",
+          "nullable": true
+        },
+        {
+          "name": "AccountOpenedDate",
+          "source_type": "date",
+          "nullable": false
+        },
+        {
+          "name": "StandardDiscountPercentage",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "IsStatementSent",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "IsOnCreditHold",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "PaymentDays",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "PhoneNumber",
+          "source_type": "nvarchar(20)",
+          "nullable": false
+        },
+        {
+          "name": "FaxNumber",
+          "source_type": "nvarchar(20)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryRun",
+          "source_type": "nvarchar(5)",
+          "nullable": true
+        },
+        {
+          "name": "RunPosition",
+          "source_type": "nvarchar(5)",
+          "nullable": true
+        },
+        {
+          "name": "WebsiteURL",
+          "source_type": "nvarchar(256)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryAddressLine1",
+          "source_type": "nvarchar(60)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryAddressLine2",
+          "source_type": "nvarchar(60)",
+          "nullable": true
+        },
+        {
+          "name": "DeliveryPostalCode",
+          "source_type": "nvarchar(10)",
+          "nullable": false
+        },
+        {
+          "name": "DeliveryLocation",
+          "source_type": "geography",
+          "nullable": true
+        },
+        {
+          "name": "PostalAddressLine1",
+          "source_type": "nvarchar(60)",
+          "nullable": false
+        },
+        {
+          "name": "PostalAddressLine2",
+          "source_type": "nvarchar(60)",
+          "nullable": true
+        },
+        {
+          "name": "PostalPostalCode",
+          "source_type": "nvarchar(10)",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ValidFrom",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        },
+        {
+          "name": "ValidTo",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    },
+    {
+      "schema": "Warehouse",
+      "table": "StockItems_Archive",
+      "primary_key": null,
+      "order_by": [
+        "StockItemID",
+        "ValidFrom",
+        "ValidTo"
+      ],
+      "origin": "HISTORY",
+      "columns": [
+        {
+          "name": "StockItemID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "StockItemName",
+          "source_type": "nvarchar(100)",
+          "nullable": false
+        },
+        {
+          "name": "SupplierID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ColorID",
+          "source_type": "int",
+          "nullable": true
+        },
+        {
+          "name": "UnitPackageID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "OuterPackageID",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "Brand",
+          "source_type": "nvarchar(50)",
+          "nullable": true
+        },
+        {
+          "name": "Size",
+          "source_type": "nvarchar(20)",
+          "nullable": true
+        },
+        {
+          "name": "LeadTimeDays",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "QuantityPerOuter",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "IsChillerStock",
+          "source_type": "bit",
+          "nullable": false
+        },
+        {
+          "name": "Barcode",
+          "source_type": "nvarchar(50)",
+          "nullable": true
+        },
+        {
+          "name": "TaxRate",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "UnitPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": false
+        },
+        {
+          "name": "RecommendedRetailPrice",
+          "source_type": "decimal(18,2)",
+          "nullable": true
+        },
+        {
+          "name": "TypicalWeightPerUnit",
+          "source_type": "decimal(18,3)",
+          "nullable": false
+        },
+        {
+          "name": "MarketingComments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "InternalComments",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "Photo",
+          "source_type": "varbinary(max)",
+          "nullable": true
+        },
+        {
+          "name": "CustomFields",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "Tags",
+          "source_type": "nvarchar(max)",
+          "nullable": true
+        },
+        {
+          "name": "SearchDetails",
+          "source_type": "nvarchar(max)",
+          "nullable": false
+        },
+        {
+          "name": "LastEditedBy",
+          "source_type": "int",
+          "nullable": false
+        },
+        {
+          "name": "ValidFrom",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        },
+        {
+          "name": "ValidTo",
+          "source_type": "datetime2(7)",
+          "nullable": false
+        }
+      ]
+    }
+  ]
+}

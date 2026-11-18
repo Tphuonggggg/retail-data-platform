@@ -1,0 +1,3 @@
+# Existing approved local driver versions; no package installation performed by WWI-06A.
+pyodbc==5.5.0
+psycopg[binary]==3.3.9

@@ -4,6 +4,8 @@
 
 ## Chính sách MVP hiện hành — MVP-SIMPLIFICATION-01, 2026-11-17
 
+**Task Owner2026-11-18:** đã cho WWI-06A code/offline implementation và một bounded Raw-only restart; [runbook/status](ingestion/README.md) ghi code Implemented/Offline Tested, runtime Full Load NOT RUN. MVP-G02 foundation verified; source TLS/archive effective INSERT chưa resolve. Quyền task hiện tại không cho thực thi source/target DDL/grant/COPY hoặc tự WWI-06B; các no-start/Not implemented notes lịch sử phía dưới không phủ nhận code-only authority này. Không thay accepted design hoặc tuyên bố runtime PASS từ offline tests.
+
 Owner đã supersede mandatory protected staging/custom NTFS ACL/multi-layer remediation/SHA256 execution manifests/repeated local approval checkpoints: **optional future hardening**, không MVP blocker. EX02-S1 **DEFERRED — OPTIONAL SECURITY HARDENING**, giữ package/evidence lịch sử, không chạy ACL scripts. [Owner record](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) và [MVP milestones](TASKS.md#mvp-operational-milestones) là hướng triển khai local hiện hành; các no-start/preparation-only notes phía dưới giữ bối cảnh task cũ, không phủ nhận authority mới.
 
 Giữ WWI read-only/dedicated identity/đúng11 objects/no sysadmin extraction, source TLS, no Git secrets, consistency/reconciliation/type fidelity/100ns/idempotency/recovery/SCD2/BRD/KPI. Không đổi accepted Phase1 design hoặc tự ghi runtime PASS. Task hiện tại cho Compose/Raw bootstrap/checker preparation và offline tests/local commit; **không** SQL permission changes, start/stop Docker, create volume/database, source ingestion, ACL changes hoặc push. Runtime cần targeted Owner authorization, không một dây chuyền admin approvals mới.

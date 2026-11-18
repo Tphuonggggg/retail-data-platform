@@ -1,37 +1,41 @@
-# Raw foundation
+# Raw storage
 
-**Current2026-11-18:** MVP-G02 DONE — schemas/metadata/role/permissions/TCP và bounded restart persistence đã verified; [evidence](../../infrastructure/docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Failure/recovery notes phía dưới là history trước Owner recovery. App vẫn không có Raw CREATE; payload/Full Load objects và privileges chưa provision, không tự grant.
+## Trạng thái
+
+**2026-11-18: MVP-G02 DONE — foundation verified.** PostgreSQL18.7/retail_raw, schemas raw/ingestion_meta, runs/object_runs và retail_ingest permissions/TCP giữ nguyên qua một bounded Raw-only restart; [evidence](../../infrastructure/docker/README.md#phase-a--mvp-g02-verified-2026-11-18).
+
+**WWI-06A: SQL prepared / offline tested; payload runtime NOT RUN.** [Full Load code/runbook](../../ingestion/README.md) đã có. [full_load.sql](full_load.sql) chưa apply; không payload/control tables mới, COPY hoặc publication đã chạy. Historical bootstrap failure/recovery ở Docker runbook không phải current failure.
 
 ## Purpose, scope và responsibilities
 
-Namespace Raw và invocation/object-run tracking cho target Compose riêng. **Server retail_raw đã chạy, nhưng bootstrap FAILED và schemas/tables/ingestion role chưa tồn tại theo readonly inspection2026-11-17.** [Bootstrap](bootstrap.sql) đã sửa failure exit và chuẩn bị recovery, chưa apply. Không tạo WWI payload tables, batch/chunk/publication ledger, checkpoint, warehouse hoặc SCD2; ingestion/publication runtime Not implemented yet.
+Sở hữu storage contract source-shaped Raw và ingestion metadata, không KPI/DW/SCD2 hoặc orchestration. Inputs: approved11 source populations + types, existing foundation/config; outputs: typed immutable capture rows, technical metadata và published membership. Dependencies: infrastructure Compose, ingestion/accepted source design.
 
-## Inputs, outputs và dependencies
+## Foundation và proposed extensions
 
-Input: dedicated database `retail_raw` mới, bootstrap user `postgres`, ingestion password qua container environment; [Compose](../../infrastructure/docker/README.md) sở hữu first-start execution. Output dự kiến:
-
-| Object | Grain / trách nhiệm |
+| Object | Grain / status |
 | --- | --- |
-| `raw` | Namespace cho source-shaped payload, hiện chưa có payload tables |
-| `ingestion_meta.runs` | Một invocation `run_id`; `capture_id` riêng, optional retry link, mode/status/timestamps/consistency reference |
-| `ingestion_meta.object_runs` | Một `(run_id, source_schema, source_table)` trong đúng11 approved objects; observed counts/status/reconciliation/error code |
+| raw / ingestion_meta schemas | Foundation đã verified, owner postgres |
+| ingestion_meta.runs | Một invocation/run_id, capture_id riêng, retry link, times/status/consistency |
+| ingestion_meta.object_runs | Một run/source object, counts/status/reconciliation/error; đúng11-object allowlist |
+| load_contracts / load_audits | Proposed: scope/fingerprint/source context và count/typed digest |
+| raw_publications / raw_current | Proposed: publication ledger và atomic singleton pointer |
+| raw.sales_* / raw.warehouse_* | Proposed:11 typed payload tables, PK(run_id,row_ordinal); unique current key trong run, không archive NK uniqueness |
+| raw.current_* | Proposed:11 views chỉ đọc current published all11 membership |
 
-Owner schemas/tables là bootstrap `postgres`; app `retail_ingest` NOSUPERUSER/NOCREATEDB/NOCREATEROLE/NOREPLICATION/NOBYPASSRLS. App được CONNECT database, USAGE schemas và SELECT/INSERT/UPDATE metadata; không DELETE/TRUNCATE hoặc CREATE schema/payload tables. Chưa grant quyền payload khi chưa có bảng. Bootstrap password không dùng cho normal ingestion. SQL Server identity/grants là phần riêng, không được bootstrap PostgreSQL thay đổi.
+Baseline [bootstrap.sql](bootstrap.sql) đã apply ngoài task hiện tại; chỉ role/schema/run tracking, không payload. Runtime retail_ingest NOSUPERUSER/NOCREATEDB/NOCREATEROLE/NOREPLICATION/NOBYPASSRLS; CONNECT/USAGE và metadata SELECT/INSERT/UPDATE; không Raw CREATE/DELETE/TRUNCATE. Các grants cho objects mới ở proposed SQL **chưa cấp**, pipeline không tự cấp.
 
-## Data và time semantics
+## Data, time và recovery semantics
 
-Counts chưa đo để NULL, không dùng0 thay unknown. `reconciliation_state=PASS` yêu cầu ba count có giá trị và bằng nhau, nhưng count equality không chứng minh fidelity/source consistency. `SUCCEEDED` chỉ là execution status, không Raw publication. Consistency mặc định UNVERIFIED; evidence reference bắt buộc nếu sau này ghi VERIFIED_CONSISTENT, application vẫn phải kiểm actual proof.
+Counts chưa biết NULL; known zero mới0. Count equality không đủ chứng minh fidelity/consistent source. SUCCEEDED execution không tự Raw publication. Unverified source context không được đưa vào published views. Payload datetime2(7) dùng F2→str/None→TEXT COLLATE C; technical timestamps timestamptz. Geography native SQL varbinary/engine context cần actual fidelity proof; NULL/Decimal/Unicode/binary không được âm thầm normalize. Current và physical archive riêng, giữ duplicates/zero-duration.
 
-`timestamptz` chỉ lưu technical run times; **không** lưu authoritative datetime2(7) nguồn vào các cột này. Payload temporal sẽ dùng approved F2→Python str/None→PostgreSQL TEXT/C, giữ27 ký tự/100ns/sentinel/NULL theo B9. Current/H là populations riêng; archive duplicate multiplicity không được collapse.
-
-Giữ [approved Full/Raw design](../../docs/data-models/wwi-dw-03a-full-raw-design-proposal.md): append-only captures, riêng capture/batch/attempt/chunk/publication, atomic published membership và replay retained content. Hai bảng foundation chưa đủ thay các manifests đó. WWI-06 phải bổ sung physical metadata/payload trước production Full Load; không TRUNCATE/overwrite Raw để làm rerun. Không phát minh CDC, opening inventory hoặc KPI.
+[Accepted Full/Raw design](../../docs/data-models/wwi-dw-03a-full-raw-design-proposal.md) vẫn giữ. WWI-06A triển khai atomic capture/new-capture retry; persisted sealed chunks/attempt registry/retained failed-content replay chưa có, không gọi source reread là replay. WWI-06/MVP-G03 không DONE. Không TRUNCATE/overwrite để rerun; không suy CDC/business-time/history completeness.
 
 ## Technology, structure và execution
 
-PostgreSQL18 SQL/psql; [bootstrap.sql](bootstrap.sql), không extension/dependency mới. Script dùng first start hoặc authorized recovery A trên target new-only; role/schema collision → STOP, không `IF NOT EXISTS` che drift. Guard invalid target/password/collision dùng constant SQL exception với ON_ERROR_STOP → exit3, không `\quit 1`. CREATE/GRANT nằm trong transaction; không sửa schema/permission scope đã định nghĩa. [Recovery A/B và exact commands](../../infrastructure/docker/README.md#bootstrap-failure-và-recovery-a); không chạy trên native PG hoặc B9.
+PostgreSQL18/psql. [full_load.sql](full_load.sql) sinh từ [schema.py](../../ingestion/loaders/schema.py), không runtime execution; có guard retail_raw/postgres và transaction new-only, không DROP/role creation. Owner cần review/cho phép riêng target initialization/grants ở WWI-06B. [Runbook](../../ingestion/README.md) có exact proposed command, CLI/preflight/load/reconcile/recovery; **không chạy initialization/load trong task WWI-06A**. Không đụng native PostgreSQL/B9.
 
-## Testing, acceptance và status
+## Testing và acceptance
 
-[Offline suite](../../tests/raw_foundation_static.py) kiểm SQL allowlist, counts/status constraints, no destructive reset và config/Compose. Chưa engine compilation, SQL execution hoặc real connection; không dùng text checks để claim constraint runtime PASS. Sau Owner cho phép startup, chạy [readonly probe](../../scripts/check_raw_connection.py), kiểm role/schema và persistence rồi mới xét MVP-G02. Dữ liệu payload/idempotency/recovery thuộc MVP-G03/04, chưa triển khai.
+[Foundation tests](../../tests/raw_foundation_static.py) kiểm config/metadata guards/Compose/checker; foundation actual runtime evidence ở trên. [Full Load offline tests](../../tests/full_load_offline.py) kiểm generated SQL bằng generator, contracts/types/transaction model/digest/rerun. Không dùng mock/static PASS claim SQL engine compilation/new grants/COPY/publication runtime. WWI-06B phải provision đúng scope và kiểm engine/fidelity/recovery/atomic views dưới runtime authorization trước operational acceptance.
 
-[Parent storage module](../README.md). Current status: fix offline tested và guard-only read-only probes verified; **full bootstrap/recovery not applied**, app permissions chưa runtime verified; ingestion/publication **Not implemented yet**.
+[Parent storage](../README.md).

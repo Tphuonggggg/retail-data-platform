@@ -2,11 +2,11 @@
 
 **2026-11-18:** MVP-G02 DONE — Raw18.7 app TCP/permissions/restart persistence verified; [evidence](infrastructure/docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Historical bootstrap-failed notes bên dưới giữ context. Source TLS validation và hai archive effective INSERT exceptions còn mở; không Full Load đã chạy.
 
-**Current local MVP:** [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) ưu tiên pipeline/data correctness/runtime evidence; protected staging/ACL work là optional hardening. EX01 DONE, EX02 chưa provision theo tracker. Raw server18.7 đang chạy nhưng bootstrap FAILED, schemas/role absent; [fix và recovery A](infrastructure/docker/README.md#bootstrap-failure-và-recovery-a) prepared/offline tested, chưa apply. [MVP-G01–06](TASKS.md#mvp-operational-milestones) theo dõi access → Raw → Full/Incremental → DW → Analytics/Orchestration; không tự PASS historical gates.
+**WWI-06A, 2026-11-18:** [Python Full Load và runbook](ingestion/README.md) đã Implemented / Offline Tested, chờ Owner review; chưa chạy source extraction, payload DDL/COPY hoặc publication. Đúng11 objects, source F2 exact100ns, typed Raw/COPY, metadata/count/digest, atomic publication và safe new-capture retry đã có code. Target payload/control/grants mới chưa provision; retained sealed-chunk replay chưa triển khai. Source TLS/archive INSERT còn runtime blockers. [MVP-G01–06](TASKS.md#mvp-operational-milestones) phân biệt code readiness với operational acceptance; [MVP-SIMPLIFICATION-01](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp) vẫn áp dụng.
 
 ## Project Overview
 
-Dự án portfolio Data Engineering dùng SQL Server WideWorldImporters chỉ đọc làm OLTP, xây warehouse PostgreSQL và phục vụ Power BI. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 **Not Started**. Production modules **Not implemented yet**; chỉ B9 isolated PoC có evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
+Dự án portfolio Data Engineering dùng SQL Server WideWorldImporters chỉ đọc làm OLTP, xây warehouse PostgreSQL và phục vụ Power BI. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, giới hạn WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**; WWI-05 chưa hoàn tất. M2 trở đi và Phase 3–9 runtime **Not Started**. WWI-06A code/offline slice được Owner giao riêng; dbt/DW/Airflow/analytics **Not implemented yet**; B9 PoC giữ evidence lịch sử. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md). [Scope](PROJECT_SCOPE.md), [Roadmap](ROADMAP.md), [Tasks](TASKS.md).
 
 ## Business Problems and MVP
 
@@ -18,7 +18,7 @@ Dữ liệu order, invoice, customer transaction và stock movement có grain/ý
 
 ## Technology Stack
 
-Python 3.12, SQL Server nguồn, PostgreSQL đích, SQL, dbt Core, Apache Airflow, Docker Compose, pytest, Power BI và GitHub Actions là stack dự kiến theo phase. BigQuery là extension. Chưa cài hoặc cấu hình runtime của dự án trong repository; dịch vụ local tồn tại không chứng minh pipeline đã chạy. Không tự thêm package/framework.
+Python 3.12, SQL Server nguồn, PostgreSQL đích, SQL, dbt Core, Apache Airflow, Docker Compose, pytest, Power BI và GitHub Actions là stack theo phase; BigQuery là extension. Raw Docker18.7 foundation verified; Python Full Load dùng pyodbc5.5.0/psycopg3.3.9 đã có trong local venv, unittest cho offline tests. dbt/Airflow/warehouse/Power BI runtime chưa triển khai; không tự cài thêm package/framework.
 
 ## Module Overview
 

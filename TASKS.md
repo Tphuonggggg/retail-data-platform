@@ -1,6 +1,6 @@
 # Task Tracker
 
-Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`, `DEFERRED`. DONE cần acceptance evidence; Owner quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**. Raw foundation PREPARED/OFFLINE TESTED; runtime/Full Load và Phase3–9 **Not Started**. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md) và [current MVP policy](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp).
+Trạng thái hợp lệ: `TODO`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`, `DONE`, `DEFERRED`. DONE cần acceptance evidence; Owner quyết định nghiệm thu/chuyển phase. Phase 0 **Completed**; Phase 1 **Completed — Requirements & Source Design**; WWI-02/03 **DONE**, WWI-04 **DONE — Design**. DW-01/02/03A/03B/03C **DONE — Design**; DW-04 **DONE — Design Acceptance**. Phase 2 **IN_PROGRESS — Authorized**, WWI-05 **IN_PROGRESS**, M1A **DONE — Verification Checkpoint**. MVP-G02 Raw foundation **DONE**; WWI-06A code/offline **REVIEW**, real Full Load và Phase3–9 runtime **Not Started**. [Owner closure/authorization](docs/architecture/wwi-phase-1-closure-approval.md) và [current MVP policy](docs/architecture/wwi-m1b-owner-decisions.md#mvp-simplification-01--trusted-local-mvp).
 
 ## MVP Operational Milestones
 
@@ -10,12 +10,12 @@ MVP-SIMPLIFICATION-01 tạo operational view dưới đây; không thay ID/statu
 | --- | --- | --- |
 | MVP-G01 — Source Access | Dedicated extractor, đúng11 SELECT/no write/admin, source TLS | BLOCKED — Owner evidence2026-11-18:11 SELECT đã được chứng minh; hai archives báo effective INSERT chưa giải thích, TLS certificate validation fail. Không dùng diagnostic bypass trong ingestion; [source status](data-sources/security/README.md) |
 | MVP-G02 — PostgreSQL Raw | Isolated target; successful bootstrap, expected role/permissions, reliable restart/persistence/config và connectivity | DONE — Fresh18.7/app TCP/UTF8/C/permissions PASS2026-11-18; bounded Raw-only restart với0 active runs/clients, schemas/table OIDs+owners/counts/role/grants giữ nguyên, healthy trở lại. [Evidence](infrastructure/docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Không Full Load hoặc payload/publication schema acceptance |
-| MVP-G03 — Full Load | G01+G02; WWI-06 physical payload/batch/chunk/publication, supported source context,11 required objects/counts/fidelity/100ns/safe rerun | TODO — không extractor hoặc ingestion runtime |
+| MVP-G03 — Full Load | G01+G02; WWI-06 physical payload/batch/chunk/publication, supported source context,11 required objects/counts/fidelity/100ns/safe rerun | IN_PROGRESS — WWI-06A code/offline tests có; source/target provisioning và actual Full Load NOT RUN, retained chunk/attempt replay còn thiếu; không operational PASS |
 | MVP-G04 — Incremental | G03; approved current-state convergence, checkpoint/rerun/delete-history limitations và recovery | TODO — không bịa CDC; mutation tests chỉ môi trường độc lập được duyệt |
 | MVP-G05 — Data Warehouse | Accepted mappings/BRD/KPI; dbt staging/core/facts/dims/SCD2/critical tests trên accepted Raw | TODO — WWI-08; có thể phát triển Sales slice từ G03 trong khi G04 hoàn thiện |
 | MVP-G06 — Analytics & Orchestration | G04+G05; defined KPI marts/Power BI, Airflow/recovery và reproducible Sales e2e demo | TODO — WWI-09/10/11 rồi Customer/Inventory như roadmap |
 
-Next engineering task: **WWI-06 Python Full Load implementation** sau EX02/Raw runtime readiness hoặc trong task code-only riêng được giao. Dùng đúng11 allowlist, batch reads, source-shaped lossless types, approved F2 strings, immutable capture/batch/attempt/chunk IDs, append-only target/reconciliation/publication boundary; no partial publication. Test failed chunk/unknown commit ACK, retry sealed content, archive duplicate multiplicity và explicit UNVERIFIED source-context limitation; chỉ publish khi applicable correctness checks có evidence. Không chạy Full Load trong task simplification.
+**Current Owner task2026-11-18:** WWI-06A code/offline implementation được giao riêng, không đóng WWI-05 hoặc mở Phase3 runtime. [Code/runbook](ingestion/README.md) đã Implemented/Offline Tested; runtime NOT RUN. Next task WWI-06B cần Owner giao và resolve source TLS/archive INSERT/target DDL+grants. Accepted full scope vẫn gồm immutable capture/batch/attempt/chunk IDs, append-only reconciliation/publication, retained content replay; WWI-06A chưa có sealed-chunk persistence/resume, không tự xóa requirement đó. Không tuyên bố WWI-06 hoặc MVP-G03 DONE.
 
 Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI chỉ đọc và warehouse PostgreSQL. Task của kiến trúc nguồn cũ đã được loại khỏi backlog, không được tính là `DONE`. Mỗi task chỉ được bắt đầu khi phase và dependencies tương ứng được chủ dự án cho phép.
 
@@ -32,7 +32,7 @@ Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI ch�
 | WWI-03 | 1 | docs/requirements, analytics | Chốt business requirements, KPI MVP, tax/customer role và hoãn revenue/COGS/AOV không đủ policy | High | WWI-02 | Công thức, source measure, date basis, exclusions, reconciliation và tests được owner duyệt trước fact/mart | DONE |
 | WWI-04 | 1 | docs/data-models, docs/architecture, docs/adr | Thiết kế logical DW, SCD2, full/incremental, propagation/recovery và môi trường thử nghiệm độc lập | High | WWI-02, WWI-03 | DW-01–DW-04 được owner nghiệm thu; watermark/tie-breaker/delete/history/as-of và test INSERT/UPDATE/DELETE chỉ trên môi trường độc lập được duyệt | DONE |
 | WWI-05 | 2 | infrastructure, data-sources, storage | Chuẩn bị WWI read-only và PostgreSQL đích | High | WWI-02, WWI-04, phase implementation approval | Quyền/cấu hình kết nối, điều kiện nguồn ngoài repo và môi trường local tái lập được xác minh; không lộ secret/không sửa WWI | IN_PROGRESS |
-| WWI-06 | 3 | ingestion, storage, data-quality | Sales full load, raw/staging, validation và rerun | High | WWI-03, WWI-05 | Batch metadata (count/duration/error), count/keys đối soát, quarantine và idempotent rerun có unit/integration test thực | TODO |
+| WWI-06 | 3 | ingestion, storage, data-quality | Sales full load, raw/staging, validation và rerun | High | WWI-03, WWI-05 | Batch metadata (count/duration/error), count/keys đối soát, quarantine và idempotent rerun có unit/integration test thực | IN_PROGRESS — chỉ WWI-06A code/offline được giao riêng; runtime dependencies chưa đạt |
 | WWI-07 | 3 | ingestion, tests | Sales incremental/checkpoint và failure recovery | High | WWI-04, WWI-06, approval cho test environment | Test INSERT/UPDATE end-to-end trong môi trường độc lập; checkpoint/retry/backfill có bằng chứng; WWI gốc không đổi | TODO |
 | WWI-08 | 4 | storage, transformation, data-quality | Sales warehouse/dbt và kiểm tra cơ bản | High | WWI-03, WWI-06 | Fact/dim đúng grain, tránh double count; unique/not null/relationships/accepted values và business tests, reconciliation chạy thực | TODO |
 | WWI-09 | 5 | orchestration, tests | Điều phối Sales bằng Airflow | High | WWI-07, WWI-08 | DAG đúng dependency, retry/rerun an toàn qua thử nghiệm | TODO |
@@ -43,6 +43,13 @@ Các task dưới đây là backlog hiện hành cho nguồn SQL Server WWI ch�
 | WWI-14 | 8 | docs/analytics | Purchasing hoặc Finance extension khi được duyệt | Low | WWI-13, owner scope approval | Task/KPI/contract và tests riêng; không chặn MVP | TODO |
 | WWI-15 | 8 | infrastructure, storage | BigQuery extension khi được duyệt | Low | WWI-13, owner approval | Tương đương dữ liệu, bảo mật/chi phí và số đo thực nếu triển khai | TODO |
 | WWI-16 | 9 | tests, docs, .github | Unit/integration/e2e, CI, runbooks, tối ưu truy vấn và portfolio MVP local | High | WWI-11, WWI-12, WWI-13; WWI-14, WWI-15 chỉ nếu được giao | Người khác tái lập local với nguồn WWI được chuẩn bị hợp lệ; CI/test/failure report và số đo tối ưu trước/sau nếu có đều có bằng chứng | TODO |
+
+## WWI-06 implementation slices
+
+| ID | Dependencies / module | Acceptance criteria | Status / evidence |
+| --- | --- | --- | --- |
+| WWI-06A | Owner code-only authority; accepted contracts/design; ingestion/storage/tests | Executable CLI/all11 contracts/F2/types/batching, actual metadata integration, count/digest/idempotency/rollback/unknown-ACK offline tests và runbook; không real Full Load | REVIEW — Implemented / Offline Tested; [runbook](ingestion/README.md), [tests](tests/full_load_offline.py), [prepared SQL](storage/raw/full_load.sql); Owner acceptance pending |
+| WWI-06B | Owner runtime task; MVP-G01/G02; review WWI-06A + target provisioning approval | Actual source schema/adapter/geography proof, strict TLS/least privilege, authorized target DDL/grants, selected/all candidate load/count+value/rollback/rerun/reconnect/atomic publication; reconcile remaining chunk/attempt/replay acceptance | TODO — chưa bắt đầu; nguồn/target có blockers, không tự runtime hoặc đổi design |
 
 ## Kế hoạch Phase 1.6 / WWI-04
 

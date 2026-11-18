@@ -2,6 +2,8 @@
 
 ## Current Local MVP Checks
 
+[full_load_offline.py](full_load_offline.py) là WWI-06A executable unit/offline integration suite với synthetic fixtures/mock drivers: exact types/F2, batches, NULL, failure rollback, unknown ACK, count/digest, retry/idempotency, source permission/TLS/schema/identity guards, COPY/named cursor và no-secret CLI. Chạy `unittest discover -s tests -p full_load_offline.py -v` bằng project venv. Không DB/source connection hoặc real Full Load; actual SQL/adapter/runtime proof dành WWI-06B. [Runbook](../ingestion/README.md).
+
 [raw_foundation_static.py](raw_foundation_static.py) kiểm config/secret omission/target isolation/metadata SQL và actual Compose parser; [source_security_static.py](source_security_static.py) giữ11-object SQL guards regression. Chạy explicit `unittest discover -s tests -p 'raw_foundation_static.py' -v` hoặc `source_security_static.py` trong existing venv, không DB runtime. [Raw README](../infrastructure/docker/README.md) có commands. EX02-S1 ACL tests phía dưới là **DEFERRED — OPTIONAL SECURITY HARDENING** theo MVP-SIMPLIFICATION-01; không pipeline gate hoặc prerequisite. Không claim SQL compilation/service/runtime từ static PASS.
 
 ## 1. Overview
