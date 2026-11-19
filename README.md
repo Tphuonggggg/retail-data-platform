@@ -2,7 +2,7 @@
 
 Portfolio Data Engineering: WWI SQL Server ? Python ? PostgreSQL Raw ? dbt DW/Marts ? Power BI. ?u ti?n Sales end-to-end; incremental/SCD2/Customer/Inventory/Airflow/cloud ? milestones sau.
 
-**Implemented:** Full Load CLI, typed batched SELECT/COPY, run metadata, count/digest reconciliation, rerun/rollback; Raw PostgreSQL18.7 ?? provision. **Runtime ingestion NOT RUN.** dbt/DW/marts/Power BI/Airflow ch?a tri?n khai.
+**Implemented:** Full Load CLI, typed batched SELECT/COPY, run metadata, count/digest reconciliation, rerun/rollback; Raw PostgreSQL18.7 ?? provision. **FULL_LOAD_RUNTIME_ACCEPTED ? 11 objects/939208 rows, unpublished candidates; [runtime evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19).** dbt/DW/marts/Power BI/Airflow ch?a tri?n khai.
 
 ## Setup local
 
