@@ -1,5 +1,7 @@
 # Raw storage
 
+**INGEST follow-up2026-11-19:** restarted existing container `retail-raw-postgres-1` ID9fd7b79b, same `retail-raw_pg_data` volume, localhost55434. Healthy PostgreSQL18.7/app TCP PASS. Readonly verifier PASS:11 payload/4 controls/11 views/248 columns/constraints/indexes/grants and all11 target preflight. Payloads, runs/object_runs/contracts/audits/publication ledger remain0; singleton pointer remainsNULL. No recreation, migration, ingestion or publication. Source configuration opt-in remains pending.
+
 **Latest WWI-06B:** [approved execution và runtime verification](#wwi-06b--approved-raw-payload-provisioning-2026-11-18) = **RAW_PAYLOAD_PROVISIONING_PASS**. Owner đã cấp quyền exact script/target/postgres; execute một lần exit0, app-only verification PASS. Full Load/smoke vẫn chưa được phép; NOT APPLIED notes bên dưới là historical pre-approval evidence.
 
 ## Trạng thái

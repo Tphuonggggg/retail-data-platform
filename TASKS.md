@@ -4,6 +4,9 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 
 | ID | Module/dependencies | Acceptance | Status |
 |---|---|---|---|
+| INGEST-01 | Existing Docker/Raw + environment + explicit local source config | Restore existing container/volume; dependencies and both preflights | IN_PROGRESS — Raw healthy/all11 target PASS; source opt-in pending |
+| INGEST-02 | INGEST-01 | Real holdings batch64 unpublished smoke; count/distinct/numeric/NULL/digest/meta | BLOCKED — source local configuration decision pending; NOT RUN |
+| INGEST-03 | INGEST-02 | All11 load/reconciliation/RI/temporal fidelity/rerun/failure handling; no publication | TODO — NOT RUN; must not close after smoke only |
 | Phase0/Phase1, WWI-01?04 | Source/design docs | Owner accepted requirements/source/KPI/logical DW/SCD/load designs | DONE ? Design |
 | MVP-G02 / Raw provisioning | infrastructure/storage | Foundation +11 payload/4 controls/11 views + target preflight verified | DONE ? Runtime provisioning |
 | WWI-06A | ingestion | CLI/types/batch/COPY/count/digest/rerun/rollback offline coverage | REVIEW ? Implemented/Offline Tested |

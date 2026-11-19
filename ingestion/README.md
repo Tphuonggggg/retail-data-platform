@@ -1,5 +1,9 @@
 # Ingestion
 
+**INGEST-01/02/03 — 2026-11-19:** existing Raw container restored, healthy; schema/grants/all11 target preflight PASS, all payload/runs empty, pointer NULL. Python3.12.10/pyodbc5.5.0/psycopg3.3.9/ODBC18 verified. Source/load NOT RUN: local config remains production/trust=no/admin opt-in=no; current PC account requires explicit local development/admin opt-in, Owner response pending. No secrets/config changes or ingestion performed. Do not infer runtime acceptance from offline tests.
+
+Prepared read-only acceptance tool: `python tests/integration/ingest_runtime.py --execute --object Warehouse.StockItemHoldings --env-file .env` captures source aggregates; add `--run-id <uuid>` after authorized load for candidate count/distinct/numeric/NULL/F2 min-max and durable digest comparison. Outputs aggregates only; no publication or writes. Runtime of this tool awaits source configuration. Continue to smoke, all11 load, RI checks and safe rerun/failure verification after opt-in; first smoke alone does not close the task.
+
 Python3.12 + pyodbc5.5.0 + psycopg3.3.9. Full Load Implemented/Offline Tested; runtime NOT RUN. [Setup/commands](../README.md).
 
 - full_load.py: CLI config/plan/ddl/connectivity/preflight/load/reconcile/abandon.
