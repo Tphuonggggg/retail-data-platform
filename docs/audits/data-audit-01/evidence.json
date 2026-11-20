@@ -1,0 +1,2139 @@
+{
+  "source_identity": {
+    "endpoint": "tcp:DESKTOP-OBDFK6B,1433",
+    "instance": "SQLEXPRESS",
+    "database": "WideWorldImporters",
+    "actual_login": "DESKTOP-OBDFK6B\\PC",
+    "database_user": "dbo",
+    "product_version": "17.0.1000.7"
+  },
+  "source_security": {
+    "encrypt": true,
+    "development": true,
+    "trust_server_certificate": true,
+    "admin_opt_in": true
+  },
+  "run": [
+    "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+    "8b5a8530-5783-49d3-b969-d925b0482c2c",
+    "SUCCEEDED",
+    "UNVERIFIED",
+    "FULL",
+    "2026-11-19 04:36:50.916841+00:00",
+    "2026-11-19 04:39:25.541980+00:00"
+  ],
+  "raw_runs": [
+    [
+      "FAILED",
+      1
+    ],
+    [
+      "SUCCEEDED",
+      3
+    ]
+  ],
+  "temporal_associations": {
+    "Sales.CustomerTransactions": [
+      0,
+      null,
+      null
+    ],
+    "Sales.Customers": [
+      2,
+      "Sales",
+      "Customers_Archive"
+    ],
+    "Sales.Customers_Archive": [
+      1,
+      null,
+      null
+    ],
+    "Sales.InvoiceLines": [
+      0,
+      null,
+      null
+    ],
+    "Sales.Invoices": [
+      0,
+      null,
+      null
+    ],
+    "Sales.OrderLines": [
+      0,
+      null,
+      null
+    ],
+    "Sales.Orders": [
+      0,
+      null,
+      null
+    ],
+    "Warehouse.StockItemHoldings": [
+      0,
+      null,
+      null
+    ],
+    "Warehouse.StockItemTransactions": [
+      0,
+      null,
+      null
+    ],
+    "Warehouse.StockItems": [
+      2,
+      "Warehouse",
+      "StockItems_Archive"
+    ],
+    "Warehouse.StockItems_Archive": [
+      1,
+      null,
+      null
+    ]
+  },
+  "source_raw": [
+    {
+      "object": "Sales.CustomerTransactions",
+      "source_now": 97147,
+      "raw_capture": 97147,
+      "count_difference": 0,
+      "source_digest": "095028959cfbd8116ce62b0146ad4ff0b4b88b4b51838e058a25f972cf884971",
+      "raw_digest": "095028959cfbd8116ce62b0146ad4ff0b4b88b4b51838e058a25f972cf884971",
+      "status": "PASS",
+      "all_runs_base_rows": 97147
+    },
+    {
+      "object": "Sales.Customers",
+      "source_now": 663,
+      "raw_capture": 663,
+      "count_difference": 0,
+      "source_digest": "22513520e235fb9dd79183c71de01c9bafe300f75be236bf192b5523080d7ad5",
+      "raw_digest": "22513520e235fb9dd79183c71de01c9bafe300f75be236bf192b5523080d7ad5",
+      "status": "PASS",
+      "all_runs_base_rows": 663
+    },
+    {
+      "object": "Sales.Customers_Archive",
+      "source_now": 51,
+      "raw_capture": 51,
+      "count_difference": 0,
+      "source_digest": "3442e3b951c2b3842bff301ab0589721fcb549d86099ae5e56fb8f1e7031381d",
+      "raw_digest": "3442e3b951c2b3842bff301ab0589721fcb549d86099ae5e56fb8f1e7031381d",
+      "status": "PASS",
+      "history_duplicate_payload_occurrences": 0,
+      "history_duplicate_period_keys": 0,
+      "all_runs_base_rows": 51
+    },
+    {
+      "object": "Sales.InvoiceLines",
+      "source_now": 228265,
+      "raw_capture": 228265,
+      "count_difference": 0,
+      "source_digest": "76b3a6fc899571ddd0e4fa4334a1353860ccdb3d48f462b676044b96780eefe9",
+      "raw_digest": "76b3a6fc899571ddd0e4fa4334a1353860ccdb3d48f462b676044b96780eefe9",
+      "status": "PASS",
+      "all_runs_base_rows": 228265
+    },
+    {
+      "object": "Sales.Invoices",
+      "source_now": 70510,
+      "raw_capture": 70510,
+      "count_difference": 0,
+      "source_digest": "a24813758d1474f21343c1a94edba13e8bf1efbacf13774c2b3a713b2ab8ef9e",
+      "raw_digest": "a24813758d1474f21343c1a94edba13e8bf1efbacf13774c2b3a713b2ab8ef9e",
+      "status": "PASS",
+      "all_runs_base_rows": 70510
+    },
+    {
+      "object": "Sales.OrderLines",
+      "source_now": 231412,
+      "raw_capture": 231412,
+      "count_difference": 0,
+      "source_digest": "f1f0297dbe881f4672e4ac997d912e6f6d724d0fc0f6f33ade424a8460a580b3",
+      "raw_digest": "f1f0297dbe881f4672e4ac997d912e6f6d724d0fc0f6f33ade424a8460a580b3",
+      "status": "PASS",
+      "all_runs_base_rows": 231412
+    },
+    {
+      "object": "Sales.Orders",
+      "source_now": 73595,
+      "raw_capture": 73595,
+      "count_difference": 0,
+      "source_digest": "be5fa65e68fa7812d85d4e4d0a00d7621d4c9a84ae15ee9923d085e484f6a982",
+      "raw_digest": "be5fa65e68fa7812d85d4e4d0a00d7621d4c9a84ae15ee9923d085e484f6a982",
+      "status": "PASS",
+      "all_runs_base_rows": 73595
+    },
+    {
+      "object": "Warehouse.StockItemHoldings",
+      "source_now": 227,
+      "raw_capture": 227,
+      "count_difference": 0,
+      "source_digest": "747ee988532909382a23f6a254e84e2b669b8efc38e292407dc9688ec288d450",
+      "raw_digest": "747ee988532909382a23f6a254e84e2b669b8efc38e292407dc9688ec288d450",
+      "status": "PASS",
+      "all_runs_base_rows": 681
+    },
+    {
+      "object": "Warehouse.StockItemTransactions",
+      "source_now": 236667,
+      "raw_capture": 236667,
+      "count_difference": 0,
+      "source_digest": "bc42b41fd741a51a18a915c738c9e3d1536c2c7154fad0bf5ed142fd59471526",
+      "raw_digest": "bc42b41fd741a51a18a915c738c9e3d1536c2c7154fad0bf5ed142fd59471526",
+      "status": "PASS",
+      "all_runs_base_rows": 236667
+    },
+    {
+      "object": "Warehouse.StockItems",
+      "source_now": 227,
+      "raw_capture": 227,
+      "count_difference": 0,
+      "source_digest": "636b212e27865fbe1cbceefc65745bb113ce3a16eee45268e5e5f0da7989ed24",
+      "raw_digest": "636b212e27865fbe1cbceefc65745bb113ce3a16eee45268e5e5f0da7989ed24",
+      "status": "PASS",
+      "all_runs_base_rows": 227
+    },
+    {
+      "object": "Warehouse.StockItems_Archive",
+      "source_now": 444,
+      "raw_capture": 444,
+      "count_difference": 0,
+      "source_digest": "5cfd8d55efffa5241b940d645d7c27ed89d80c3b51702355c6d12c55c2f05cc7",
+      "raw_digest": "5cfd8d55efffa5241b940d645d7c27ed89d80c3b51702355c6d12c55c2f05cc7",
+      "status": "PASS",
+      "history_duplicate_payload_occurrences": 0,
+      "history_duplicate_period_keys": 0,
+      "all_runs_base_rows": 444
+    }
+  ],
+  "ruleset": "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+  "measure_version": "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91",
+  "dq_population": {
+    "Sales.Customers": {
+      "VALID": 663
+    },
+    "Sales.InvoiceLines": {
+      "VALID": 223639,
+      "WARNING": 4626
+    },
+    "Sales.Invoices": {
+      "VALID": 70510
+    },
+    "Sales.OrderLines": {
+      "VALID": 231412
+    },
+    "Sales.Orders": {
+      "VALID": 73595
+    },
+    "Warehouse.StockItems": {
+      "VALID": 227
+    }
+  },
+  "warning_samples": [
+    {
+      "record_identity": "7a15ea44a59e61425ff7b3f70bf1030a",
+      "source_object": "Sales.InvoiceLines",
+      "raw_ordinal": 96574,
+      "line_profit": "-48.00",
+      "rule_id": "SALES_INVOICELINES_LINE_PROFIT_MIN_VALUE"
+    },
+    {
+      "record_identity": "6c09040e3b4d98e9a7226fe001b53086",
+      "source_object": "Sales.InvoiceLines",
+      "raw_ordinal": 96668,
+      "line_profit": "-48.00",
+      "rule_id": "SALES_INVOICELINES_LINE_PROFIT_MIN_VALUE"
+    },
+    {
+      "record_identity": "bb1313c741fe0a69973795594dbcbba1",
+      "source_object": "Sales.InvoiceLines",
+      "raw_ordinal": 96777,
+      "line_profit": "-36.00",
+      "rule_id": "SALES_INVOICELINES_LINE_PROFIT_MIN_VALUE"
+    }
+  ],
+  "violations_by_rule": {
+    "SALES_INVOICELINES_LINE_PROFIT_MIN_VALUE": 4626
+  },
+  "dq_counts": {
+    "total": 604672,
+    "statuses": {
+      "VALID": 600046,
+      "WARNING": 4626
+    },
+    "violations": 4626,
+    "violated_records": 4626,
+    "quarantine": 0
+  },
+  "existing_fixture": {
+    "prefix": "fixture_cfe6af032542",
+    "input_count": 5,
+    "quarantine_count": 2,
+    "states": [
+      [
+        "WARNING",
+        1
+      ],
+      [
+        "INVALID",
+        2
+      ],
+      [
+        "VALID",
+        2
+      ]
+    ]
+  },
+  "date_range": [
+    "2013-01-01",
+    "2016-05-31"
+  ],
+  "historical_unresolved": [
+    228265,
+    228265,
+    228265
+  ],
+  "secondary_reconciliation": {
+    "checks": [
+      {
+        "check": "invoice_line_count",
+        "expected": 228265,
+        "actual": 228265,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "tax",
+        "expected": "25782098.25",
+        "actual": "25782098.25",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "including_tax",
+        "expected": "198043439.45",
+        "actual": "198043439.45",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "units",
+        "expected": 8950628,
+        "actual": 8950628,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_orders_count",
+        "expected": 73595,
+        "actual": 73595,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_orders_distinct",
+        "expected": 73595,
+        "actual": 73595,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_orderlines_count",
+        "expected": 231412,
+        "actual": 231412,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_orderlines_distinct",
+        "expected": 231412,
+        "actual": 231412,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_invoices_count",
+        "expected": 70510,
+        "actual": 70510,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_invoices_distinct",
+        "expected": 70510,
+        "actual": 70510,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_daily_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_daily_units",
+        "expected": 8950628,
+        "actual": "8950628",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_product_daily_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_product_daily_units",
+        "expected": 8950628,
+        "actual": "8950628",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_customer_sales_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_customer_sales_units",
+        "expected": 8950628,
+        "actual": "8950628",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_customer_summary_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_customer_summary_units",
+        "expected": 8950628,
+        "actual": "8950628",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_monthly_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_monthly_units",
+        "expected": 8950628,
+        "actual": "8950628",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_daily_invoice_count",
+        "expected": 70510,
+        "actual": "70510",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_customer_sales_invoice_count",
+        "expected": 70510,
+        "actual": "70510",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_customer_summary_invoice_count",
+        "expected": 70510,
+        "actual": "70510",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "mart_sales_monthly_invoice_count",
+        "expected": 70510,
+        "actual": "70510",
+        "absolute_difference": "0",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "grouped_date_mismatch_groups",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "grouped_product_mismatch_groups",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "grouped_customer_mismatch_groups",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "product_distinct_invoice_mismatch_groups",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "included_plus_excluded_rows",
+        "expected": 228265,
+        "actual": 228265,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "included_plus_excluded_amount",
+        "expected": "172261341.20",
+        "actual": "172261341.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "unexplained_exclusions",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "violation_exact_raw_lookup_failures",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-01-01",
+        "expected": "3770410.85",
+        "actual": "3770410.85",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-01-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-02-01",
+        "expected": "2776786.20",
+        "actual": "2776786.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-02-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-03-01",
+        "expected": "3870505.30",
+        "actual": "3870505.30",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-03-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-04-01",
+        "expected": "4059606.85",
+        "actual": "4059606.85",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-04-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-05-01",
+        "expected": "4417965.55",
+        "actual": "4417965.55",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-05-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-06-01",
+        "expected": "4069036.20",
+        "actual": "4069036.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-06-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-07-01",
+        "expected": "4381767.45",
+        "actual": "4381767.45",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-07-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-08-01",
+        "expected": "3495991.00",
+        "actual": "3495991.00",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-08-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-09-01",
+        "expected": "3779040.85",
+        "actual": "3779040.85",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-09-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-10-01",
+        "expected": "3752608.45",
+        "actual": "3752608.45",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-10-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-11-01",
+        "expected": "3697461.90",
+        "actual": "3697461.90",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-11-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2013-12-01",
+        "expected": "3636007.40",
+        "actual": "3636007.40",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2013-12-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-01-01",
+        "expected": "4067538.00",
+        "actual": "4067538.00",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-01-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-02-01",
+        "expected": "3470209.20",
+        "actual": "3470209.20",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-02-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-03-01",
+        "expected": "3861928.75",
+        "actual": "3861928.75",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-03-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-04-01",
+        "expected": "4095234.65",
+        "actual": "4095234.65",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-04-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-05-01",
+        "expected": "4590639.10",
+        "actual": "4590639.10",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-05-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-06-01",
+        "expected": "4266644.10",
+        "actual": "4266644.10",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-06-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-07-01",
+        "expected": "4786301.05",
+        "actual": "4786301.05",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-07-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-08-01",
+        "expected": "4085489.60",
+        "actual": "4085489.60",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-08-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-09-01",
+        "expected": "3882968.85",
+        "actual": "3882968.85",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-09-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-10-01",
+        "expected": "4438683.65",
+        "actual": "4438683.65",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-10-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-11-01",
+        "expected": "4018967.45",
+        "actual": "4018967.45",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-11-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2014-12-01",
+        "expected": "4364882.80",
+        "actual": "4364882.80",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2014-12-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-01-01",
+        "expected": "4401699.25",
+        "actual": "4401699.25",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-01-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-02-01",
+        "expected": "4195319.25",
+        "actual": "4195319.25",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-02-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-03-01",
+        "expected": "4528131.65",
+        "actual": "4528131.65",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-03-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-04-01",
+        "expected": "5073264.75",
+        "actual": "5073264.75",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-04-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-05-01",
+        "expected": "4480730.55",
+        "actual": "4480730.55",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-05-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-06-01",
+        "expected": "4515840.45",
+        "actual": "4515840.45",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-06-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-07-01",
+        "expected": "5155672.00",
+        "actual": "5155672.00",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-07-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-08-01",
+        "expected": "3938163.40",
+        "actual": "3938163.40",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-08-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-09-01",
+        "expected": "4662600.00",
+        "actual": "4662600.00",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-09-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-10-01",
+        "expected": "4492049.40",
+        "actual": "4492049.40",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-10-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-11-01",
+        "expected": "4089208.50",
+        "actual": "4089208.50",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-11-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2015-12-01",
+        "expected": "4458811.25",
+        "actual": "4458811.25",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2015-12-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2016-01-01",
+        "expected": "4447705.95",
+        "actual": "4447705.95",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2016-01-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2016-02-01",
+        "expected": "4005616.85",
+        "actual": "4005616.85",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2016-02-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2016-03-01",
+        "expected": "4645254.00",
+        "actual": "4645254.00",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2016-03-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2016-04-01",
+        "expected": "4563666.10",
+        "actual": "4563666.10",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2016-04-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "month_amount_2016-05-01",
+        "expected": "4970932.65",
+        "actual": "4970932.65",
+        "absolute_difference": "0.00",
+        "relative_difference": "0",
+        "status": "PASS"
+      },
+      {
+        "check": "month_coverage_2016-05-01",
+        "expected": true,
+        "actual": true,
+        "absolute_difference": 0,
+        "relative_difference": 0.0,
+        "status": "PASS"
+      },
+      {
+        "check": "independent_ratios",
+        "comparisons": 1329,
+        "tolerance": "1E-12",
+        "max_absolute_difference": "4.9462366E-17",
+        "status": "PASS"
+      },
+      {
+        "check": "dw_core.fact_invoice_line_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dw_core.dim_date_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dw_core.fact_order_line_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dq.validation_violations_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dq.record_status_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dw_core.dim_customer_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_marts.mart_customer_sales_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dw_core.dim_product_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_marts.mart_sales_daily_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_marts.mart_sales_product_daily_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_marts.mart_sales_customer_summary_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "sales_marts.mart_sales_monthly_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      },
+      {
+        "check": "dq.quarantine_records_pin_and_ruleset",
+        "expected": 0,
+        "actual": 0,
+        "absolute_difference": 0,
+        "relative_difference": null,
+        "status": "PASS"
+      }
+    ],
+    "included": [
+      228265,
+      "172261341.20"
+    ],
+    "excluded": [
+      0,
+      "0"
+    ],
+    "unresolved_historical_roles": [
+      228265,
+      228265,
+      228265
+    ],
+    "role": "BUYER",
+    "status": "PASS"
+  },
+  "totals": [
+    "172261341.20",
+    "25782098.25",
+    "198043439.45",
+    "8950628",
+    "70510",
+    "73595"
+  ],
+  "model_rows": {
+    "dw_core.fact_invoice_line": 228265,
+    "dw_core.dim_date": 1247,
+    "dw_core.fact_order_line": 231412,
+    "dq.validation_violations": 4626,
+    "dq.record_status": 604672,
+    "dw_core.dim_customer": 663,
+    "sales_marts.mart_customer_sales": 66463,
+    "dw_core.dim_product": 227,
+    "sales_marts.mart_sales_daily": 1247,
+    "sales_marts.mart_sales_product_daily": 141561,
+    "sales_marts.mart_sales_customer_summary": 663,
+    "sales_marts.mart_sales_monthly": 41,
+    "dq.quarantine_records": 0,
+    "dw_staging.stg_warehouse_stockitems": 227,
+    "dw_staging.stg_sales_customers": 663,
+    "dw_staging.stg_sales_invoicelines": 228265,
+    "dw_intermediate.int_invoice_header": 70510,
+    "dw_staging.stg_sales_invoices": 70510,
+    "dw_staging.stg_sales_orderlines": 231412,
+    "dw_intermediate.int_order_header": 73595,
+    "dw_staging.stg_sales_orders": 73595
+  },
+  "database_bytes": 738105023,
+  "storage": [
+    {
+      "schema": "dq",
+      "relation": "record_status",
+      "estimated_rows": 604672,
+      "actual_rows_all_captures": 604672,
+      "heap_bytes": 144039936,
+      "index_bytes": 0,
+      "total_bytes": 144113664
+    },
+    {
+      "schema": "dw_core",
+      "relation": "fact_invoice_line",
+      "estimated_rows": 228265,
+      "actual_rows_all_captures": 228265,
+      "heap_bytes": 133693440,
+      "index_bytes": 0,
+      "total_bytes": 133767168
+    },
+    {
+      "schema": "dw_core",
+      "relation": "fact_order_line",
+      "estimated_rows": 231412,
+      "actual_rows_all_captures": 231412,
+      "heap_bytes": 118489088,
+      "index_bytes": 0,
+      "total_bytes": 118554624
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_orderlines",
+      "estimated_rows": 231412,
+      "actual_rows_all_captures": 231412,
+      "heap_bytes": 45580288,
+      "index_bytes": 18825216,
+      "total_bytes": 64454656
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_invoicelines",
+      "estimated_rows": 228265,
+      "actual_rows_all_captures": 228265,
+      "heap_bytes": 42156032,
+      "index_bytes": 18579456,
+      "total_bytes": 60784640
+    },
+    {
+      "schema": "raw",
+      "relation": "warehouse_stockitemtransactions",
+      "estimated_rows": 236667,
+      "actual_rows_all_captures": 236667,
+      "heap_bytes": 35258368,
+      "index_bytes": 19251200,
+      "total_bytes": 54558720
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_invoices",
+      "estimated_rows": 70510,
+      "actual_rows_all_captures": 70510,
+      "heap_bytes": 41246720,
+      "index_bytes": 5767168,
+      "total_bytes": 47063040
+    },
+    {
+      "schema": "sales_marts",
+      "relation": "mart_sales_product_daily",
+      "estimated_rows": 141561,
+      "actual_rows_all_captures": 141561,
+      "heap_bytes": 40370176,
+      "index_bytes": 0,
+      "total_bytes": 40419328
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_customertransactions",
+      "estimated_rows": 97147,
+      "actual_rows_all_captures": 97147,
+      "heap_bytes": 14327808,
+      "index_bytes": 7929856,
+      "total_bytes": 22298624
+    },
+    {
+      "schema": "sales_marts",
+      "relation": "mart_customer_sales",
+      "estimated_rows": 66463,
+      "actual_rows_all_captures": 66463,
+      "heap_bytes": 18874368,
+      "index_bytes": 0,
+      "total_bytes": 18915328
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_orders",
+      "estimated_rows": 73595,
+      "actual_rows_all_captures": 73595,
+      "heap_bytes": 11526144,
+      "index_bytes": 6012928,
+      "total_bytes": 17580032
+    },
+    {
+      "schema": "dq",
+      "relation": "validation_violations",
+      "estimated_rows": 4626,
+      "actual_rows_all_captures": 4626,
+      "heap_bytes": 1810432,
+      "index_bytes": 0,
+      "total_bytes": 1851392
+    },
+    {
+      "schema": "dw_core",
+      "relation": "dim_customer",
+      "estimated_rows": 663,
+      "actual_rows_all_captures": 663,
+      "heap_bytes": 524288,
+      "index_bytes": 0,
+      "total_bytes": 532480
+    },
+    {
+      "schema": "sales_marts",
+      "relation": "mart_sales_daily",
+      "estimated_rows": 1247,
+      "actual_rows_all_captures": 1247,
+      "heap_bytes": 393216,
+      "index_bytes": 0,
+      "total_bytes": 434176
+    },
+    {
+      "schema": "dw_core",
+      "relation": "dim_date",
+      "estimated_rows": 1247,
+      "actual_rows_all_captures": 1247,
+      "heap_bytes": 335872,
+      "index_bytes": 0,
+      "total_bytes": 376832
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_customers",
+      "estimated_rows": 663,
+      "actual_rows_all_captures": 663,
+      "heap_bytes": 245760,
+      "index_bytes": 98304,
+      "total_bytes": 376832
+    },
+    {
+      "schema": "sales_marts",
+      "relation": "mart_sales_customer_summary",
+      "estimated_rows": 663,
+      "actual_rows_all_captures": 663,
+      "heap_bytes": 262144,
+      "index_bytes": 0,
+      "total_bytes": 270336
+    },
+    {
+      "schema": "raw",
+      "relation": "warehouse_stockitemholdings",
+      "estimated_rows": 681,
+      "actual_rows_all_captures": 681,
+      "heap_bytes": 90112,
+      "index_bytes": 106496,
+      "total_bytes": 229376
+    },
+    {
+      "schema": "raw",
+      "relation": "warehouse_stockitems_archive",
+      "estimated_rows": 444,
+      "actual_rows_all_captures": 444,
+      "heap_bytes": 139264,
+      "index_bytes": 40960,
+      "total_bytes": 212992
+    },
+    {
+      "schema": "raw",
+      "relation": "warehouse_stockitems",
+      "estimated_rows": 227,
+      "actual_rows_all_captures": 227,
+      "heap_bytes": 90112,
+      "index_bytes": 65536,
+      "total_bytes": 188416
+    },
+    {
+      "schema": "dw_core",
+      "relation": "dim_product",
+      "estimated_rows": 227,
+      "actual_rows_all_captures": 227,
+      "heap_bytes": 131072,
+      "index_bytes": 0,
+      "total_bytes": 139264
+    },
+    {
+      "schema": "raw",
+      "relation": "sales_customers_archive",
+      "estimated_rows": 51,
+      "actual_rows_all_captures": 51,
+      "heap_bytes": 24576,
+      "index_bytes": 16384,
+      "total_bytes": 73728
+    },
+    {
+      "schema": "ingestion_meta",
+      "relation": "runs",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "ingestion_meta",
+      "relation": "load_contracts",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "ingestion_meta",
+      "relation": "object_runs",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 14,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "ingestion_meta",
+      "relation": "load_audits",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 13,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 32768
+    },
+    {
+      "schema": "ingestion_meta",
+      "relation": "raw_current",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 1,
+      "heap_bytes": 8192,
+      "index_bytes": 16384,
+      "total_bytes": 24576
+    },
+    {
+      "schema": "sales_marts",
+      "relation": "mart_sales_monthly",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 41,
+      "heap_bytes": 16384,
+      "index_bytes": 0,
+      "total_bytes": 24576
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_cfe6af032542_violations",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_efa94abd66fe_status",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_cfe6af032542",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_efa94abd66fe_violations",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "ingestion_meta",
+      "relation": "raw_publications",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 0,
+      "heap_bytes": 0,
+      "index_bytes": 16384,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_9caaab0c3746_violations",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_efa94abd66fe",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_9caaab0c3746",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_9caaab0c3746_status",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_9caaab0c3746_quarantine",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 2,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_376dd8dae560",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_376dd8dae560_violations",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_376dd8dae560_status",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_376dd8dae560_quarantine",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 2,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_f2b69d7b99e8_violations",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 4,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_f2b69d7b99e8_status",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_f2b69d7b99e8",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_cfe6af032542_quarantine",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 2,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_cfe6af032542_status",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 5,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_f2b69d7b99e8_quarantine",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 2,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dbt_sales_test",
+      "relation": "fixture_efa94abd66fe_quarantine",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 2,
+      "heap_bytes": 8192,
+      "index_bytes": 0,
+      "total_bytes": 16384
+    },
+    {
+      "schema": "dq",
+      "relation": "quarantine_records",
+      "estimated_rows": -1,
+      "actual_rows_all_captures": 0,
+      "heap_bytes": 0,
+      "index_bytes": 0,
+      "total_bytes": 8192
+    }
+  ],
+  "schema_bytes": {
+    "dbt_sales_test": 327680,
+    "dq": 145973248,
+    "dw_core": 253370368,
+    "ingestion_meta": 172032,
+    "raw": 267821056,
+    "sales_marts": 60063744
+  },
+  "quality_version_storage": 59257856,
+  "pg_stat_statements": false,
+  "safe_plan": [
+    {
+      "Plan": {
+        "Node Type": "Seq Scan",
+        "Parallel Aware": false,
+        "Async Capable": false,
+        "Relation Name": "mart_sales_daily",
+        "Alias": "mart_sales_daily",
+        "Startup Cost": 0.0,
+        "Total Cost": 63.59,
+        "Plan Rows": 1,
+        "Plan Width": 12,
+        "Disabled": false,
+        "Filter": "(sales_amount < '0'::numeric)"
+      }
+    }
+  ],
+  "compiled_tests": [
+    {
+      "test": "staging_fidelity",
+      "failures": 0
+    },
+    {
+      "test": "capture_and_contract_pins",
+      "failures": 0
+    },
+    {
+      "test": "dimension_business_key_mapping",
+      "failures": 0
+    },
+    {
+      "test": "historical_lookup_not_fabricated",
+      "failures": 0
+    },
+    {
+      "test": "mart_grains",
+      "failures": 0
+    },
+    {
+      "test": "no_fatal_violations",
+      "failures": 0
+    },
+    {
+      "test": "population_accounting",
+      "failures": 0
+    },
+    {
+      "test": "quality_status_consistency",
+      "failures": 0
+    },
+    {
+      "test": "quarantine_lineage",
+      "failures": 0
+    },
+    {
+      "test": "ratio_semantics",
+      "failures": 0
+    },
+    {
+      "test": "violation_grain",
+      "failures": 0
+    },
+    {
+      "test": "invoice_fact_fidelity",
+      "failures": 0
+    },
+    {
+      "test": "order_fact_fidelity",
+      "failures": 0
+    },
+    {
+      "test": "unique_dim_date_date_key",
+      "failures": 0
+    },
+    {
+      "test": "not_null_dim_date_date_key",
+      "failures": 0
+    },
+    {
+      "test": "not_null_dim_date__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_dim_customer_customer_key",
+      "failures": 0
+    },
+    {
+      "test": "not_null_dim_customer_customer_key",
+      "failures": 0
+    },
+    {
+      "test": "not_null_dim_customer__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_dim_product_product_key",
+      "failures": 0
+    },
+    {
+      "test": "not_null_dim_product_product_key",
+      "failures": 0
+    },
+    {
+      "test": "not_null_dim_product__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_fact_invoice_line_source_invoice_line_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_invoice_line_source_invoice_line_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_invoice_line__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_invoice_line_observed_product_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_invoice_line_observed_product_key__product_key__ref_dim_product_",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_invoice_line_buyer_observed_customer_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_invoice_line_buyer_observed_customer_key__customer_key__ref_dim_customer_",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_invoice_line_invoice_date_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_invoice_line_invoice_date_key__date_key__ref_dim_date_",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_invoice_line_bill_to_observed_customer_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_invoice_line_bill_to_observed_customer_key__customer_key__ref_dim_customer_",
+      "failures": 0
+    },
+    {
+      "test": "unique_fact_order_line_source_order_line_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_order_line_source_order_line_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_order_line__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_order_line_observed_product_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_order_line_observed_product_key__product_key__ref_dim_product_",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_order_line_buyer_observed_customer_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_order_line_buyer_observed_customer_key__customer_key__ref_dim_customer_",
+      "failures": 0
+    },
+    {
+      "test": "not_null_fact_order_line_order_date_key",
+      "failures": 0
+    },
+    {
+      "test": "relationships_fact_order_line_order_date_key__date_key__ref_dim_date_",
+      "failures": 0
+    },
+    {
+      "test": "unique_int_invoice_header_source_invoice_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_int_invoice_header_source_invoice_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_int_invoice_header__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_int_order_header_source_order_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_int_order_header_source_order_id",
+      "failures": 0
+    },
+    {
+      "test": "not_null_int_order_header__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_record_status_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_record_status_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "accepted_values_record_status_dq_status__VALID__WARNING__INVALID",
+      "failures": 0
+    },
+    {
+      "test": "unique_stg_sales_customers_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_customers_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_customers__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_stg_sales_orders_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_orders_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_orders__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_stg_sales_orderlines_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_orderlines_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_orderlines__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_stg_sales_invoices_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_invoices_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_invoices__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_stg_sales_invoicelines_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_invoicelines_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_sales_invoicelines__capture_id",
+      "failures": 0
+    },
+    {
+      "test": "unique_stg_warehouse_stockitems_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_warehouse_stockitems_record_identity",
+      "failures": 0
+    },
+    {
+      "test": "not_null_stg_warehouse_stockitems__capture_id",
+      "failures": 0
+    }
+  ],
+  "started_at": "2026-11-20T10:48:23.128683+00:00",
+  "finished_at": "2026-11-20T11:02:59.890169+00:00",
+  "baseline_head": "cdfac7f59f6fb4d7fba5e4d27e0c1f6506b8429f",
+  "capture_pin": "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+  "status": "DATA_AUDIT_ACCEPTED"
+}

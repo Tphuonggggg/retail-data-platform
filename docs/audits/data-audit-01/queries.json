@@ -1,0 +1,3117 @@
+[
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select current_database(),current_user,current_setting('default_transaction_read_only')",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select current_database(),current_user,current_setting('default_transaction_read_only')",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_try_advisory_lock(941062)",
+    "parameters": [],
+    "seconds": 0.0007
+  },
+  {
+    "id": "B_CONTROL_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0086
+  },
+  {
+    "id": "B_CONTROL_object_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.object_runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.002
+  },
+  {
+    "id": "B_CONTROL_load_contracts",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_contracts order by 1,2",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "B_CONTROL_load_audits",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_audits order by 1,2",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "B_CONTROL_raw_current",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_current order by 1,2",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "B_CONTROL_raw_publications",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_publications order by 1,2",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "B_RUN",
+    "engine": "PostgreSQL",
+    "sql": "select run_id,capture_id,status,consistency_state,extraction_mode,started_at,finished_at from ingestion_meta.runs where run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0009
+  },
+  {
+    "id": "B_OBJECTS",
+    "engine": "PostgreSQL",
+    "sql": "select source_schema||'.'||source_table,status,reconciliation_state,source_row_count,extracted_row_count,loaded_row_count from ingestion_meta.object_runs where run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0008
+  },
+  {
+    "id": "B_AUDITS",
+    "engine": "PostgreSQL",
+    "sql": "select object_name,row_count,row_digest from ingestion_meta.load_audits where run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0009
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select publication_id from ingestion_meta.raw_current",
+    "parameters": [],
+    "seconds": 0.0007
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.raw_publications",
+    "parameters": [],
+    "seconds": 0.0006
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select status,count(*) from ingestion_meta.runs group by 1",
+    "parameters": [],
+    "seconds": 0.0006
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.CustomerTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_customertransactions"
+    ],
+    "seconds": 0.0238
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.CustomerTransactions",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.CustomerTransactions"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.CustomerTransactions",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"CustomerTransactionID\",\"CustomerID\",\"TransactionTypeID\",\"InvoiceID\",\"PaymentMethodID\",\"TransactionDate\",\"AmountExcludingTax\",\"TaxAmount\",\"TransactionAmount\",\"OutstandingBalance\",\"FinalizationDate\",\"IsFinalized\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_customertransactions\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 9.765,
+    "rows": 97147
+  },
+  {
+    "id": "A_SOURCE_Sales.CustomerTransactions",
+    "engine": "SQL Server",
+    "sql": "SELECT [CustomerTransactionID],[CustomerID],[TransactionTypeID],[InvoiceID],[PaymentMethodID],[TransactionDate],[AmountExcludingTax],[TaxAmount],[TransactionAmount],[OutstandingBalance],[FinalizationDate],[IsFinalized],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Sales].[CustomerTransactions]",
+    "parameters": [],
+    "seconds": 10.268,
+    "rows": 97147
+  },
+  {
+    "id": "B_BASE_Sales.CustomerTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_customertransactions\"",
+    "parameters": [],
+    "seconds": 0.0071
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_customers"
+    ],
+    "seconds": 0.014
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.Customers",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.Customers"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"CustomerID\",\"CustomerName\",\"BillToCustomerID\",\"CustomerCategoryID\",\"BuyingGroupID\",\"PrimaryContactPersonID\",\"AlternateContactPersonID\",\"DeliveryMethodID\",\"DeliveryCityID\",\"PostalCityID\",\"CreditLimit\",\"AccountOpenedDate\",\"StandardDiscountPercentage\",\"IsStatementSent\",\"IsOnCreditHold\",\"PaymentDays\",\"PhoneNumber\",\"FaxNumber\",\"DeliveryRun\",\"RunPosition\",\"WebsiteURL\",\"DeliveryAddressLine1\",\"DeliveryAddressLine2\",\"DeliveryPostalCode\",\"DeliveryLocation\",\"PostalAddressLine1\",\"PostalAddressLine2\",\"PostalPostalCode\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" FROM raw.\"sales_customers\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.169,
+    "rows": 663
+  },
+  {
+    "id": "A_SOURCE_Sales.Customers",
+    "engine": "SQL Server",
+    "sql": "SELECT [CustomerID],[CustomerName],[BillToCustomerID],[CustomerCategoryID],[BuyingGroupID],[PrimaryContactPersonID],[AlternateContactPersonID],[DeliveryMethodID],[DeliveryCityID],[PostalCityID],[CreditLimit],[AccountOpenedDate],[StandardDiscountPercentage],[IsStatementSent],[IsOnCreditHold],[PaymentDays],[PhoneNumber],[FaxNumber],[DeliveryRun],[RunPosition],[WebsiteURL],[DeliveryAddressLine1],[DeliveryAddressLine2],[DeliveryPostalCode],CONVERT(varbinary(max),[DeliveryLocation]) AS [DeliveryLocation],[PostalAddressLine1],[PostalAddressLine2],[PostalPostalCode],[LastEditedBy],CASE WHEN [ValidFrom] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidFrom], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidFrom]) / 100), 7)\n       END AS [ValidFrom],CASE WHEN [ValidTo] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidTo], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidTo]) / 100), 7)\n       END AS [ValidTo] FROM [Sales].[Customers]",
+    "parameters": [],
+    "seconds": 0.179,
+    "rows": 663
+  },
+  {
+    "id": "B_BASE_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_customers\"",
+    "parameters": [],
+    "seconds": 0.0031
+  },
+  {
+    "id": "C_STAGE_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"customer_id\",\"customer_name\",\"bill_to_customer_id\",\"customer_category_id\",\"buying_group_id\",\"primary_contact_person_id\",\"alternate_contact_person_id\",\"delivery_method_id\",\"delivery_city_id\",\"postal_city_id\",\"credit_limit\",\"account_opened_date\",\"standard_discount_percentage\",\"is_statement_sent\",\"is_on_credit_hold\",\"payment_days\",\"phone_number\",\"fax_number\",\"delivery_run\",\"run_position\",\"website_url\",\"delivery_address_line1\",\"delivery_address_line2\",\"delivery_postal_code\",\"delivery_location\",\"postal_address_line1\",\"postal_address_line2\",\"postal_postal_code\",\"last_edited_by\",\"valid_from\",\"valid_to\" FROM dw_staging.stg_sales_customers",
+    "parameters": [],
+    "seconds": 0.179,
+    "rows": 663
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct _capture_id from dw_staging.stg_sales_customers",
+    "parameters": [],
+    "seconds": 0.0195
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.Customers_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_customers_archive"
+    ],
+    "seconds": 0.01
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.Customers_Archive",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.Customers_Archive"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.Customers_Archive",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"CustomerID\",\"CustomerName\",\"BillToCustomerID\",\"CustomerCategoryID\",\"BuyingGroupID\",\"PrimaryContactPersonID\",\"AlternateContactPersonID\",\"DeliveryMethodID\",\"DeliveryCityID\",\"PostalCityID\",\"CreditLimit\",\"AccountOpenedDate\",\"StandardDiscountPercentage\",\"IsStatementSent\",\"IsOnCreditHold\",\"PaymentDays\",\"PhoneNumber\",\"FaxNumber\",\"DeliveryRun\",\"RunPosition\",\"WebsiteURL\",\"DeliveryAddressLine1\",\"DeliveryAddressLine2\",\"DeliveryPostalCode\",\"DeliveryLocation\",\"PostalAddressLine1\",\"PostalAddressLine2\",\"PostalPostalCode\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" FROM raw.\"sales_customers_archive\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.021,
+    "rows": 51
+  },
+  {
+    "id": "A_SOURCE_Sales.Customers_Archive",
+    "engine": "SQL Server",
+    "sql": "SELECT [CustomerID],[CustomerName],[BillToCustomerID],[CustomerCategoryID],[BuyingGroupID],[PrimaryContactPersonID],[AlternateContactPersonID],[DeliveryMethodID],[DeliveryCityID],[PostalCityID],[CreditLimit],[AccountOpenedDate],[StandardDiscountPercentage],[IsStatementSent],[IsOnCreditHold],[PaymentDays],[PhoneNumber],[FaxNumber],[DeliveryRun],[RunPosition],[WebsiteURL],[DeliveryAddressLine1],[DeliveryAddressLine2],[DeliveryPostalCode],CONVERT(varbinary(max),[DeliveryLocation]) AS [DeliveryLocation],[PostalAddressLine1],[PostalAddressLine2],[PostalPostalCode],[LastEditedBy],CASE WHEN [ValidFrom] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidFrom], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidFrom]) / 100), 7)\n       END AS [ValidFrom],CASE WHEN [ValidTo] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidTo], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidTo]) / 100), 7)\n       END AS [ValidTo] FROM [Sales].[Customers_Archive]",
+    "parameters": [],
+    "seconds": 0.012,
+    "rows": 51
+  },
+  {
+    "id": "B_BASE_Sales.Customers_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_customers_archive\"",
+    "parameters": [],
+    "seconds": 0.0023
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_invoicelines"
+    ],
+    "seconds": 0.0044
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.InvoiceLines",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.InvoiceLines"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"InvoiceLineID\",\"InvoiceID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"TaxAmount\",\"LineProfit\",\"ExtendedPrice\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_invoicelines\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 25.077,
+    "rows": 228265
+  },
+  {
+    "id": "A_SOURCE_Sales.InvoiceLines",
+    "engine": "SQL Server",
+    "sql": "SELECT [InvoiceLineID],[InvoiceID],[StockItemID],[Description],[PackageTypeID],[Quantity],[UnitPrice],[TaxRate],[TaxAmount],[LineProfit],[ExtendedPrice],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Sales].[InvoiceLines]",
+    "parameters": [],
+    "seconds": 24.903,
+    "rows": 228265
+  },
+  {
+    "id": "B_BASE_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_invoicelines\"",
+    "parameters": [],
+    "seconds": 0.0142
+  },
+  {
+    "id": "C_STAGE_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"invoice_line_id\",\"invoice_id\",\"stock_item_id\",\"description\",\"package_type_id\",\"quantity\",\"unit_price\",\"tax_rate\",\"tax_amount\",\"line_profit\",\"extended_price\",\"last_edited_by\",\"last_edited_when\" FROM dw_staging.stg_sales_invoicelines",
+    "parameters": [],
+    "seconds": 24.45,
+    "rows": 228265
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct _capture_id from dw_staging.stg_sales_invoicelines",
+    "parameters": [],
+    "seconds": 0.0166
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_invoices"
+    ],
+    "seconds": 0.0291
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.Invoices",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.Invoices"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"InvoiceID\",\"CustomerID\",\"BillToCustomerID\",\"OrderID\",\"DeliveryMethodID\",\"ContactPersonID\",\"AccountsPersonID\",\"SalespersonPersonID\",\"PackedByPersonID\",\"InvoiceDate\",\"CustomerPurchaseOrderNumber\",\"IsCreditNote\",\"CreditNoteReason\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"TotalDryItems\",\"TotalChillerItems\",\"DeliveryRun\",\"RunPosition\",\"ReturnedDeliveryData\",\"ConfirmedDeliveryTime\",\"ConfirmedReceivedBy\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_invoices\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 10.181,
+    "rows": 70510
+  },
+  {
+    "id": "A_SOURCE_Sales.Invoices",
+    "engine": "SQL Server",
+    "sql": "SELECT [InvoiceID],[CustomerID],[BillToCustomerID],[OrderID],[DeliveryMethodID],[ContactPersonID],[AccountsPersonID],[SalespersonPersonID],[PackedByPersonID],[InvoiceDate],[CustomerPurchaseOrderNumber],[IsCreditNote],[CreditNoteReason],[Comments],[DeliveryInstructions],[InternalComments],[TotalDryItems],[TotalChillerItems],[DeliveryRun],[RunPosition],[ReturnedDeliveryData],CASE WHEN [ConfirmedDeliveryTime] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ConfirmedDeliveryTime], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ConfirmedDeliveryTime]) / 100), 7)\n       END AS [ConfirmedDeliveryTime],[ConfirmedReceivedBy],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Sales].[Invoices]",
+    "parameters": [],
+    "seconds": 11.241,
+    "rows": 70510
+  },
+  {
+    "id": "B_BASE_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_invoices\"",
+    "parameters": [],
+    "seconds": 0.0212
+  },
+  {
+    "id": "C_STAGE_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"invoice_id\",\"customer_id\",\"bill_to_customer_id\",\"order_id\",\"delivery_method_id\",\"contact_person_id\",\"accounts_person_id\",\"salesperson_person_id\",\"packed_by_person_id\",\"invoice_date\",\"customer_purchase_order_number\",\"is_credit_note\",\"credit_note_reason\",\"comments\",\"delivery_instructions\",\"internal_comments\",\"total_dry_items\",\"total_chiller_items\",\"delivery_run\",\"run_position\",\"returned_delivery_data\",\"confirmed_delivery_time\",\"confirmed_received_by\",\"last_edited_by\",\"last_edited_when\" FROM dw_staging.stg_sales_invoices",
+    "parameters": [],
+    "seconds": 10.029,
+    "rows": 70510
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct _capture_id from dw_staging.stg_sales_invoices",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_orderlines"
+    ],
+    "seconds": 0.0045
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.OrderLines",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.OrderLines"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"OrderLineID\",\"OrderID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"PickedQuantity\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_orderlines\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 22.484,
+    "rows": 231412
+  },
+  {
+    "id": "A_SOURCE_Sales.OrderLines",
+    "engine": "SQL Server",
+    "sql": "SELECT [OrderLineID],[OrderID],[StockItemID],[Description],[PackageTypeID],[Quantity],[UnitPrice],[TaxRate],[PickedQuantity],CASE WHEN [PickingCompletedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [PickingCompletedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [PickingCompletedWhen]) / 100), 7)\n       END AS [PickingCompletedWhen],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Sales].[OrderLines]",
+    "parameters": [],
+    "seconds": 22.603,
+    "rows": 231412
+  },
+  {
+    "id": "B_BASE_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_orderlines\"",
+    "parameters": [],
+    "seconds": 0.0163
+  },
+  {
+    "id": "C_STAGE_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"order_line_id\",\"order_id\",\"stock_item_id\",\"description\",\"package_type_id\",\"quantity\",\"unit_price\",\"tax_rate\",\"picked_quantity\",\"picking_completed_when\",\"last_edited_by\",\"last_edited_when\" FROM dw_staging.stg_sales_orderlines",
+    "parameters": [],
+    "seconds": 23.624,
+    "rows": 231412
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct _capture_id from dw_staging.stg_sales_orderlines",
+    "parameters": [],
+    "seconds": 0.0096
+  },
+  {
+    "id": "A_PG_SCHEMA_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "sales_orders"
+    ],
+    "seconds": 0.0142
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Sales.Orders",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Sales.Orders"
+    ]
+  },
+  {
+    "id": "A_RAW_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"OrderID\",\"CustomerID\",\"SalespersonPersonID\",\"PickedByPersonID\",\"ContactPersonID\",\"BackorderOrderID\",\"OrderDate\",\"ExpectedDeliveryDate\",\"CustomerPurchaseOrderNumber\",\"IsUndersupplyBackordered\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_orders\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 6.894,
+    "rows": 73595
+  },
+  {
+    "id": "A_SOURCE_Sales.Orders",
+    "engine": "SQL Server",
+    "sql": "SELECT [OrderID],[CustomerID],[SalespersonPersonID],[PickedByPersonID],[ContactPersonID],[BackorderOrderID],[OrderDate],[ExpectedDeliveryDate],[CustomerPurchaseOrderNumber],[IsUndersupplyBackordered],[Comments],[DeliveryInstructions],[InternalComments],CASE WHEN [PickingCompletedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [PickingCompletedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [PickingCompletedWhen]) / 100), 7)\n       END AS [PickingCompletedWhen],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Sales].[Orders]",
+    "parameters": [],
+    "seconds": 6.897,
+    "rows": 73595
+  },
+  {
+    "id": "B_BASE_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_orders\"",
+    "parameters": [],
+    "seconds": 0.0056
+  },
+  {
+    "id": "C_STAGE_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"order_id\",\"customer_id\",\"salesperson_person_id\",\"picked_by_person_id\",\"contact_person_id\",\"backorder_order_id\",\"order_date\",\"expected_delivery_date\",\"customer_purchase_order_number\",\"is_undersupply_backordered\",\"comments\",\"delivery_instructions\",\"internal_comments\",\"picking_completed_when\",\"last_edited_by\",\"last_edited_when\" FROM dw_staging.stg_sales_orders",
+    "parameters": [],
+    "seconds": 6.833,
+    "rows": 73595
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct _capture_id from dw_staging.stg_sales_orders",
+    "parameters": [],
+    "seconds": 0.0021
+  },
+  {
+    "id": "A_PG_SCHEMA_Warehouse.StockItemHoldings",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "warehouse_stockitemholdings"
+    ],
+    "seconds": 0.0037
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Warehouse.StockItemHoldings",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Warehouse.StockItemHoldings"
+    ]
+  },
+  {
+    "id": "A_RAW_Warehouse.StockItemHoldings",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"StockItemID\",\"QuantityOnHand\",\"BinLocation\",\"LastStocktakeQuantity\",\"LastCostPrice\",\"ReorderLevel\",\"TargetStockLevel\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"warehouse_stockitemholdings\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.042,
+    "rows": 227
+  },
+  {
+    "id": "A_SOURCE_Warehouse.StockItemHoldings",
+    "engine": "SQL Server",
+    "sql": "SELECT [StockItemID],[QuantityOnHand],[BinLocation],[LastStocktakeQuantity],[LastCostPrice],[ReorderLevel],[TargetStockLevel],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Warehouse].[StockItemHoldings]",
+    "parameters": [],
+    "seconds": 0.015,
+    "rows": 227
+  },
+  {
+    "id": "B_BASE_Warehouse.StockItemHoldings",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitemholdings\"",
+    "parameters": [],
+    "seconds": 0.0023
+  },
+  {
+    "id": "A_PG_SCHEMA_Warehouse.StockItemTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "warehouse_stockitemtransactions"
+    ],
+    "seconds": 0.0036
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Warehouse.StockItemTransactions",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Warehouse.StockItemTransactions"
+    ]
+  },
+  {
+    "id": "A_RAW_Warehouse.StockItemTransactions",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"StockItemTransactionID\",\"StockItemID\",\"TransactionTypeID\",\"CustomerID\",\"InvoiceID\",\"SupplierID\",\"PurchaseOrderID\",\"TransactionOccurredWhen\",\"Quantity\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"warehouse_stockitemtransactions\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 20.898,
+    "rows": 236667
+  },
+  {
+    "id": "A_SOURCE_Warehouse.StockItemTransactions",
+    "engine": "SQL Server",
+    "sql": "SELECT [StockItemTransactionID],[StockItemID],[TransactionTypeID],[CustomerID],[InvoiceID],[SupplierID],[PurchaseOrderID],CASE WHEN [TransactionOccurredWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [TransactionOccurredWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [TransactionOccurredWhen]) / 100), 7)\n       END AS [TransactionOccurredWhen],[Quantity],[LastEditedBy],CASE WHEN [LastEditedWhen] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [LastEditedWhen], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [LastEditedWhen]) / 100), 7)\n       END AS [LastEditedWhen] FROM [Warehouse].[StockItemTransactions]",
+    "parameters": [],
+    "seconds": 21.843,
+    "rows": 236667
+  },
+  {
+    "id": "B_BASE_Warehouse.StockItemTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitemtransactions\"",
+    "parameters": [],
+    "seconds": 0.0097
+  },
+  {
+    "id": "A_PG_SCHEMA_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "warehouse_stockitems"
+    ],
+    "seconds": 0.0044
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Warehouse.StockItems",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Warehouse.StockItems"
+    ]
+  },
+  {
+    "id": "A_RAW_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"StockItemID\",\"StockItemName\",\"SupplierID\",\"ColorID\",\"UnitPackageID\",\"OuterPackageID\",\"Brand\",\"Size\",\"LeadTimeDays\",\"QuantityPerOuter\",\"IsChillerStock\",\"Barcode\",\"TaxRate\",\"UnitPrice\",\"RecommendedRetailPrice\",\"TypicalWeightPerUnit\",\"MarketingComments\",\"InternalComments\",\"Photo\",\"CustomFields\",\"Tags\",\"SearchDetails\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" FROM raw.\"warehouse_stockitems\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.036,
+    "rows": 227
+  },
+  {
+    "id": "A_SOURCE_Warehouse.StockItems",
+    "engine": "SQL Server",
+    "sql": "SELECT [StockItemID],[StockItemName],[SupplierID],[ColorID],[UnitPackageID],[OuterPackageID],[Brand],[Size],[LeadTimeDays],[QuantityPerOuter],[IsChillerStock],[Barcode],[TaxRate],[UnitPrice],[RecommendedRetailPrice],[TypicalWeightPerUnit],[MarketingComments],[InternalComments],[Photo],[CustomFields],[Tags],[SearchDetails],[LastEditedBy],CASE WHEN [ValidFrom] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidFrom], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidFrom]) / 100), 7)\n       END AS [ValidFrom],CASE WHEN [ValidTo] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidTo], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidTo]) / 100), 7)\n       END AS [ValidTo] FROM [Warehouse].[StockItems]",
+    "parameters": [],
+    "seconds": 0.039,
+    "rows": 227
+  },
+  {
+    "id": "B_BASE_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitems\"",
+    "parameters": [],
+    "seconds": 0.0022
+  },
+  {
+    "id": "C_STAGE_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"stock_item_id\",\"stock_item_name\",\"supplier_id\",\"color_id\",\"unit_package_id\",\"outer_package_id\",\"brand\",\"size\",\"lead_time_days\",\"quantity_per_outer\",\"is_chiller_stock\",\"barcode\",\"tax_rate\",\"unit_price\",\"recommended_retail_price\",\"typical_weight_per_unit\",\"marketing_comments\",\"internal_comments\",\"photo\",\"custom_fields\",\"tags\",\"search_details\",\"last_edited_by\",\"valid_from\",\"valid_to\" FROM dw_staging.stg_warehouse_stockitems",
+    "parameters": [],
+    "seconds": 0.047,
+    "rows": 227
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct _capture_id from dw_staging.stg_warehouse_stockitems",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "A_PG_SCHEMA_Warehouse.StockItems_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select column_name,data_type,is_nullable,numeric_precision,numeric_scale,collation_name from information_schema.columns where table_schema='raw' and table_name=%s order by ordinal_position",
+    "parameters": [
+      "warehouse_stockitems_archive"
+    ],
+    "seconds": 0.0056
+  },
+  {
+    "id": "A_SOURCE_SCHEMA_Warehouse.StockItems_Archive",
+    "engine": "SQL Server",
+    "sql": "sys.columns/sys.tables metadata SELECT; see schema()",
+    "parameters": [
+      "Warehouse.StockItems_Archive"
+    ]
+  },
+  {
+    "id": "A_RAW_Warehouse.StockItems_Archive",
+    "engine": "PostgreSQL",
+    "sql": "SELECT \"StockItemID\",\"StockItemName\",\"SupplierID\",\"ColorID\",\"UnitPackageID\",\"OuterPackageID\",\"Brand\",\"Size\",\"LeadTimeDays\",\"QuantityPerOuter\",\"IsChillerStock\",\"Barcode\",\"TaxRate\",\"UnitPrice\",\"RecommendedRetailPrice\",\"TypicalWeightPerUnit\",\"MarketingComments\",\"InternalComments\",\"Photo\",\"CustomFields\",\"Tags\",\"SearchDetails\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" FROM raw.\"warehouse_stockitems_archive\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.08,
+    "rows": 444
+  },
+  {
+    "id": "A_SOURCE_Warehouse.StockItems_Archive",
+    "engine": "SQL Server",
+    "sql": "SELECT [StockItemID],[StockItemName],[SupplierID],[ColorID],[UnitPackageID],[OuterPackageID],[Brand],[Size],[LeadTimeDays],[QuantityPerOuter],[IsChillerStock],[Barcode],[TaxRate],[UnitPrice],[RecommendedRetailPrice],[TypicalWeightPerUnit],[MarketingComments],[InternalComments],[Photo],[CustomFields],[Tags],[SearchDetails],[LastEditedBy],CASE WHEN [ValidFrom] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidFrom], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidFrom]) / 100), 7)\n       END AS [ValidFrom],CASE WHEN [ValidTo] IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), [ValidTo], 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, [ValidTo]) / 100), 7)\n       END AS [ValidTo] FROM [Warehouse].[StockItems_Archive]",
+    "parameters": [],
+    "seconds": 0.089,
+    "rows": 444
+  },
+  {
+    "id": "B_BASE_Warehouse.StockItems_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitems_archive\"",
+    "parameters": [],
+    "seconds": 0.0023
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sum(loaded_row_count) from ingestion_meta.object_runs where run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0105
+  },
+  {
+    "id": "D_ACTUAL_STATUS",
+    "engine": "PostgreSQL",
+    "sql": "select capture_id,source_object,record_identity,source_business_key,_raw_row_ordinal,ruleset_version,evaluation_id,dq_status,is_valid,has_warning,is_quarantined,violation_count from dq.record_status",
+    "parameters": [],
+    "seconds": 3.1322
+  },
+  {
+    "id": "D_ACTUAL_VIOLATIONS",
+    "engine": "PostgreSQL",
+    "sql": "select capture_id,source_object,record_identity,source_business_key,_raw_row_ordinal,ruleset_version,evaluation_id,rule_id,severity,action,column_name,actual_value from dq.validation_violations",
+    "parameters": [],
+    "seconds": 0.0585
+  },
+  {
+    "id": "D_RAW_PYTHON_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "SELECT _row_ordinal,\"CustomerID\",\"CustomerName\",\"BillToCustomerID\",\"CustomerCategoryID\",\"BuyingGroupID\",\"PrimaryContactPersonID\",\"AlternateContactPersonID\",\"DeliveryMethodID\",\"DeliveryCityID\",\"PostalCityID\",\"CreditLimit\",\"AccountOpenedDate\",\"StandardDiscountPercentage\",\"IsStatementSent\",\"IsOnCreditHold\",\"PaymentDays\",\"PhoneNumber\",\"FaxNumber\",\"DeliveryRun\",\"RunPosition\",\"WebsiteURL\",\"DeliveryAddressLine1\",\"DeliveryAddressLine2\",\"DeliveryPostalCode\",\"DeliveryLocation\",\"PostalAddressLine1\",\"PostalAddressLine2\",\"PostalPostalCode\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" FROM raw.\"sales_customers\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ]
+  },
+  {
+    "id": "D_RAW_PYTHON_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "SELECT _row_ordinal,\"InvoiceLineID\",\"InvoiceID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"TaxAmount\",\"LineProfit\",\"ExtendedPrice\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_invoicelines\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ]
+  },
+  {
+    "id": "D_RAW_PYTHON_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "SELECT _row_ordinal,\"InvoiceID\",\"CustomerID\",\"BillToCustomerID\",\"OrderID\",\"DeliveryMethodID\",\"ContactPersonID\",\"AccountsPersonID\",\"SalespersonPersonID\",\"PackedByPersonID\",\"InvoiceDate\",\"CustomerPurchaseOrderNumber\",\"IsCreditNote\",\"CreditNoteReason\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"TotalDryItems\",\"TotalChillerItems\",\"DeliveryRun\",\"RunPosition\",\"ReturnedDeliveryData\",\"ConfirmedDeliveryTime\",\"ConfirmedReceivedBy\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_invoices\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ]
+  },
+  {
+    "id": "D_RAW_PYTHON_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "SELECT _row_ordinal,\"OrderLineID\",\"OrderID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"PickedQuantity\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_orderlines\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ]
+  },
+  {
+    "id": "D_RAW_PYTHON_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "SELECT _row_ordinal,\"OrderID\",\"CustomerID\",\"SalespersonPersonID\",\"PickedByPersonID\",\"ContactPersonID\",\"BackorderOrderID\",\"OrderDate\",\"ExpectedDeliveryDate\",\"CustomerPurchaseOrderNumber\",\"IsUndersupplyBackordered\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" FROM raw.\"sales_orders\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ]
+  },
+  {
+    "id": "D_RAW_PYTHON_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "SELECT _row_ordinal,\"StockItemID\",\"StockItemName\",\"SupplierID\",\"ColorID\",\"UnitPackageID\",\"OuterPackageID\",\"Brand\",\"Size\",\"LeadTimeDays\",\"QuantityPerOuter\",\"IsChillerStock\",\"Barcode\",\"TaxRate\",\"UnitPrice\",\"RecommendedRetailPrice\",\"TypicalWeightPerUnit\",\"MarketingComments\",\"InternalComments\",\"Photo\",\"CustomFields\",\"Tags\",\"SearchDetails\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" FROM raw.\"warehouse_stockitems\" WHERE _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ]
+  },
+  {
+    "id": "D_QUARANTINE",
+    "engine": "PostgreSQL",
+    "sql": "select record_identity from dq.quarantine_records",
+    "parameters": [],
+    "seconds": 0.0086
+  },
+  {
+    "id": "D_WARNING_VALUE",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.validation_violations v join raw.sales_invoicelines r on r._run_id=v.capture_id and r._row_ordinal=v._raw_row_ordinal where v.source_object='Sales.InvoiceLines' and v.column_name='line_profit' and (r.\"LineProfit\">=0 or v.actual_value<>('md5:'||md5(r.\"LineProfit\"::text)))",
+    "parameters": [],
+    "seconds": 0.0427
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='dbt_sales_test' and c.relname like 'fixture_%_quarantine' order by c.oid desc",
+    "parameters": [],
+    "seconds": 0.0037
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select record_identity from dbt_sales_test.fixture_cfe6af032542 where tax_amount is null order by 1",
+    "parameters": [],
+    "seconds": 0.0025
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select record_identity from dbt_sales_test.fixture_cfe6af032542_quarantine order by 1",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_cfe6af032542",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select dq_status,count(*) from dbt_sales_test.fixture_cfe6af032542_status group by 1",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_customer",
+    "parameters": [],
+    "seconds": 0.0099
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select customer_key,source_customer_id,_capture_id,source_valid_from,source_valid_to from dw_core.dim_customer",
+    "parameters": [],
+    "seconds": 0.0038
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_product",
+    "parameters": [],
+    "seconds": 0.0028
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select product_key,source_stock_item_id,_capture_id,source_valid_from,source_valid_to from dw_core.dim_product",
+    "parameters": [],
+    "seconds": 0.0017
+  },
+  {
+    "id": "E_DATE_BOUNDS",
+    "engine": "PostgreSQL",
+    "sql": "select min(d),max(d) from (select \"OrderDate\" d from raw.sales_orders where _run_id=%s union all select \"InvoiceDate\" from raw.sales_invoices where _run_id=%s)x",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0209
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select calendar_date,date_key,calendar_year,calendar_month,calendar_day,calendar_quarter,month_start from dw_core.dim_date",
+    "parameters": [],
+    "seconds": 0.0036
+  },
+  {
+    "id": "E_ATTRIBUTE_dim_customer",
+    "engine": "PostgreSQL",
+    "sql": "with expected as (select \"CustomerID\",\"CustomerName\",\"CustomerCategoryID\",\"BuyingGroupID\",\"BillToCustomerID\",\"ValidFrom\",\"ValidTo\" from raw.sales_customers where _run_id=%s),actual as (select source_customer_id,customer_name,customer_category_id,buying_group_id,current_bill_to_customer_id,source_valid_from,source_valid_to from dw_core.dim_customer) select count(*) from ((select * from expected except all select * from actual) union all (select * from actual except all select * from expected))x",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0033
+  },
+  {
+    "id": "E_ATTRIBUTE_dim_product",
+    "engine": "PostgreSQL",
+    "sql": "with expected as (select \"StockItemID\",\"StockItemName\",\"Brand\",\"Size\",\"ColorID\",\"UnitPackageID\",\"OuterPackageID\",\"QuantityPerOuter\",\"IsChillerStock\",\"ValidFrom\",\"ValidTo\" from raw.warehouse_stockitems where _run_id=%s),actual as (select source_stock_item_id,stock_item_name,brand,size,color_id,unit_package_id,outer_package_id,quantity_per_outer,is_chiller_stock,source_valid_from,source_valid_to from dw_core.dim_product) select count(*) from ((select * from expected except all select * from actual) union all (select * from actual except all select * from expected))x",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0024
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct source_invoice_line_id) from dw_core.fact_invoice_line",
+    "parameters": [],
+    "seconds": 0.1089
+  },
+  {
+    "id": "F_RAW_ELIGIBILITY_fact_invoice_line",
+    "engine": "PostgreSQL",
+    "sql": "select l._row_ordinal,h._row_ordinal,l.\"InvoiceLineID\" from raw.sales_invoicelines l left join raw.sales_invoices h on h._run_id=l._run_id and h.\"InvoiceID\"=l.\"InvoiceID\" where l._run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.2571
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select source_invoice_line_id,is_sales_eligible,dq_status from dw_core.fact_invoice_line",
+    "parameters": [],
+    "seconds": 0.2337
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select record_identity,dq_status,is_valid,has_warning,is_quarantined from dw_core.fact_invoice_line",
+    "parameters": [],
+    "seconds": 0.3331
+  },
+  {
+    "id": "F_EXACT_fact_invoice_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_invoicelines r left join dw_core.fact_invoice_line f on f.source_invoice_line_id=r.\"InvoiceLineID\" and f._capture_id=r._run_id where r._run_id=%s and (f.source_last_edited_when is distinct from r.\"LastEditedWhen\" or f.source_reported_line_profit is distinct from r.\"LineProfit\" or f._raw_row_ordinal is distinct from r._row_ordinal or f.source_business_key is distinct from r.\"InvoiceLineID\"::text)",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.2447
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct source_order_line_id) from dw_core.fact_order_line",
+    "parameters": [],
+    "seconds": 0.1059
+  },
+  {
+    "id": "F_RAW_ELIGIBILITY_fact_order_line",
+    "engine": "PostgreSQL",
+    "sql": "select l._row_ordinal,h._row_ordinal,l.\"OrderLineID\" from raw.sales_orderlines l left join raw.sales_orders h on h._run_id=l._run_id and h.\"OrderID\"=l.\"OrderID\" where l._run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.2524
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select source_order_line_id,is_order_eligible,dq_status from dw_core.fact_order_line",
+    "parameters": [],
+    "seconds": 0.2203
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select record_identity,dq_status,is_valid,has_warning,is_quarantined from dw_core.fact_order_line",
+    "parameters": [],
+    "seconds": 0.2887
+  },
+  {
+    "id": "F_EXACT_fact_order_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_orderlines r left join dw_core.fact_order_line f on f.source_order_line_id=r.\"OrderLineID\" and f._capture_id=r._run_id where r._run_id=%s and (f.source_last_edited_when is distinct from r.\"LastEditedWhen\" or f._raw_row_ordinal is distinct from r._row_ordinal or f.source_business_key is distinct from r.\"OrderLineID\"::text)",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.2201
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) filter(where buyer_lookup_status='U'),count(*) filter(where bill_to_lookup_status='U'),count(*) filter(where product_lookup_status='U') from dw_core.fact_invoice_line",
+    "parameters": [],
+    "seconds": 0.0495
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select sales_date from sales_marts.mart_sales_daily group by sales_date having count(*)<>1)x",
+    "parameters": [],
+    "seconds": 0.0027
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select invoice_date,source_stock_item_id from sales_marts.mart_sales_product_daily group by invoice_date,source_stock_item_id having count(*)<>1)x",
+    "parameters": [],
+    "seconds": 0.0571
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select invoice_date,source_customer_id,customer_role from sales_marts.mart_customer_sales group by invoice_date,source_customer_id,customer_role having count(*)<>1)x",
+    "parameters": [],
+    "seconds": 0.0215
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select source_customer_id,customer_role from sales_marts.mart_sales_customer_summary group by source_customer_id,customer_role having count(*)<>1)x",
+    "parameters": [],
+    "seconds": 0.0029
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select sales_month from sales_marts.mart_sales_monthly group by sales_month having count(*)<>1)x",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select distinct customer_role from sales_marts.mart_customer_sales",
+    "parameters": [],
+    "seconds": 0.0089
+  },
+  {
+    "id": "G_RAW_DAILY_TAX",
+    "engine": "PostgreSQL",
+    "sql": "select i.\"InvoiceDate\",sum(l.\"TaxAmount\") from raw.sales_invoicelines l join raw.sales_invoices i on l._run_id=i._run_id and l.\"InvoiceID\"=i.\"InvoiceID\" where l._run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0804
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sales_date,tax_amount from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0041
+  },
+  {
+    "id": "G_RAW_DAILY_INCLUDING_TAX",
+    "engine": "PostgreSQL",
+    "sql": "select i.\"InvoiceDate\",sum(l.\"ExtendedPrice\") from raw.sales_invoicelines l join raw.sales_invoices i on l._run_id=i._run_id and l.\"InvoiceID\"=i.\"InvoiceID\" where l._run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0776
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sales_date,invoice_amount_including_tax from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0041
+  },
+  {
+    "id": "G_RAW_DAILY_INVOICE",
+    "engine": "PostgreSQL",
+    "sql": "select \"InvoiceDate\",count(*) from raw.sales_invoices where _run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0159
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sales_date,invoice_count from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0026
+  },
+  {
+    "id": "G_RAW_MONTHLY_COUNT",
+    "engine": "PostgreSQL",
+    "sql": "select date_trunc('month',\"InvoiceDate\")::date,count(*) from raw.sales_invoices where _run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0231
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sales_month,invoice_count from sales_marts.mart_sales_monthly",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "G_RAW_DAILY_ORDER",
+    "engine": "PostgreSQL",
+    "sql": "select \"OrderDate\",count(*) from raw.sales_orders where _run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0096
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sales_date,order_count from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "G_RAW_CUSTOMER_HEADERS",
+    "engine": "PostgreSQL",
+    "sql": "select \"InvoiceDate\",\"CustomerID\",count(*) from raw.sales_invoices where _run_id=%s group by 1,2",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0832
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select invoice_date,source_customer_id,invoice_count from sales_marts.mart_customer_sales",
+    "parameters": [],
+    "seconds": 0.0641
+  },
+  {
+    "id": "G_RAW_CUSTOMER_SUMMARY",
+    "engine": "PostgreSQL",
+    "sql": "select \"CustomerID\",min(\"InvoiceDate\"),max(\"InvoiceDate\"),count(*) from raw.sales_invoices where _run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0205
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select source_customer_id,first_invoice_date,last_invoice_date,invoice_count from sales_marts.mart_sales_customer_summary",
+    "parameters": [],
+    "seconds": 0.0023
+  },
+  {
+    "id": "G_RAW_MONTHLY_UNITS",
+    "engine": "PostgreSQL",
+    "sql": "select date_trunc('month',i.\"InvoiceDate\")::date,sum(l.\"Quantity\") from raw.sales_invoicelines l join raw.sales_invoices i on l._run_id=i._run_id and l.\"InvoiceID\"=i.\"InvoiceID\" where l._run_id=%s group by 1",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0921
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sales_month,units_sold from sales_marts.mart_sales_monthly",
+    "parameters": [],
+    "seconds": 0.0011
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sum(sales_amount),sum(tax_amount),sum(invoice_amount_including_tax),sum(units_sold),sum(invoice_count),sum(order_count) from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select schemaname,tablename from pg_tables where schemaname in ('dw_core','sales_marts','dq') union all select schemaname,viewname from pg_views where schemaname in ('dw_staging','dw_intermediate')",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_invoice_line",
+    "parameters": [],
+    "seconds": 0.0233
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_date",
+    "parameters": [],
+    "seconds": 0.0031
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_order_line",
+    "parameters": [],
+    "seconds": 0.0239
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.validation_violations",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.record_status",
+    "parameters": [],
+    "seconds": 0.035
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_customer",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_customer_sales",
+    "parameters": [],
+    "seconds": 0.0031
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_product",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_product_daily",
+    "parameters": [],
+    "seconds": 0.0098
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_customer_summary",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_monthly",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.quarantine_records",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_warehouse_stockitems",
+    "parameters": [],
+    "seconds": 0.0018
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_customers",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_invoicelines",
+    "parameters": [],
+    "seconds": 0.0155
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_intermediate.int_invoice_header",
+    "parameters": [],
+    "seconds": 0.2336
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_invoices",
+    "parameters": [],
+    "seconds": 0.0058
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_orderlines",
+    "parameters": [],
+    "seconds": 0.0194
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_intermediate.int_order_header",
+    "parameters": [],
+    "seconds": 0.1854
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_orders",
+    "parameters": [],
+    "seconds": 0.0046
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_database_size(current_database())",
+    "parameters": [],
+    "seconds": 0.0104
+  },
+  {
+    "id": "H_STORAGE",
+    "engine": "PostgreSQL",
+    "sql": "select n.nspname,c.relname,c.reltuples::bigint,pg_relation_size(c.oid),pg_indexes_size(c.oid),pg_total_relation_size(c.oid),c.relkind from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('raw','ingestion_meta','dq','dw_core','sales_marts','dbt_sales_test') and c.relkind in ('r','m') order by pg_total_relation_size(c.oid) desc",
+    "parameters": [],
+    "seconds": 0.0082
+  },
+  {
+    "id": "H_ACTUAL_dq.record_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.record_status",
+    "parameters": [],
+    "seconds": 0.034
+  },
+  {
+    "id": "H_ACTUAL_dw_core.fact_invoice_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_invoice_line",
+    "parameters": [],
+    "seconds": 0.0287
+  },
+  {
+    "id": "H_ACTUAL_dw_core.fact_order_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_order_line",
+    "parameters": [],
+    "seconds": 0.0229
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_orderlines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_orderlines",
+    "parameters": [],
+    "seconds": 0.0126
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_invoicelines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_invoicelines",
+    "parameters": [],
+    "seconds": 0.0111
+  },
+  {
+    "id": "H_ACTUAL_raw.warehouse_stockitemtransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.warehouse_stockitemtransactions",
+    "parameters": [],
+    "seconds": 0.0142
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_invoices",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_invoices",
+    "parameters": [],
+    "seconds": 0.0058
+  },
+  {
+    "id": "H_ACTUAL_sales_marts.mart_sales_product_daily",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_product_daily",
+    "parameters": [],
+    "seconds": 0.0107
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_customertransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_customertransactions",
+    "parameters": [],
+    "seconds": 0.0068
+  },
+  {
+    "id": "H_ACTUAL_sales_marts.mart_customer_sales",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_customer_sales",
+    "parameters": [],
+    "seconds": 0.0034
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_orders",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_orders",
+    "parameters": [],
+    "seconds": 0.0032
+  },
+  {
+    "id": "H_ACTUAL_dq.validation_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.validation_violations",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "H_ACTUAL_dw_core.dim_customer",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_customer",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_sales_marts.mart_sales_daily",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_daily",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "H_ACTUAL_dw_core.dim_date",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_date",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_customers",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_customers",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_sales_marts.mart_sales_customer_summary",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_customer_summary",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_raw.warehouse_stockitemholdings",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.warehouse_stockitemholdings",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "H_ACTUAL_raw.warehouse_stockitems_archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.warehouse_stockitems_archive",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "H_ACTUAL_raw.warehouse_stockitems",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.warehouse_stockitems",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_dw_core.dim_product",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_product",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_raw.sales_customers_archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.sales_customers_archive",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_ingestion_meta.runs",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.runs",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_ingestion_meta.load_contracts",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.load_contracts",
+    "parameters": [],
+    "seconds": 0.0017
+  },
+  {
+    "id": "H_ACTUAL_ingestion_meta.object_runs",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.object_runs",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "H_ACTUAL_ingestion_meta.load_audits",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.load_audits",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_ingestion_meta.raw_current",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.raw_current",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_sales_marts.mart_sales_monthly",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_monthly",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_cfe6af032542_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_cfe6af032542_violations",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_efa94abd66fe_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_efa94abd66fe_status",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_cfe6af032542",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_cfe6af032542",
+    "parameters": [],
+    "seconds": 0.0011
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_efa94abd66fe_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_efa94abd66fe_violations",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_ingestion_meta.raw_publications",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from ingestion_meta.raw_publications",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_9caaab0c3746_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_9caaab0c3746_violations",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_efa94abd66fe",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_efa94abd66fe",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_9caaab0c3746",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_9caaab0c3746",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_9caaab0c3746_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_9caaab0c3746_status",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_9caaab0c3746_quarantine",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_9caaab0c3746_quarantine",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_376dd8dae560",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_376dd8dae560",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_376dd8dae560_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_376dd8dae560_violations",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_376dd8dae560_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_376dd8dae560_status",
+    "parameters": [],
+    "seconds": 0.0011
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_376dd8dae560_quarantine",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_376dd8dae560_quarantine",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_f2b69d7b99e8_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_f2b69d7b99e8_violations",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_f2b69d7b99e8_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_f2b69d7b99e8_status",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_f2b69d7b99e8",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_f2b69d7b99e8",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_cfe6af032542_quarantine",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_cfe6af032542_quarantine",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_cfe6af032542_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_cfe6af032542_status",
+    "parameters": [],
+    "seconds": 0.0009
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_f2b69d7b99e8_quarantine",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_f2b69d7b99e8_quarantine",
+    "parameters": [],
+    "seconds": 0.0018
+  },
+  {
+    "id": "H_ACTUAL_dbt_sales_test.fixture_efa94abd66fe_quarantine",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dbt_sales_test.fixture_efa94abd66fe_quarantine",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "H_ACTUAL_dq.quarantine_records",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.quarantine_records",
+    "parameters": [],
+    "seconds": 0.0008
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select sum(pg_column_size(ruleset_version)+pg_column_size(evaluation_id)) from dq.record_status",
+    "parameters": [],
+    "seconds": 0.0522
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select exists(select from pg_extension where extname='pg_stat_statements')",
+    "parameters": [],
+    "seconds": 0.0028
+  },
+  {
+    "id": "H_SAFE_PLAN",
+    "engine": "PostgreSQL",
+    "sql": "explain (format json) select sales_date,sales_amount from sales_marts.mart_sales_daily where sales_amount<0",
+    "parameters": [],
+    "seconds": 0.0022
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select schemaname,tablename from pg_tables where schemaname in ('dw_core','sales_marts','dq','dw_staging','dw_intermediate') union all select schemaname,viewname from pg_views where schemaname in ('dw_core','sales_marts','dq','dw_staging','dw_intermediate')",
+    "parameters": [],
+    "seconds": 0.0023
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_core.dim_customer"
+    ],
+    "seconds": 0.0016
+  },
+  {
+    "id": "B_PINS_dim_customer",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_customer where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0016
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_core.dim_date"
+    ],
+    "seconds": 0.0009
+  },
+  {
+    "id": "B_PINS_dim_date",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_date where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.001
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_core.dim_product"
+    ],
+    "seconds": 0.0014
+  },
+  {
+    "id": "B_PINS_dim_product",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_product where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.001
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_core.fact_invoice_line"
+    ],
+    "seconds": 0.0012
+  },
+  {
+    "id": "B_PINS_fact_invoice_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_invoice_line where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0537
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_core.fact_order_line"
+    ],
+    "seconds": 0.0018
+  },
+  {
+    "id": "B_PINS_fact_order_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_order_line where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0587
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_intermediate.int_invoice_header"
+    ],
+    "seconds": 0.0028
+  },
+  {
+    "id": "B_PINS_int_invoice_header",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_intermediate.int_invoice_header where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0901
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_intermediate.int_order_header"
+    ],
+    "seconds": 0.0014
+  },
+  {
+    "id": "B_PINS_int_order_header",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_intermediate.int_order_header where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0355
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "sales_marts.mart_customer_sales"
+    ],
+    "seconds": 0.0018
+  },
+  {
+    "id": "B_PINS_mart_customer_sales",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_customer_sales where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.007
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "sales_marts.mart_sales_customer_summary"
+    ],
+    "seconds": 0.0016
+  },
+  {
+    "id": "B_PINS_mart_sales_customer_summary",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_customer_summary where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0017
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "sales_marts.mart_sales_daily"
+    ],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_PINS_mart_sales_daily",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_daily where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "sales_marts.mart_sales_monthly"
+    ],
+    "seconds": 0.0011
+  },
+  {
+    "id": "B_PINS_mart_sales_monthly",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_monthly where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.001
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "sales_marts.mart_sales_product_daily"
+    ],
+    "seconds": 0.0009
+  },
+  {
+    "id": "B_PINS_mart_sales_product_daily",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_product_daily where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0168
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dq.quarantine_records"
+    ],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_PINS_quarantine_records",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.quarantine_records where capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0013
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dq.record_status"
+    ],
+    "seconds": 0.0008
+  },
+  {
+    "id": "B_PINS_record_status",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.record_status where capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0642
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dq.validation_violations"
+    ],
+    "seconds": 0.0015
+  },
+  {
+    "id": "B_PINS_validation_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dq.validation_violations where capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0017
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_staging.stg_sales_customers"
+    ],
+    "seconds": 0.0011
+  },
+  {
+    "id": "B_PINS_stg_sales_customers",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_customers where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0012
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_get_viewdef(%s::regclass,true)",
+    "parameters": [
+      "dw_staging.stg_sales_customers"
+    ],
+    "seconds": 0.0077
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_staging.stg_sales_invoicelines"
+    ],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_PINS_stg_sales_invoicelines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_invoicelines where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0133
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_get_viewdef(%s::regclass,true)",
+    "parameters": [
+      "dw_staging.stg_sales_invoicelines"
+    ],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_staging.stg_sales_invoices"
+    ],
+    "seconds": 0.0012
+  },
+  {
+    "id": "B_PINS_stg_sales_invoices",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_invoices where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0053
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_get_viewdef(%s::regclass,true)",
+    "parameters": [
+      "dw_staging.stg_sales_invoices"
+    ],
+    "seconds": 0.0013
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_staging.stg_sales_orderlines"
+    ],
+    "seconds": 0.0011
+  },
+  {
+    "id": "B_PINS_stg_sales_orderlines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_orderlines where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0155
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_get_viewdef(%s::regclass,true)",
+    "parameters": [
+      "dw_staging.stg_sales_orderlines"
+    ],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_staging.stg_sales_orders"
+    ],
+    "seconds": 0.0012
+  },
+  {
+    "id": "B_PINS_stg_sales_orders",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_sales_orders where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0036
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_get_viewdef(%s::regclass,true)",
+    "parameters": [
+      "dw_staging.stg_sales_orders"
+    ],
+    "seconds": 0.0012
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select relkind from pg_class where oid=%s::regclass",
+    "parameters": [
+      "dw_staging.stg_warehouse_stockitems"
+    ],
+    "seconds": 0.0008
+  },
+  {
+    "id": "B_PINS_stg_warehouse_stockitems",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_staging.stg_warehouse_stockitems where _capture_id is distinct from %s::uuid or ruleset_version is distinct from %s or evaluation_id is distinct from %s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8",
+      "39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f",
+      "92d777ccdc05e4b517528f29ed632ee0"
+    ],
+    "seconds": 0.0009
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_get_viewdef(%s::regclass,true)",
+    "parameters": [
+      "dw_staging.stg_warehouse_stockitems"
+    ],
+    "seconds": 0.0017
+  },
+  {
+    "id": "I_staging_fidelity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select 'Sales.Customers' as object_name where exists ((select \"CustomerID\",\"CustomerName\",\"BillToCustomerID\",\"CustomerCategoryID\",\"BuyingGroupID\",\"PrimaryContactPersonID\",\"AlternateContactPersonID\",\"DeliveryMethodID\",\"DeliveryCityID\",\"PostalCityID\",\"CreditLimit\",\"AccountOpenedDate\",\"StandardDiscountPercentage\",\"IsStatementSent\",\"IsOnCreditHold\",\"PaymentDays\",\"PhoneNumber\",\"FaxNumber\",\"DeliveryRun\",\"RunPosition\",\"WebsiteURL\",\"DeliveryAddressLine1\",\"DeliveryAddressLine2\",\"DeliveryPostalCode\",\"DeliveryLocation\",\"PostalAddressLine1\",\"PostalAddressLine2\",\"PostalPostalCode\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" from \"retail_raw\".\"raw\".\"sales_customers\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid except all select customer_id,customer_name,bill_to_customer_id,customer_category_id,buying_group_id,primary_contact_person_id,alternate_contact_person_id,delivery_method_id,delivery_city_id,postal_city_id,credit_limit,account_opened_date,standard_discount_percentage,is_statement_sent,is_on_credit_hold,payment_days,phone_number,fax_number,delivery_run,run_position,website_url,delivery_address_line1,delivery_address_line2,delivery_postal_code,delivery_location,postal_address_line1,postal_address_line2,postal_postal_code,last_edited_by,valid_from,valid_to from \"retail_raw\".\"dw_staging\".\"stg_sales_customers\") union all (select customer_id,customer_name,bill_to_customer_id,customer_category_id,buying_group_id,primary_contact_person_id,alternate_contact_person_id,delivery_method_id,delivery_city_id,postal_city_id,credit_limit,account_opened_date,standard_discount_percentage,is_statement_sent,is_on_credit_hold,payment_days,phone_number,fax_number,delivery_run,run_position,website_url,delivery_address_line1,delivery_address_line2,delivery_postal_code,delivery_location,postal_address_line1,postal_address_line2,postal_postal_code,last_edited_by,valid_from,valid_to from \"retail_raw\".\"dw_staging\".\"stg_sales_customers\" except all select \"CustomerID\",\"CustomerName\",\"BillToCustomerID\",\"CustomerCategoryID\",\"BuyingGroupID\",\"PrimaryContactPersonID\",\"AlternateContactPersonID\",\"DeliveryMethodID\",\"DeliveryCityID\",\"PostalCityID\",\"CreditLimit\",\"AccountOpenedDate\",\"StandardDiscountPercentage\",\"IsStatementSent\",\"IsOnCreditHold\",\"PaymentDays\",\"PhoneNumber\",\"FaxNumber\",\"DeliveryRun\",\"RunPosition\",\"WebsiteURL\",\"DeliveryAddressLine1\",\"DeliveryAddressLine2\",\"DeliveryPostalCode\",\"DeliveryLocation\",\"PostalAddressLine1\",\"PostalAddressLine2\",\"PostalPostalCode\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" from \"retail_raw\".\"raw\".\"sales_customers\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid))\nunion all\nselect 'Sales.Orders' as object_name where exists ((select \"OrderID\",\"CustomerID\",\"SalespersonPersonID\",\"PickedByPersonID\",\"ContactPersonID\",\"BackorderOrderID\",\"OrderDate\",\"ExpectedDeliveryDate\",\"CustomerPurchaseOrderNumber\",\"IsUndersupplyBackordered\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_orders\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid except all select order_id,customer_id,salesperson_person_id,picked_by_person_id,contact_person_id,backorder_order_id,order_date,expected_delivery_date,customer_purchase_order_number,is_undersupply_backordered,comments,delivery_instructions,internal_comments,picking_completed_when,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_orders\") union all (select order_id,customer_id,salesperson_person_id,picked_by_person_id,contact_person_id,backorder_order_id,order_date,expected_delivery_date,customer_purchase_order_number,is_undersupply_backordered,comments,delivery_instructions,internal_comments,picking_completed_when,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_orders\" except all select \"OrderID\",\"CustomerID\",\"SalespersonPersonID\",\"PickedByPersonID\",\"ContactPersonID\",\"BackorderOrderID\",\"OrderDate\",\"ExpectedDeliveryDate\",\"CustomerPurchaseOrderNumber\",\"IsUndersupplyBackordered\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_orders\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid))\nunion all\nselect 'Sales.OrderLines' as object_name where exists ((select \"OrderLineID\",\"OrderID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"PickedQuantity\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_orderlines\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid except all select order_line_id,order_id,stock_item_id,description,package_type_id,quantity,unit_price,tax_rate,picked_quantity,picking_completed_when,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\") union all (select order_line_id,order_id,stock_item_id,description,package_type_id,quantity,unit_price,tax_rate,picked_quantity,picking_completed_when,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\" except all select \"OrderLineID\",\"OrderID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"PickedQuantity\",\"PickingCompletedWhen\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_orderlines\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid))\nunion all\nselect 'Sales.Invoices' as object_name where exists ((select \"InvoiceID\",\"CustomerID\",\"BillToCustomerID\",\"OrderID\",\"DeliveryMethodID\",\"ContactPersonID\",\"AccountsPersonID\",\"SalespersonPersonID\",\"PackedByPersonID\",\"InvoiceDate\",\"CustomerPurchaseOrderNumber\",\"IsCreditNote\",\"CreditNoteReason\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"TotalDryItems\",\"TotalChillerItems\",\"DeliveryRun\",\"RunPosition\",\"ReturnedDeliveryData\",\"ConfirmedDeliveryTime\",\"ConfirmedReceivedBy\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_invoices\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid except all select invoice_id,customer_id,bill_to_customer_id,order_id,delivery_method_id,contact_person_id,accounts_person_id,salesperson_person_id,packed_by_person_id,invoice_date,customer_purchase_order_number,is_credit_note,credit_note_reason,comments,delivery_instructions,internal_comments,total_dry_items,total_chiller_items,delivery_run,run_position,returned_delivery_data,confirmed_delivery_time,confirmed_received_by,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\") union all (select invoice_id,customer_id,bill_to_customer_id,order_id,delivery_method_id,contact_person_id,accounts_person_id,salesperson_person_id,packed_by_person_id,invoice_date,customer_purchase_order_number,is_credit_note,credit_note_reason,comments,delivery_instructions,internal_comments,total_dry_items,total_chiller_items,delivery_run,run_position,returned_delivery_data,confirmed_delivery_time,confirmed_received_by,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\" except all select \"InvoiceID\",\"CustomerID\",\"BillToCustomerID\",\"OrderID\",\"DeliveryMethodID\",\"ContactPersonID\",\"AccountsPersonID\",\"SalespersonPersonID\",\"PackedByPersonID\",\"InvoiceDate\",\"CustomerPurchaseOrderNumber\",\"IsCreditNote\",\"CreditNoteReason\",\"Comments\",\"DeliveryInstructions\",\"InternalComments\",\"TotalDryItems\",\"TotalChillerItems\",\"DeliveryRun\",\"RunPosition\",\"ReturnedDeliveryData\",\"ConfirmedDeliveryTime\",\"ConfirmedReceivedBy\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_invoices\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid))\nunion all\nselect 'Sales.InvoiceLines' as object_name where exists ((select \"InvoiceLineID\",\"InvoiceID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"TaxAmount\",\"LineProfit\",\"ExtendedPrice\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_invoicelines\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid except all select invoice_line_id,invoice_id,stock_item_id,description,package_type_id,quantity,unit_price,tax_rate,tax_amount,line_profit,extended_price,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\") union all (select invoice_line_id,invoice_id,stock_item_id,description,package_type_id,quantity,unit_price,tax_rate,tax_amount,line_profit,extended_price,last_edited_by,last_edited_when from \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\" except all select \"InvoiceLineID\",\"InvoiceID\",\"StockItemID\",\"Description\",\"PackageTypeID\",\"Quantity\",\"UnitPrice\",\"TaxRate\",\"TaxAmount\",\"LineProfit\",\"ExtendedPrice\",\"LastEditedBy\",\"LastEditedWhen\" from \"retail_raw\".\"raw\".\"sales_invoicelines\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid))\nunion all\nselect 'Warehouse.StockItems' as object_name where exists ((select \"StockItemID\",\"StockItemName\",\"SupplierID\",\"ColorID\",\"UnitPackageID\",\"OuterPackageID\",\"Brand\",\"Size\",\"LeadTimeDays\",\"QuantityPerOuter\",\"IsChillerStock\",\"Barcode\",\"TaxRate\",\"UnitPrice\",\"RecommendedRetailPrice\",\"TypicalWeightPerUnit\",\"MarketingComments\",\"InternalComments\",\"Photo\",\"CustomFields\",\"Tags\",\"SearchDetails\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" from \"retail_raw\".\"raw\".\"warehouse_stockitems\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid except all select stock_item_id,stock_item_name,supplier_id,color_id,unit_package_id,outer_package_id,brand,size,lead_time_days,quantity_per_outer,is_chiller_stock,barcode,tax_rate,unit_price,recommended_retail_price,typical_weight_per_unit,marketing_comments,internal_comments,photo,custom_fields,tags,search_details,last_edited_by,valid_from,valid_to from \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\") union all (select stock_item_id,stock_item_name,supplier_id,color_id,unit_package_id,outer_package_id,brand,size,lead_time_days,quantity_per_outer,is_chiller_stock,barcode,tax_rate,unit_price,recommended_retail_price,typical_weight_per_unit,marketing_comments,internal_comments,photo,custom_fields,tags,search_details,last_edited_by,valid_from,valid_to from \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\" except all select \"StockItemID\",\"StockItemName\",\"SupplierID\",\"ColorID\",\"UnitPackageID\",\"OuterPackageID\",\"Brand\",\"Size\",\"LeadTimeDays\",\"QuantityPerOuter\",\"IsChillerStock\",\"Barcode\",\"TaxRate\",\"UnitPrice\",\"RecommendedRetailPrice\",\"TypicalWeightPerUnit\",\"MarketingComments\",\"InternalComments\",\"Photo\",\"CustomFields\",\"Tags\",\"SearchDetails\",\"LastEditedBy\",\"ValidFrom\",\"ValidTo\" from \"retail_raw\".\"raw\".\"warehouse_stockitems\" where _run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid))) audit_failure_rows",
+    "parameters": [],
+    "seconds": 1.1373
+  },
+  {
+    "id": "I_capture_and_contract_pins",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity from \"retail_raw\".\"dw_staging\".\"stg_sales_customers\" where _capture_id<>'5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\nor ruleset_version<>'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f' or evaluation_id<>md5('5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid::text||':'||'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f')\nunion all\n\nselect record_identity from \"retail_raw\".\"dw_staging\".\"stg_sales_orders\" where _capture_id<>'5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\nor ruleset_version<>'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f' or evaluation_id<>md5('5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid::text||':'||'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f')\nunion all\n\nselect record_identity from \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\" where _capture_id<>'5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\nor ruleset_version<>'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f' or evaluation_id<>md5('5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid::text||':'||'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f')\nunion all\n\nselect record_identity from \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\" where _capture_id<>'5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\nor ruleset_version<>'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f' or evaluation_id<>md5('5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid::text||':'||'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f')\nunion all\n\nselect record_identity from \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\" where _capture_id<>'5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\nor ruleset_version<>'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f' or evaluation_id<>md5('5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid::text||':'||'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f')\nunion all\n\nselect record_identity from \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\" where _capture_id<>'5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\nor ruleset_version<>'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f' or evaluation_id<>md5('5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid::text||':'||'39d3afd2fef434eb82e656480892b958e0d5fa9d34e2086eeda0bffb0dd3000f')) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0337
+  },
+  {
+    "id": "I_dimension_business_key_mapping",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select f.record_identity from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" f\nleft join \"retail_raw\".\"dw_core\".\"dim_product\" p on p.product_key=f.observed_product_key\nleft join \"retail_raw\".\"dw_core\".\"dim_customer\" b on b.customer_key=f.buyer_observed_customer_key\nleft join \"retail_raw\".\"dw_core\".\"dim_customer\" t on t.customer_key=f.bill_to_observed_customer_key\nleft join \"retail_raw\".\"dw_core\".\"dim_date\" d on d.date_key=f.invoice_date_key\nwhere f.is_sales_eligible and (p.source_stock_item_id is distinct from f.source_stock_item_id\n or b.source_customer_id is distinct from f.source_buyer_customer_id\n or t.source_customer_id is distinct from f.source_bill_to_customer_id\n or d.calendar_date is distinct from f.invoice_date)\nunion all\nselect f.record_identity from \"retail_raw\".\"dw_core\".\"fact_order_line\" f\nleft join \"retail_raw\".\"dw_core\".\"dim_product\" p on p.product_key=f.observed_product_key\nleft join \"retail_raw\".\"dw_core\".\"dim_customer\" b on b.customer_key=f.buyer_observed_customer_key\nleft join \"retail_raw\".\"dw_core\".\"dim_date\" d on d.date_key=f.order_date_key\nwhere f.is_order_eligible and (p.source_stock_item_id is distinct from f.source_stock_item_id\n or b.source_customer_id is distinct from f.source_buyer_customer_id\n or d.calendar_date is distinct from f.order_date)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.2502
+  },
+  {
+    "id": "I_historical_lookup_not_fabricated",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where buyer_customer_key is not null\n or bill_to_customer_key is not null or product_key is not null or buyer_lookup_status<>'U'\n or bill_to_lookup_status<>'U' or product_lookup_status<>'U'\nunion all\nselect record_identity from \"retail_raw\".\"dw_core\".\"fact_order_line\" where buyer_customer_key is not null\n or product_key is not null or buyer_lookup_status<>'U' or product_lookup_status<>'U') audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0877
+  },
+  {
+    "id": "I_mart_grains",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select 'daily' as model from \"retail_raw\".\"sales_marts\".\"mart_sales_daily\" group by sales_date having count(*)<>1\nunion all select 'product' from \"retail_raw\".\"sales_marts\".\"mart_sales_product_daily\" group by invoice_date,source_stock_item_id having count(*)<>1\nunion all select 'customer' from \"retail_raw\".\"sales_marts\".\"mart_customer_sales\" group by invoice_date,source_customer_id,customer_role having count(*)<>1\nunion all select 'customer_summary' from \"retail_raw\".\"sales_marts\".\"mart_sales_customer_summary\" group by source_customer_id,customer_role having count(*)<>1\nunion all select 'monthly' from \"retail_raw\".\"sales_marts\".\"mart_sales_monthly\" group by sales_month having count(*)<>1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.078
+  },
+  {
+    "id": "I_no_fatal_violations",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select rule_id from \"retail_raw\".\"dq\".\"validation_violations\" where action='fail_pipeline') audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0033
+  },
+  {
+    "id": "I_population_accounting",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with staged as (\n\nselect _capture_id as capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dw_staging\".\"stg_sales_customers\"\nunion all\n\nselect _capture_id as capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dw_staging\".\"stg_sales_orders\"\nunion all\n\nselect _capture_id as capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\"\nunion all\n\nselect _capture_id as capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\"\nunion all\n\nselect _capture_id as capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\"\nunion all\n\nselect _capture_id as capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\"\n\n\n), evaluated as (\nselect capture_id,source_object,record_identity,ruleset_version from \"retail_raw\".\"dq\".\"record_status\"\n)\n(select * from staged except all select * from evaluated)\nunion all (select * from evaluated except all select * from staged)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 3.3491
+  },
+  {
+    "id": "I_quality_status_consistency",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with expected as (\nselect record_identity,ruleset_version,bool_or(severity='ERROR') as invalid,\nbool_or(severity='WARNING') as warning from \"retail_raw\".\"dq\".\"validation_violations\" group by 1,2\n)\nselect s.record_identity from \"retail_raw\".\"dq\".\"record_status\" s\nleft join expected v using(record_identity,ruleset_version)\nwhere (s.dq_status='INVALID') is distinct from coalesce(v.invalid,false)\nor s.is_valid is distinct from (s.dq_status<>'INVALID')\nor s.has_warning is distinct from coalesce(v.warning,false)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.1347
+  },
+  {
+    "id": "I_quarantine_lineage",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select q.record_identity from \"retail_raw\".\"dq\".\"quarantine_records\" q\nleft join \"retail_raw\".\"dq\".\"record_status\" s using(record_identity,ruleset_version,evaluation_id)\nwhere s.record_identity is null or not s.is_quarantined or s.dq_status<>'INVALID'\nor not exists(select 1 from \"retail_raw\".\"dq\".\"validation_violations\" v where v.record_identity=q.record_identity\n and v.ruleset_version=q.ruleset_version and v.action='quarantine')) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0018
+  },
+  {
+    "id": "I_ratio_semantics",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select sales_date from \"retail_raw\".\"sales_marts\".\"mart_sales_daily\"\nwhere average_invoice_value_before_tax is distinct from sales_amount/nullif(invoice_count::numeric,0)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0021
+  },
+  {
+    "id": "I_violation_grain",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity from \"retail_raw\".\"dq\".\"validation_violations\"\ngroup by capture_id,record_identity,ruleset_version,rule_id having count(*)<>1\nunion all\nselect record_identity from \"retail_raw\".\"dq\".\"quarantine_records\"\ngroup by capture_id,record_identity,ruleset_version having count(*)<>1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0034
+  },
+  {
+    "id": "I_invoice_fact_fidelity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with expected as (\nselect l.\"InvoiceLineID\" as id,l.\"InvoiceID\" as invoice_id,l.\"StockItemID\" as product_id,\n l.\"Quantity\" as quantity,l.\"UnitPrice\" as price,l.\"TaxAmount\" as tax,\n l.\"ExtendedPrice\"-l.\"TaxAmount\" as amount,l.\"ExtendedPrice\" as including_tax,\n i.\"InvoiceDate\" as invoice_date,i.\"CustomerID\" as buyer,i.\"BillToCustomerID\" as bill_to\nfrom \"retail_raw\".\"raw\".\"sales_invoicelines\" l left join \"retail_raw\".\"raw\".\"sales_invoices\" i\n on l.\"InvoiceID\"=i.\"InvoiceID\" and l._run_id=i._run_id where l._run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\n), actual as (\nselect source_invoice_line_id as id,source_invoice_id as invoice_id,source_stock_item_id as product_id,\n quantity,unit_price as price,tax_amount as tax,invoiced_sales_before_tax as amount,\n invoice_amount_including_tax as including_tax,invoice_date,\n source_buyer_customer_id as buyer,source_bill_to_customer_id as bill_to\nfrom \"retail_raw\".\"dw_core\".\"fact_invoice_line\"\n)\n(select * from expected except all select * from actual)\nunion all (select * from actual except all select * from expected)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.6143
+  },
+  {
+    "id": "I_order_fact_fidelity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with expected as (\nselect l.\"OrderLineID\" as id,l.\"OrderID\" as order_id,l.\"StockItemID\" as product_id,\n l.\"Quantity\" as quantity,l.\"UnitPrice\" as price,l.\"PickedQuantity\" as picked,\n o.\"OrderDate\" as order_date,o.\"CustomerID\" as buyer\nfrom \"retail_raw\".\"raw\".\"sales_orderlines\" l left join \"retail_raw\".\"raw\".\"sales_orders\" o\non o.\"OrderID\"=l.\"OrderID\" and o._run_id=l._run_id where l._run_id='5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8'::uuid\n), actual as (\nselect source_order_line_id as id,source_order_id as order_id,source_stock_item_id as product_id,\n ordered_quantity as quantity,source_unit_price as price,source_picked_quantity as picked,order_date,\n source_buyer_customer_id as buyer from \"retail_raw\".\"dw_core\".\"fact_order_line\"\n)\n(select * from expected except all select * from actual)\nunion all (select * from actual except all select * from expected)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.3788
+  },
+  {
+    "id": "I_unique_dim_date_date_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    date_key as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_core\".\"dim_date\"\nwhere date_key is not null\ngroup by date_key\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0085
+  },
+  {
+    "id": "I_not_null_dim_date_date_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select date_key\nfrom \"retail_raw\".\"dw_core\".\"dim_date\"\nwhere date_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "I_not_null_dim_date__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_core\".\"dim_date\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "I_unique_dim_customer_customer_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    customer_key as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_core\".\"dim_customer\"\nwhere customer_key is not null\ngroup by customer_key\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "I_not_null_dim_customer_customer_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select customer_key\nfrom \"retail_raw\".\"dw_core\".\"dim_customer\"\nwhere customer_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "I_not_null_dim_customer__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_core\".\"dim_customer\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "I_unique_dim_product_product_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    product_key as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_core\".\"dim_product\"\nwhere product_key is not null\ngroup by product_key\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "I_not_null_dim_product_product_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select product_key\nfrom \"retail_raw\".\"dw_core\".\"dim_product\"\nwhere product_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0011
+  },
+  {
+    "id": "I_not_null_dim_product__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_core\".\"dim_product\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0009
+  },
+  {
+    "id": "I_unique_fact_invoice_line_source_invoice_line_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    source_invoice_line_id as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_core\".\"fact_invoice_line\"\nwhere source_invoice_line_id is not null\ngroup by source_invoice_line_id\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.1291
+  },
+  {
+    "id": "I_not_null_fact_invoice_line_source_invoice_line_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select source_invoice_line_id\nfrom \"retail_raw\".\"dw_core\".\"fact_invoice_line\"\nwhere source_invoice_line_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0297
+  },
+  {
+    "id": "I_not_null_fact_invoice_line__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_core\".\"fact_invoice_line\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0437
+  },
+  {
+    "id": "I_not_null_fact_invoice_line_observed_product_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select observed_product_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\nwhere observed_product_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0502
+  },
+  {
+    "id": "I_relationships_fact_invoice_line_observed_product_key__product_key__ref_dim_product_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select observed_product_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\n    where observed_product_key is not null\n),\n\nparent as (\n    select product_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_product\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0625
+  },
+  {
+    "id": "I_not_null_fact_invoice_line_buyer_observed_customer_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select buyer_observed_customer_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\nwhere buyer_observed_customer_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0454
+  },
+  {
+    "id": "I_relationships_fact_invoice_line_buyer_observed_customer_key__customer_key__ref_dim_customer_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select buyer_observed_customer_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\n    where buyer_observed_customer_key is not null\n),\n\nparent as (\n    select customer_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_customer\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0638
+  },
+  {
+    "id": "I_not_null_fact_invoice_line_invoice_date_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select invoice_date_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\nwhere invoice_date_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0465
+  },
+  {
+    "id": "I_relationships_fact_invoice_line_invoice_date_key__date_key__ref_dim_date_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select invoice_date_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\n    where invoice_date_key is not null\n),\n\nparent as (\n    select date_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_date\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0576
+  },
+  {
+    "id": "I_not_null_fact_invoice_line_bill_to_observed_customer_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select bill_to_observed_customer_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\nwhere bill_to_observed_customer_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0496
+  },
+  {
+    "id": "I_relationships_fact_invoice_line_bill_to_observed_customer_key__customer_key__ref_dim_customer_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select bill_to_observed_customer_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_invoice_line\" where is_sales_eligible) dbt_subquery\n    where bill_to_observed_customer_key is not null\n),\n\nparent as (\n    select customer_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_customer\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0747
+  },
+  {
+    "id": "I_unique_fact_order_line_source_order_line_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    source_order_line_id as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_core\".\"fact_order_line\"\nwhere source_order_line_id is not null\ngroup by source_order_line_id\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.104
+  },
+  {
+    "id": "I_not_null_fact_order_line_source_order_line_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select source_order_line_id\nfrom \"retail_raw\".\"dw_core\".\"fact_order_line\"\nwhere source_order_line_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0271
+  },
+  {
+    "id": "I_not_null_fact_order_line__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_core\".\"fact_order_line\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0343
+  },
+  {
+    "id": "I_not_null_fact_order_line_observed_product_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select observed_product_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_order_line\" where is_order_eligible) dbt_subquery\nwhere observed_product_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0406
+  },
+  {
+    "id": "I_relationships_fact_order_line_observed_product_key__product_key__ref_dim_product_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select observed_product_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_order_line\" where is_order_eligible) dbt_subquery\n    where observed_product_key is not null\n),\n\nparent as (\n    select product_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_product\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0576
+  },
+  {
+    "id": "I_not_null_fact_order_line_buyer_observed_customer_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select buyer_observed_customer_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_order_line\" where is_order_eligible) dbt_subquery\nwhere buyer_observed_customer_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0403
+  },
+  {
+    "id": "I_relationships_fact_order_line_buyer_observed_customer_key__customer_key__ref_dim_customer_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select buyer_observed_customer_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_order_line\" where is_order_eligible) dbt_subquery\n    where buyer_observed_customer_key is not null\n),\n\nparent as (\n    select customer_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_customer\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0601
+  },
+  {
+    "id": "I_not_null_fact_order_line_order_date_key",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select order_date_key\nfrom (select * from \"retail_raw\".\"dw_core\".\"fact_order_line\" where is_order_eligible) dbt_subquery\nwhere order_date_key is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.044
+  },
+  {
+    "id": "I_relationships_fact_order_line_order_date_key__date_key__ref_dim_date_",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with child as (\n    select order_date_key as from_field\n    from (select * from \"retail_raw\".\"dw_core\".\"fact_order_line\" where is_order_eligible) dbt_subquery\n    where order_date_key is not null\n),\n\nparent as (\n    select date_key as to_field\n    from \"retail_raw\".\"dw_core\".\"dim_date\"\n)\n\nselect\n    from_field\n\nfrom child\nleft join parent\n    on child.from_field = parent.to_field\n\nwhere parent.to_field is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0575
+  },
+  {
+    "id": "I_unique_int_invoice_header_source_invoice_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    source_invoice_id as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_intermediate\".\"int_invoice_header\"\nwhere source_invoice_id is not null\ngroup by source_invoice_id\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.2673
+  },
+  {
+    "id": "I_not_null_int_invoice_header_source_invoice_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select source_invoice_id\nfrom \"retail_raw\".\"dw_intermediate\".\"int_invoice_header\"\nwhere source_invoice_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0017
+  },
+  {
+    "id": "I_not_null_int_invoice_header__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_intermediate\".\"int_invoice_header\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0011
+  },
+  {
+    "id": "I_unique_int_order_header_source_order_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    source_order_id as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_intermediate\".\"int_order_header\"\nwhere source_order_id is not null\ngroup by source_order_id\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.2235
+  },
+  {
+    "id": "I_not_null_int_order_header_source_order_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select source_order_id\nfrom \"retail_raw\".\"dw_intermediate\".\"int_order_header\"\nwhere source_order_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0017
+  },
+  {
+    "id": "I_not_null_int_order_header__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_intermediate\".\"int_order_header\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "I_unique_record_status_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dq\".\"record_status\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.2895
+  },
+  {
+    "id": "I_not_null_record_status_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dq\".\"record_status\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0456
+  },
+  {
+    "id": "I_accepted_values_record_status_dq_status__VALID__WARNING__INVALID",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (with all_values as (\n\n    select\n        dq_status as value_field,\n        count(*) as n_records\n\n    from \"retail_raw\".\"dq\".\"record_status\"\n    group by dq_status\n\n)\n\nselect *\nfrom all_values\nwhere value_field not in (\n    'VALID','WARNING','INVALID'\n)) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0631
+  },
+  {
+    "id": "I_unique_stg_sales_customers_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_customers\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0026
+  },
+  {
+    "id": "I_not_null_stg_sales_customers_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_customers\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0019
+  },
+  {
+    "id": "I_not_null_stg_sales_customers__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_customers\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "I_unique_stg_sales_orders_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_orders\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.1147
+  },
+  {
+    "id": "I_not_null_stg_sales_orders_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_orders\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.051
+  },
+  {
+    "id": "I_not_null_stg_sales_orders__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_orders\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0133
+  },
+  {
+    "id": "I_unique_stg_sales_orderlines_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.429
+  },
+  {
+    "id": "I_not_null_stg_sales_orderlines_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.182
+  },
+  {
+    "id": "I_not_null_stg_sales_orderlines__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_orderlines\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "I_unique_stg_sales_invoices_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.1192
+  },
+  {
+    "id": "I_not_null_stg_sales_invoices_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0573
+  },
+  {
+    "id": "I_not_null_stg_sales_invoices__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_invoices\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "I_unique_stg_sales_invoicelines_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.4054
+  },
+  {
+    "id": "I_not_null_stg_sales_invoicelines_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.1789
+  },
+  {
+    "id": "I_not_null_stg_sales_invoicelines__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_staging\".\"stg_sales_invoicelines\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "I_unique_stg_warehouse_stockitems_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select\n    record_identity as unique_field,\n    count(*) as n_records\n\nfrom \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\"\nwhere record_identity is not null\ngroup by record_identity\nhaving count(*) > 1) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "I_not_null_stg_warehouse_stockitems_record_identity",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select record_identity\nfrom \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\"\nwhere record_identity is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "I_not_null_stg_warehouse_stockitems__capture_id",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from (select _capture_id\nfrom \"retail_raw\".\"dw_staging\".\"stg_warehouse_stockitems\"\nwhere _capture_id is null) audit_failure_rows",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "B_CONTROL_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "B_CONTROL_object_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.object_runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_CONTROL_load_contracts",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_contracts order by 1,2",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "B_CONTROL_load_audits",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_audits order by 1,2",
+    "parameters": [],
+    "seconds": 0.0065
+  },
+  {
+    "id": "B_CONTROL_raw_current",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_current order by 1,2",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_CONTROL_raw_publications",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_publications order by 1,2",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select current_database(),current_user,current_setting('default_transaction_read_only')",
+    "parameters": [],
+    "seconds": 0.0064
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select current_database(),current_user,current_setting('default_transaction_read_only')",
+    "parameters": [],
+    "seconds": 0.0015
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select pg_try_advisory_lock(941062)",
+    "parameters": [],
+    "seconds": 0.002
+  },
+  {
+    "id": "B_CONTROL_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0266
+  },
+  {
+    "id": "B_CONTROL_object_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.object_runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0032
+  },
+  {
+    "id": "B_CONTROL_load_contracts",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_contracts order by 1,2",
+    "parameters": [],
+    "seconds": 0.0021
+  },
+  {
+    "id": "B_CONTROL_load_audits",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_audits order by 1,2",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "B_CONTROL_raw_current",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_current order by 1,2",
+    "parameters": [],
+    "seconds": 0.0026
+  },
+  {
+    "id": "B_CONTROL_raw_publications",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_publications order by 1,2",
+    "parameters": [],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_ORDINAL_Sales.CustomerTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_customertransactions\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0211
+  },
+  {
+    "id": "B_FAILED_Sales.CustomerTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_customertransactions\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0165
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.CustomerTransactions",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[CustomerTransactions]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_customers\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0039
+  },
+  {
+    "id": "B_FAILED_Sales.Customers",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_customers\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.Customers",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[Customers]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Sales.Customers_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_customers_archive\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0041
+  },
+  {
+    "id": "B_FAILED_Sales.Customers_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_customers_archive\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0017
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.Customers_Archive",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[Customers_Archive]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_invoicelines\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0307
+  },
+  {
+    "id": "B_FAILED_Sales.InvoiceLines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_invoicelines\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0301
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.InvoiceLines",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[InvoiceLines]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_invoices\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.01
+  },
+  {
+    "id": "B_FAILED_Sales.Invoices",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_invoices\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0068
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.Invoices",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[Invoices]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_orderlines\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0301
+  },
+  {
+    "id": "B_FAILED_Sales.OrderLines",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_orderlines\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0382
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.OrderLines",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[OrderLines]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"sales_orders\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0132
+  },
+  {
+    "id": "B_FAILED_Sales.Orders",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"sales_orders\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0055
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Sales.Orders",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Sales].[Orders]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Warehouse.StockItemHoldings",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"warehouse_stockitemholdings\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0123
+  },
+  {
+    "id": "B_FAILED_Warehouse.StockItemHoldings",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitemholdings\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0016
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Warehouse.StockItemHoldings",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Warehouse].[StockItemHoldings]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Warehouse.StockItemTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"warehouse_stockitemtransactions\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0347
+  },
+  {
+    "id": "B_FAILED_Warehouse.StockItemTransactions",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitemtransactions\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0319
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Warehouse.StockItemTransactions",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Warehouse].[StockItemTransactions]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"warehouse_stockitems\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0032
+  },
+  {
+    "id": "B_FAILED_Warehouse.StockItems",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitems\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0014
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Warehouse.StockItems",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Warehouse].[StockItems]",
+    "parameters": []
+  },
+  {
+    "id": "B_ORDINAL_Warehouse.StockItems_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*),count(distinct _row_ordinal),min(_row_ordinal),max(_row_ordinal) from raw.\"warehouse_stockitems_archive\" where _run_id=%s",
+    "parameters": [
+      "5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8"
+    ],
+    "seconds": 0.0044
+  },
+  {
+    "id": "B_FAILED_Warehouse.StockItems_Archive",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from raw.\"warehouse_stockitems_archive\" r join ingestion_meta.runs m on m.run_id=r._run_id where m.status='FAILED'",
+    "parameters": [],
+    "seconds": 0.0011
+  },
+  {
+    "id": "A_SOURCE_COUNT_BIG_Warehouse.StockItems_Archive",
+    "engine": "SQL Server",
+    "sql": "SELECT COUNT_BIG(*) FROM [Warehouse].[StockItems_Archive]",
+    "parameters": []
+  },
+  {
+    "id": "PG",
+    "engine": "PostgreSQL",
+    "sql": "select table_schema,table_name from information_schema.columns where column_name='measure_version' and table_schema in ('dw_core','dw_intermediate','sales_marts') order by 1,2",
+    "parameters": [],
+    "seconds": 0.0395
+  },
+  {
+    "id": "B_MEASURES_dim_customer",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_customer where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0085
+  },
+  {
+    "id": "B_MEASURES_dim_date",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_date where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0074
+  },
+  {
+    "id": "B_MEASURES_dim_product",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.dim_product where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.008
+  },
+  {
+    "id": "B_MEASURES_fact_invoice_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_invoice_line where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0947
+  },
+  {
+    "id": "B_MEASURES_fact_order_line",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_core.fact_order_line where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0818
+  },
+  {
+    "id": "B_MEASURES_int_invoice_header",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_intermediate.int_invoice_header where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0048
+  },
+  {
+    "id": "B_MEASURES_int_order_header",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from dw_intermediate.int_order_header where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0015
+  },
+  {
+    "id": "B_MEASURES_mart_customer_sales",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_customer_sales where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0176
+  },
+  {
+    "id": "B_MEASURES_mart_sales_customer_summary",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_customer_summary where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0022
+  },
+  {
+    "id": "B_MEASURES_mart_sales_daily",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_daily where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0029
+  },
+  {
+    "id": "B_MEASURES_mart_sales_monthly",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_monthly where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0013
+  },
+  {
+    "id": "B_MEASURES_mart_sales_product_daily",
+    "engine": "PostgreSQL",
+    "sql": "select count(*) from sales_marts.mart_sales_product_daily where measure_version is distinct from %s",
+    "parameters": [
+      "86ac5adfd16901e62f9d100ba567b9e60bca60b9ead94c54ddcb3ecddfc69e91"
+    ],
+    "seconds": 0.0315
+  },
+  {
+    "id": "B_CONTROL_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0012
+  },
+  {
+    "id": "B_CONTROL_object_runs",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.object_runs order by 1,2",
+    "parameters": [],
+    "seconds": 0.0009
+  },
+  {
+    "id": "B_CONTROL_load_contracts",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_contracts order by 1,2",
+    "parameters": [],
+    "seconds": 0.001
+  },
+  {
+    "id": "B_CONTROL_load_audits",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.load_audits order by 1,2",
+    "parameters": [],
+    "seconds": 0.0008
+  },
+  {
+    "id": "B_CONTROL_raw_current",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_current order by 1,2",
+    "parameters": [],
+    "seconds": 0.0009
+  },
+  {
+    "id": "B_CONTROL_raw_publications",
+    "engine": "PostgreSQL",
+    "sql": "select * from ingestion_meta.raw_publications order by 1,2",
+    "parameters": [],
+    "seconds": 0.0007
+  }
+]

@@ -1,0 +1,3 @@
+severity,check_id,status,finding,expected,actual
+LOW,REPEATED_VERSION_STORAGE,WARNING,Measured ruleset_version + evaluation_id datum bytes in dq.record_status; no migration performed,optimization opportunity only,59257856
+LOW,POINT_IN_TIME_SOURCE_PROOF,WARNING,Current full content equality is not a global source snapshot proof; consistency remains UNVERIFIED,not asserted,not proven
