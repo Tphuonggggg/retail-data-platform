@@ -4,6 +4,7 @@ import argparse
 import json
 from pathlib import Path
 import secrets
+import hashlib
 import subprocess
 import sys
 
@@ -15,16 +16,16 @@ from infrastructure.scripts.check_raw_connection import read_env_file, load_conf
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--execute', action='store_true')
+    parser.add_argument('--approved-sha256')
     args = parser.parse_args()
     if not args.execute:
         parser.print_help(); return 0
     import psycopg
-    from psycopg import sql
     local = ROOT / '.local/dbt'
     private = local / 'connection.json'
     try:
         values = read_env_file(ROOT / '.env')
-        cfg = load_config(values, require_admin=True)
+        cfg = load_config(values)
         if cfg.port != 55434: raise ValueError('Wrong port')
         info = json.loads(subprocess.check_output(['docker','inspect','retail-raw-postgres-1']))[0]
         if (info['Id'] != '9fd7b79bf3a28ba8a531fef868fa5d8aaf6b0af786d9e042b3407fdb65ca8ddd'
@@ -33,18 +34,23 @@ def main():
             or not any(m.get('Name')=='retail-raw_pg_data' for m in info['Mounts'])):
             raise ValueError('Wrong container identity')
         if private.exists(): raise ValueError('Private profile exists: inspect, do not overwrite')
+        script = (ROOT/'infrastructure/postgres/warehouse/provision.sql').read_bytes()
+        approved = '409e65e330e2cc7292c23c87c8cbc914c46121c5d0acd38a08476b9546335477'
+        if args.approved_sha256 != approved or hashlib.sha256(script).hexdigest() != approved:
+            raise ValueError('Approved script hash mismatch')
         local.mkdir(parents=True, exist_ok=True)
         password = secrets.token_urlsafe(36)
-        with psycopg.connect(host=cfg.host,port=cfg.port,dbname=cfg.database,user='postgres',
-                             password=values['RAW_PG_ADMIN_PASSWORD'],connect_timeout=5) as conn:
-            if conn.execute('select current_database(),current_user').fetchone()!=('retail_raw','postgres'):
-                raise ValueError('Wrong database identity')
-            conn.execute((ROOT/'infrastructure/postgres/warehouse/provision.sql').read_text(encoding='utf-8'))
-            # No credentials in command arguments, source files or SQL logs.
-            conn.execute(sql.SQL('ALTER ROLE retail_transform LOGIN PASSWORD {}').format(sql.Literal(password)))
-            # Save private recovery material before the transaction commits.
-            with private.open('x',encoding='utf-8') as out:
-                json.dump({'password':password},out)
+        # Docker-local postgres socket; no change to host authentication or admin password.
+        # token_urlsafe has a fixed safe alphabet; the password travels only on stdin.
+        with private.open('x',encoding='utf-8') as out:
+            json.dump({'password':password},out)
+        command = ['docker','exec','-i',info['Id'],'psql','-X','-U','postgres','-d','retail_raw',
+                   '-v','ON_ERROR_STOP=1','--single-transaction','-f','-']
+        result = subprocess.run(command, input=script +
+            ("\nALTER ROLE retail_transform LOGIN PASSWORD '"+password+"';\n").encode(),
+            capture_output=True,timeout=60)
+        if result.returncode != 0:
+            raise RuntimeError('Provisioning failed; inspect state before retry; output suppressed')
         print('WAREHOUSE_PROVISIONING_PASS: new role and four schemas; Raw unchanged')
         return 0
     except Exception as error:

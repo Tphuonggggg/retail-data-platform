@@ -1,11 +1,11 @@
--- DW-IMPLEMENT-01: new-only, isolated warehouse schemas in the existing Raw DB.
--- Executed transactionally by provision.py, never by ordinary dbt commands.
+-- DBT-SALES-01: proposed privileged provisioning. Requires separate Owner approval.
+-- Existing container/database only; transactional, new-only; never run by dbt.
 DO $$ BEGIN
  IF current_database() <> 'retail_raw' OR current_user <> 'postgres'
  THEN RAISE EXCEPTION 'Wrong provisioning target'; END IF;
  IF EXISTS(SELECT FROM pg_roles WHERE rolname='retail_transform') OR
     EXISTS(SELECT FROM pg_namespace WHERE nspname IN
-      ('dw_staging','dw_intermediate','dw_core','sales_marts'))
+      ('dw_staging','dw_intermediate','dw_core','sales_marts','dq','dbt_sales_test'))
  THEN RAISE EXCEPTION 'Warehouse collision: inspect; do not rerun provisioning'; END IF;
 END $$;
 CREATE ROLE retail_transform NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
@@ -14,13 +14,13 @@ CREATE SCHEMA dw_staging AUTHORIZATION retail_transform;
 CREATE SCHEMA dw_intermediate AUTHORIZATION retail_transform;
 CREATE SCHEMA dw_core AUTHORIZATION retail_transform;
 CREATE SCHEMA sales_marts AUTHORIZATION retail_transform;
+CREATE SCHEMA dq AUTHORIZATION retail_transform;
+CREATE SCHEMA dbt_sales_test AUTHORIZATION retail_transform;
 GRANT USAGE ON SCHEMA raw,ingestion_meta TO retail_transform;
 GRANT SELECT ON
- raw.sales_customers, raw.sales_customers_archive, raw.sales_orders,
+ raw.sales_customers, raw.sales_orders,
  raw.sales_orderlines, raw.sales_invoices, raw.sales_invoicelines,
- raw.sales_customertransactions, raw.warehouse_stockitems,
- raw.warehouse_stockitems_archive, raw.warehouse_stockitemholdings,
- raw.warehouse_stockitemtransactions,
+ raw.warehouse_stockitems,
  ingestion_meta.runs, ingestion_meta.object_runs, ingestion_meta.load_contracts,
  ingestion_meta.load_audits, ingestion_meta.raw_publications, ingestion_meta.raw_current
  TO retail_transform;
@@ -45,14 +45,10 @@ BEGIN
  OR (SELECT count(*) FROM ingestion_meta.load_audits WHERE run_id=requested)<>11
  THEN RAISE EXCEPTION 'Capture must contain all eleven reconciled objects'; END IF;
  FOR x IN SELECT * FROM (VALUES
-   ('Sales','Customers','sales_customers'),('Sales','Customers_Archive','sales_customers_archive'),
+   ('Sales','Customers','sales_customers'),
    ('Sales','Orders','sales_orders'),('Sales','OrderLines','sales_orderlines'),
    ('Sales','Invoices','sales_invoices'),('Sales','InvoiceLines','sales_invoicelines'),
-   ('Sales','CustomerTransactions','sales_customertransactions'),
-   ('Warehouse','StockItems','warehouse_stockitems'),
-   ('Warehouse','StockItems_Archive','warehouse_stockitems_archive'),
-   ('Warehouse','StockItemHoldings','warehouse_stockitemholdings'),
-   ('Warehouse','StockItemTransactions','warehouse_stockitemtransactions')
+   ('Warehouse','StockItems','warehouse_stockitems')
  ) AS objects(source_schema,source_table,target_table) LOOP
    EXECUTE format('SELECT count(*) FROM raw.%I WHERE _run_id=$1',x.target_table)
      INTO actual USING requested;

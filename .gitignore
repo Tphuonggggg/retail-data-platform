@@ -32,3 +32,5 @@ dbt/target/
 dbt/logs/
 dbt/dbt_packages/
 profiles.yml
+# Runtime-only compatibility junction for the original container bootstrap bind.
+/storage/
