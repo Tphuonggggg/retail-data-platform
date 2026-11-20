@@ -1,5 +1,21 @@
 # Sales Analytics — dbt runtime đã nghiệm thu
 
+## INGEST-INCR-01 — explicit input versions
+
+Runner thêm `--input-kind INCREMENTAL --capture-id <validated-version-uuid>`. FULL vẫn mặc định và giữ guard cũ. Incremental guard kiểm tra parent/root/scope/contract/VALIDATED; `sales_raw_input()` chọn đúng sáu typed state functions trên cùng UUID cho staging và fidelity test. Không dùng publication pointer/latest, không mix versions. YAML rules/measures, Buyer/Bill-to, grains, historical U/NK/reasons và observed-current references giữ nguyên.
+
+Incremental dùng session `work_mem=64MB`, max_parallel_workers_per_gather=0, jit=off, threads=1; không ALTER SYSTEM/container. Truyền qua libpq PGOPTIONS và giữ inherited read-only options; installed adapter không nhận profile key `options`. Run-start kiểm tra actual settings, sai thì fail. `--work-mem-mb 4|16|64` cho benchmark có kiểm soát; FULL mặc định4MB. Memory này tính trên từng operation, không phải total-process cap. EXPLAIN phát hiện Function Scan ước lượng5 dòng so với70510 thực tế; query64MB riêng lẻ0,62s chưa giải quyết toàn graph. Materialized staging/statistics và jit=off xử lý regression; probe fact full-output4,25s, enable_hashjoin=off bị timeout12s nên không áp dụng. Table models do transform sở hữu được ANALYZE sau build; không ANALYZE Raw. Các lần dừng được ghi trong evidence. Không thêm index/hint/đổi grain để che lỗi.
+
+Rebuild toàn bộ Sales dependency graph là correctness baseline; không thêm dbt incremental materialization. `performance.yml: incremental_staging_materialization: table` cache sáu typed staging của version và chạy ANALYZE trên đúng staging do retail_transform sở hữu. FULL vẫn dùng staging views. Incremental vì vậy có 21 models gồm 2 views/19 tables. Đây là staging hiện hành phục vụ planner/column pruning, không thêm Raw snapshots. Đổi này xử lý regression từ Function Scan cardinality và repeated projection; session64MB riêng lẻ chưa đủ bảo đảm full graph. Không đổi ruleset/measure hash. DQ được tính lại theo version và ruleset; artifacts invocation/YAML và immutable input cho phép giải thích/tái tạo evaluation trước. Serving tables vẫn local development/Uncertified, không phải atomic analytical publication; dùng advisory runner lock và chưa phục vụ BI.
+
+```powershell
+.\.venv\Scripts\python.exe dbt/run_dbt.py build --input-kind INCREMENTAL --capture-id c825b18e-fc62-4cf1-8837-b37b4c9f9668
+.\.venv\Scripts\python.exe dbt/run_dbt.py test --input-kind INCREMENTAL --capture-id c825b18e-fc62-4cf1-8837-b37b4c9f9668
+.\.venv\Scripts\python.exe tests/integration/incremental_acceptance.py --execute --with-sales --version-id c825b18e-fc62-4cf1-8837-b37b4c9f9668 --output .local/incremental-reconciliation.json
+```
+
+Xem [workflow/limitations](../ingestion/README.md#ingest-incr-01--sales-snapshot-diff-2026-11-20) và [runtime evidence](../docs/audits/ingest-incr-01/evidence.json). Không thay accepted KPI hoặc tự resolve historical SCD2 bằng current dimension. Missing Product trong fixture tạo relationship violation/quarantine, giữ source key/history U và loại contribution khỏi eligible Sales; không tự tạo dimension giả.
+
 **DBT_SALES_RUNTIME_ACCEPTED — 2026-11-20.** PostgreSQL 18.7, dbt-core 1.11.17, dbt-postgres 1.11.0, Python 3.12.10. Đã build 21 models: 8 views và 13 tables; 69 dbt data tests PASS. Đây là biến đổi local-development của unpublished capture, **không phải Certified publication hoặc bằng chứng source point-in-time consistency**.
 
 ## Phạm vi và capture

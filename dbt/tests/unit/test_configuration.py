@@ -10,6 +10,19 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[2]))
 from configuration import load,validate,ContractError,quality_state,safe_ratio,failure_sql,literal,fingerprint,UniqueLoader
 
 class ConfigTests(unittest.TestCase):
+    def test_session_options_preserve_read_only(self):
+        from execute import session_pgoptions
+        options=session_pgoptions('-c default_transaction_read_only=on',64)
+        self.assertIn('default_transaction_read_only=on',options)
+        self.assertNotIn('read_only=off',options)
+        self.assertIn('work_mem=64MB',options)
+    def test_session_memory_rejects_unregistered_input(self):
+        from execute import session_pgoptions
+        for value in (True,0,1024,'64 -c default_transaction_read_only=off'):
+            with self.assertRaises(ValueError):session_pgoptions('',value)
+    def test_incremental_materialization_closed_contract(self):
+        self.reject(lambda d:d['performance'].update(incremental_staging_materialization='incremental'))
+        self.reject(lambda d:d['performance'].update(incremental_staging_materialization={}))
     def setUp(self):self.docs=load()['documents']
     def reject(self,change):
         d=deepcopy(self.docs);change(d)

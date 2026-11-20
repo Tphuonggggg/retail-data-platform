@@ -1,5 +1,6 @@
 version: sales-performance-v1
 threads: 1
+incremental_staging_materialization: table
 materialization:
   staging: view
   intermediate: view

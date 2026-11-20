@@ -17,5 +17,5 @@ select _run_id as _capture_id, _row_ordinal as _raw_row_ordinal,
   cast("ExtendedPrice" as numeric(18,2)) as extended_price,
   cast("LastEditedBy" as integer) as last_edited_by,
   cast("LastEditedWhen" as text) collate "C" as last_edited_when
-from {{ source('wwi_raw', 'sales_invoicelines') }}
+from {{ sales_raw_input('sales_invoicelines') }}
 where _run_id = {{ capture_id() }}

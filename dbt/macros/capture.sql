@@ -22,10 +22,26 @@
     {% if result.rows[0][0] != 'retail_raw' or result.rows[0][1] != 'retail_transform' %}
       {{ exceptions.raise_compiler_error('Unexpected warehouse database or transformation identity') }}
     {% endif %}
-    {% set result = run_query("select dw_staging.assert_capture(" ~ capture_id() ~ ")") %}
+    {% set settings = run_query("select current_setting('work_mem'),current_setting('max_parallel_workers_per_gather'),current_setting('jit')") %}
+    {% if settings.rows[0][0] != (var('sales_work_mem_mb',4)|string ~ 'MB') or settings.rows[0][1] != '0' or settings.rows[0][2] != 'off' %}
+      {{ exceptions.raise_compiler_error('Required session performance settings not active') }}
+    {% endif %}
+    {% set assertion = 'ingestion_meta.assert_sales_version' if var('sales_input_kind','FULL') == 'INCREMENTAL' else 'dw_staging.assert_capture' %}
+    {% set result = run_query("select " ~ assertion ~ "(" ~ capture_id() ~ ")") %}
   {% endif %}
   {{ return('select 1') }}
 {% endmacro %}
+
+{% macro sales_raw_input(name) -%}
+  {% set allowed = ['sales_customers','sales_orders','sales_orderlines','sales_invoices','sales_invoicelines','warehouse_stockitems'] %}
+  {% if name not in allowed %}{{ exceptions.raise_compiler_error('Unregistered Sales source') }}{% endif %}
+  {% set relation = source('wwi_raw',name) %}
+  {% if var('sales_input_kind','FULL') == 'INCREMENTAL' %}
+    {{ return('raw.sales_state_' ~ name ~ '(' ~ capture_id() ~ ')') }}
+  {% elif var('sales_input_kind','FULL') == 'FULL' %}
+    {{ return(relation) }}
+  {% else %}{{ exceptions.raise_compiler_error('Unknown Sales input kind') }}{% endif %}
+{%- endmacro %}
 
 {% macro observed_key(kind, natural_key) -%}
   md5('{{ kind }}:OBSERVED_CAPTURE:' || {{ capture_id() }}::text || ':' || ({{ natural_key }})::text)

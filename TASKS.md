@@ -4,6 +4,7 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 
 | ID | Module/dependencies | Acceptance | Status |
 |---|---|---|---|
+| INGEST-INCR-01 | Accepted Full Load + DBT-SALES-01 + Owner-approved new-only incremental migration | Live snapshot-diff/current-state reconciliation/no-change; isolated persisted I/U/D/recovery; version-pinned dbt/DQ/marts; source/Raw/publication preserved | DONE — INCREMENTAL_RUNTIME_ACCEPTED; 2 live versions604672 unchanged/run; 166 fixture checks; 97 independent checks; 21 models/69 dbt tests; same-version21 counts/19 digests stable; [evidence](docs/audits/ingest-incr-01/evidence.json) |
 | DBT-SALES-01 | INGEST-03 + approved Sales DW/KPI + scoped transformation role | Real capture-pinned staging/DQ/core/marts; YAML contracts; independent reconciliation/rerun/performance; Raw preserved | DONE — DBT_SALES_RUNTIME_ACCEPTED; 21 models/69 dbt tests/129 checks; real DQ604672 records; unpublished/UNVERIFIED |
 | REPO-STRUCTURE-02 | Pipeline-stage ownership, preserved DW draft | Paths/imports/docs/Compose/offline checks plus live capture integrity | DONE — runtime recovery/bind compatibility and all11 typed digests/control metadata reverified via DBT-SALES-01 |
 | INGEST-01 | Existing Docker/Raw + approved local config | Same container/volume, correct identities/dependencies and source/target all11 preflight | DONE ? healthy18.7, all preflights PASS; explicit Owner development config recorded |
@@ -18,7 +19,7 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 | SALES-02 | SALES-01 | Sales Raw full scope/dependencies and business reconciliation | DONE ? Sales Raw/dependencies and source controls verified via INGEST-03 |
 | SALES-03 | SALES-02 + approved DW/KPI | dbt staging/core/Sales Mart/basic DQ | DONE — runtime Sales Warehouse/DQ/marts via DBT-SALES-01; [evidence](dbt/README.md) |
 | SALES-04 | SALES-03 | Power BI + repeatable Sales demo | TODO |
-| NEXT-01 | Sales evidence | Incremental, SCD2, Customer/Inventory, Airflow, advanced recovery per roadmap | TODO |
+| NEXT-01 | Sales evidence | SCD2, Customer/Inventory, Airflow, advanced recovery per roadmap; incremental Sales hoàn tất riêng tại INGEST-INCR-01 | TODO |
 
 Current Full Load runtime accepted for unpublished candidates; [counts/evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). WWI-05/06 parent/phase closure remains Owner review; no automatic transition or downstream implementation. Publication remains NOT RUN.
 

@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SUITES = (
     ('dbt/tests/unit', 'test_configuration.py'),
     ('ingestion/tests', 'full_load_offline.py'),
+    ('ingestion/tests', 'incremental_offline.py'),
     ('infrastructure/tests', 'raw_foundation_static.py'),
     ('infrastructure/tests', 'raw_provisioning_readonly.py'),
     ('tests/integration', 'ingest_acceptance_offline.py'),

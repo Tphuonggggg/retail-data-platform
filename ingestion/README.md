@@ -1,5 +1,60 @@
 # Ingestion
 
+## INGEST-INCR-01 — Sales snapshot-diff, 2026-11-20
+
+**INCREMENTAL_RUNTIME_ACCEPTED.** Live versions `a1f29736-c057-4a2c-9ac4-05f8c15e9df9` → `c825b18e-fc62-4cf1-8837-b37b4c9f9668`: mỗi run scan604672, INSERT/UPDATE/DELETE=0, UNCHANGED604672, payload/event writes0. Durations102,443s/99,960s gồm target reconciliation35,250s/33,219s. Same-ID read-back PASS; fixture166 checks và independent live97 checks PASS. Đây là số liệu quan sát live không thay đổi, không phải mutation proof trên WWI.
+
+dbt trên version thứ hai: 21 models/69 tests + hook PASS; repeat build giữ nguyên21 counts/19 table content digests. Sales Before Tax172261341.20, Tax25782098.25, Including Tax198043439.45, units8950628, invoices70510, orders73595; chênh lệch so baseline được đọc lại=0. DQ VALID600046/WARNING4626/INVALID0, violations4626/quarantine0. Source consistency vẫn UNVERIFIED, publication/ACK vẫn NULL.
+
+Build thành công64,494s; repeat78,870s có chạy concurrent preservation check; independent final38,168s. Không gọi tổng các duration riêng là một continuous wall-clock benchmark: acceptance window còn gồm debug, fixture và các lần dbt dừng. Full Load cũ154,625s đọc11 objects/939208 rows, khác workload6 objects nên không suy speedup. Incremental staging materialized thêm228,836MiB; Raw không chép lại payload unchanged. Peak process RSS chưa đo. Xem evidence cho stage timings, dung lượng delta/meta, các lần hiệu năng bị dừng và fidelity test chưa version-aware đã sửa.
+
+Sáu dependency thực tế của dbt Sales; CustomerTransactions/history không thuộc scope. Mọi run mới đọc toàn bộ nguồn, chỉ ghi delta ở target: **snapshot-diff, không phải source-side incremental extraction**.
+
+| Nguồn | PK | Dòng khảo sát | Timestamp distinct / tổng | Chiến lược |
+|---|---|---:|---:|---|
+| Sales.Customers | CustomerID | 663 | ValidFrom: 58/663 | Current snapshot-diff |
+| Sales.InvoiceLines | InvoiceLineID | 228265 | LastEditedWhen: 1069/228265 | Snapshot-diff |
+| Sales.Invoices | InvoiceID | 70510 | LastEditedWhen: 1069/70510 | Snapshot-diff |
+| Sales.OrderLines | OrderLineID | 231412 | LastEditedWhen: 1970/231412 | Snapshot-diff |
+| Sales.Orders | OrderID | 73595 | LastEditedWhen: 2129/73595 | Snapshot-diff |
+| Warehouse.StockItems | StockItemID | 227 | ValidFrom: 10/227 | Current snapshot-diff |
+
+Khảo sát trực tiếp trước implementation: PK unique, timestamp NULL=0; PK indexes phục vụ ordered scans. Chưa chứng minh timestamp bắt mọi update/backdating/delete. SNAPSHOT OFF, RCSI OFF, CDC OFF, Change Tracking chưa bật; không đổi cấu hình. Customers/StockItems temporal type 2, liên kết đúng archives hiện có; ValidFrom là system-time, không business-effective time. Counts ở bảng là observations, runtime phải đếm/so sánh lại.
+
+### Storage, identity và transactions
+
+- `ingestion_meta.incremental_versions`: version/run UUID, parent, Full Load base, depth, frozen contract/algorithm, status, boundary UTC, evidence/error. `incremental_events`: object/key, INSERT/UPDATE/DELETE, before-version và before/after SHA256. UNCHANGED chỉ ghi counters.
+- Sáu `raw.delta_*` giữ typed INSERT/UPDATE payload. Sáu hàm `raw.sales_state_*(uuid)` hợp nhất root với latest event trên đúng ancestor chain. Không copy Full Load/membership cho no-change. Chain tối đa 32; compaction cần task riêng.
+- Projection `_run_id` là version UUID, `_row_ordinal=PK+2147483649` dương cho int32. Lineage: version/object/business key → latest delta hoặc root Full Load theo PK. Không join projection ordinal trực tiếp vào base payload theo run/ordinal.
+- Một transaction cho cả sáu nguồn, events, payload, reconciliation và VALIDATED. Triggers cấm append sau terminal, cấm đổi identity/mở lại terminal ledger. Lỗi rollback toàn bộ payload/events, giữ FAILED trong transaction riêng. Unknown COMMIT cần inspect/read-back, không tự retry ghi.
+- Same successful ID reconcile rồi trả kết quả cũ; khác parent/contract bị từ chối. Same FAILED/RUNNING ID không ghi đè: inspect, dùng ID mới cho fresh extraction. Không có sealed-chunk replay.
+- Codec giữ Decimal/NULL/rỗng/Unicode/binary/geography và datetime2(7). Phân loại kiểm tra tuple chính xác ngoài SHA256 nên collision không che UPDATE; digest vẫn có cryptographic collision risk. Independent verifier dùng native typed equality/SQL EXCEPT ALL, không lấy cùng hash helper làm oracle hai phía.
+- Live chưa có coherent snapshot proof: gặp absence thì STOP; không tạo DELETE hợp lệ từ partial/failed/inconsistent scan. DELETE chỉ chạy qua adapter fixture có boundary kiểm soát, không có CLI flag mở live DELETE. Không suy business retirement/SCD2.
+- Candidate vẫn unpublished/UNVERIFIED. `acknowledged_publication_id` bị constraint buộc NULL: boundary/candidate progress khác operational publication ACK. Không advance source checkpoint, chọn latest hoặc đổi publication pointer.
+
+### Workflow PowerShell
+
+[Migration](../infrastructure/postgres/incremental.sql) đã được Owner duyệt riêng và provision một lần. Runtime không chạy DDL; không chạy lại migration khi objects đã tồn tại.
+
+```powershell
+.\.venv\Scripts\python.exe -m ingestion.incremental plan
+.\.venv\Scripts\python.exe -m ingestion.incremental preflight --parent-id 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8
+$salesVersion = [guid]::NewGuid().ToString()
+.\.venv\Scripts\python.exe -m ingestion.incremental run --version-id $salesVersion --parent-id 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8 --execute
+.\.venv\Scripts\python.exe -m ingestion.incremental inspect --version-id $salesVersion
+.\.venv\Scripts\python.exe -m ingestion.incremental reconcile --version-id $salesVersion
+.\.venv\Scripts\python.exe dbt/run_dbt.py build --input-kind INCREMENTAL --capture-id $salesVersion
+.\.venv\Scripts\python.exe tests/integration/incremental_acceptance.py --execute --with-sales --version-id $salesVersion --output .local/incremental-reconciliation.json
+# Read-back cùng ID/parent; không extract lại hoặc tạo logical changes mới.
+.\.venv\Scripts\python.exe -m ingestion.incremental run --version-id $salesVersion --parent-id 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8 --execute
+```
+
+Kiểm tra `$LASTEXITCODE` sau từng lệnh, dừng nếu khác 0. Mỗi lần đọc nguồn mới phải dùng UUID mới với explicit parent VALIDATED. CLI không có publish command. CLI JSON lỗi không chứa DSN/driver exceptions/secrets.
+
+Fast tests: `ingestion/tests/incremental_offline.py`. Fixture: `tests/integration/incremental_runtime.py --execute --compiled-project <private-dbt-project>` tạo objects prefix riêng trong `dbt_sales_test` bằng retail_transform; không sửa WWI/Raw production/grants/publication. Fixture lock 941063; ingestion 941061; dbt 941062. Artifacts kể cả lần lỗi được giữ; chưa auto cleanup. Fixture chạy production merge/transactions/overlay SQL và SQL compile của 21 models/69 tests qua sáu analytical revisions; tách biệt với real dbt invocation live. Connection errors được inject, không phải network/server chaos test. Intermediate CDC events, historical SCD2, global atomic analytical publication, source-consistent certification, compaction vẫn deferred.
+
+Evidence: [INGEST-INCR-01](../docs/audits/ingest-incr-01/evidence.json). Power BI/Airflow/domain analytics khác không được bắt đầu.
+
 ## INGEST-01/02/03 — Runtime acceptance, 2026-11-19
 
 **FULL_LOAD_RUNTIME_ACCEPTED — unpublished candidates.** Phần preparation/NOT RUN phía dưới là trạng thái trước Owner development-config approval và execution trong task này.

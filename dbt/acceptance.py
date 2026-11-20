@@ -24,7 +24,7 @@ def connect():
     return db
 
 def report_models(db):
-    rows=db.execute("select schemaname,tablename from pg_tables where schemaname in ('dq','dw_core','sales_marts') order by 1,2").fetchall()
+    rows=db.execute("select schemaname,tablename from pg_tables where schemaname in ('dw_staging','dw_intermediate','dq','dw_core','sales_marts') order by 1,2").fetchall()
     result=[]
     for schema,table in rows:
         count,digest=db.execute(sql.SQL("select count(*),md5(string_agg(h,'' order by h)) from (select md5(row_to_json(t)::text) h from {}.{} t) a").format(sql.Identifier(schema),sql.Identifier(table))).fetchone()

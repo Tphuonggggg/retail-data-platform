@@ -1,3 +1,12 @@
+# 2026-11-20 — INGEST-INCR-01: Sales snapshot-diff runtime acceptance
+
+- Owner duyệt migration cuối SHA25602a45e5b… trên đúng retail_raw/container cũ; transaction exit0. Tạo6 typed delta tables,2 metadata tables,9 SECURITY INVOKER functions/8 guards; không sửa Raw Full Load payload/SQL Server/roles cũ/publication.
+- CLI plan/preflight/run/reconcile/inspect; streaming key+exact typed comparison, SHA256, atomic six-object candidates, immutable terminal/delta guards, explicit parents, no-copy unchanged, failed/unknown outcome inspection. Source scan toàn bộ, không gọi là watermark extraction/CDC. Live DELETE bị chặn khi snapshot UNVERIFIED; ACK chỉ sau future approved publication, hiện NULL.
+- Hai live versions604672 unchanged/run, I/U/D0, duration102,443s/99,960s; same-ID read-back PASS. Isolated PostgreSQL fixtures166 checks gồm I/U/D, precision/NULL/Unicode, rollback, retry, ID conflicts, terminal guards và DQ/mart restatement. Synthetic fixture proof được tách khỏi real WWI observations.
+- dbt chọn explicit version; materialize6 incremental staging + ANALYZE, jit=off/work_mem64MB chỉ session để giải quyết cardinality/JIT regression. Không đổi business/DQ/measures hashes hoặc grains. Sửa hai fidelity oracles còn đọc Full Raw trực tiếp; giữ cả failed/stopped attempt evidence. Thành công21 models (19tables/2views),69 tests + hook; rerun21 counts/19 digests stable.
+- Independent live reconciliation97 checks PASS, KPI delta0; DQ604672 = VALID600046/WARNING4626/INVALID0, violations4626/quarantine0. All11 original Full Load digests939208 rows/old metadata giữ nguyên; publication0/pointerNULL. Non-admin retail_ingest payload/event permission probe rollback hoàn toàn,0 durable probe rows.
+- [Workflow và limitations](ingestion/README.md#ingest-incr-01--sales-snapshot-diff-2026-11-20), [evidence](docs/audits/ingest-incr-01/evidence.json). Không triển khai BI/Airflow/domain analytics/SCD2 hoặc tự đóng parent phase.
+
 # 2026-11-20 — DBT-SALES-01: Sales Warehouse runtime acceptance
 
 - Khôi phục Docker Engine và container Raw cũ; sửa legacy bootstrap bind bằng ignored junction, không recreate/reset nguồn dữ liệu. All11 typed digests/939208 rows và toàn bộ Raw control/publication metadata kiểm lại không đổi.

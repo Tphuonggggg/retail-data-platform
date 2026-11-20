@@ -35,5 +35,5 @@ select _run_id as _capture_id, _row_ordinal as _raw_row_ordinal,
   cast("LastEditedBy" as integer) as last_edited_by,
   cast("ValidFrom" as text) collate "C" as valid_from,
   cast("ValidTo" as text) collate "C" as valid_to
-from {{ source('wwi_raw', 'sales_customers') }}
+from {{ sales_raw_input('sales_customers') }}
 where _run_id = {{ capture_id() }}

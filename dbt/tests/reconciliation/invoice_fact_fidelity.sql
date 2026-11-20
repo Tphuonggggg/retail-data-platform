@@ -3,7 +3,7 @@ select l."InvoiceLineID" as id,l."InvoiceID" as invoice_id,l."StockItemID" as pr
  l."Quantity" as quantity,l."UnitPrice" as price,l."TaxAmount" as tax,
  l."ExtendedPrice"-l."TaxAmount" as amount,l."ExtendedPrice" as including_tax,
  i."InvoiceDate" as invoice_date,i."CustomerID" as buyer,i."BillToCustomerID" as bill_to
-from {{ source('wwi_raw','sales_invoicelines') }} l left join {{ source('wwi_raw','sales_invoices') }} i
+from {{ sales_raw_input('sales_invoicelines') }} l left join {{ sales_raw_input('sales_invoices') }} i
  on l."InvoiceID"=i."InvoiceID" and l._run_id=i._run_id where l._run_id={{ capture_id() }}
 ), actual as (
 select source_invoice_line_id as id,source_invoice_id as invoice_id,source_stock_item_id as product_id,

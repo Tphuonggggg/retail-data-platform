@@ -16,5 +16,5 @@ select _run_id as _capture_id, _row_ordinal as _raw_row_ordinal,
   cast("PickingCompletedWhen" as text) collate "C" as picking_completed_when,
   cast("LastEditedBy" as integer) as last_edited_by,
   cast("LastEditedWhen" as text) collate "C" as last_edited_when
-from {{ source('wwi_raw', 'sales_orderlines') }}
+from {{ sales_raw_input('sales_orderlines') }}
 where _run_id = {{ capture_id() }}

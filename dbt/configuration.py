@@ -152,7 +152,8 @@ def validate(documents):
         dependencies={'S06':('S05','S02'),'MOM':('S05','S05'),'YOY':('S05','S05')}
         if (x['numerator'],x['denominator'])!=dependencies.get(x['id'],(None,None)):raise ContractError('Invalid measure dependency')
         if type(x['dimensions']) is not list or set(x['dimensions'])-{'date','product','buyer','bill_to'}:raise ContractError('Unknown dimensions')
-    p=docs['performance'];_keys(p,{'version','threads','materialization','indexes'}, {'version','threads','materialization','indexes'})
+    p=docs['performance'];_keys(p,{'version','threads','materialization','indexes','incremental_staging_materialization'}, {'version','threads','materialization','indexes'})
+    if type(p.get('incremental_staging_materialization','view')) is not str or p.get('incremental_staging_materialization','view') not in {'view','table'}:raise ContractError('Unsupported incremental staging materialization')
     if type(p['threads']) is not int or not 1<=p['threads']<=4 or type(p['indexes']) is not bool:raise ContractError('Unsupported execution parameter')
     if p['materialization']!={'staging':'view','intermediate':'view','dq':'table','core':'table','marts':'table'}:raise ContractError('Unsupported materialization')
     for d in docs.values():

@@ -33,10 +33,18 @@ PROFILE='''retail_sales:
       retries: 0
 '''
 
+
+def session_pgoptions(existing,work_mem):
+    if type(work_mem) is not int or work_mem not in {4,16,64}:
+        raise ValueError('Unregistered session memory')
+    return (existing+f' -c work_mem={work_mem}MB -c max_parallel_workers_per_gather=0 -c jit=off').strip()
+
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('command',choices=['validate','debug','compile','run','test','build','deps'])
     p.add_argument('--capture-id',required=True)
+    p.add_argument('--input-kind',choices=['FULL','INCREMENTAL'],default='FULL')
+    p.add_argument('--work-mem-mb',type=int,choices=[4,16,64],help='Session-only memory per PostgreSQL operation; default incremental64/full4')
     p.add_argument('--config-dir',type=Path)
     args=p.parse_args()
     guard=None
@@ -55,14 +63,26 @@ def main():
                              autocommit=True,connect_timeout=5,options='-c default_transaction_read_only=on')
         if guard.execute('select current_database(),current_user').fetchone()!=('retail_raw','retail_transform'):raise ValueError('Wrong identity')
         if not guard.execute('select pg_try_advisory_lock(941062)').fetchone()[0]:raise ValueError('Another transformation is active')
-        guard.execute('select dw_staging.assert_capture(%s)',(args.capture_id,))
+        if args.input_kind=='INCREMENTAL':
+            from ingestion.incremental import assert_version
+            if assert_version(guard,UUID(args.capture_id))!='INCREMENTAL':raise ValueError('Incremental version required')
+        else:guard.execute('select dw_staging.assert_capture(%s)',(args.capture_id,))
         invocation=str(uuid4()); project=local/'invocations'/invocation
         project.mkdir(parents=True)
         base=ROOT/'dbt'
         for folder in ('models','macros','tests'):
             shutil.copytree(base/folder,project/folder,ignore=shutil.ignore_patterns('__pycache__','*.py','*.pyc'))
         configuration=yaml.safe_load((base/'dbt_project.yml').read_text(encoding='utf-8'))
-        configuration['vars']={'sales_contract':contract}
+        work_mem=args.work_mem_mb or (64 if args.input_kind=='INCREMENTAL' else 4)
+        configuration['vars']={'sales_contract':contract,'sales_input_kind':args.input_kind,'sales_work_mem_mb':work_mem}
+        incremental_staging=contract['documents']['performance'].get('incremental_staging_materialization','view')
+        if args.input_kind=='INCREMENTAL':
+            staging=configuration['models']['retail_sales']['staging']
+            staging['+materialized']=incremental_staging
+            if incremental_staging=='table':
+                staging['+post-hook']=['ANALYZE {{ this }}']
+        for group in ('quality','core','marts'):
+            configuration['models']['retail_sales'][group]['+post-hook']=['ANALYZE {{ this }}']
         if contract['documents']['performance']['indexes']:
             indexes={
                 'record_status':[{'columns':['record_identity','ruleset_version'],'unique':True}],
@@ -78,13 +98,18 @@ def main():
         (project/'profiles.yml').write_text(PROFILE.replace('THREADS',str(contract['documents']['performance']['threads'])),encoding='utf-8')
         env=dict(os.environ,WWI_DBT_CAPTURE_ID=args.capture_id,WWI_DBT_HOST=cfg.host,DBT_ENV_SECRET_PASSWORD=secret,
                  DBT_SEND_ANONYMOUS_USAGE_STATS='false',DBT_USE_COLORS='false',DBT_PARTIAL_PARSE='false',PYTHONUTF8='1')
+        # libpq honors PGOPTIONS. This adapter version ignores a profile 'options'
+        # key; preserve inherited read-only safeguards rather than replacing them.
+        env['PGOPTIONS']=session_pgoptions(os.environ.get('PGOPTIONS',''),work_mem)
         executable=Path(sys.executable).with_name('dbt.exe' if os.name=='nt' else 'dbt')
         started=time.perf_counter()
         result=subprocess.run([str(executable),args.command,'--project-dir',str(project),'--profiles-dir',str(project)],
                               env=env,cwd=ROOT)
-        evidence={'invocation':invocation,'command':args.command,'capture_id':args.capture_id,
+        evidence={'invocation':invocation,'command':args.command,'capture_id':args.capture_id,'input_kind':args.input_kind,
                   'ruleset':contract['ruleset_version'],'measure_version':contract['measure_version'],
                   'threads':contract['documents']['performance']['threads'],
+                  'work_mem_mb':work_mem,'max_parallel_workers_per_gather':0,'jit':False,
+                  'incremental_staging_materialization':incremental_staging if args.input_kind=='INCREMENTAL' else None,
                   'indexes':contract['documents']['performance']['indexes'],
                   'elapsed_seconds':round(time.perf_counter()-started,3),'exit_code':result.returncode}
         (project/'execution.json').write_text(json.dumps(evidence,indent=2),encoding='utf-8')
