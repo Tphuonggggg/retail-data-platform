@@ -4,6 +4,7 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 
 | ID | Module/dependencies | Acceptance | Status |
 |---|---|---|---|
+| REPO-STRUCTURE-02 | Pipeline-stage ownership, existing uncommitted DW draft | Paths/imports/docs/Compose/offline checks; live capture integrity; no ingestion/dbt runtime | PARTIAL — structural/offline checks PASS; Docker Engine unavailable/TCP55434 timeout, live capture verification BLOCKED |
 | INGEST-01 | Existing Docker/Raw + approved local config | Same container/volume, correct identities/dependencies and source/target all11 preflight | DONE ? healthy18.7, all preflights PASS; explicit Owner development config recorded |
 | INGEST-02 | INGEST-01 | Real holdings batch64 unpublished smoke; count/distinct/numeric/NULL/digest/meta | DONE ? smoke47b6c909,227 rows, controls/durable reconciliation PASS |
 | INGEST-03 | INGEST-02 | All11 load/reconciliation/RI/temporal fidelity/rerun/failure handling; no publication | DONE ? FULL_LOAD_RUNTIME_ACCEPTED, run5abc4a32,939208 rows/11 PASS; rerun/rollback/retry PASS; pointer NULL, consistency UNVERIFIED |

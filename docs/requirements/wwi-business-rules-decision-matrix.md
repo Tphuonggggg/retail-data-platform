@@ -1,6 +1,6 @@
 # WWI Business Rules & Decision Matrix — Phase 1.5
 
-**Trạng thái: Project Owner đã phê duyệt BRD-01–BRD-12 cho phạm vi Phase 1.5.** Các hàng dưới giữ phương án và bằng chứng khi review; cột quyết định phản ánh kết luận chính thức. `Approved` gồm business rule hoặc quyết định hoãn/loại khỏi MVP, không đồng nghĩa KPI đã được kiểm thử trong warehouse. Evidence: [Profiling](../data-models/wwi-data-profiling.md), [Relationships](../data-models/wwi-source-relationships.md), [Source Contracts](../data-models/wwi-source-contracts.md), [KPI Verification SQL](../../analytics/kpi-definitions/wwi-kpi-verification-sql.md).
+**Trạng thái: Project Owner đã phê duyệt BRD-01–BRD-12 cho phạm vi Phase 1.5.** Các hàng dưới giữ phương án và bằng chứng khi review; cột quyết định phản ánh kết luận chính thức. `Approved` gồm business rule hoặc quyết định hoãn/loại khỏi MVP, không đồng nghĩa KPI đã được kiểm thử trong warehouse. Evidence: [Profiling](../data-models/wwi-data-profiling.md), [Relationships](../data-models/wwi-source-relationships.md), [Source Contracts](../data-models/wwi-source-contracts.md), [KPI Verification SQL](kpi-definitions/wwi-kpi-verification-sql.md).
 
 | ID / vấn đề | Phương án và ưu/nhược điểm | Bằng chứng | Quyết định được duyệt | Ảnh hưởng / rủi ro | Trạng thái |
 | --- | --- | --- | --- | --- | --- |

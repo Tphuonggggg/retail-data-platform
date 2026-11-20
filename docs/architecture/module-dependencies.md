@@ -1,27 +1,29 @@
-# Module Dependencies
+# Module Dependencies — ownership hiện hành
 
-**MVP-RESET-01 hi?n h?nh:** data/business/fidelity contracts gi? nguy?n; historical dedicated-identity/global permission/ACL/security approval prerequisites ???c supersede b?i current PROJECT_SCOPE.md/AGENTS.md. Sales-first MVP; advanced incremental/SCD2/recovery l? milestones sau, kh?ng claim runtime implemented.
-
-**Planned — Not implemented yet.** Mũi tên là phụ thuộc thiết kế, không phải import code đã tồn tại.
+REPO-STRUCTURE-02 chỉ đổi đường dẫn/trách nhiệm thư mục, không thay hệ thống nguồn/đích, grain, KPI hoặc approved architecture.
 
 ```mermaid
 flowchart LR
-  C[WWI source contract / business decisions] --> IG[ingestion]
-  W[WWI SQL Server read-only] --> IG
-  IG --> ST[storage raw/staging]
-  ST --> TR[transformation dbt/SQL]
-  TR --> DW[storage warehouse PostgreSQL]
-  DW --> AN[analytics marts/Power BI]
-  OR[orchestration Airflow] -. điều phối .-> IG
-  OR -. điều phối .-> TR
-  DQ[data-quality] -. kiểm tra .-> IG
-  DQ -. kiểm tra .-> TR
-  DQ -. đối soát .-> DW
-  MO[monitoring] -. quan sát .-> OR
-  TS[tests] -. xác minh .-> IG
-  TS -. xác minh .-> TR
-  IF[infrastructure] -. môi trường .-> IG
-  IF -. môi trường .-> DW
+  W[SQL Server WWI SELECT-only] --> I[ingestion: Python extract/load]
+  I --> R[PostgreSQL Raw]
+  R --> D[dbt: staging / intermediate / core / marts]
+  D --> P[powerbi: reports]
+  F[airflow: scheduling and retries] -. orchestrates .-> I
+  F -. orchestrates .-> D
+  X[infrastructure: Compose / PostgreSQL DDL / setup] -. provisions .-> R
+  X -. environment .-> D
+  O[monitoring: cross-pipeline observability] -. observes .-> I
+  O -. observes .-> D
+  T[tests: cross-module integration] -. verifies .-> I
+  T -. verifies .-> D
 ```
 
-Sales pipeline từ extract đến mart, Airflow, data quality và monitoring được hoàn thiện trước khi mở rộng Customer rồi Inventory Movements. Quality checks cơ bản là dependency của ingestion/warehouse, không chờ Phase 6. Các module không phụ thuộc ngược từ nguồn vào analytics. `docs` ghi source contract và quyết định; `.github` chứa CI sau khi Git/code được thiết lập; `scripts` hỗ trợ task cụ thể.
+- ingestion/common giữ runtime config/contract/codecs; extractors và loaders không phụ thuộc dbt/Power BI.
+- infrastructure/scripts/check_raw_connection.py cung cấp Raw config/probe dùng chung với ingestion; không import ingestion ngược lại. Provisioning chỉ gọi riêng khi được phép, không import-time mutation.
+- ingestion/tests sở hữu unit/offline tests của extraction/load. infrastructure/tests sở hữu provisioning/config/resource checks. tests/integration giữ đối soát source–Raw và B9 vì chúng xuyên module.
+- dbt sở hữu SQL marts, model tests và project config; infrastructure sở hữu schema provisioning. Bản nháp dbt được bảo toàn, chưa runtime acceptance.
+- powerbi sở hữu reports/assets, không chứa KPI definitions chung hoặc marts SQL.
+- docs/requirements/kpi-definitions giữ KPI/business definitions; docs/data-models và ADR giữ thiết kế đã duyệt; history ở docs/archive.
+- scripts chỉ project-wide utilities. DQ checks nằm gần stage thực thi; [DQ ownership](data-quality-ownership.md), không có module placeholder song song.
+
+Full Load đã runtime accepted ngày 2026-11-19, chưa publication. dbt/Airflow/Power BI chưa runtime verified. [Current tree/migration/runtime blocker](../../README.md), [tracker](../../TASKS.md). Không thay milestone sequencing: Sales-first, Airflow sau stable executable pipelines.

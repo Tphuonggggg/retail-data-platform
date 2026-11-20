@@ -1,7 +1,6 @@
-# Scripts
+# Project-wide utilities
 
-- check_raw_connection.py: offline config validation or explicit read-only Raw connectivity.
-- recover_raw_bootstrap.py: historical recovery helper; defaults read-only, --apply mutates DB and is outside reset.
-- inspect_wwi_source.py: optional metadata/sample diagnostic. --history-permissions is legacy dedicated-user investigation, not a normal load prerequisite.
+- [validate_repository.py](validate_repository.py): Python syntax, Markdown links/anchors, secret patterns; không runtime connections.
+- [run_checks.py](run_checks.py): chạy offline suites theo ownership hiện hành, nonzero exit khi có lỗi.
 
-Use [main CLI/runbook](../README.md) for normal operation. No script auto-installs packages, grants permissions or starts ingestion. [Historical investigation](../docs/archive/pre-reset/ingestion-history.md).
+Source diagnostic thuộc [ingestion](../ingestion/scripts/inspect_wwi_source.py). Raw connection/recovery/provisioning thuộc [infrastructure](../infrastructure/README.md). Không tự cài dependencies, chạy ingestion hoặc cấp quyền.

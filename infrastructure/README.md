@@ -1,52 +1,14 @@
 # infrastructure
 
-**Current2026-11-18:** MVP-G02 verified — app TCP/schema/role/permissions và one authorized Raw-only restart/persistence PASS; [evidence](docker/README.md#phase-a--mvp-g02-verified-2026-11-18). Historical bootstrap failure bên dưới đã được Owner recover; không chạy repair lại. Source TLS và archive effective INSERT exception vẫn block Full Load runtime.
+Sở hữu Docker Compose, PostgreSQL initialization/schema provisioning và local infrastructure utilities. Không chứa ingestion hoặc dbt transformation logic.
 
-## 1. Overview
-Module **môi trường thực thi cho nguồn WWI chỉ đọc và warehouse PostgreSQL**. Isolated Raw Compose/bootstrap **PREPARED / OFFLINE TESTED**; runtime Not implemented yet.
+- [docker](docker/README.md): Compose project retail-raw, localhost55434, volume retail-raw_pg_data.
+- [postgres](postgres/README.md): bootstrap.sql, full_load.sql và bằng chứng Raw provisioning/load lịch sử. SQL không đổi trong refactor, không chạy initialization lại.
+- scripts/check_raw_connection.py: offline config hoặc SELECT-only connectivity.
+- scripts/recover_raw_bootstrap.py: historical recovery, mặc định chỉ preflight; không apply trong refactor.
+- scripts/provision_warehouse.py và postgres/warehouse/provision.sql: draft DW-IMPLEMENT-01 chưa runtime verified, không chạy tự động.
+- tests: Raw foundation offline/static và initial-empty provisioning read-only verifier.
 
-## 2. Purpose
-Quản lý cấu hình local/cloud theo phase mà không đưa credentials vào repository.
+Runtime accepted ngày 2026-11-19 nằm tại [ingestion](../ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). Ngày 2026-11-20 Docker Linux Engine unavailable/TCP55434 timeout; kiểm lại capture BLOCKED, không sửa/xóa/recreate infrastructure.
 
-## 3. Scope
-SQL Server WWI là nguồn OLTP local; PostgreSQL là raw/staging/warehouse đích. Docker Compose dự kiến quản lý các thành phần dự án local; BigQuery là extension.
-
-## 4. Responsibilities
-Tách cấu hình môi trường khỏi logic dữ liệu; kiểm soát biến môi trường, quyền truy cập và bảo mật kết nối.
-
-## 5. Inputs
-Yêu cầu runtime, source contract, quyền đọc WWI và cấu hình môi trường qua biến môi trường.
-
-## 6. Outputs
-Hướng dẫn và cấu hình local/cloud theo phase được duyệt.
-
-## 7. Dependencies
-data-sources, storage, orchestration và yêu cầu bảo mật.
-
-## 8. Technology Stack
-SQL Server nguồn; PostgreSQL đích; Docker/Docker Compose và BigQuery ở phase tương ứng.
-
-## 9. Directory Structure
-- [docker/](docker/README.md)
-- [local/](README.md)
-- [cloud/](README.md)
-
-## 10. Planned Workflow
-Xác minh source read-only và chuẩn bị Raw song song → Owner authorize runtime → kiểm connectivity/restart/persistence → Full Load task riêng. [Docker README](docker/README.md) có exact startup/shutdown commands, chưa được chạy.
-
-## 11. Development Tasks
-WWI-05 cho môi trường local; WWI-15 cho BigQuery nếu được duyệt. Theo dõi [TASKS.md](../TASKS.md).
-
-## 12. Testing Strategy
-Kiểm tra quyền đọc, kết nối, khởi động và tái lập môi trường khi có service; không sửa WWI gốc.
-
-## 13. Acceptance Criteria
-Môi trường tái lập được, không commit secret, nguồn giữ quyền chỉ đọc.
-
-## 14. Current Status
-Current [Raw package/recovery](docker/README.md): server18.7 đã chạy trong retail-raw-postgres-1/volume retail-raw_pg_data/loopback55434 theo Owner và readonly inspection. Bootstrap FAILED, raw/meta/role absent; fix + recovery A prepared, chưa apply. Old health healthy không là bootstrap PASS. Task fix không start/stop/recreate/delete resource, không native5432/B9/SQLServer changes. WWI-05 IN_PROGRESS, MVP-G02 BLOCKED; historical M1A evidence giữ nguyên.
-
-
-## MVP-RESET-01 consolidation
-
-Future-only submodule READMEs ?? h?p nh?t v? ??y; ch?a c? implementation trong c?c th? m?c k? ho?ch ??. Xem [roadmap](../ROADMAP.md). Kh?ng t?o placeholder code; t?o module con khi c? task tri?n khai th?c t?.
+Compose bootstrap bind chuyển sang ../postgres/bootstrap.sql; container/image/project/volume/port không đổi. Existing container không bị recreate trong refactor. [Project checks](../scripts/run_checks.py) chỉ offline; Compose config validation không khởi động service.

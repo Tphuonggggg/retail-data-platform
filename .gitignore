@@ -28,3 +28,7 @@ data-sources/*.tsv
 data-sources/*.jsonl
 .DS_Store
 Thumbs.db
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+profiles.yml

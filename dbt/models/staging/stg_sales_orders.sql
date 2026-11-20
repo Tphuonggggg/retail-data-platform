@@ -1,0 +1,19 @@
+select _run_id as _capture_id, _row_ordinal as _raw_row_ordinal,
+  cast("OrderID" as integer) as order_id,
+  cast("CustomerID" as integer) as customer_id,
+  cast("SalespersonPersonID" as integer) as salesperson_person_id,
+  cast("PickedByPersonID" as integer) as picked_by_person_id,
+  cast("ContactPersonID" as integer) as contact_person_id,
+  cast("BackorderOrderID" as integer) as backorder_order_id,
+  cast("OrderDate" as date) as order_date,
+  cast("ExpectedDeliveryDate" as date) as expected_delivery_date,
+  cast("CustomerPurchaseOrderNumber" as text) as customer_purchase_order_number,
+  cast("IsUndersupplyBackordered" as boolean) as is_undersupply_backordered,
+  cast("Comments" as text) as comments,
+  cast("DeliveryInstructions" as text) as delivery_instructions,
+  cast("InternalComments" as text) as internal_comments,
+  cast("PickingCompletedWhen" as text) collate "C" as picking_completed_when,
+  cast("LastEditedBy" as integer) as last_edited_by,
+  cast("LastEditedWhen" as text) collate "C" as last_edited_when
+from {{ source('wwi_raw', 'sales_orders') }}
+where _run_id = {{ capture_id() }}

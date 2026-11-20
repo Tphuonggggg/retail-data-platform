@@ -9,4 +9,4 @@ Purpose/scope: technical contracts cho [Full Load](../README.md), không KPI log
 - [config.py](config.py): reuse Raw checker parser, Windows-integrated strict TLS/local target; no-secret summary.
 - [evidence.py](evidence.py), [errors.py](errors.py): window coverage/sanitized categories; parser không chứng minh writer control.
 
-Dependencies/technology: Python3.12 stdlib + pure functions scripts; không I/O database lúc import. Execution qua parent CLI; testing/acceptance qua [offline suite](../../tests/full_load_offline.py). Actual engine fidelity cần WWI-06B. Automatic retry/checkpoint Not implemented yet.
+Dependencies/technology: Python3.12 stdlib + pure functions scripts; không I/O database lúc import. Execution qua parent CLI; testing/acceptance qua [offline suite](../tests/full_load_offline.py). Actual engine fidelity cần WWI-06B. Automatic retry/checkpoint Not implemented yet.

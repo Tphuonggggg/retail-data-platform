@@ -91,4 +91,9 @@ Warehouse.StockItemHoldings/batch64/unpublished: fresh source vs Raw count/disti
 
 ## Tests v? history
 
-[Offline tests](../tests/full_load_offline.py), [Raw tests](../tests/raw_foundation_static.py), [Raw SQL](../storage/raw/README.md). [Evidence tr??c reset](../docs/archive/pre-reset/ingestion-history.md) l? historical, kh?ng active security requirements.
+[Offline tests](tests/full_load_offline.py), [Raw tests](../infrastructure/tests/raw_foundation_static.py), [Raw SQL](../infrastructure/postgres/README.md). [Evidence tr??c reset](../docs/archive/pre-reset/ingestion-history.md) l? historical, kh?ng active security requirements.
+# Paths hiện hành — REPO-STRUCTURE-02
+
+CLI `python -m ingestion.full_load` giữ nguyên. Raw config helper chuyển sang infrastructure.scripts.check_raw_connection; source diagnostics dùng `python ingestion/scripts/inspect_wwi_source.py`. Unit/offline tests: `python -m unittest discover -s ingestion/tests -p full_load_offline.py -v`. Cross-module acceptance/recovery probes vẫn ở tests/integration, không chạy load tự động.
+
+Raw DDL/runbook ở [infrastructure/postgres](../infrastructure/postgres/README.md); capture, datatype/F2 fidelity và business/data contracts không đổi. Runtime evidence ngày 2026-11-19 bên dưới giữ nguyên; re-verification sau refactor ngày 2026-11-20 BLOCKED do Docker Engine unavailable/TCP55434 timeout. Không chạy lại Full Load hoặc publish để kiểm tra refactor.

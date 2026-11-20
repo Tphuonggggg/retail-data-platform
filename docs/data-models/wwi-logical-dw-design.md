@@ -4,7 +4,7 @@
 
 ## Đầu vào và ranh giới quyết định
 
-[Scope](../../PROJECT_SCOPE.md), [KPI Catalog](../../analytics/kpi-definitions/wwi-kpi-candidate-catalog.md), [BRD](../requirements/wwi-business-rules-decision-matrix.md), [Source Contracts](wwi-source-contracts.md), [Dictionary nguồn](wwi-metadata-dictionary.md), [Profiling](wwi-data-profiling.md), [Relationships](wwi-source-relationships.md) là nguồn tham chiếu. Không thay thế các tài liệu nguồn bằng bản sao. Warehouse tự thiết kế trên PostgreSQL, nguồn WWI SQL Server read-only; Sales end-to-end trước Customer rồi Inventory.
+[Scope](../../PROJECT_SCOPE.md), [KPI Catalog](../requirements/kpi-definitions/wwi-kpi-candidate-catalog.md), [BRD](../requirements/wwi-business-rules-decision-matrix.md), [Source Contracts](wwi-source-contracts.md), [Dictionary nguồn](wwi-metadata-dictionary.md), [Profiling](wwi-data-profiling.md), [Relationships](wwi-source-relationships.md) là nguồn tham chiếu. Không thay thế các tài liệu nguồn bằng bản sao. Warehouse tự thiết kế trên PostgreSQL, nguồn WWI SQL Server read-only; Sales end-to-end trước Customer rồi Inventory.
 
 | Ràng buộc được duyệt | Hệ quả với DW-01 | Phần chưa chốt |
 | --- | --- | --- |
@@ -57,7 +57,7 @@ Hai intermediate là hợp đồng logic hỗ trợ population, **không phải 
 | 11 | I01–I05; I06 Unsupported | fact_stock_movement, fact_inventory_current | product, movement date/type | StockItemTransactions.Quantity; Holdings.QuantityOnHand | K07/K08; không cộng movements để dựng balance |
 | 12 | I07 Unsupported | Không có risk model | Không áp dụng | Current holdings không là forecast | Không công bố Stockout Risk |
 
-K01–K13 ở [SQL KPI](../../analytics/kpi-definitions/wwi-kpi-verification-sql.md); R02/R04 ở [SQL Relationships](wwi-relationship-validation-sql.md). C05 Optional lấy current dim_customer một row/NK theo category, không join fact, đối soát K06. I05 month trend có thể roll-up từ mart movement daily theo type/product, giữ precision Quantity.
+K01–K13 ở [SQL KPI](../requirements/kpi-definitions/wwi-kpi-verification-sql.md); R02/R04 ở [SQL Relationships](wwi-relationship-validation-sql.md). C05 Optional lấy current dim_customer một row/NK theo category, không join fact, đối soát K06. I05 month trend có thể roll-up từ mart movement daily theo type/product, giữ precision Quantity.
 
 ## Điều hướng deliverables
 

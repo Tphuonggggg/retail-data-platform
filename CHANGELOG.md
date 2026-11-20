@@ -68,3 +68,10 @@ Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ �
 ### Status
 - Phase 0: Completed ở mức tài liệu và repository. Chưa triển khai hoặc kiểm thử pipeline.
 - P0-01 đến P0-06 và WWI-01: `DONE`. Không tạo remote hoặc push; Phase 1.1 và khảo sát Phase 1.2 được chấp thuận, WWI-02 ở `IN_PROGRESS`.
+# 2026-11-20 — REPO-STRUCTURE-02
+
+- Chuyển ownership theo pipeline stage: dbt, airflow, powerbi; Raw DDL/provisioning và checks thuộc infrastructure; ingestion unit tests đặt gần implementation; cross-module tests giữ ở tests/integration.
+- KPI documents chuyển về docs/requirements/kpi-definitions; giữ nguyên business definitions. Cập nhật imports, CLI examples, path discovery, Markdown links và Compose bootstrap bind source; không đổi resource identities hoặc Raw SQL/contracts.
+- Bảo toàn draft DW-IMPLEMENT-01 chưa commit: models/macros/tests về dbt, provisioning nháp về infrastructure. Không chạy dbt/provisioning hoặc tiếp tục triển khai draft; requirements pins đã có trước task được giữ nguyên.
+- Không Full Load, source writes, schema mutation, publication, container restart/recreate hoặc volume deletion. Docker Linux Engine unavailable và Raw TCP timeout nên live capture integrity re-verification BLOCKED; không đánh dấu acceptance hoàn tất từ offline checks.
+- Path migration map, current tree và giới hạn nghiệm thu tại README; history giữ ở docs/archive. Không push/merge.

@@ -14,3 +14,6 @@
 | Optional cloud | Stable MVP + Owner scope | BigQuery/other controlled extensions | TODO |
 
 Sales-first ?u ti?n tri?n khai; kh?ng lo?i source contracts/accepted DW design. Kh?ng y?u c?u Customer/Inventory/advanced recovery ho?n t?t tr??c demo Sales. Existing all11 publication contract kh?ng t? ??i; selected smoke remains unpublished. [Historical roadmap](docs/archive/pre-reset/ROADMAP.md).
+# REPO-STRUCTURE-02 — cập nhật ownership ngày 2026-11-20
+
+Pipeline folders hiện hành: ingestion → dbt → powerbi, airflow cho orchestration; infrastructure sở hữu PostgreSQL DDL/setup, docs giữ KPI và thiết kế. Structural refactor không thay thứ tự milestone/business scope hoặc tự bắt đầu dbt. Live Raw re-verification BLOCKED vì Docker Engine unavailable; xem [tracker](TASKS.md) và [migration](README.md#repo-structure-02--ngày-2026-11-20). Các stage statuses trong roadmap bên dưới là snapshot trước INGEST runtime; INGEST-01/02/03 DONE theo tracker/bằng chứng 2026-11-19, không yêu cầu chạy lại load.

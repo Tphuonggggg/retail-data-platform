@@ -44,7 +44,7 @@ Join aliases: `il` Sales.InvoiceLines; `i` Sales.Invoices; `ol` Sales.OrderLines
 | dim_movement_type.source_type_id / movement_type_key | m.TransactionTypeID; Application.TransactionTypes.TransactionTypeID | Conform NK, SK đích | int; reference source ngoài 9 bảng | Type history policy TBD | FK verified; ingestion dependency Pending Approval |
 | .type_name | Application.TransactionTypes.TransactionTypeName | Copy sau approval contract/ingestion | nvarchar(50), required; metadata SELECT ngày 2026-11-14 | SCD1 candidate, history policy chưa đánh giá | Cột/type/NULL Verified; ingestion dependency Pending Approval |
 
-Evidence Kxx ở [SQL KPI](../../analytics/kpi-definitions/wwi-kpi-verification-sql.md); Rxx ở [SQL quan hệ](wwi-relationship-validation-sql.md). Các mapping chỉ có cột nguồn đã kiểm metadata; reference type_name có kiểm chứng bổ sung dưới đây nhưng chưa đủ contract/approval để ingestion.
+Evidence Kxx ở [SQL KPI](../requirements/kpi-definitions/wwi-kpi-verification-sql.md); Rxx ở [SQL quan hệ](wwi-relationship-validation-sql.md). Các mapping chỉ có cột nguồn đã kiểm metadata; reference type_name có kiểm chứng bổ sung dưới đây nhưng chưa đủ contract/approval để ingestion.
 
 ### Metadata evidence bổ sung cho reference dependency
 

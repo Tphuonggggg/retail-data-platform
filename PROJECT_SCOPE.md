@@ -15,10 +15,13 @@ Phase0/1 ho?n th?nh thi?t k?. Raw foundation v?11 payload/4 controls/11 views ??
 
 ## Business contracts gi? nguy?n
 
-Buyer CustomerID kh?c BillToCustomerID; order/header v? invoice/line kh?c grain. Invoiced Sales Before Tax=SUM(ExtendedPrice?TaxAmount), theo InvoiceDate, kh?ng recognized revenue. Order metrics theo OrderDate. Kh?ng suy payment allocation, refunds, daily inventory balance ho?c official COGS. Xem [KPI](analytics/kpi-definitions/wwi-kpi-candidate-catalog.md), [source contracts](docs/data-models/wwi-source-contracts.md), [DW design](docs/data-models/wwi-logical-dw-design.md).
+Buyer CustomerID kh?c BillToCustomerID; order/header v? invoice/line kh?c grain. Invoiced Sales Before Tax=SUM(ExtendedPrice?TaxAmount), theo InvoiceDate, kh?ng recognized revenue. Order metrics theo OrderDate. Kh?ng suy payment allocation, refunds, daily inventory balance ho?c official COGS. Xem [KPI](docs/requirements/kpi-definitions/wwi-kpi-candidate-catalog.md), [source contracts](docs/data-models/wwi-source-contracts.md), [DW design](docs/data-models/wwi-logical-dw-design.md).
 
 ## ?i?u ch?nh acceptance k? thu?t
 
 Current Windows account ???c ph?p; selected-object checks thay global all11 security audit. Development trust bypass c?n explicit config; admin account c?n explicit opt-in. Dedicated account/ACL/staging/manifests/security audit kh?ng MVP gates. SELECT-only, parameterization, target validation v? rollback v?n b?t bu?c.
 
 Historical SCD2/incremental/full publication/recovery designs ???c gi? cho milestones sau, kh?ng gi? ?? implement ho?c silently ??i existing publication semantics. Ch?a cho ph?p ingestion runtime trong reset. [L?ch s?](docs/archive/pre-reset/README.md).
+# Cập nhật triển khai và ownership — 2026-11-20
+
+Business scope/BRD/KPI/grains giữ nguyên. Full Load đã được nghiệm thu ngày 2026-11-19 cho unpublished capture 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8; những dòng “ingestion NOT RUN” bên dưới là snapshot trước runtime, được thay bằng [bằng chứng hiện hành](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). dbt/DW/marts chưa được nghiệm thu; chỉ có draft được bảo toàn. [Ownership và paths mới](README.md#cấu-trúc-theo-pipeline-stage) không thay kiến trúc hoặc cho phép runtime mới. REPO-STRUCTURE-02 chỉ structural refactor; kiểm lại Raw hiện BLOCKED do Docker Engine unavailable.

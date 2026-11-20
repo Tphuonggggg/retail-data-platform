@@ -6,7 +6,7 @@
 
 Branch `main`; HEAD đã xác minh **`eeb22c224e767059581c3b10a3bb3f5d1f1cc0fb`**, message `docs: finalize WWI SCD2 design policies`; working tree đầu task sạch. Không có pre-existing modifications cần ghép. Snapshot SHA-256 108 tracked files dùng kiểm preservation; không tạo snapshot dữ liệu nguồn.
 
-Dependencies đã có: [Source Contracts](wwi-source-contracts.md), [Extraction Matrix](wwi-extraction-requirements-matrix.md), [Raw Requirements](../requirements/wwi-raw-layer-requirements.md), [Validation Matrix](../requirements/wwi-source-validation-matrix.md), [DW-01](wwi-logical-dw-design.md), [DW-02 Specification](wwi-final-scd2-design-specification.md), [E acceptance/handoff](wwi-dw-02e-assessment.md), [sáu ADR](../adr/README.md). Business definitions theo [KPI Catalog](../../analytics/kpi-definitions/wwi-kpi-candidate-catalog.md); không mở lại BRD/KPI, grains hoặc SCD tracking set.
+Dependencies đã có: [Source Contracts](wwi-source-contracts.md), [Extraction Matrix](wwi-extraction-requirements-matrix.md), [Raw Requirements](../requirements/wwi-raw-layer-requirements.md), [Validation Matrix](../requirements/wwi-source-validation-matrix.md), [DW-01](wwi-logical-dw-design.md), [DW-02 Specification](wwi-final-scd2-design-specification.md), [E acceptance/handoff](wwi-dw-02e-assessment.md), [sáu ADR](../adr/README.md). Business definitions theo [KPI Catalog](../requirements/kpi-definitions/wwi-kpi-candidate-catalog.md); không mở lại BRD/KPI, grains hoặc SCD tracking set.
 
 Đã kiểm inventory/profiling/dictionary và README ingestion/storage/infrastructure. Trong repository chưa có DW-03A deliverables hoặc executable document validator cùng chức năng; không tạo thêm requirements/ADR trùng lặp.
 

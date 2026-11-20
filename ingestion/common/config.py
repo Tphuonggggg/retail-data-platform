@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 import os
 
-from scripts.check_raw_connection import RawConfig, load_config, read_env_file
+from infrastructure.scripts.check_raw_connection import RawConfig, load_config, read_env_file
 from .errors import PipelineError
 
 SOURCE_ENDPOINT = "tcp:DESKTOP-OBDFK6B,1433"

@@ -1,54 +1,76 @@
 # Retail Data Platform
 
-Portfolio Data Engineering: WWI SQL Server ? Python ? PostgreSQL Raw ? dbt DW/Marts ? Power BI. ?u ti?n Sales end-to-end; incremental/SCD2/Customer/Inventory/Airflow/cloud ? milestones sau.
+Đồ án Data Engineering: **SQL Server WWI → Python Full Load → PostgreSQL Raw → dbt DW/Marts → Power BI**. Ưu tiên Sales; incremental/SCD2/Customer/Inventory/Airflow ở milestones sau.
 
-**Implemented:** Full Load CLI, typed batched SELECT/COPY, run metadata, count/digest reconciliation, rerun/rollback; Raw PostgreSQL18.7 ?? provision. **FULL_LOAD_RUNTIME_ACCEPTED ? 11 objects/939208 rows, unpublished candidates; [runtime evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19).** dbt/DW/marts/Power BI/Airflow ch?a tri?n khai.
+**Full Load đã nghiệm thu ngày 2026-11-19:** 11 objects, 939.208 dòng của run `5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8`, consistency UNVERIFIED, chưa publish. [Runtime evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). dbt là bản nháp DW-IMPLEMENT-01 chưa hoàn tất/kiểm chứng runtime, chưa có Sales Warehouse/Mart được nghiệm thu.
 
-## Setup local
+## Cấu trúc theo pipeline stage
 
-D?ng Python3.12 c?i cho ch?nh development account (ho?c installation d?ng chung ???c c?p quy?n), kh?ng d?ng venv t?o b?i user kh?c. Kh?ng c?n runas. ODBC Driver18 ph?i c? s?n. Root requirements.txt l? ngu?n phi?n b?n duy nh?t; unittest stdlib, ch?a th?m dbt/Airflow dependencies.
+```text
+ingestion/             extractors, loaders, codecs, Full Load CLI
+  common/              config, source contract, fidelity/evidence
+  extractors/          SQL Server SELECT-only
+  loaders/             PostgreSQL COPY, metadata, reconciliation
+  scripts/             source diagnostics
+  tests/               ingestion unit/offline tests
+dbt/                   project, staging/intermediate/core/marts, macros, tests (draft)
+airflow/               orchestration ownership; chưa có DAG/config/plugin
+powerbi/               report/dashboard ownership; chưa có report assets
+infrastructure/
+  docker/              Compose và resource identities
+  postgres/            bootstrap, Raw DDL/runbook; warehouse draft riêng
+  scripts/             connection, recovery, provisioning utilities
+  tests/               infrastructure offline/read-only checks
+monitoring/            cross-pipeline logging/metrics/observability
+docs/                  architecture, requirements/KPI, data models, ADR, archive
+data-sources/          source documentation và historical security artifacts
+scripts/               project-wide validation utilities
+tests/                 cross-module integration, B9 và historical security tests
+```
+
+Marts SQL thuộc dbt; Power BI chỉ sở hữu báo cáo. [DQ ownership](docs/architecture/data-quality-ownership.md): checks đặt gần stage thực thi, không duy trì module rỗng song song.
+
+## Local setup và kiểm tra
+
+Dùng Python 3.12 của development account, ODBC Driver 18, Docker Desktop Linux Engine. Giữ .venv/.env hiện có, không ghi đè/xóa/tạo lại tự động. [requirements.txt](requirements.txt) là nguồn version duy nhất; dbt pins được bảo toàn từ draft trước refactor, không chứng minh runtime PASS. Windows Authentication dùng current development account; development TLS/admin opt-in chỉ theo Owner approval. Không in credentials/DSN.
+
+Chạy từ repository root:
 
 ```powershell
-python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
-Copy-Item .env.example .env
-```
-
-N?u .venv ?? t?n t?i: ki?m `pyvenv.cfg` v? interpreter tr??c, kh?ng ghi ??/x?a t? ??ng. ?i?n private Raw credentials v?o .env. Windows Auth d?ng current account. Default TLS Encrypt=yes/trust=no; local self-signed c? th? explicit APP_ENV=development + trust=yes. Account admin ch? d?ng khi explicit WWI_ALLOW_ADMIN_SOURCE=yes trong development; summary hi?n th? opt-in.
-
-## L?nh v?n h?nh
-
-```powershell
 docker compose --env-file .env -f infrastructure/docker/compose.raw.yaml config --quiet
-# Ch? khi c?n kh?i ??ng service; kh?ng reset volume ho?c rerun initialization:
-docker compose --env-file .env -f infrastructure/docker/compose.raw.yaml up -d
-.venv\Scripts\python.exe -m ingestion.full_load config --env-file .env
+.venv\Scripts\python.exe -m ingestion.full_load --help
 .venv\Scripts\python.exe -m ingestion.full_load plan --object Warehouse.StockItemHoldings
-.venv\Scripts\python.exe -m ingestion.full_load connectivity --object Warehouse.StockItemHoldings --env-file .env
-.venv\Scripts\python.exe -m ingestion.full_load preflight --object Warehouse.StockItemHoldings --env-file .env
+.venv\Scripts\python.exe -m ingestion.full_load preflight --all --env-file .env
+.venv\Scripts\python.exe -m ingestion.full_load reconcile --all --run-id 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8 --env-file .env
+.venv\Scripts\python.exe scripts/run_checks.py
 ```
 
-Compose project retail-raw/volume retail-raw_pg_data/localhost55434 gi? nguy?n. Native PostgreSQL v? B9 kh?ng li?n quan. Existing Raw ?? provision; kh?ng ch?y bootstrap/full_load.sql l?i.
+Preflight/reconcile cần runtime sẵn sàng, không nạp lại/publish. [Runbook](ingestion/README.md). Không chạy lại bootstrap/full_load.sql trên database đã provision.
 
-L?nh t??ng lai sau khi Owner giao runtime smoke (reset KH?NG ch?y):
+Compose project `retail-raw`, container `retail-raw-postgres-1`, volume `retail-raw_pg_data`, binding `127.0.0.1:55434` giữ nguyên. Bootstrap bind source nay là `infrastructure/postgres/bootstrap.sql`. Không chạy compose up/recreate chỉ để áp dụng đường dẫn mới trên container hiện có; refactor không yêu cầu restart.
 
-```powershell
-$run = [guid]::NewGuid().ToString()
-.venv\Scripts\python.exe -m ingestion.full_load load --object Warehouse.StockItemHoldings --batch-size 64 --run-id $run --execute --env-file .env
-.venv\Scripts\python.exe -m ingestion.full_load reconcile --object Warehouse.StockItemHoldings --run-id $run --env-file .env
-```
+## REPO-STRUCTURE-02 — ngày 2026-11-20
 
-Kh?ng --publish cho selected smoke. Unknown commit ? inspect run ID, kh?ng auto retry/delete. [Chi ti?t ingestion](ingestion/README.md).
+| Đường dẫn cũ | Đường dẫn hiện hành |
+|---|---|
+| `transformation/dbt/*` | `dbt/*` |
+| `transformation/run_dbt.py` | `dbt/run_dbt.py` |
+| `transformation/provision.py`, `provision.sql` | `infrastructure/scripts/provision_warehouse.py`, `infrastructure/postgres/warehouse/provision.sql` |
+| `storage/raw/*` | `infrastructure/postgres/*` |
+| `orchestration/README.md` | `airflow/README.md` |
+| `analytics/README.md` | `powerbi/README.md` |
+| `analytics/kpi-definitions/*` | `docs/requirements/kpi-definitions/*` |
+| `scripts/inspect_wwi_source.py` | `ingestion/scripts/inspect_wwi_source.py` |
+| Raw connection/recovery scripts | `infrastructure/scripts/` |
+| `tests/full_load_offline.py` | `ingestion/tests/full_load_offline.py` |
+| Raw foundation/provisioning tests | `infrastructure/tests/` |
+| `tests/ingest_acceptance_offline.py` | `tests/integration/ingest_acceptance_offline.py` |
+| `storage/README.md` | `docs/archive/pre-reset/storage-module.md` |
+| `data-quality/README.md` | `docs/architecture/data-quality-ownership.md` |
 
-## Tests
+CLI `python -m ingestion.full_load` không đổi. Imports/path discovery, SQL references, Markdown links và Compose bind source được cập nhật; Raw SQL/contracts và business definitions giữ nguyên. Draft DW-IMPLEMENT-01 có sẵn trước task được giữ và di chuyển, không triển khai tiếp; bản sao nguyên trạng ở `.local/repo-structure-02/preserved-dw-draft/` (ignored).
 
-```powershell
-.venv\Scripts\python.exe -m unittest discover -s tests -p '*offline.py'
-.venv\Scripts\python.exe -m unittest discover -s tests -p raw_foundation_static.py
-```
+Runtime re-verification hiện **BLOCKED**: Docker Linux Engine unavailable, TCP 55434 timeout ngày 2026-11-20. Chưa xác minh lại capture sau refactor; không suy runtime PASS từ offline checks hay báo cáo trước. Task không chạy Full Load/dbt/provisioning, không source writes/pointer changes. Khi runtime được khôi phục cần chạy preflight/reconcile trước nghiệm thu đầy đủ.
 
-## ?i?u h??ng
-
-[Scope](PROJECT_SCOPE.md) ? [Roadmap](ROADMAP.md) ? [Tasks](TASKS.md) ? [Source/DW models](docs/data-models/README.md) ? [KPI](analytics/kpi-definitions/wwi-kpi-candidate-catalog.md) ? [Architecture](docs/architecture/system-overview.md) ? [Historical archive](docs/archive/pre-reset/README.md) ? [Reset plan](docs/mvp-reset-plan.md).
-
-Module ownership: ingestion=extract/load; storage=SQL Raw/target definitions; transformation=dbt/SQL t??ng lai; orchestration=DAGs; analytics=marts/KPI/report; scripts=diagnostics; tests=verification. Gi? c?u tr?c hi?n h?u, kh?ng ??i folder ch? ?? gi?ng template.
+[Scope](PROJECT_SCOPE.md) · [Roadmap](ROADMAP.md) · [Tasks](TASKS.md) · [Data models](docs/data-models/README.md) · [KPI](docs/requirements/kpi-definitions/wwi-kpi-candidate-catalog.md) · [Archive](docs/archive/pre-reset/README.md).

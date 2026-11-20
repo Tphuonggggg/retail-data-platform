@@ -16,3 +16,6 @@ MVP-RESET-01 (Owner, 2026-11-19) supersede c?c security/runtime acceptance c?; l
 - Refactor nh?, tests ph? h?p, c?p nh?t README/status ??ng th?c t?. Routine local/offline commands kh?ng c?n chu?i approval ri?ng.
 
 MVP hi?n t?i: Sales extraction ? Raw ? dbt ? DW ? Sales Mart ? Power BI, basic DQ/logging/repeatability. Incremental, Customer/Inventory, SCD2, Airflow v? advanced recovery ? milestones ti?p theo. Kh?ng ch?y ingestion trong task reset.
+# Ownership hiện hành — REPO-STRUCTURE-02, 2026-11-20
+
+`ingestion` sở hữu extract/load/codecs và tests riêng; `dbt` sở hữu staging/core/marts/data tests; `airflow` sở hữu orchestration; `powerbi` sở hữu reports. `infrastructure` sở hữu Compose/PostgreSQL provisioning và utilities/tests riêng. `docs` giữ business/KPI/models/ADRs/history. `scripts` chỉ project-wide utilities; `tests` giữ cross-module integration. Refactor không phê duyệt runtime hay business policies trong draft DW-IMPLEMENT-01. Xem [migration map](README.md#repo-structure-02--ngày-2026-11-20).

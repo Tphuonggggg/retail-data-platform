@@ -8,7 +8,7 @@ Sau kiểm0 RUNNING runs và0 other client backends, đã thực hiện **một*
 
 ## WWI-06B — Read-only Docker CLI verification
 
-Latest Owner approval2026-11-18 đã cho exact Raw SQL execution: apply một lần exit0, [RAW_PAYLOAD_PROVISIONING_PASS](../../storage/raw/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18), target app preflight và health/TCP PASS. Operator PC/approved per-user Docker CLI/server29.8.2/Linux/context desktop-linux; same healthy container/Compose/loopback55434/retail-raw_pg_data. Không restart/recreate/volume/certificate changes, không ingestion; initializer new-only không rerun. Prior NOT APPLIED inspection giữ historical evidence.
+Latest Owner approval2026-11-18 đã cho exact Raw SQL execution: apply một lần exit0, [RAW_PAYLOAD_PROVISIONING_PASS](../postgres/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18), target app preflight và health/TCP PASS. Operator PC/approved per-user Docker CLI/server29.8.2/Linux/context desktop-linux; same healthy container/Compose/loopback55434/retail-raw_pg_data. Không restart/recreate/volume/certificate changes, không ingestion; initializer new-only không rerun. Prior NOT APPLIED inspection giữ historical evidence.
 
 PowerShell preparation/inspection dưới **PC**, không dùng extractor để quản lý Docker. Nếu PATH thiếu chỉ sửa current session; không system-wide PATH hoặc install/reinstall. Không dump container Env/unfiltered Compose config chứa credentials.
 
@@ -33,15 +33,15 @@ Quản lý PostgreSQL Raw riêng cho MVP, persistent volume và first-start boot
 
 ## Inputs, outputs, dependencies và technology
 
-[compose.raw.yaml](compose.raw.yaml) dùng official `postgres:18`, Docker Compose và biến từ root [.env.example](../../.env.example). Không Dockerfile hoặc package mới. Output tương lai: database `retail_raw`, schemas `raw`/`ingestion_meta`, non-admin role `retail_ingest` và metadata tables tại [bootstrap.sql](../../storage/raw/bootstrap.sql). Credentials thực nằm trong ignored `.env`; không dump `docker compose config` đầy đủ ra logs.
+[compose.raw.yaml](compose.raw.yaml) dùng official `postgres:18`, Docker Compose và biến từ root [.env.example](../../.env.example). Không Dockerfile hoặc package mới. Output tương lai: database `retail_raw`, schemas `raw`/`ingestion_meta`, non-admin role `retail_ingest` và metadata tables tại [bootstrap.sql](../postgres/bootstrap.sql). Credentials thực nằm trong ignored `.env`; không dump `docker compose config` đầy đủ ra logs.
 
 Resource namespace: project `retail-raw`, service `postgres`, expected container `retail-raw-postgres-1`, volume `retail-raw_pg_data`, network `retail-raw_default`; host `127.0.0.1:55434`. Không dùng port5432/native service hoặc55433/B9. Volume PostgreSQL18 mount tại `/var/lib/postgresql` theo [official image](https://hub.docker.com/_/postgres); init script readonly, chỉ chạy khi data directory mới. Ghi actual image version/digest sau lần chạy thực tế; tag major18 chưa là digest pin.
 
 ## Folder structure
 
 - [compose.raw.yaml](compose.raw.yaml): một isolated service, loopback binding, persistent volume, healthcheck và `restart: no`.
-- [storage/raw](../../storage/raw/README.md): bootstrap SQL/metadata ownership.
-- [check_raw_connection.py](../../scripts/check_raw_connection.py): config validation hoặc explicit readonly connectivity probe.
+- [storage/raw](../postgres/README.md): bootstrap SQL/metadata ownership.
+- [check_raw_connection.py](../scripts/check_raw_connection.py): config validation hoặc explicit readonly connectivity probe.
 
 ## Execution — lệnh chuẩn bị cho task runtime tiếp theo
 
@@ -52,7 +52,7 @@ Chạy từ repository root. Các lệnh startup/shutdown dưới đây **chưa 
 3. Offline validation, không kết nối hoặc tạo resource:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env --check-config
+.\.venv\Scripts\python.exe infrastructure/scripts/check_raw_connection.py --env-file .env --check-config
 docker compose -p retail-raw --env-file .env -f infrastructure/docker/compose.raw.yaml config --quiet
 ```
 
@@ -61,7 +61,7 @@ docker compose -p retail-raw --env-file .env -f infrastructure/docker/compose.ra
 ```powershell
 docker compose -p retail-raw --env-file .env -f infrastructure/docker/compose.raw.yaml up -d postgres
 docker compose -p retail-raw --env-file .env -f infrastructure/docker/compose.raw.yaml ps
-.\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env
+.\.venv\Scripts\python.exe infrastructure/scripts/check_raw_connection.py --env-file .env
 ```
 
 Probe dùng role `retail_ingest`, readonly transaction, kiểm database/identity/schema/metadata và no-admin flags; không nạp dữ liệu. Healthcheck sửa mới yêu cầu `pg_isready` **và** Raw/metadata schemas, hai metadata tables, non-admin login role. Existing container chưa nhận health definition mới; không tự recreate để cập nhật nó. Healthy không thay kiểm permissions/constraints/persistence và MVP-G02 evidence.
@@ -85,7 +85,7 @@ WWI source giữ ODBC18/Windows Integrated/`Encrypt=yes;TrustServerCertificate=n
 
 ```powershell
 $env:PYTHONDONTWRITEBYTECODE = '1'
-.\.venv\Scripts\python.exe -m unittest discover -s tests -p 'raw_foundation_static.py' -v
+.\.venv\Scripts\python.exe -m unittest discover -s infrastructure/tests -p 'raw_foundation_static.py' -v
 ```
 
 Tests kiểm config, secret omission, target rejection, SQL contracts và actual Compose parser với synthetic values trong memory; không start service/connect DB. Bootstrap chưa PostgreSQL compile/execute, không runtime PASS.
@@ -96,7 +96,7 @@ Historical preparation tại38d15a6: Engine unavailable. **Inspection hiện t�
 
 Root cause có ba phần: input ingestion password dưới16 ký tự bị guard từ chối đúng; bootstrap cũ dùng `\quit 1` dù psql18 không hỗ trợ exit-code argument nên kết thúc bình thường; health cũ chỉ `pg_isready`. [psql18 docs](https://www.postgresql.org/docs/18/app-psql.html) mô tả `\quit` không có argument và SQL error với ON_ERROR_STOP trả exit3. Bản sửa dùng constant `RAISE EXCEPTION`, guard missing env/default rỗng, new-only collision check và giữ transaction DDL. Không hạ password policy hoặc bỏ prefix validation. Compose mapping vẫn `RAW_PG_PASSWORD` → `RAW_PG_INGEST_PASSWORD`; container nhận đúng tên biến, không có bằng chứng lỗi `\getenv`.
 
-**Ưu tiên A: apply corrected bootstrap vào existing database, giữ container/volume.** [recover_raw_bootstrap.py](../../scripts/recover_raw_bootstrap.py) mặc định chỉ preflight; kiểm Compose labels/image/loopback/volume, dùng immutable container ID, SELECT read-only để từ chối existing target objects/custom roles. Kiểm này không chứng minh toàn bộ volume trống. `--apply` là mutation cần Owner approve riêng, không chạy trong task fix. Script lấy private app password từ explicit env file, truyền qua child process environment và Docker `--env NAME`, không password argv/logs; stale container password không được dùng lại. Không cần sửa admin password hoặc recreate container.
+**Ưu tiên A: apply corrected bootstrap vào existing database, giữ container/volume.** [recover_raw_bootstrap.py](../scripts/recover_raw_bootstrap.py) mặc định chỉ preflight; kiểm Compose labels/image/loopback/volume, dùng immutable container ID, SELECT read-only để từ chối existing target objects/custom roles. Kiểm này không chứng minh toàn bộ volume trống. `--apply` là mutation cần Owner approve riêng, không chạy trong task fix. Script lấy private app password từ explicit env file, truyền qua child process environment và Docker `--env NAME`, không password argv/logs; stale container password không được dùng lại. Không cần sửa admin password hoặc recreate container.
 
 Exact PowerShell commands từ root cho Owner/future authorized task:
 
@@ -106,16 +106,16 @@ if (-not (Test-Path -LiteralPath .env)) { Copy-Item -LiteralPath .env.example -D
 notepad .env
 # Owner tự đặt RAW_PG_PASSWORD riêng, >=16 ký tự, không placeholder prefix.
 # Không gửi password qua chat; không tự đặt lại admin password của cluster đã init.
-.\.venv\Scripts\python.exe scripts/recover_raw_bootstrap.py --env-file .env
+.\.venv\Scripts\python.exe infrastructure/scripts/recover_raw_bootstrap.py --env-file .env
 if ($LASTEXITCODE -ne 0) { throw 'STOP: private config/target/preflight chưa đạt' }
 
 # CHỈ SAU EXPLICIT OWNER AUTHORIZATION CHO RECOVERY A:
-.\.venv\Scripts\python.exe scripts/recover_raw_bootstrap.py --env-file .env --apply
+.\.venv\Scripts\python.exe infrastructure/scripts/recover_raw_bootstrap.py --env-file .env --apply
 if ($LASTEXITCODE -ne 0) { throw 'STOP: inspect actual state; không retry mù' }
 
 # Chỉ bỏ process-level stale app-password override, không đổi OS/system config.
 Remove-Item -LiteralPath Env:RAW_PG_PASSWORD -ErrorAction SilentlyContinue
-.\.venv\Scripts\python.exe scripts/check_raw_connection.py --env-file .env
+.\.venv\Scripts\python.exe infrastructure/scripts/check_raw_connection.py --env-file .env
 if ($LASTEXITCODE -ne 0) { throw 'STOP: app connectivity chưa được verify' }
 ```
 

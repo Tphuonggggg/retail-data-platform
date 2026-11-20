@@ -28,3 +28,6 @@ flowchart TD
 ```
 
 Nguồn restore đứng yên không chứng minh incremental INSERT/UPDATE; test changed-state chỉ trên môi trường độc lập được Owner duyệt. Temporal system-time không mặc định đủ lịch sử business-effective. No-writes interval/consistent-copy, physical/runtime mechanisms và thresholds vẫn là gates, không được giả định bằng sơ đồ.
+# Navigation hiện hành — REPO-STRUCTURE-02
+
+Pipeline systems và business/certification policies bên dưới giữ nguyên. Ownership thư mục: Python ingestion → PostgreSQL Raw (infrastructure) → dbt staging/core/marts → Power BI; airflow orchestration, monitoring observability. Đây là structural refactor; chưa chạy dbt và không publish accepted Raw capture. [Paths và runtime status](../../README.md), [module ownership](module-dependencies.md).

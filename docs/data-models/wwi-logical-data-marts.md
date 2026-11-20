@@ -1,6 +1,6 @@
 # WWI Logical Data Mart Specifications — DW-01
 
-**DW-01 logical mart specifications accepted — sáu marts, không tạo table/Power BI.** [KPI đã duyệt](../../analytics/kpi-definitions/wwi-kpi-candidate-catalog.md), [fact/dimension dictionary](wwi-fact-dimension-dictionary.md), [change propagation](wwi-change-impact-matrix.md). Core DW giữ chi tiết; marts phục vụ câu hỏi/filters cụ thể. Không join hai facts ở grain chi tiết để cộng measures.
+**DW-01 logical mart specifications accepted — sáu marts, không tạo table/Power BI.** [KPI đã duyệt](../requirements/kpi-definitions/wwi-kpi-candidate-catalog.md), [fact/dimension dictionary](wwi-fact-dimension-dictionary.md), [change propagation](wwi-change-impact-matrix.md). Core DW giữ chi tiết; marts phục vụ câu hỏi/filters cụ thể. Không join hai facts ở grain chi tiết để cộng measures.
 
 | Mart / declared grain | Input và supported KPI IDs | Filter / aggregation / risks | Full refresh | Incremental / restatement |
 | --- | --- | --- | --- | --- |

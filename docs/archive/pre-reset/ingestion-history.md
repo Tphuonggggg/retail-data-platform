@@ -2,7 +2,7 @@
 
 **WWI-06C hiện hành2026-11-18:** [history permission investigation](ingestion-history.md#wwi-06c--history-permission-investigation-2026-11-18) vẫn **BLOCKED**. Đã có SELECT-only evidence dưới actual wwi_extract qua PowerShell/ODBC18:9 current tables không quyền ghi được kiểm, hai bound histories cùng effective INSERT=1. Chưa xác định được nguyên nhân; Python preflight chưa chạy được do base interpreter nằm trong profile PC. Một kết nối strict TLS thành công, kết nối mới thất bại; không suy current source readiness PASS. Production guard giữ nguyên, chưa smoke/ingestion/publication.
 
-**WWI-06B current2026-11-18:** [approved Raw provisioning/runtime evidence](../../../storage/raw/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18) = **RAW_PAYLOAD_PROVISIONING_PASS**. Owner duyệt exact SHA256/target/postgres; initializer chạy nguyên bản một lần exit0.11 payload+4 controls+11 views/248 columns/constraints/indexes/grants verified; target-only preflight(all11) PASS, foundation unchanged. Chưa Full Load/smoke/publication. Archive permission exception vẫn pending; không source guard bypass hoặc tự load. NOT APPLIED/TARGET_DDL_REQUIRED và TLS trust-remediation notes phía dưới là prior states/proposals.
+**WWI-06B current2026-11-18:** [approved Raw provisioning/runtime evidence](../../../infrastructure/postgres/README.md#wwi-06b--approved-raw-payload-provisioning-2026-11-18) = **RAW_PAYLOAD_PROVISIONING_PASS**. Owner duyệt exact SHA256/target/postgres; initializer chạy nguyên bản một lần exit0.11 payload+4 controls+11 views/248 columns/constraints/indexes/grants verified; target-only preflight(all11) PASS, foundation unchanged. Chưa Full Load/smoke/publication. Archive permission exception vẫn pending; không source guard bypass hoặc tự load. NOT APPLIED/TARGET_DDL_REQUIRED và TLS trust-remediation notes phía dưới là prior states/proposals.
 
 ## Trạng thái và phạm vi
 
@@ -21,7 +21,7 @@ Module đọc SQL Server WWI → PostgreSQL Raw, quản lý run/capture, fidelit
 | [checkpoints/](../../../ingestion/README.md) | Incremental checkpoint Not implemented yet |
 | [requirements.txt](../../../ingestion/requirements.txt) | pyodbc5.5.0, psycopg[binary]3.3.9 đã có trong project-local .venv; task này không cài package |
 
-Python3.12, ODBC18, PostgreSQL18, unittest stdlib. Inputs: [source contracts](../../data-models/wwi-source-contracts.md), [metadata dictionary](../../data-models/wwi-metadata-dictionary.md), [accepted Full/Raw design](../../data-models/wwi-dw-03a-full-raw-design-proposal.md), [Raw foundation](../../../storage/raw/README.md), private ignored .env. Outputs: typed Raw candidates/published membership và metadata. Không sửa accepted mappings/KPI/temporal policies. Config tái sử dụng pure functions của [Raw checker](../../../scripts/check_raw_connection.py).
+Python3.12, ODBC18, PostgreSQL18, unittest stdlib. Inputs: [source contracts](../../data-models/wwi-source-contracts.md), [metadata dictionary](../../data-models/wwi-metadata-dictionary.md), [accepted Full/Raw design](../../data-models/wwi-dw-03a-full-raw-design-proposal.md), [Raw foundation](../../../infrastructure/postgres/README.md), private ignored .env. Outputs: typed Raw candidates/published membership và metadata. Không sửa accepted mappings/KPI/temporal policies. Config tái sử dụng pure functions của [Raw checker](../../../infrastructure/scripts/check_raw_connection.py).
 
 ## Hợp đồng dữ liệu và kiểu
 
@@ -44,7 +44,7 @@ Source fetchmany, target COPY từng batch, read-back bằng **server-side named
 
 ## Target initialization và quyền
 
-[full_load.sql](../../../storage/raw/full_load.sql) là **artifact đã Owner-authorized execution/runtime verified**, sinh từ [schema.py](../../../ingestion/loaders/schema.py):11 typed payload tables,11 views, bốn control tables. DDL new-only transaction trên retail_raw; Owner dùng postgres chỉ khi cấp quyền provisioning riêng. Collision → rollback; không DROP/TRUNCATE/IF-NOT-EXISTS che drift. Runtime luôn retail_ingest, không auto CREATE/GRANT/escalation.
+[full_load.sql](../../../infrastructure/postgres/full_load.sql) là **artifact đã Owner-authorized execution/runtime verified**, sinh từ [schema.py](../../../ingestion/loaders/schema.py):11 typed payload tables,11 views, bốn control tables. DDL new-only transaction trên retail_raw; Owner dùng postgres chỉ khi cấp quyền provisioning riêng. Collision → rollback; không DROP/TRUNCATE/IF-NOT-EXISTS che drift. Runtime luôn retail_ingest, không auto CREATE/GRANT/escalation.
 
 Actual role có raw USAGE, không CREATE; payload/control/views và exact grants đã provision. Target-only preflight(all11) PASS. Grants chỉ SELECT/INSERT payload; controls SELECT/INSERT hoặc pointer SELECT/UPDATE; views SELECT. Metadata nền runs/object_runs giữ SELECT/INSERT/UPDATE; app không DELETE/TRUNCATE. Không nới quyền để đạt PASS.
 
@@ -53,14 +53,14 @@ Actual role có raw USAGE, không CREATE; payload/control/views và exact grants
 ~~~powershell
 if ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name -ine 'DESKTOP-OBDFK6B\PC') { throw 'STOP: Docker requires PC operator' }
 $dockerExe = 'C:\Users\PC\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe'
-Get-Content -LiteralPath storage/raw/full_load.sql -Raw -Encoding UTF8 | & $dockerExe exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
+Get-Content -LiteralPath infrastructure/postgres/full_load.sql -Raw -Encoding UTF8 | & $dockerExe exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
 ~~~
 
 Actual execution dùng exact bytes qua approved Docker-local psql, không rerun command ví dụ này; không áp dụng native PostgreSQL/B9 hoặc đổi bootstrap. CLI load không tự provisioning.
 
 ## Transaction, metadata và publication
 
-runs lưu run_id/capture_id riêng, retry link, start/end/status/error/consistency. object_runs lưu scope/status/timestamps/source/extracted/loaded counts/reconciliation. Duration tính finished_at−started_at và tổng trên CLI; unknown count NULL, known rollback mới loaded=0. Columns dựa [bootstrap thực tế](../../../storage/raw/bootstrap.sql).
+runs lưu run_id/capture_id riêng, retry link, start/end/status/error/consistency. object_runs lưu scope/status/timestamps/source/extracted/loaded counts/reconciliation. Duration tính finished_at−started_at và tổng trên CLI; unknown count NULL, known rollback mới loaded=0. Columns dựa [bootstrap thực tế](../../../infrastructure/postgres/bootstrap.sql).
 
 Bốn bảng mới: load_contracts(scope/contract fingerprint/source engine context), load_audits(count/SHA256 typed-row digest), raw_publications(immutable run/previous publication), raw_current(singleton pointer). Fingerprint là data replay contract, không approval manifest; source snapshot ID NULL khi không proof.
 
@@ -132,12 +132,12 @@ Operator chịu proof writer inventory/control/window; parser chỉ kiểm revie
 ## Testing, acceptance và WWI-06B
 
 ~~~powershell
-.venv\Scripts\python.exe -m unittest discover -s tests -p full_load_offline.py -v
-.venv\Scripts\python.exe -m unittest discover -s tests -p raw_foundation_static.py -v
+.venv\Scripts\python.exe -m unittest discover -s ingestion/tests -p full_load_offline.py -v
+.venv\Scripts\python.exe -m unittest discover -s infrastructure/tests -p raw_foundation_static.py -v
 .venv\Scripts\python.exe -m unittest discover -s tests -p source_security_static.py -v
 ~~~
 
-[Offline suite](../../../tests/full_load_offline.py): synthetic fixtures/mock drivers; F2/NULL/Decimal/Unicode/binary, frozen contracts156 current columns, batching/empty/history duplicates, rollback/count/content mismatch/retry/idempotency/unknown ACK, atomic full-scope publication, identity/schema/TLS/permission blockers, named cursor/no-secret CLI. Offline PASS không chứng minh SQL compilation/geography fidelity/performance hoặc runtime ingestion.
+[Offline suite](../../../ingestion/tests/full_load_offline.py): synthetic fixtures/mock drivers; F2/NULL/Decimal/Unicode/binary, frozen contracts156 current columns, batching/empty/history duplicates, rollback/count/content mismatch/retry/idempotency/unknown ACK, atomic full-scope publication, identity/schema/TLS/permission blockers, named cursor/no-secret CLI. Offline PASS không chứng minh SQL compilation/geography fidelity/performance hoặc runtime ingestion.
 
 Kết quả WWI-06A2026-11-18 (trước readiness review dưới đây): Python3.12.10, pyodbc5.5.0, psycopg/psycopg-binary3.3.9 và ODBC Driver18 có sẵn; không install. **38 Full Load +22 Raw foundation +18 source security +12 B9 offline tests PASS**. CLI plan/config/ddl PASS offline; load thiếu execute trả exit1 trước connection. Final readonly Raw inspection: PostgreSQL18.7,0 payload tables, chỉ runs/object_runs, counts[0,0], app Raw CREATE=false. Task chỉ restart Raw một lần ở Phase A và chạy metadata/TCP reads; không source query/extraction, payload DDL/grants/COPY/publication, source permission change, native PostgreSQL/B9 resource change hoặc real Full Load.
 
@@ -199,7 +199,7 @@ runas /user:DESKTOP-OBDFK6B\wwi_extract "powershell.exe -NoProfile -NoExit"
 # Trong cửa sổ wwi_extract:
 Set-Location -LiteralPath 'D:\Code\Retail_Data_Platform\project1_Retail_Data_platform'
 whoami /user
-.venv\Scripts\python.exe scripts/inspect_wwi_source.py --execute
+.venv\Scripts\python.exe ingestion/scripts/inspect_wwi_source.py --execute
 ~~~
 
 Diagnostic không bypass TLS, không nạp dữ liệu, không gọi production loader bằng PC. --samples thêm TOP(1) mỗi object, --holdings-profile thêm small-table aggregates; output không row values. Exit0 chỉ hoàn tất metadata check, không G01/least-privilege PASS; rights output thuộc current session.
@@ -225,7 +225,7 @@ if ($publicCert.Thumbprint -ne 'BAB7BCF8CEEFD64DB354180B5D2A92439BFDB7EB' -or
 if ((Get-Date) -lt $publicCert.NotBefore -or (Get-Date) -ge $publicCert.NotAfter) { throw 'STOP: invalid certificate validity' }
 if (Test-Path -LiteralPath ('Cert:\CurrentUser\Root\'+$publicCert.Thumbprint)) { throw 'STOP: already trusted; inspect the remaining TLS cause' }
 Import-Certificate -FilePath $publicFile -CertStoreLocation Cert:\CurrentUser\Root
-.venv\Scripts\python.exe scripts/inspect_wwi_source.py --execute
+.venv\Scripts\python.exe ingestion/scripts/inspect_wwi_source.py --execute
 ~~~
 
 [Import-Certificate](https://learn.microsoft.com/en-us/powershell/module/pki/import-certificate?view=windowsserver2025-ps) thao tác certificate store của đúng session. Proposed rollback chỉ sau Owner review: gỡ đúng thumbprint mới import nếu trước đó absent và không có dependency khác; không xóa wholesale root store. Trust action trên **chưa được thực hiện**. Private config/venv phải đọc được dưới extractor; không sửa ACL ở task này.
@@ -259,7 +259,7 @@ if (-not (Test-Path -LiteralPath $dockerExe)) { throw 'STOP: approved Docker CLI
 & $dockerExe inspect retail-raw-postgres-1 --format '{{.Config.Image}}|{{json .NetworkSettings.Ports}}|{{json .Mounts}}'
 if ($LASTEXITCODE -ne 0) { throw 'STOP: Docker target inspection failed' }
 # Future separately authorized apply only; NOT RUN in provisioning verification task.
-Get-Content -LiteralPath storage/raw/full_load.sql -Raw -Encoding UTF8 |
+Get-Content -LiteralPath infrastructure/postgres/full_load.sql -Raw -Encoding UTF8 |
     & $dockerExe exec -i retail-raw-postgres-1 psql -X -U postgres -d retail_raw -v ON_ERROR_STOP=1
 if ($LASTEXITCODE -ne 0) { throw 'STOP: provisioning failed; inspect, do not reset/retry blindly' }
 ~~~
@@ -277,7 +277,7 @@ Trình tự sau khi Owner cho phép **riêng selected-object load**, dưới wwi
 ~~~powershell
 Set-Location -LiteralPath 'D:\Code\Retail_Data_Platform\project1_Retail_Data_platform'
 whoami /user
-.venv\Scripts\python.exe scripts/inspect_wwi_source.py --execute --holdings-profile
+.venv\Scripts\python.exe ingestion/scripts/inspect_wwi_source.py --execute --holdings-profile
 if ($LASTEXITCODE -ne 0) { throw 'STOP: source metadata/TLS check' }
 .venv\Scripts\python.exe -m ingestion.full_load preflight --object Warehouse.StockItemHoldings --env-file .env
 if ($LASTEXITCODE -ne 0) { throw 'STOP: unresolved source rights or target schema/grants' }
@@ -287,7 +287,7 @@ $candidateRun
 if ($LASTEXITCODE -ne 0) { throw ('STOP: inspect run '+$candidateRun+'; no automatic retry') }
 .venv\Scripts\python.exe -m ingestion.full_load reconcile --object Warehouse.StockItemHoldings --run-id $candidateRun --env-file .env
 if ($LASTEXITCODE -ne 0) { throw 'STOP: durable reconciliation failed' }
-.venv\Scripts\python.exe scripts/inspect_wwi_source.py --execute --holdings-profile
+.venv\Scripts\python.exe ingestion/scripts/inspect_wwi_source.py --execute --holdings-profile
 ~~~
 
 Không --publish. Với batch64 và227 rows mong đợi4 batches64/64/64/35 nếu source không đổi. Expected: one new run/capture, runs RUNNING→SUCCEEDED; object PENDING→RUNNING→SUCCEEDED/reconciliation PASS, source/extracted/loaded counts bằng fresh count; load_audits count/digest; duration nonnegative; raw_current/publication không đổi, serving views không nhận candidate. Technical SUCCESS không chứng minh consistent source; khi chưa actual no-writes proof vẫn UNVERIFIED/unpublished.
@@ -351,7 +351,7 @@ Validation:44 Full Load/readiness +22 Raw foundation +18 source security +12 B9 
 
 Project-local .venv trỏ base Python3.12.10 tại `C:\Users\PC\AppData\Local\Programs\Python\Python312\python.exe`. Launch bằng credential riêng trả Win32 access error5 và stderr `No Python at ...Python312...`; ACL đọc được của base executable/directory chỉ có SYSTEM/Administrators/PC. **Python production preflight dưới wwi_extract = NOT RUN**, không gán cho nó một SQL runtime error chưa quan sát. Không dùng PC/DBA hoặc EXECUTE AS thay extractor, không copy Python/install package/sửa ACL để vượt prerequisite.
 
-Để thu thập subset độc lập, đã chạy Windows PowerShell System.Data.Odbc với Driver18/Integrated Auth/Encrypt=yes/TrustServerCertificate=no dưới actual Windows SID đã duyệt. Adapter dùng SELECT queries/parameters từ [collector](../../../scripts/inspect_wwi_source.py), không chạy loader. Lượt đầu verified27/30 queries;3 queries role/grant closure NOT_VERIFIED, không coi là empty grants. Collector sau đó dùng active `sys.user_token` cho effective role/grant scope; các query sửa này chưa được live-verify do kết nối mới fail TLS.
+Để thu thập subset độc lập, đã chạy Windows PowerShell System.Data.Odbc với Driver18/Integrated Auth/Encrypt=yes/TrustServerCertificate=no dưới actual Windows SID đã duyệt. Adapter dùng SELECT queries/parameters từ [collector](../../../ingestion/scripts/inspect_wwi_source.py), không chạy loader. Lượt đầu verified27/30 queries;3 queries role/grant closure NOT_VERIFIED, không coi là empty grants. Collector sau đó dùng active `sys.user_token` cho effective role/grant scope; các query sửa này chưa được live-verify do kết nối mới fail TLS.
 
 | Kiểm tra | Bằng chứng actual / kết quả |
 | --- | --- |
@@ -387,7 +387,7 @@ Temporary `.local/wwi06c-odbc-runtime.ps1` đã bổ sung read-only exact-certif
 ~~~powershell
 # Trong actual wwi_extract session, sau khi Python execution prerequisite được resolve.
 # Collector exit0 = collection complete; exit2 = metadata query NOT_VERIFIED; không gate approval.
-.venv\Scripts\python.exe -X utf8 scripts/inspect_wwi_source.py --execute --history-permissions
+.venv\Scripts\python.exe -X utf8 ingestion/scripts/inspect_wwi_source.py --execute --history-permissions
 # Chỉ SELECT/preflight, không load; unchanged guard vẫn reject archive INSERT=1.
 .venv\Scripts\python.exe -X utf8 -m ingestion.full_load preflight --object Warehouse.StockItemHoldings --env-file .env
 ~~~

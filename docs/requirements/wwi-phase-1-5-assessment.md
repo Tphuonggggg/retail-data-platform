@@ -14,8 +14,8 @@
 
 1. [Business Requirements](wwi-business-requirements.md): mục tiêu, entities, data creation flow, use cases, KPI candidates và giới hạn ba subject areas.
 2. [Business Questions & Use Cases](wwi-business-questions-use-cases.md): câu hỏi, grain, candidate và quyết định cần thêm.
-3. [KPI Catalog](../../analytics/kpi-definitions/wwi-kpi-candidate-catalog.md): 22 ID, phân loại Core/Optional/Deferred/Unsupported, công thức, source/grain/date/filter/unit/aggregation, DQ/reconciliation và trạng thái duyệt.
-4. [KPI Verification SQL](../../analytics/kpi-definitions/wwi-kpi-verification-sql.md): K01–K13, `SELECT` riêng grain và kết quả đã chạy.
+3. [KPI Catalog](kpi-definitions/wwi-kpi-candidate-catalog.md): 22 ID, phân loại Core/Optional/Deferred/Unsupported, công thức, source/grain/date/filter/unit/aggregation, DQ/reconciliation và trạng thái duyệt.
+4. [KPI Verification SQL](kpi-definitions/wwi-kpi-verification-sql.md): K01–K13, `SELECT` riêng grain và kết quả đã chạy.
 5. [Business Rules & Decision Matrix](wwi-business-rules-decision-matrix.md): BRD-01–BRD-12, phương án, evidence, quyết định và trạng thái Approved.
 
 ## Acceptance checklist

@@ -1,6 +1,6 @@
 # WWI Business Requirements — Phase 1.5
 
-**Trạng thái: BRD-01–BRD-12 và định nghĩa nghiệp vụ KPI MVP đã được Project Owner phê duyệt trong Phase 1.5; triển khai/technical validation chưa thực hiện.** Phạm vi ba subject areas MVP theo [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md); Sales/Invoicing được ưu tiên end-to-end. Fact/dimension grain và schema chưa được duyệt. Bằng chứng nguồn: [Metadata Dictionary](../data-models/wwi-metadata-dictionary.md), [Data Profiling](../data-models/wwi-data-profiling.md), [Source Relationships](../data-models/wwi-source-relationships.md), [Source Contracts](../data-models/wwi-source-contracts.md). Câu hỏi cụ thể ở [Business Questions](wwi-business-questions-use-cases.md); định nghĩa ở [KPI Catalog](../../analytics/kpi-definitions/wwi-kpi-candidate-catalog.md).
+**Trạng thái: BRD-01–BRD-12 và định nghĩa nghiệp vụ KPI MVP đã được Project Owner phê duyệt trong Phase 1.5; triển khai/technical validation chưa thực hiện.** Phạm vi ba subject areas MVP theo [PROJECT_SCOPE.md](../../PROJECT_SCOPE.md); Sales/Invoicing được ưu tiên end-to-end. Fact/dimension grain và schema chưa được duyệt. Bằng chứng nguồn: [Metadata Dictionary](../data-models/wwi-metadata-dictionary.md), [Data Profiling](../data-models/wwi-data-profiling.md), [Source Relationships](../data-models/wwi-source-relationships.md), [Source Contracts](../data-models/wwi-source-contracts.md). Câu hỏi cụ thể ở [Business Questions](wwi-business-questions-use-cases.md); định nghĩa ở [KPI Catalog](kpi-definitions/wwi-kpi-candidate-catalog.md).
 
 ## BR-S — Sales/Invoicing
 

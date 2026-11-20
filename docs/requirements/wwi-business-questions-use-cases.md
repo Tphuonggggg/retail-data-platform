@@ -1,6 +1,6 @@
 # WWI Business Questions & Use Cases — Phase 1.5
 
-**Trạng thái: câu hỏi nghiệp vụ Phase 1.5 đã được phân loại theo BRD-01–BRD-12 được duyệt; dashboard chưa triển khai.** Xem [Business Requirements](wwi-business-requirements.md), [KPI Catalog](../../analytics/kpi-definitions/wwi-kpi-candidate-catalog.md) và nguồn WWI. Các câu hỏi Deferred/Unsupported giữ để giải thích giới hạn, không là cam kết MVP.
+**Trạng thái: câu hỏi nghiệp vụ Phase 1.5 đã được phân loại theo BRD-01–BRD-12 được duyệt; dashboard chưa triển khai.** Xem [Business Requirements](wwi-business-requirements.md), [KPI Catalog](kpi-definitions/wwi-kpi-candidate-catalog.md) và nguồn WWI. Các câu hỏi Deferred/Unsupported giữ để giải thích giới hạn, không là cam kết MVP.
 
 | ID | Subject area / câu hỏi | Use case / người dùng giả định | Nguồn và grain cần giữ | KPI candidates | Giới hạn / quyết định |
 | --- | --- | --- | --- | --- | --- |
