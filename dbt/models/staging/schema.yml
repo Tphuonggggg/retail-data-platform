@@ -1,266 +1,62 @@
 version: 2
 models:
-  - name: stg_sales_customers
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: customer_id
-        data_tests: [not_null, unique]
-      - name: customer_name
-        data_tests: [not_null]
-      - name: bill_to_customer_id
-        data_tests: [not_null]
-      - name: customer_category_id
-        data_tests: [not_null]
-      - name: buying_group_id
-      - name: primary_contact_person_id
-        data_tests: [not_null]
-      - name: alternate_contact_person_id
-      - name: delivery_method_id
-        data_tests: [not_null]
-      - name: delivery_city_id
-        data_tests: [not_null]
-      - name: postal_city_id
-        data_tests: [not_null]
-      - name: credit_limit
-      - name: account_opened_date
-        data_tests: [not_null]
-      - name: standard_discount_percentage
-        data_tests: [not_null]
-      - name: is_statement_sent
-        data_tests: [not_null]
-      - name: is_on_credit_hold
-        data_tests: [not_null]
-      - name: payment_days
-        data_tests: [not_null]
-      - name: phone_number
-        data_tests: [not_null]
-      - name: fax_number
-        data_tests: [not_null]
-      - name: delivery_run
-      - name: run_position
-      - name: website_url
-        data_tests: [not_null]
-      - name: delivery_address_line1
-        data_tests: [not_null]
-      - name: delivery_address_line2
-      - name: delivery_postal_code
-        data_tests: [not_null]
-      - name: delivery_location
-      - name: postal_address_line1
-        data_tests: [not_null]
-      - name: postal_address_line2
-      - name: postal_postal_code
-        data_tests: [not_null]
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: valid_from
-        data_tests: [not_null]
-      - name: valid_to
-        data_tests: [not_null]
-  - name: stg_sales_orders
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: order_id
-        data_tests: [not_null, unique]
-      - name: customer_id
-        data_tests: [not_null]
-      - name: salesperson_person_id
-        data_tests: [not_null]
-      - name: picked_by_person_id
-      - name: contact_person_id
-        data_tests: [not_null]
-      - name: backorder_order_id
-      - name: order_date
-        data_tests: [not_null]
-      - name: expected_delivery_date
-        data_tests: [not_null]
-      - name: customer_purchase_order_number
-      - name: is_undersupply_backordered
-        data_tests: [not_null]
-      - name: comments
-      - name: delivery_instructions
-      - name: internal_comments
-      - name: picking_completed_when
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: last_edited_when
-        data_tests: [not_null]
-  - name: stg_sales_orderlines
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: order_line_id
-        data_tests: [not_null, unique]
-      - name: order_id
-        data_tests: [not_null]
-      - name: stock_item_id
-        data_tests: [not_null]
-      - name: description
-        data_tests: [not_null]
-      - name: package_type_id
-        data_tests: [not_null]
-      - name: quantity
-        data_tests: [not_null]
-      - name: unit_price
-      - name: tax_rate
-        data_tests: [not_null]
-      - name: picked_quantity
-        data_tests: [not_null]
-      - name: picking_completed_when
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: last_edited_when
-        data_tests: [not_null]
-  - name: stg_sales_invoices
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: invoice_id
-        data_tests: [not_null, unique]
-      - name: customer_id
-        data_tests: [not_null]
-      - name: bill_to_customer_id
-        data_tests: [not_null]
-      - name: order_id
-      - name: delivery_method_id
-        data_tests: [not_null]
-      - name: contact_person_id
-        data_tests: [not_null]
-      - name: accounts_person_id
-        data_tests: [not_null]
-      - name: salesperson_person_id
-        data_tests: [not_null]
-      - name: packed_by_person_id
-        data_tests: [not_null]
-      - name: invoice_date
-        data_tests: [not_null]
-      - name: customer_purchase_order_number
-      - name: is_credit_note
-        data_tests: [not_null]
-      - name: credit_note_reason
-      - name: comments
-      - name: delivery_instructions
-      - name: internal_comments
-      - name: total_dry_items
-        data_tests: [not_null]
-      - name: total_chiller_items
-        data_tests: [not_null]
-      - name: delivery_run
-      - name: run_position
-      - name: returned_delivery_data
-      - name: confirmed_delivery_time
-      - name: confirmed_received_by
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: last_edited_when
-        data_tests: [not_null]
-  - name: stg_sales_invoicelines
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: invoice_line_id
-        data_tests: [not_null, unique]
-      - name: invoice_id
-        data_tests: [not_null]
-      - name: stock_item_id
-        data_tests: [not_null]
-      - name: description
-        data_tests: [not_null]
-      - name: package_type_id
-        data_tests: [not_null]
-      - name: quantity
-        data_tests: [not_null]
-      - name: unit_price
-      - name: tax_rate
-        data_tests: [not_null]
-      - name: tax_amount
-        data_tests: [not_null]
-      - name: line_profit
-        data_tests: [not_null]
-      - name: extended_price
-        data_tests: [not_null]
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: last_edited_when
-        data_tests: [not_null]
-  - name: stg_sales_customertransactions
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: customer_transaction_id
-        data_tests: [not_null, unique]
-      - name: customer_id
-        data_tests: [not_null]
-      - name: transaction_type_id
-        data_tests: [not_null]
-      - name: invoice_id
-      - name: payment_method_id
-      - name: transaction_date
-        data_tests: [not_null]
-      - name: amount_excluding_tax
-        data_tests: [not_null]
-      - name: tax_amount
-        data_tests: [not_null]
-      - name: transaction_amount
-        data_tests: [not_null]
-      - name: outstanding_balance
-        data_tests: [not_null]
-      - name: finalization_date
-      - name: is_finalized
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: last_edited_when
-        data_tests: [not_null]
-  - name: stg_warehouse_stockitems
-    description: "Explicit typed population pinned to one development capture."
-    columns:
-      - name: _capture_id
-        data_tests: [not_null]
-      - name: stock_item_id
-        data_tests: [not_null, unique]
-      - name: stock_item_name
-        data_tests: [not_null]
-      - name: supplier_id
-        data_tests: [not_null]
-      - name: color_id
-      - name: unit_package_id
-        data_tests: [not_null]
-      - name: outer_package_id
-        data_tests: [not_null]
-      - name: brand
-      - name: size
-      - name: lead_time_days
-        data_tests: [not_null]
-      - name: quantity_per_outer
-        data_tests: [not_null]
-      - name: is_chiller_stock
-        data_tests: [not_null]
-      - name: barcode
-      - name: tax_rate
-        data_tests: [not_null]
-      - name: unit_price
-        data_tests: [not_null]
-      - name: recommended_retail_price
-      - name: typical_weight_per_unit
-        data_tests: [not_null]
-      - name: marketing_comments
-      - name: internal_comments
-      - name: photo
-      - name: custom_fields
-      - name: tags
-      - name: search_details
-        data_tests: [not_null]
-      - name: last_edited_by
-        data_tests: [not_null]
-      - name: valid_from
-        data_tests: [not_null]
-      - name: valid_to
-        data_tests: [not_null]
+- name: stg_sales_customers
+  description: Explicit typed population pinned to one development capture.
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: stg_sales_orders
+  description: Explicit typed population pinned to one development capture.
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: stg_sales_orderlines
+  description: Explicit typed population pinned to one development capture.
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: stg_sales_invoices
+  description: Explicit typed population pinned to one development capture.
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: stg_sales_invoicelines
+  description: Explicit typed population pinned to one development capture.
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: stg_warehouse_stockitems
+  description: Explicit typed population pinned to one development capture.
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null

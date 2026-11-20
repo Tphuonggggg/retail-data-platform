@@ -2,3 +2,4 @@ pyodbc==5.5.0
 psycopg[binary]==3.3.9
 dbt-core==1.11.17
 dbt-postgres==1.11.0
+PyYAML==6.0.3

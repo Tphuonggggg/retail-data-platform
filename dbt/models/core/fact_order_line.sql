@@ -7,7 +7,12 @@ select l.order_line_id as source_order_line_id,l.order_id as source_order_id,
  'HISTORICAL_SCD2_DEFERRED'::text as product_lookup_reason,
  l.quantity as ordered_quantity,l.picked_quantity as source_picked_quantity,
  l.unit_price as source_unit_price,l.last_edited_when as source_last_edited_when,
- l._capture_id
+ l._capture_id,l.record_identity,l.source_object,l.source_business_key,l._raw_row_ordinal,
+ l.ruleset_version,l.evaluation_id,{{ measure_version() }} as measure_version,
+ q.dq_status,q.is_valid,q.has_warning,q.is_quarantined,
+ (q.is_valid and coalesce(h.is_order_eligible,false)) as is_order_eligible
 from {{ ref('stg_sales_orderlines') }} l
 left join {{ ref('int_order_header') }} h
  on l.order_id=h.source_order_id and l._capture_id=h._capture_id
+
+join {{ ref('record_status') }} q on q.record_identity=l.record_identity and q.ruleset_version=l.ruleset_version and q.evaluation_id=l.evaluation_id

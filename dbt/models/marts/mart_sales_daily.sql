@@ -1,19 +1,19 @@
 with lines as (
- select invoice_date,sum(quantity) as quantity,
- sum(invoiced_sales_before_tax) as invoiced_sales_before_tax,
- sum(tax_amount) as tax_amount,sum(invoice_amount_including_tax) as invoice_amount_including_tax,
- sum(source_reported_line_profit) as source_reported_line_profit
- from {{ ref('fact_invoice_line') }} group by invoice_date
-), headers as (
- select invoice_date,count(*) as invoice_count
- from {{ ref('int_invoice_header') }} group by invoice_date
+ select invoice_date,{{ metric('S05') }} as sales_amount,{{ metric('S03') }} as invoice_amount_including_tax,
+ {{ metric('S04') }} as tax_amount,{{ metric('UNITS') }} as units_sold
+ from {{ ref('fact_invoice_line') }} where is_sales_eligible group by invoice_date
+), invoices as (
+ select invoice_date,{{ metric('S02') }} as invoice_count from {{ ref('int_invoice_header') }}
+ where is_sales_eligible group by invoice_date
+), orders as (
+ select order_date,{{ metric('S01') }} as order_count from {{ ref('int_order_header') }}
+ where is_order_eligible group by order_date
 )
-select h.invoice_date,to_char(h.invoice_date,'YYYYMMDD')::integer as invoice_date_key,
- h.invoice_count,coalesce(l.quantity,0) as quantity,
- coalesce(l.invoiced_sales_before_tax,0)::numeric as invoiced_sales_before_tax,
- coalesce(l.tax_amount,0)::numeric as tax_amount,
- coalesce(l.invoice_amount_including_tax,0)::numeric as invoice_amount_including_tax,
- coalesce(l.source_reported_line_profit,0)::numeric as source_reported_line_profit,
- coalesce(l.invoiced_sales_before_tax,0)::numeric/nullif(h.invoice_count,0) as average_invoice_value_before_tax,
- {{ capture_id() }} as _capture_id,'DEVELOPMENT_UNCERTIFIED'::text as certification_status
-from headers h left join lines l using(invoice_date)
+select d.calendar_date as sales_date,d.date_key,coalesce(i.invoice_count,0) as invoice_count,
+ coalesce(o.order_count,0) as order_count,coalesce(l.sales_amount,0)::numeric as sales_amount,
+ coalesce(l.tax_amount,0)::numeric as tax_amount,coalesce(l.invoice_amount_including_tax,0)::numeric as invoice_amount_including_tax,
+ coalesce(l.units_sold,0) as units_sold,
+ {{ ratio('coalesce(l.sales_amount,0)','i.invoice_count') }} as average_invoice_value_before_tax,
+ {{ build_metadata() }}
+from {{ ref('dim_date') }} d left join lines l on l.invoice_date=d.calendar_date
+left join invoices i on i.invoice_date=d.calendar_date left join orders o on o.order_date=d.calendar_date

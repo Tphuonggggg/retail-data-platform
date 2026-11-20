@@ -51,7 +51,7 @@ def main():
             capture_output=True,timeout=60)
         if result.returncode != 0:
             raise RuntimeError('Provisioning failed; inspect state before retry; output suppressed')
-        print('WAREHOUSE_PROVISIONING_PASS: new role and four schemas; Raw unchanged')
+        print('WAREHOUSE_PROVISIONING_PASS: new role and six schemas; Raw unchanged')
         return 0
     except Exception as error:
         print(json.dumps({'status':'FAIL','error_type':type(error).__name__,

@@ -1,0 +1,160 @@
+version: sales-measures-v1
+reconciliation:
+  amount_absolute_tolerance: '0'
+  ratio_absolute_tolerance: '0.000000000001'
+measures:
+- id: S01
+  name: Order Count
+  source_fact: int_order_header
+  grain: OrderID
+  aggregation: count
+  numerator: null
+  denominator: null
+  eligibility: is_order_eligible
+  date_basis: OrderDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  version: '1'
+- id: S02
+  name: Invoice Count
+  source_fact: int_invoice_header
+  grain: InvoiceID
+  aggregation: count
+  numerator: null
+  denominator: null
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  version: '1'
+- id: S03
+  name: Invoice Amount Including Tax
+  source_fact: fact_invoice_line
+  grain: InvoiceLineID
+  aggregation: sum
+  numerator: null
+  denominator: null
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  - product
+  - buyer
+  - bill_to
+  version: '1'
+- id: S04
+  name: Invoice Tax Amount
+  source_fact: fact_invoice_line
+  grain: InvoiceLineID
+  aggregation: sum
+  numerator: null
+  denominator: null
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  - product
+  - buyer
+  - bill_to
+  version: '1'
+- id: S05
+  name: Invoiced Sales Before Tax
+  source_fact: fact_invoice_line
+  grain: InvoiceLineID
+  aggregation: sum
+  numerator: null
+  denominator: null
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  - product
+  - buyer
+  - bill_to
+  version: '1'
+- id: S06
+  name: Average Invoice Value Before Tax
+  source_fact: fact_invoice_line
+  grain: InvoiceLineID
+  aggregation: ratio
+  numerator: S05
+  denominator: S02
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  version: '1'
+- id: UNITS
+  name: Source Units Sold
+  source_fact: fact_invoice_line
+  grain: InvoiceLineID
+  aggregation: sum
+  numerator: null
+  denominator: null
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  - product
+  - buyer
+  - bill_to
+  version: '1'
+- id: C03
+  name: Sales by Selected Customer Role
+  source_fact: fact_invoice_line
+  grain: InvoiceLineID
+  aggregation: sum
+  numerator: null
+  denominator: null
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  - product
+  - buyer
+  - bill_to
+  version: '1'
+- id: MOM
+  name: Month-over-Month Captured Sales Growth
+  source_fact: mart_sales_monthly
+  grain: month
+  aggregation: growth
+  numerator: S05
+  denominator: S05
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  version: '1'
+- id: YOY
+  name: Year-over-Year Captured Sales Growth
+  source_fact: mart_sales_monthly
+  grain: month
+  aggregation: growth
+  numerator: S05
+  denominator: S05
+  eligibility: is_sales_eligible
+  date_basis: InvoiceDate
+  null_policy: PRESERVE_OPTIONAL_EXCLUDE_INVALID
+  zero_division: 'NULL'
+  dimensions:
+  - date
+  version: '1'

@@ -12,8 +12,12 @@ models:
     +materialized: table
     staging:
       +schema: dw_staging
+      +materialized: view
     intermediate:
       +schema: dw_intermediate
+      +materialized: view
+    quality:
+      +schema: dq
     core:
       +schema: dw_core
     marts:

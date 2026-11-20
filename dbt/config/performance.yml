@@ -1,0 +1,9 @@
+version: sales-performance-v1
+threads: 1
+materialization:
+  staging: view
+  intermediate: view
+  dq: table
+  core: table
+  marts: table
+indexes: false

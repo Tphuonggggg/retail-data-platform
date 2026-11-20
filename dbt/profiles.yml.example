@@ -1,0 +1,14 @@
+retail_sales:
+  target: development
+  outputs:
+    development:
+      type: postgres
+      host: "{{ env_var('WWI_DBT_HOST') }}"
+      port: 55434
+      dbname: retail_raw
+      user: retail_transform
+      password: "{{ env_var('DBT_ENV_SECRET_PASSWORD') }}"
+      schema: dw_staging
+      threads: 1
+      sslmode: disable
+# Documentation only. run_dbt.py creates the actual private profile and validated vars.

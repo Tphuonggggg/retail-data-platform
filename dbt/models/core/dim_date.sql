@@ -11,5 +11,5 @@ select to_char(calendar_date,'YYYYMMDD')::integer as date_key, calendar_date,
  extract(day from calendar_date)::integer as calendar_day,
  extract(quarter from calendar_date)::integer as calendar_quarter,
  date_trunc('month',calendar_date)::date as month_start,
- {{ capture_id() }} as _capture_id
+ {{ build_metadata() }}
 from calendar

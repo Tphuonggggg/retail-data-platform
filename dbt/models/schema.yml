@@ -1,0 +1,156 @@
+version: 2
+models:
+- name: dim_date
+  columns:
+  - name: date_key
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: dim_customer
+  columns:
+  - name: customer_key
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: dim_product
+  columns:
+  - name: product_key
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: fact_invoice_line
+  columns:
+  - name: source_invoice_line_id
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+  - name: observed_product_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_sales_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_product')
+          field: product_key
+        config:
+          where: is_sales_eligible
+  - name: buyer_observed_customer_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_sales_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_customer')
+          field: customer_key
+        config:
+          where: is_sales_eligible
+  - name: invoice_date_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_sales_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_date')
+          field: date_key
+        config:
+          where: is_sales_eligible
+  - name: bill_to_observed_customer_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_sales_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_customer')
+          field: customer_key
+        config:
+          where: is_sales_eligible
+- name: fact_order_line
+  columns:
+  - name: source_order_line_id
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+  - name: observed_product_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_order_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_product')
+          field: product_key
+        config:
+          where: is_order_eligible
+  - name: buyer_observed_customer_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_order_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_customer')
+          field: customer_key
+        config:
+          where: is_order_eligible
+  - name: order_date_key
+    data_tests:
+    - not_null:
+        config:
+          where: is_order_eligible
+    - relationships:
+        arguments:
+          to: ref('dim_date')
+          field: date_key
+        config:
+          where: is_order_eligible
+- name: int_invoice_header
+  columns:
+  - name: source_invoice_id
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: int_order_header
+  columns:
+  - name: source_order_id
+    data_tests:
+    - unique
+    - not_null
+  - name: _capture_id
+    data_tests:
+    - not_null
+- name: record_status
+  columns:
+  - name: record_identity
+    data_tests:
+    - unique
+    - not_null
+  - name: dq_status
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - VALID
+          - WARNING
+          - INVALID

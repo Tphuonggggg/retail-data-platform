@@ -1,16 +1,11 @@
 version: 2
 sources:
-  - name: wwi_raw
-    schema: raw
-    tables:
-      - name: sales_customers
-      - name: sales_orders
-      - name: sales_orderlines
-      - name: sales_invoices
-      - name: sales_invoicelines
-      - name: sales_customertransactions
-      - name: warehouse_stockitems
-      - name: warehouse_stockitemholdings
-      - name: warehouse_stockitemtransactions
-      - name: sales_customers_archive
-      - name: warehouse_stockitems_archive
+- name: wwi_raw
+  schema: raw
+  tables:
+  - name: sales_customers
+  - name: sales_orders
+  - name: sales_orderlines
+  - name: sales_invoices
+  - name: sales_invoicelines
+  - name: warehouse_stockitems

@@ -1,0 +1,994 @@
+version: sales-dq-v1
+rules:
+- rule_id: SALES_CUSTOMERS_CUSTOMER_ID_NOT_NULL
+  object: Sales.Customers
+  column: customer_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_CUSTOMER_NAME_NOT_NULL
+  object: Sales.Customers
+  column: customer_name
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_BILL_TO_CUSTOMER_ID_NOT_NULL
+  object: Sales.Customers
+  column: bill_to_customer_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_CUSTOMER_CATEGORY_ID_NOT_NULL
+  object: Sales.Customers
+  column: customer_category_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_PRIMARY_CONTACT_PERSON_ID_NOT_NULL
+  object: Sales.Customers
+  column: primary_contact_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_DELIVERY_METHOD_ID_NOT_NULL
+  object: Sales.Customers
+  column: delivery_method_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_DELIVERY_CITY_ID_NOT_NULL
+  object: Sales.Customers
+  column: delivery_city_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_POSTAL_CITY_ID_NOT_NULL
+  object: Sales.Customers
+  column: postal_city_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_ACCOUNT_OPENED_DATE_NOT_NULL
+  object: Sales.Customers
+  column: account_opened_date
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_STANDARD_DISCOUNT_PERCENTAGE_NOT_NULL
+  object: Sales.Customers
+  column: standard_discount_percentage
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_IS_STATEMENT_SENT_NOT_NULL
+  object: Sales.Customers
+  column: is_statement_sent
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_IS_ON_CREDIT_HOLD_NOT_NULL
+  object: Sales.Customers
+  column: is_on_credit_hold
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_PAYMENT_DAYS_NOT_NULL
+  object: Sales.Customers
+  column: payment_days
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_PHONE_NUMBER_NOT_NULL
+  object: Sales.Customers
+  column: phone_number
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_FAX_NUMBER_NOT_NULL
+  object: Sales.Customers
+  column: fax_number
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_WEBSITE_URL_NOT_NULL
+  object: Sales.Customers
+  column: website_url
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_DELIVERY_ADDRESS_LINE1_NOT_NULL
+  object: Sales.Customers
+  column: delivery_address_line1
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_DELIVERY_POSTAL_CODE_NOT_NULL
+  object: Sales.Customers
+  column: delivery_postal_code
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_POSTAL_ADDRESS_LINE1_NOT_NULL
+  object: Sales.Customers
+  column: postal_address_line1
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_POSTAL_POSTAL_CODE_NOT_NULL
+  object: Sales.Customers
+  column: postal_postal_code
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_LAST_EDITED_BY_NOT_NULL
+  object: Sales.Customers
+  column: last_edited_by
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_VALID_FROM_NOT_NULL
+  object: Sales.Customers
+  column: valid_from
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_VALID_TO_NOT_NULL
+  object: Sales.Customers
+  column: valid_to
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_CUSTOMER_ID_UNIQUE
+  object: Sales.Customers
+  column: customer_id
+  type: unique
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: true
+  message: Review unique constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_VALID_FROM_DATE_ORDER
+  object: Sales.Customers
+  column: valid_from
+  type: date_order
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: valid_to
+  message: Review date_order constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_ORDER_ID_NOT_NULL
+  object: Sales.Orders
+  column: order_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_CUSTOMER_ID_NOT_NULL
+  object: Sales.Orders
+  column: customer_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_SALESPERSON_PERSON_ID_NOT_NULL
+  object: Sales.Orders
+  column: salesperson_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_CONTACT_PERSON_ID_NOT_NULL
+  object: Sales.Orders
+  column: contact_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_ORDER_DATE_NOT_NULL
+  object: Sales.Orders
+  column: order_date
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_EXPECTED_DELIVERY_DATE_NOT_NULL
+  object: Sales.Orders
+  column: expected_delivery_date
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_IS_UNDERSUPPLY_BACKORDERED_NOT_NULL
+  object: Sales.Orders
+  column: is_undersupply_backordered
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_LAST_EDITED_BY_NOT_NULL
+  object: Sales.Orders
+  column: last_edited_by
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_LAST_EDITED_WHEN_NOT_NULL
+  object: Sales.Orders
+  column: last_edited_when
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_ORDER_ID_UNIQUE
+  object: Sales.Orders
+  column: order_id
+  type: unique
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: true
+  message: Review unique constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_ORDER_LINE_ID_NOT_NULL
+  object: Sales.OrderLines
+  column: order_line_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_ORDER_ID_NOT_NULL
+  object: Sales.OrderLines
+  column: order_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_STOCK_ITEM_ID_NOT_NULL
+  object: Sales.OrderLines
+  column: stock_item_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_DESCRIPTION_NOT_NULL
+  object: Sales.OrderLines
+  column: description
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_PACKAGE_TYPE_ID_NOT_NULL
+  object: Sales.OrderLines
+  column: package_type_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_QUANTITY_NOT_NULL
+  object: Sales.OrderLines
+  column: quantity
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_TAX_RATE_NOT_NULL
+  object: Sales.OrderLines
+  column: tax_rate
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_PICKED_QUANTITY_NOT_NULL
+  object: Sales.OrderLines
+  column: picked_quantity
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_LAST_EDITED_BY_NOT_NULL
+  object: Sales.OrderLines
+  column: last_edited_by
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_LAST_EDITED_WHEN_NOT_NULL
+  object: Sales.OrderLines
+  column: last_edited_when
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_ORDER_LINE_ID_UNIQUE
+  object: Sales.OrderLines
+  column: order_line_id
+  type: unique
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: true
+  message: Review unique constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_INVOICE_ID_NOT_NULL
+  object: Sales.Invoices
+  column: invoice_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_CUSTOMER_ID_NOT_NULL
+  object: Sales.Invoices
+  column: customer_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_BILL_TO_CUSTOMER_ID_NOT_NULL
+  object: Sales.Invoices
+  column: bill_to_customer_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_DELIVERY_METHOD_ID_NOT_NULL
+  object: Sales.Invoices
+  column: delivery_method_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_CONTACT_PERSON_ID_NOT_NULL
+  object: Sales.Invoices
+  column: contact_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_ACCOUNTS_PERSON_ID_NOT_NULL
+  object: Sales.Invoices
+  column: accounts_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_SALESPERSON_PERSON_ID_NOT_NULL
+  object: Sales.Invoices
+  column: salesperson_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_PACKED_BY_PERSON_ID_NOT_NULL
+  object: Sales.Invoices
+  column: packed_by_person_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_INVOICE_DATE_NOT_NULL
+  object: Sales.Invoices
+  column: invoice_date
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_IS_CREDIT_NOTE_NOT_NULL
+  object: Sales.Invoices
+  column: is_credit_note
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_TOTAL_DRY_ITEMS_NOT_NULL
+  object: Sales.Invoices
+  column: total_dry_items
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_TOTAL_CHILLER_ITEMS_NOT_NULL
+  object: Sales.Invoices
+  column: total_chiller_items
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_LAST_EDITED_BY_NOT_NULL
+  object: Sales.Invoices
+  column: last_edited_by
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_LAST_EDITED_WHEN_NOT_NULL
+  object: Sales.Invoices
+  column: last_edited_when
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_INVOICE_ID_UNIQUE
+  object: Sales.Invoices
+  column: invoice_id
+  type: unique
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: true
+  message: Review unique constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_INVOICE_LINE_ID_NOT_NULL
+  object: Sales.InvoiceLines
+  column: invoice_line_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_INVOICE_ID_NOT_NULL
+  object: Sales.InvoiceLines
+  column: invoice_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_STOCK_ITEM_ID_NOT_NULL
+  object: Sales.InvoiceLines
+  column: stock_item_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_DESCRIPTION_NOT_NULL
+  object: Sales.InvoiceLines
+  column: description
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_PACKAGE_TYPE_ID_NOT_NULL
+  object: Sales.InvoiceLines
+  column: package_type_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_QUANTITY_NOT_NULL
+  object: Sales.InvoiceLines
+  column: quantity
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_TAX_RATE_NOT_NULL
+  object: Sales.InvoiceLines
+  column: tax_rate
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_TAX_AMOUNT_NOT_NULL
+  object: Sales.InvoiceLines
+  column: tax_amount
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_LINE_PROFIT_NOT_NULL
+  object: Sales.InvoiceLines
+  column: line_profit
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_EXTENDED_PRICE_NOT_NULL
+  object: Sales.InvoiceLines
+  column: extended_price
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_LAST_EDITED_BY_NOT_NULL
+  object: Sales.InvoiceLines
+  column: last_edited_by
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_LAST_EDITED_WHEN_NOT_NULL
+  object: Sales.InvoiceLines
+  column: last_edited_when
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_INVOICE_LINE_ID_UNIQUE
+  object: Sales.InvoiceLines
+  column: invoice_line_id
+  type: unique
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: true
+  message: Review unique constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_STOCK_ITEM_ID_NOT_NULL
+  object: Warehouse.StockItems
+  column: stock_item_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_STOCK_ITEM_NAME_NOT_NULL
+  object: Warehouse.StockItems
+  column: stock_item_name
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_SUPPLIER_ID_NOT_NULL
+  object: Warehouse.StockItems
+  column: supplier_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_UNIT_PACKAGE_ID_NOT_NULL
+  object: Warehouse.StockItems
+  column: unit_package_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_OUTER_PACKAGE_ID_NOT_NULL
+  object: Warehouse.StockItems
+  column: outer_package_id
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_LEAD_TIME_DAYS_NOT_NULL
+  object: Warehouse.StockItems
+  column: lead_time_days
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_QUANTITY_PER_OUTER_NOT_NULL
+  object: Warehouse.StockItems
+  column: quantity_per_outer
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_IS_CHILLER_STOCK_NOT_NULL
+  object: Warehouse.StockItems
+  column: is_chiller_stock
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_TAX_RATE_NOT_NULL
+  object: Warehouse.StockItems
+  column: tax_rate
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_UNIT_PRICE_NOT_NULL
+  object: Warehouse.StockItems
+  column: unit_price
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_TYPICAL_WEIGHT_PER_UNIT_NOT_NULL
+  object: Warehouse.StockItems
+  column: typical_weight_per_unit
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_SEARCH_DETAILS_NOT_NULL
+  object: Warehouse.StockItems
+  column: search_details
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_LAST_EDITED_BY_NOT_NULL
+  object: Warehouse.StockItems
+  column: last_edited_by
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_VALID_FROM_NOT_NULL
+  object: Warehouse.StockItems
+  column: valid_from
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_VALID_TO_NOT_NULL
+  object: Warehouse.StockItems
+  column: valid_to
+  type: not_null
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_STOCK_ITEM_ID_UNIQUE
+  object: Warehouse.StockItems
+  column: stock_item_id
+  type: unique
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: true
+  message: Review unique constraint; preserve Raw reference
+- rule_id: WAREHOUSE_STOCKITEMS_VALID_FROM_DATE_ORDER
+  object: Warehouse.StockItems
+  column: valid_from
+  type: date_order
+  enabled: true
+  severity: ERROR
+  action: fail_pipeline
+  expected: valid_to
+  message: Review date_order constraint; preserve Raw reference
+- rule_id: SALES_CUSTOMERS_BILL_TO_CUSTOMER_ID_RELATIONSHIP
+  object: Sales.Customers
+  column: bill_to_customer_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Customers
+    column: customer_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_CUSTOMER_ID_RELATIONSHIP
+  object: Sales.Orders
+  column: customer_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Customers
+    column: customer_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_ORDERS_BACKORDER_ORDER_ID_RELATIONSHIP
+  object: Sales.Orders
+  column: backorder_order_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Orders
+    column: order_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_ORDER_ID_RELATIONSHIP
+  object: Sales.OrderLines
+  column: order_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Orders
+    column: order_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_STOCK_ITEM_ID_RELATIONSHIP
+  object: Sales.OrderLines
+  column: stock_item_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Warehouse.StockItems
+    column: stock_item_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_CUSTOMER_ID_RELATIONSHIP
+  object: Sales.Invoices
+  column: customer_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Customers
+    column: customer_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_BILL_TO_CUSTOMER_ID_RELATIONSHIP
+  object: Sales.Invoices
+  column: bill_to_customer_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Customers
+    column: customer_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_ORDER_ID_RELATIONSHIP
+  object: Sales.Invoices
+  column: order_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Orders
+    column: order_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_INVOICE_ID_RELATIONSHIP
+  object: Sales.InvoiceLines
+  column: invoice_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Sales.Invoices
+    column: invoice_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_STOCK_ITEM_ID_RELATIONSHIP
+  object: Sales.InvoiceLines
+  column: stock_item_id
+  type: relationship
+  enabled: true
+  severity: ERROR
+  action: quarantine
+  expected:
+    object: Warehouse.StockItems
+    column: stock_item_id
+  message: Review relationship constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_EXTENDED_PRICE_MIN_VALUE
+  object: Sales.InvoiceLines
+  column: extended_price
+  type: min_value
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: 0
+  message: Review min_value constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_TAX_AMOUNT_MIN_VALUE
+  object: Sales.InvoiceLines
+  column: tax_amount
+  type: min_value
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: 0
+  message: Review min_value constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_LINE_PROFIT_MIN_VALUE
+  object: Sales.InvoiceLines
+  column: line_profit
+  type: min_value
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: 0
+  message: Review min_value constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_QUANTITY_MIN_VALUE
+  object: Sales.InvoiceLines
+  column: quantity
+  type: min_value
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: 0
+  message: Review min_value constraint; preserve Raw reference
+- rule_id: SALES_INVOICES_IS_CREDIT_NOTE_REGISTERED_EXPRESSION
+  object: Sales.Invoices
+  column: is_credit_note
+  type: registered_expression
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: credit_note_review
+  message: Review registered_expression constraint; preserve Raw reference
+- rule_id: SALES_ORDERLINES_UNIT_PRICE_NOT_NULL
+  object: Sales.OrderLines
+  column: unit_price
+  type: not_null
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
+- rule_id: SALES_INVOICELINES_UNIT_PRICE_NOT_NULL
+  object: Sales.InvoiceLines
+  column: unit_price
+  type: not_null
+  enabled: true
+  severity: WARNING
+  action: flag
+  expected: true
+  message: Review not_null constraint; preserve Raw reference
