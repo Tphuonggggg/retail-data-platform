@@ -4,7 +4,8 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 
 | ID | Module/dependencies | Acceptance | Status |
 |---|---|---|---|
-| REPO-STRUCTURE-02 | Pipeline-stage ownership, existing uncommitted DW draft | Paths/imports/docs/Compose/offline checks; live capture integrity; no ingestion/dbt runtime | PARTIAL — structural/offline checks PASS; Docker Engine unavailable/TCP55434 timeout, live capture verification BLOCKED |
+| DBT-SALES-01 | INGEST-03 + approved Sales DW/KPI + scoped transformation role | Real capture-pinned staging/DQ/core/marts; YAML contracts; independent reconciliation/rerun/performance; Raw preserved | DONE — DBT_SALES_RUNTIME_ACCEPTED; 21 models/69 dbt tests/129 checks; real DQ604672 records; unpublished/UNVERIFIED |
+| REPO-STRUCTURE-02 | Pipeline-stage ownership, preserved DW draft | Paths/imports/docs/Compose/offline checks plus live capture integrity | DONE — runtime recovery/bind compatibility and all11 typed digests/control metadata reverified via DBT-SALES-01 |
 | INGEST-01 | Existing Docker/Raw + approved local config | Same container/volume, correct identities/dependencies and source/target all11 preflight | DONE ? healthy18.7, all preflights PASS; explicit Owner development config recorded |
 | INGEST-02 | INGEST-01 | Real holdings batch64 unpublished smoke; count/distinct/numeric/NULL/digest/meta | DONE ? smoke47b6c909,227 rows, controls/durable reconciliation PASS |
 | INGEST-03 | INGEST-02 | All11 load/reconciliation/RI/temporal fidelity/rerun/failure handling; no publication | DONE ? FULL_LOAD_RUNTIME_ACCEPTED, run5abc4a32,939208 rows/11 PASS; rerun/rollback/retry PASS; pointer NULL, consistency UNVERIFIED |
@@ -15,8 +16,10 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 | MVP-RESET-01 | Repository, Owner scope; baseline cf94d05 | Preserve dirty work, simplify selected preflight/config/docs/deps, tests/links/Compose, local commits, no runtime ingestion | DONE ? MVP_RESTRUCTURING_COMPLETE; 107 offline tests/links/Compose PASS; source selected preflight PASS; target runtime blocked by Docker engine unavailable |
 | SALES-01 | Reset + private config + runtime authorization | Unpublished selected smoke, durable reconcile and same-run rerun | DONE ? Raw smoke coverage via INGEST-02/03 |
 | SALES-02 | SALES-01 | Sales Raw full scope/dependencies and business reconciliation | DONE ? Sales Raw/dependencies and source controls verified via INGEST-03 |
-| SALES-03 | SALES-02 + approved DW/KPI | dbt staging/core/Sales Mart/basic DQ | TODO |
+| SALES-03 | SALES-02 + approved DW/KPI | dbt staging/core/Sales Mart/basic DQ | DONE — runtime Sales Warehouse/DQ/marts via DBT-SALES-01; [evidence](dbt/README.md) |
 | SALES-04 | SALES-03 | Power BI + repeatable Sales demo | TODO |
 | NEXT-01 | Sales evidence | Incremental, SCD2, Customer/Inventory, Airflow, advanced recovery per roadmap | TODO |
 
 Current Full Load runtime accepted for unpublished candidates; [counts/evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). WWI-05/06 parent/phase closure remains Owner review; no automatic transition or downstream implementation. Publication remains NOT RUN.
+
+Nghiệm thu kỹ thuật DBT-SALES-01 chỉ áp dụng local Sales transformations chưa publish; Power BI/Airflow/domain khác/Certified publication và đóng phase vẫn ngoài task.

@@ -1,8 +1,10 @@
 # Retail Data Platform
 
+**DBT_SALES_RUNTIME_ACCEPTED — 2026-11-20:** 21 models (8 views/13 tables), 69 dbt tests, 129 independent reconciliation checks, 153 offline tests. [Runbook, model counts và evidence](dbt/README.md). Raw vẫn unpublished/UNVERIFIED; Power BI/Airflow chưa triển khai.
+
 Đồ án Data Engineering: **SQL Server WWI → Python Full Load → PostgreSQL Raw → dbt DW/Marts → Power BI**. Ưu tiên Sales; incremental/SCD2/Customer/Inventory/Airflow ở milestones sau.
 
-**Full Load đã nghiệm thu ngày 2026-11-19:** 11 objects, 939.208 dòng của run `5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8`, consistency UNVERIFIED, chưa publish. [Runtime evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). dbt là bản nháp DW-IMPLEMENT-01 chưa hoàn tất/kiểm chứng runtime, chưa có Sales Warehouse/Mart được nghiệm thu.
+**Full Load đã nghiệm thu ngày 2026-11-19:** 11 objects, 939.208 dòng của run `5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8`, consistency UNVERIFIED, chưa publish. [Runtime evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). Sales dbt Warehouse/Marts đã runtime accepted trong DBT-SALES-01; historical SCD2 và các domain ngoài Sales vẫn chưa triển khai.
 
 ## Cấu trúc theo pipeline stage
 
@@ -13,7 +15,7 @@ ingestion/             extractors, loaders, codecs, Full Load CLI
   loaders/             PostgreSQL COPY, metadata, reconciliation
   scripts/             source diagnostics
   tests/               ingestion unit/offline tests
-dbt/                   project, staging/intermediate/core/marts, macros, tests (draft)
+dbt/                   project, staging/intermediate/core/marts, macros, tests (implemented)
 airflow/               orchestration ownership; chưa có DAG/config/plugin
 powerbi/               report/dashboard ownership; chưa có report assets
 infrastructure/
@@ -71,6 +73,6 @@ Compose project `retail-raw`, container `retail-raw-postgres-1`, volume `retail-
 
 CLI `python -m ingestion.full_load` không đổi. Imports/path discovery, SQL references, Markdown links và Compose bind source được cập nhật; Raw SQL/contracts và business definitions giữ nguyên. Draft DW-IMPLEMENT-01 có sẵn trước task được giữ và di chuyển, không triển khai tiếp; bản sao nguyên trạng ở `.local/repo-structure-02/preserved-dw-draft/` (ignored).
 
-Runtime re-verification hiện **BLOCKED**: Docker Linux Engine unavailable, TCP 55434 timeout ngày 2026-11-20. Chưa xác minh lại capture sau refactor; không suy runtime PASS từ offline checks hay báo cáo trước. Task không chạy Full Load/dbt/provisioning, không source writes/pointer changes. Khi runtime được khôi phục cần chạy preflight/reconcile trước nghiệm thu đầy đủ.
+Blocker runtime của REPO-STRUCTURE-02 đã được giải quyết trong DBT-SALES-01: Docker Engine/container cũ khởi động, legacy bind path được khôi phục bằng runtime-only junction; typed digest all11 và metadata/pointer được kiểm lại nguyên vẹn. Không rerun Full Load, recreate container/volume hoặc publish. [Recovery](infrastructure/README.md#dbt-sales-01--khôi-phục-runtime-ngày-2026-11-20).
 
 [Scope](PROJECT_SCOPE.md) · [Roadmap](ROADMAP.md) · [Tasks](TASKS.md) · [Data models](docs/data-models/README.md) · [KPI](docs/requirements/kpi-definitions/wwi-kpi-candidate-catalog.md) · [Archive](docs/archive/pre-reset/README.md).

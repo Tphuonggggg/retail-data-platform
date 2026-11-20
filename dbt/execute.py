@@ -10,7 +10,7 @@ import sys
 import time
 from uuid import UUID,uuid4
 import yaml
-from configuration import load
+from configuration import load,ContractError
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
@@ -92,7 +92,8 @@ def main():
         print(json.dumps(evidence));return result.returncode
     except Exception as error:
         print(json.dumps({'status':'FAIL','error_type':type(error).__name__,
-                          'message':'Configuration/capture/execution gate failed; no secrets logged'}));return 1
+                          'message':str(error) if isinstance(error,ContractError) else
+                          'Configuration/capture/execution gate failed; no secrets logged'}));return 1
     finally:
         if guard is not None:guard.close()
 

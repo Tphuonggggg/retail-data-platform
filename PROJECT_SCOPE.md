@@ -25,3 +25,7 @@ Historical SCD2/incremental/full publication/recovery designs ???c gi? cho miles
 # Cập nhật triển khai và ownership — 2026-11-20
 
 Business scope/BRD/KPI/grains giữ nguyên. Full Load đã được nghiệm thu ngày 2026-11-19 cho unpublished capture 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8; những dòng “ingestion NOT RUN” bên dưới là snapshot trước runtime, được thay bằng [bằng chứng hiện hành](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). dbt/DW/marts chưa được nghiệm thu; chỉ có draft được bảo toàn. [Ownership và paths mới](README.md#cấu-trúc-theo-pipeline-stage) không thay kiến trúc hoặc cho phép runtime mới. REPO-STRUCTURE-02 chỉ structural refactor; kiểm lại Raw hiện BLOCKED do Docker Engine unavailable.
+
+## DBT-SALES-01 — cập nhật runtime ngày 2026-11-20
+
+Sales staging, DQ/quarantine, 3 dimensions, 2 headers, 2 facts và 5 Sales marts/derived summaries đã triển khai và runtime verified theo [runbook](dbt/README.md). Không thay BRD/KPI/grain logical đã duyệt: customer mart giữ date/customer/role; summary một customer/role là derived summary dưới dạng table riêng. Historical SCD2/registry chưa runtime implement; facts giữ U/NK/reason và separate observed-current references. Không recognized revenue/COGS/refunds/payment allocation. Capture vẫn unpublished/UNVERIFIED; không tự chuyển phase hoặc triển khai Power BI/Airflow/domain khác. Ghi chú draft/NOT RUN trước đây là snapshot lịch sử được supersede về trạng thái runtime này.

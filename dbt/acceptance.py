@@ -76,6 +76,8 @@ def reconciliation(db,contract):
     excluded=db.execute('select count(*),coalesce(sum(invoiced_sales_before_tax),0) from dw_core.fact_invoice_line where not is_sales_eligible').fetchone()
     check('included_plus_excluded_rows',expected[0],included[0]+excluded[0]);check('included_plus_excluded_amount',expected[1],included[1]+excluded[1])
     check('unexplained_exclusions',0,excluded[0])
+    lookup_failures=db.execute('select count(*) from dq.validation_violations v left join raw.sales_invoicelines r on r._run_id=v.capture_id and r._row_ordinal=v._raw_row_ordinal where v.source_object=\'Sales.InvoiceLines\' and (r."InvoiceLineID" is null or r."InvoiceLineID"::text<>v.source_business_key)',()).fetchone()[0]
+    check('violation_exact_raw_lookup_failures',0,lookup_failures)
     unresolved=db.execute("select count(*) filter(where buyer_lookup_status='U'),count(*) filter(where bill_to_lookup_status='U'),count(*) filter(where product_lookup_status='U') from dw_core.fact_invoice_line").fetchone()
     # Independent Raw header/line populations and Decimal division; ratio-only tolerance
     # covers PostgreSQL numeric division scale, never monetary reconciliation.
@@ -154,13 +156,21 @@ def fixtures(db,contract):
         db.execute('create table dbt_sales_test.'+ident+'_quarantine as select * from dbt_sales_test.'+ident+'_status where is_quarantined')
     observed=db.execute('select record_identity,dq_status,is_quarantined,violation_count from dbt_sales_test.'+ident+'_status order by record_identity').fetchall()
     expected=[('SYNTHETIC_1','VALID',False,0),('SYNTHETIC_2','WARNING',False,1),('SYNTHETIC_3','INVALID',True,1),('SYNTHETIC_4','INVALID',True,2),('SYNTHETIC_5','VALID',False,0)]
+    actual_reasons=db.execute('select record_identity,rule_id from dbt_sales_test.'+ident+'_violations order by 1,2').fetchall()
+    expected_reasons=sorted([
+        ('SYNTHETIC_2','SALES_INVOICELINES_LINE_PROFIT_MIN_VALUE'),
+        ('SYNTHETIC_3','SALES_INVOICELINES_TAX_AMOUNT_NOT_NULL'),
+        ('SYNTHETIC_4','SALES_INVOICELINES_TAX_AMOUNT_NOT_NULL'),
+        ('SYNTHETIC_4','SALES_INVOICELINES_INVOICE_ID_RELATIONSHIP')])
+    quarantine_orphans=db.execute('select count(*) from dbt_sales_test.'+ident+'_quarantine q left join dbt_sales_test.'+ident+' r using(record_identity) where r.record_identity is null').fetchone()[0]
     gate=db.execute("select count(*) from dbt_sales_test."+ident+"_status where dq_status='VALID' and not parent_is_valid and not is_quarantined").fetchone()[0]
     duplicate=db.execute('select count(*) from (select count(*) over(partition by id) as _key_count from (values(1),(1))x(id))s where s._key_count>1').fetchone()[0]
-    return {'status':'PASS' if observed==expected and gate==1 and duplicate==2 else 'FAIL','schema':'dbt_sales_test','table_prefix':ident,
+    return {'status':'PASS' if observed==expected and gate==1 and duplicate==2 and actual_reasons==expected_reasons and quarantine_orphans==0 else 'FAIL','schema':'dbt_sales_test','table_prefix':ident,
             'ruleset_version':contract['ruleset_version'],
             'origin':'SYNTHETIC_EXAMPLE_ONLY','observed':observed,'expected':expected,'eligibility_exclusion_without_quarantine':gate,
             'duplicate_occurrences_flagged':duplicate,
             'missing_capture_rejected':missing_capture_rejected,
+            'verified_rule_reasons':actual_reasons,'quarantine_orphans':quarantine_orphans,
             'quarantine_rows':db.execute('select count(*) from dbt_sales_test.'+ident+'_quarantine').fetchone()[0]}
 
 def main():

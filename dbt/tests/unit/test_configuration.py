@@ -73,5 +73,9 @@ class ConfigTests(unittest.TestCase):
     def test_fail_pipeline_macro_blocks(self):
         with self.assertRaises(ContractError):self.quality_gate(1)
     def test_nonfatal_macro_allows(self):self.assertIn('select 1',self.quality_gate(0))
+    def test_accepted_domain_null_cannot_silently_pass(self):
+        self.reject(lambda d:d['quality_rules']['rules'][0].update(type='accepted_values',expected=[None]))
+    def test_unique_on_unregistered_key_fails_clearly(self):
+        self.reject(lambda d:d['quality_rules']['rules'][0].update(type='unique',column='customer_name'))
 
 if __name__=='__main__':unittest.main()

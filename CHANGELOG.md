@@ -1,3 +1,13 @@
+# 2026-11-20 — DBT-SALES-01: Sales Warehouse runtime acceptance
+
+- Khôi phục Docker Engine và container Raw cũ; sửa legacy bootstrap bind bằng ignored junction, không recreate/reset nguồn dữ liệu. All11 typed digests/939208 rows và toàn bộ Raw control/publication metadata kiểm lại không đổi.
+- Owner phê duyệt provisioning package SHA256409e65e3…; tạo non-admin retail_transform và 6 scoped schemas; chỉ SELECT 6 Sales dependencies + 6 metadata/control tables, không quyền ghi Raw. Không đổi SQL Server/native PostgreSQL/B9.
+- Hoàn thiện capture-pinned dbt Sales project: 6 staging views, 3 DQ tables, 2 header views, 3 dimensions, 2 facts, 5 marts/summaries. YAML business/measures/quality/performance có closed validation và deterministic versions, private invocation vars/artifacts và execution lock.
+- DQ604672 records = VALID600046/WARNING4626/INVALID0; violations4626 là Source LineProfit âm được giữ dưới dạng WARNING/flag, không quarantine. Schema test riêng chứng minh VALID/WARNING/INVALID, multi-violation, 2 quarantine rows, eligibility exclusion và reject missing capture; không synthetic Raw writes.
+- Real Sales172261341.20, tax25782098.25, including-tax198043439.45, units8950628, invoices70510, orders73595. 129 independent Raw-based checks/1329 ratios PASS; amount differences0; historical lookup vẫn U, không fake current fallback.
+- Debug/compile/build/test PASS: 21 models/69 dbt tests, 153 offline tests. Rerun21 counts/13 table content digests identical. Performance baseline và optimization/query plans được giữ; rejected threads2 vì shared-memory64MiB, giữ threads1. Không Certified publication/Raw pointer update, không BI/Airflow/incremental/SCD2 runtime.
+- Status DBT_SALES_RUNTIME_ACCEPTED; [model counts, commands, timings và limitations](dbt/README.md). Commits local theo từng phần; không push/merge. Power BI là task tiếp theo chưa bắt đầu.
+
 # Changelog
 
 Ghi nhận thay đổi đã thực hiện; không ghi tính năng mới chỉ ở mức kế hoạch.

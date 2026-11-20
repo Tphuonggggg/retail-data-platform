@@ -79,3 +79,7 @@ Thư mục này giữ cross-module integration/end-to-end và historical securit
 Chạy toàn bộ offline checks từ root: `.venv\Scripts\python.exe scripts/run_checks.py`. Runner gọi từng suite bằng đường dẫn hiện hành và giữ nonzero exit code nếu có lỗi. Không có dbt runtime hoặc Full Load trong runner. B9/security/ACL history bên dưới giữ để tham khảo; ghi chú “pipeline Not implemented” cũ được supersede bởi [Full Load runtime evidence](../ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19).
 
 **Verification ngày 2026-11-20:** 126 offline tests PASS; Compose config/parser PASS; PowerShell parse 5 files và reject 10 unsafe fixtures PASS. Live Raw/capture verification BLOCKED vì Docker Engine unavailable/TCP55434 timeout. Initial-empty provisioning verifier chỉ chạy unit methods trong refactor, không dùng trạng thái row-count0 để đánh giá capture đã có dữ liệu.
+
+## DBT-SALES-01 — verification ngày 2026-11-20
+
+Current project-wide runner gồm 126 existing offline tests và 27 [fast dbt configuration/macro tests](../dbt/tests/unit/test_configuration.py): tổng153 PASS. [Real PostgreSQL fixtures/acceptance](../dbt/acceptance.py) thực hiện bằng explicit --execute, tách khỏi offline discovery. dbt69 tests và independent129 checks PASS; stable rerun và final all11 Raw digest/control/pointer verification PASS. Bằng chứng và commands tại [dbt runbook](../dbt/README.md). Snapshot runtime BLOCKED của refactor ở trên đã được giải quyết; historical security/ACL notes không thành current MVP gates.

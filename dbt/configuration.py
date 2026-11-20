@@ -100,6 +100,8 @@ def validate(documents):
         e=r['expected'];kind=r['type']
         if kind in {'not_null','unique'}:
             if e is not True:raise ContractError('Expected true')
+            if kind=='unique' and r['column']!=OBJECTS[r['object']][3]:
+                raise ContractError('Unique rules currently support only the registered source PK')
         elif kind=='relationship':
             _keys(e,{'object','column'},{'object','column'})
             if e['object'] not in OBJECTS or e['column'] not in columns[e['object']]:raise ContractError('Unknown relationship')
@@ -114,7 +116,14 @@ def validate(documents):
                 raise ContractError('Unknown registered expression')
         elif kind=='accepted_values':
             if type(e) is not list or not e:raise ContractError('Empty/invalid accepted domain')
-            for v in e:literal(v)
+            family=columns[r['object']][r['column']]
+            for v in e:
+                if v is None:raise ContractError('Use not_null separately; accepted domains cannot contain NULL')
+                if family=='bit' and type(v) is not bool:raise ContractError('Boolean domain required')
+                if family=='int' and type(v) is not int:raise ContractError('Integer domain required')
+                if family.startswith('decimal') and type(v) not in (int,float):raise ContractError('Numeric domain required')
+                if family.startswith(('nvarchar','datetime','date')) and type(v) is not str:raise ContractError('Text/date domain required')
+                literal(v)
         else:
             if not columns[r['object']][r['column']].startswith(('int','decimal')):raise ContractError('Numeric rule needs numeric column')
             values=e if kind=='between' else [e]
@@ -171,8 +180,14 @@ def failure_sql(rule,schema='dw_staging'):
 
 def load(path=None):
     path=Path(path or Path(__file__).parent/'config')
-    docs=validate({n:yaml.load((path/(n+'.yml')).read_text(encoding='utf-8'),Loader=UniqueLoader)
-                   for n in ('business_rules','measures','quality_rules','performance')})
+    parsed={}
+    for n in ('business_rules','measures','quality_rules','performance'):
+        file=path/(n+'.yml')
+        if not file.is_file():raise ContractError('Missing configuration file: '+n+'.yml')
+        try:parsed[n]=yaml.load(file.read_text(encoding='utf-8'),Loader=UniqueLoader)
+        except yaml.YAMLError as error:raise ContractError('Invalid YAML in '+n+'.yml') from error
+    try:docs=validate(parsed)
+    except (TypeError,KeyError,AttributeError) as error:raise ContractError('Invalid configuration field types') from error
     result={'ruleset_version':fingerprint({k:docs[k] for k in ('business_rules','quality_rules')}),
             'measure_version':fingerprint(docs['measures']), 'documents':docs}
     result['customer_role']=next(r['value'] for r in docs['business_rules']['rules'] if r['id']=='BRD-08')
