@@ -1,3 +1,10 @@
+# 2026-11-21 — ANALYTICS-DISCOVERY-01: Sales insights trước dashboard
+
+- Phân tích chỉ đọc trên đúng versionc825b18e; xác minh21 model pins/grains, ruleset/measure hash, Buyer default và invoice-time Bill-to roles. Không sửa KPI/YAML/schema, không chạy ingestion/dbt hoặc tạo BI assets.
+- 25 SQL queries +8 cross-checks: trends/comparable periods/AIV, product ranks/Pareto/exposure, customer role concentration, calendar/volatility/seasonality, Source LineProfit warnings, invoice outliers và order/backorder relationships.19 table digests còn khớp accepted baseline; mỗi selected insight có SQL/results và confidence/caveat.
+- Tám candidates gồm Sales đầu2016 đi ngang/AIV giảm; Pareto thực nghiệm; Sales-vs-Units ranking không trùng; Buyer/Bill-to concentration khác lớn; warnings tập trung4SKU; zero Sundays; short product histories; direct invoice gap không đồng nghĩa thất bại. Có exploratory seasonality/percentiles nhưng không suy causal/forecast/official profit.
+- [Report, conceptual page plan và measure-to-visual mapping](docs/analytics/sales-discovery-01/README.md), [reproducible SQL](docs/analytics/sales-discovery-01/queries.sql), [actual results/lineage/preservation](docs/analytics/sales-discovery-01/results.json). Read-only repeatable snapshot; before/after17 Raw+8 meta+19 warehouse table contents không đổi. Không tự bắt đầu Power BI/Customer/Inventory/Airflow hoặc đóng parent phase.
+
 # 2026-11-20 — INGEST-INCR-01: Sales snapshot-diff runtime acceptance
 
 - Owner duyệt migration cuối SHA25602a45e5b… trên đúng retail_raw/container cũ; transaction exit0. Tạo6 typed delta tables,2 metadata tables,9 SECURITY INVOKER functions/8 guards; không sửa Raw Full Load payload/SQL Server/roles cũ/publication.
