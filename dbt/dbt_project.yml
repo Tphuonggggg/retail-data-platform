@@ -16,9 +16,33 @@ models:
     intermediate:
       +schema: dw_intermediate
       +materialized: view
+      int_invoice_header:
+        +grants: {select: [retail_bi_reader]}
+      int_order_header:
+        +grants: {select: [retail_bi_reader]}
     quality:
       +schema: dq
     core:
       +schema: dw_core
+      dim_date:
+        +grants: {select: [retail_bi_reader]}
+      dim_customer:
+        +grants: {select: [retail_bi_reader]}
+      dim_product:
+        +grants: {select: [retail_bi_reader]}
+      fact_invoice_line:
+        +grants: {select: [retail_bi_reader]}
+      fact_order_line:
+        +grants: {select: [retail_bi_reader]}
     marts:
       +schema: sales_marts
+      mart_sales_daily:
+        +grants: {select: [retail_bi_reader]}
+      mart_sales_monthly:
+        +grants: {select: [retail_bi_reader]}
+      mart_sales_product_daily:
+        +grants: {select: [retail_bi_reader]}
+      mart_customer_sales:
+        +grants: {select: [retail_bi_reader]}
+      mart_sales_customer_summary:
+        +grants: {select: [retail_bi_reader]}

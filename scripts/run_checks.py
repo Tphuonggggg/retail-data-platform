@@ -5,7 +5,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = (
-    ('dbt/tests/unit', 'test_configuration.py'),
+    ('dbt/tests/unit', 'test_*.py'),
     ('ingestion/tests', 'full_load_offline.py'),
     ('ingestion/tests', 'incremental_offline.py'),
     ('infrastructure/tests', 'raw_foundation_static.py'),

@@ -1,5 +1,9 @@
 # Sales Analytics — dbt runtime đã nghiệm thu
 
+## POWERBI-ACCESS-02 — model-level SELECT grants, 2026-11-21
+
+Owner phê duyệt và đã kiểm chứng grants riêng cho 12 Sales models tới `retail_bi_reader`. Controlled build trên version `c825b18e-fc62-4cf1-8837-b37b4c9f9668` bằng `retail_transform`: 10 tables/2 views, 39 tests PASS; standalone39 PASS. Counts/content/KPI/Raw/meta/publication không đổi. Không grants ở folder/project level, không đổi business SQL/KPI/materialization hoặc rebuild staging/DQ. CLI có `--select` giới hạn 12 tên, indirect selection cautious. [Evidence và lệnh tái kiểm tra có rebuild](../powerbi/persistent-grants.md). Chỉ grants/access hoàn tất, không tạo report hay Certified publication. Các ghi chú chưa tạo BI reader ở các snapshot runtime cũ bên dưới đã được thay bởi cập nhật này.
+
 ## INGEST-INCR-01 — explicit input versions
 
 Runner thêm `--input-kind INCREMENTAL --capture-id <validated-version-uuid>`. FULL vẫn mặc định và giữ guard cũ. Incremental guard kiểm tra parent/root/scope/contract/VALIDATED; `sales_raw_input()` chọn đúng sáu typed state functions trên cùng UUID cho staging và fidelity test. Không dùng publication pointer/latest, không mix versions. YAML rules/measures, Buyer/Bill-to, grains, historical U/NK/reasons và observed-current references giữ nguyên.

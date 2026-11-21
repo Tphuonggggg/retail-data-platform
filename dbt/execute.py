@@ -33,6 +33,21 @@ PROFILE='''retail_sales:
       retries: 0
 '''
 
+SALES_BI_MODELS = (
+    'dim_date', 'dim_customer', 'dim_product', 'fact_invoice_line', 'fact_order_line',
+    'int_invoice_header', 'int_order_header', 'mart_sales_daily', 'mart_sales_monthly',
+    'mart_sales_product_daily', 'mart_customer_sales', 'mart_sales_customer_summary',
+)
+
+
+def selection_arguments(names):
+    """Bounded rebuild: no graph expansion or arbitrary dbt selector expressions."""
+    if names is None:
+        return []
+    if not names or len(set(names)) != len(names) or any(n not in SALES_BI_MODELS for n in names):
+        raise ValueError('Only explicit, unique approved Sales BI models are allowed')
+    return ['--select', *names, '--indirect-selection', 'cautious']
+
 
 def session_pgoptions(existing,work_mem):
     if type(work_mem) is not int or work_mem not in {4,16,64}:
@@ -46,6 +61,7 @@ def main():
     p.add_argument('--input-kind',choices=['FULL','INCREMENTAL'],default='FULL')
     p.add_argument('--work-mem-mb',type=int,choices=[4,16,64],help='Session-only memory per PostgreSQL operation; default incremental64/full4')
     p.add_argument('--config-dir',type=Path)
+    p.add_argument('--select',nargs='+',choices=SALES_BI_MODELS,help='Explicit approved BI models only; no + graph expansion')
     args=p.parse_args()
     guard=None
     try:
@@ -93,7 +109,8 @@ def main():
             }
             # Inject only an enumerated index contract; no arbitrary column/expression input.
             for group,names in [('quality',['record_status']),('core',['dim_customer','dim_product','fact_invoice_line','fact_order_line'])]:
-                for name in names:configuration['models']['retail_sales'][group][name]={'+indexes':indexes[name]}
+                for name in names:
+                    configuration['models']['retail_sales'][group].setdefault(name,{})['+indexes']=indexes[name]
         (project/'dbt_project.yml').write_text(yaml.safe_dump(configuration,sort_keys=False),encoding='utf-8')
         (project/'profiles.yml').write_text(PROFILE.replace('THREADS',str(contract['documents']['performance']['threads'])),encoding='utf-8')
         env=dict(os.environ,WWI_DBT_CAPTURE_ID=args.capture_id,WWI_DBT_HOST=cfg.host,DBT_ENV_SECRET_PASSWORD=secret,
@@ -103,9 +120,10 @@ def main():
         env['PGOPTIONS']=session_pgoptions(os.environ.get('PGOPTIONS',''),work_mem)
         executable=Path(sys.executable).with_name('dbt.exe' if os.name=='nt' else 'dbt')
         started=time.perf_counter()
-        result=subprocess.run([str(executable),args.command,'--project-dir',str(project),'--profiles-dir',str(project)],
+        result=subprocess.run([str(executable),args.command,'--project-dir',str(project),'--profiles-dir',str(project),*selection_arguments(args.select)],
                               env=env,cwd=ROOT)
         evidence={'invocation':invocation,'command':args.command,'capture_id':args.capture_id,'input_kind':args.input_kind,
+                  'selected_models':args.select,'indirect_selection':'cautious' if args.select else None,
                   'ruleset':contract['ruleset_version'],'measure_version':contract['measure_version'],
                   'threads':contract['documents']['performance']['threads'],
                   'work_mem_mb':work_mem,'max_parallel_workers_per_gather':0,'jit':False,

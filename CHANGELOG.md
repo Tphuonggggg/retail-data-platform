@@ -1,3 +1,15 @@
+# 2026-11-21 — POWERBI-ACCESS-02: persistent dbt grants
+
+- Cấu hình model-level SELECT riêng đúng 12 models, không default/folder grants. Runner có bounded --select và cautious indirect selection; giữ default CLI, materialization, KPI và input version hiện hành.
+- Compile/manifest PASS; controlled rebuild10 tables/2 views bằng retail_transform,39 dbt tests PASS và standalone39 PASS. Reader SELECT12/12 sau thay object; ngoài allowlist không được cấp quyền. 19 warehouse tables/2 views +25 Raw/meta tables có counts/digests không đổi; KPI, checkpoint/capture/version/publication nguyên trạng. Catalog ngoài12 giữ nguyên.
+- 181 offline tests PASS; [reproducible acceptance/evidence](powerbi/persistent-grants.md). Không privileged migration/ingestion/publish/Power BI report; không push/merge hoặc đóng parent phases. Bao gồm prerequisite ACCESS-01 trước đó chưa commit.
+
+# 2026-11-21 — POWERBI-ACCESS-01: tài khoản đọc Sales
+
+- Owner phê duyệt exact SQL trên retail-raw-postgres-1/retail_raw bằng postgres. Tạo retail_bi_reader với CONNECT/USAGE/SELECT đúng 12 objects; mật khẩu riêng qua psql password prompt không echo; LOGIN sau cấu hình mật khẩu. Không cấp admin/ghi/schema CREATE/TEMP.
+- Runtime password login và SELECT 12 models/version c825b18e PASS; password sai bị từ chối; effective DML/DDL và truy cập Raw/staging/DQ/meta/test bị chặn. 17 Raw + 8 metadata + 19 warehouse table counts/content digests, capture/version/publication trước/sau không đổi.
+- [Hướng dẫn kết nối, evidence và đề xuất dbt grants](powerbi/access.md). Không sửa dbt config, không build/ingestion/publish hoặc tạo report; SALES-04 và parent phases giữ trạng thái hiện có. Mật khẩu chỉ trong ignored private profile, không Git/output.
+
 # 2026-11-21 — ANALYTICS-DISCOVERY-01: Sales insights trước dashboard
 
 - Phân tích chỉ đọc trên đúng versionc825b18e; xác minh21 model pins/grains, ruleset/measure hash, Buyer default và invoice-time Bill-to roles. Không sửa KPI/YAML/schema, không chạy ingestion/dbt hoặc tạo BI assets.
