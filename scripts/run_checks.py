@@ -5,6 +5,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 SUITES = (
+    ('powerbi/tests', 'test_*.py'),
     ('dbt/tests/unit', 'test_*.py'),
     ('ingestion/tests', 'full_load_offline.py'),
     ('ingestion/tests', 'incremental_offline.py'),

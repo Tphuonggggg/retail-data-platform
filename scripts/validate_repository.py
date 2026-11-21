@@ -27,7 +27,13 @@ def anchors(text: str) -> set[str]:
 def main() -> int:
     names = subprocess.check_output(["git", "ls-files", "--cached", "--others", "--exclude-standard", "-z"], cwd=ROOT).decode().split("\0")
     paths = sorted({ROOT/n for n in names if n and (ROOT/n).is_file()})
-    texts = {p: p.read_text(encoding="utf-8-sig") for p in paths}
+    # Power BI background/QA images are legitimate binary artifacts, not source text.
+    image_signatures = {'.png': b'\x89PNG\r\n\x1a\n', '.jpg': b'\xff\xd8', '.jpeg': b'\xff\xd8'}
+    binary_images = {p for p in paths if p.suffix.lower() in image_signatures}
+    for p in binary_images:
+        if not p.read_bytes().startswith(image_signatures[p.suffix.lower()]):
+            raise ValueError('Invalid image signature: '+str(p.relative_to(ROOT)))
+    texts = {p: p.read_text(encoding="utf-8-sig") for p in paths if p not in binary_images}
     headings = {p.resolve(): anchors(t) for p,t in texts.items() if p.suffix == ".md"}
     issues = []; links = 0; python = 0
     patterns = [r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----", r"\bghp_[A-Za-z0-9]{30,}\b", r"(?i)(?:postgres(?:ql)?|mssql)://[^:\s/]+:[^@\s]+@"]

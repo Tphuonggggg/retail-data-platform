@@ -1,3 +1,10 @@
+# 2026-11-21 — POWERBI-SALES-01: authoring PARTIAL
+
+- Bảo toàn Owner Sales_Dashboard.pbix + private backup SHA; inspected Desktop2.159/model cache và phát hiện auto relationship sai source_business_key, double money precision. Tạo PBIP/TMSL/PBIR working project giữ reused lineage,9 single-direction relationships,6 imports,77 measures,4 pages/72 native containers, original background/theme/navigation.
+- Reader SQL16 queries và7 key/cardinality contracts PASS; all12 pin c825b18e. Owner duyệt đồng bộ riêng mật khẩu BI sau private JSON syntax repair; reader login/permissions PASS, không credentials trong Git. 44-table contents/capture/publication preservation PASS qua audit chỉ đọc.
+- Desktop open/reopen/reload và PBIR validation PASS; Import qua API/native-query/bootstrap attempts không thành công, đã khôi phục clean PostgreSQL partitions và không commit experimental extracts. Actual DAX baseline BLANK;4 screenshots trước refresh có no-data, Attribution concentration còn render error. Không nghiệm thu dashboard, không tuyên bố SQL-vs-DAX PASS, không phase closure.
+- [Guide, semantic model, source/DAX tests và blockers](powerbi/README.md). Backorder field không có trong BI objects; view SELECT proposal chờ phê duyệt riêng. SALES-04/POWERBI-SALES-01 IN_PROGRESS; không ingestion/dbt/publish/push/merge.
+
 # 2026-11-21 — POWERBI-ACCESS-02: persistent dbt grants
 
 - Cấu hình model-level SELECT riêng đúng 12 models, không default/folder grants. Runner có bounded --select và cautious indirect selection; giữ default CLI, materialization, KPI và input version hiện hành.

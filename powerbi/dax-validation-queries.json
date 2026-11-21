@@ -1,0 +1,62 @@
+[
+  {
+    "id": "baseline",
+    "dax": "EVALUATE ROW(\"Sales\",[Total Sales Before Tax],\"Tax\",[Total Tax],\"IncludingTax\",[Total Amount Including Tax],\"Units\",[Units Sold],\"Invoices\",[Invoice Count],\"Orders\",[Order Count],\"AIV\",[Average Invoice Value],\"Warnings\",[Negative LineProfit Records],\"WarningRate\",[Negative LineProfit Rate],\"AffectedProducts\",[Affected Product Count],\"Sundays\",[Zero-Transaction Sundays],\"Coverage\",[Data Coverage Days],\"BuyerTop5\",[Top 5 Buyer Concentration %],\"BillToTop5\",[Top 5 Bill-to Concentration %],\"BuyerCount\",[Buyer Customer Count],\"BillToCount\",[Bill-to Customer Count])"
+  },
+  {
+    "id": "product_diagnostics",
+    "dax": "EVALUATE ROW(\"Products\",[Distinct Active Products],\"Top20Share\",[Top 20% SKU Sales Share],\"SKUs80\",[SKUs for 80% Sales],\"Top10Overlap\",[Top N Ranking Overlap])"
+  },
+  {
+    "id": "2016_comparable",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"Sales\",[Total Sales Before Tax],\"PY\",[Sales Previous Year Comparable Period],\"SalesYoY\",[Sales YoY %],\"InvoiceYoY\",[Invoice Count YoY %],\"AIVYoY\",[AIV YoY %],\"YTD\",[Sales YTD],\"PY_YTD\",[Prior Year Comparable YTD],\"Volume\",[Volume Contribution],\"AIVComponent\",[AIV Contribution],\"Interaction\",[Interaction Contribution]),'Date'[calendar_year]=2016)"
+  },
+  {
+    "id": "monthly",
+    "dax": "EVALUATE SUMMARIZECOLUMNS('Date'[Year Month],\"Sales\",[Total Sales Before Tax],\"Invoices\",[Invoice Count],\"Orders\",[Order Count],\"AIV\",[Average Invoice Value]) ORDER BY 'Date'[Year Month]"
+  },
+  {
+    "id": "single_month",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"Sales\",[Total Sales Before Tax],\"Invoices\",[Invoice Count],\"Orders\",[Order Count],\"AIV\",[Average Invoice Value]),'Date'[Year Month]=\"2016-05\")"
+  },
+  {
+    "id": "full_year",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"Sales\",[Total Sales Before Tax],\"Invoices\",[Invoice Count],\"Orders\",[Order Count],\"AIV\",[Average Invoice Value]),'Date'[calendar_year]=2015)"
+  },
+  {
+    "id": "product_222_rank",
+    "dax": "EVALUATE FILTER(SUMMARIZECOLUMNS(Product[source_stock_item_id],\"Lifetime\",[Product Lifetime Rank],\"Comparable\",[Comparable-Period Product Rank],\"ActiveMonths\",[Product Active Months]),Product[source_stock_item_id]=222)"
+  },
+  {
+    "id": "product_single",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"Sales\",[Total Sales Before Tax],\"Invoices\",[Invoice Count],\"Orders\",[Order Count],\"AIV\",[Average Invoice Value]),Product[source_stock_item_id]=222)"
+  },
+  {
+    "id": "product_multi",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"Sales\",[Total Sales Before Tax],\"Invoices\",[Invoice Count],\"Orders\",[Order Count],\"AIV\",[Average Invoice Value]),TREATAS({222,223},Product[source_stock_item_id]))"
+  },
+  {
+    "id": "buyer_billto",
+    "dax": "EVALUATE ROW(\"BuyerSales\",[Buyer Sales],\"BillToSales\",[Bill-to Sales])"
+  },
+  {
+    "id": "topn5",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"TopN\",[Selected Top N],\"BuyerConcentration\",[Top N Buyer Concentration %],\"BillToConcentration\",[Top N Bill-to Concentration %]),'Top N'[Value]=5)"
+  },
+  {
+    "id": "role_detail_billto",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"AttributedSales\",[Selected Role Sales]),Role[Role]=\"Bill-to\")"
+  },
+  {
+    "id": "empty_period",
+    "dax": "EVALUATE CALCULATETABLE(ROW(\"Sales\",[Total Sales Before Tax],\"Invoices\",[Invoice Count],\"AIV\",[Average Invoice Value],\"YoY\",[Sales YoY %]),TREATAS({DATE(2026,1,1)},'Date'[calendar_date]))"
+  },
+  {
+    "id": "no_comparison_multi_year",
+    "dax": "EVALUATE ROW(\"YoY\",[Sales YoY %],\"Decomposition\",[Interaction Contribution])"
+  },
+  {
+    "id": "direct_references",
+    "dax": "EVALUATE ROW(\"Direct\",[Orders with Direct Invoice],\"WithoutDirect\",[Orders without Direct Invoice])"
+  }
+]

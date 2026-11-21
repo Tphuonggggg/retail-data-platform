@@ -7,7 +7,7 @@
 | First selected smoke | Reset QA, private config, runtime authorization | Holdings batch64, count/distinct/numeric/NULL/digest/reconnect; unpublished | DONE via INGEST-02/03 |
 | Sales Full Load | Smoke PASS | Selected Sales dependencies, Raw reconciliation, rerun | DONE via INGEST-02/03 |
 | Sales dbt/DW/Mart | Accepted Raw + approved grains/KPI | Staging/core and one Sales Mart; DQ/measure reconciliation | DONE via DBT-SALES-01; unpublished/Uncertified |
-| Power BI / MVP demo | Sales Mart | Dashboard, reproducible execution/basic logs/DQ | TODO |
+| Power BI / MVP demo | Sales Mart | Dashboard, reproducible execution/basic logs/DQ | IN_PROGRESS — POWERBI-SALES-01 authoring; [runtime Import/DAX/visual blockers](powerbi/validation.md), chưa nghiệm thu |
 | Incremental | Full Load + Sales dbt + approved scoped migration | Sales snapshot-diff/current-state, persisted I/U/D fixtures, version-pinned dbt/DQ/marts, reconciliation/recovery; publication ACK giữ NULL | DONE — INGEST-INCR-01, unpublished/UNVERIFIED; [evidence](docs/audits/ingest-incr-01/evidence.json) |
 | Customer/Inventory + SCD2 | Relevant source/model evidence | Adopt preserved historical designs with scoped runtime proof | TODO |
 | Airflow/advanced recovery | Stable executable pipelines | Orchestration, replay/resume/monitoring | TODO |

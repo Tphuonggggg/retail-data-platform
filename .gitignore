@@ -32,5 +32,8 @@ dbt/target/
 dbt/logs/
 dbt/dbt_packages/
 profiles.yml
+# Power BI binaries contain imported business data; keep definitions in Git.
+/powerbi/*.pbix
+/powerbi/**/.pbi/
 # Runtime-only compatibility junction for the original container bootstrap bind.
 /storage/

@@ -1,0 +1,1598 @@
+{
+  "name": "3476ef39-dac2-48c2-a4a5-6c49b0a0c640",
+  "compatibilityLevel": 1606,
+  "model": {
+    "culture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "discourageImplicitMeasures": true,
+    "tables": [
+      {
+        "name": "Date",
+        "lineageTag": "d0df121a-2a4a-41df-85b1-4ddeb2f5c365",
+        "description": "Imported from dw_core.dim_date; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.",
+        "columns": [
+          {
+            "name": "date_key",
+            "dataType": "int64",
+            "sourceColumn": "date_key",
+            "lineageTag": "6e709c9d-778a-44ad-9539-7fab33d857e9",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "calendar_date",
+            "dataType": "dateTime",
+            "sourceColumn": "calendar_date",
+            "lineageTag": "d9c49483-8cdd-4908-a4a7-a90fea724a87",
+            "summarizeBy": "none",
+            "formatString": "dd MMM yyyy",
+            "isHidden": false,
+            "isKey": true
+          },
+          {
+            "name": "calendar_year",
+            "dataType": "int64",
+            "sourceColumn": "calendar_year",
+            "lineageTag": "abc612da-3d11-4d8c-9420-f1cadfb006c4",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "calendar_month",
+            "dataType": "int64",
+            "sourceColumn": "calendar_month",
+            "lineageTag": "916feac7-0335-4b65-aa85-32fc88cc282f",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "calendar_day",
+            "dataType": "int64",
+            "sourceColumn": "calendar_day",
+            "lineageTag": "e8ea69c7-f860-483f-9d3a-1c035cc1dcfd",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "calendar_quarter",
+            "dataType": "int64",
+            "sourceColumn": "calendar_quarter",
+            "lineageTag": "f9766e20-3dd1-4046-ad2d-0b2ff7cc1fa7",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "month_start",
+            "dataType": "dateTime",
+            "sourceColumn": "month_start",
+            "lineageTag": "fde51497-cb30-42d7-98fb-693f98a331ee",
+            "summarizeBy": "none",
+            "formatString": "dd MMM yyyy",
+            "isHidden": true
+          },
+          {
+            "name": "_capture_id",
+            "dataType": "string",
+            "sourceColumn": "_capture_id",
+            "lineageTag": "8526d48f-8a35-4140-a38c-e88b99364582",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ruleset_version",
+            "dataType": "string",
+            "sourceColumn": "ruleset_version",
+            "lineageTag": "7582d7f0-2ba4-474b-a879-b57053e936ff",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "measure_version",
+            "dataType": "string",
+            "sourceColumn": "measure_version",
+            "lineageTag": "4eb568a2-fb6a-43ce-8673-ed16bad3615b",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "type": "calculated",
+            "name": "Year Month",
+            "expression": "FORMAT('Date'[calendar_date],\"yyyy-MM\")",
+            "dataType": "string",
+            "isHidden": false,
+            "lineageTag": "90a6586e-0ad9-597d-a20a-9d0e79bd49dd",
+            "summarizeBy": "none",
+            "sortByColumn": "Year Month Sort"
+          },
+          {
+            "type": "calculated",
+            "name": "Year Month Sort",
+            "expression": "YEAR('Date'[calendar_date])*100+MONTH('Date'[calendar_date])",
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "79e21b92-4665-54a0-9dea-376c1d7d8276",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Quarter",
+            "expression": "\"Q\"&'Date'[calendar_quarter]",
+            "dataType": "string",
+            "isHidden": false,
+            "lineageTag": "cdefb13d-8bde-52bb-8957-e4fdf3ae3c32",
+            "summarizeBy": "none"
+          },
+          {
+            "type": "calculated",
+            "name": "Weekday",
+            "expression": "FORMAT('Date'[calendar_date],\"ddd\")",
+            "dataType": "string",
+            "isHidden": false,
+            "lineageTag": "fd13ac02-d6ec-5990-9f78-8ea74ed8ca48",
+            "summarizeBy": "none",
+            "sortByColumn": "Weekday Sort"
+          },
+          {
+            "type": "calculated",
+            "name": "Weekday Sort",
+            "expression": "WEEKDAY('Date'[calendar_date],2)",
+            "dataType": "int64",
+            "isHidden": true,
+            "lineageTag": "da4b05cf-51b6-570c-b2cf-2e8ca7e83684",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Date",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = PostgreSQL.Database(\"127.0.0.1:55434\", \"retail_raw\", [CreateNavigationProperties=false]),\n    Data = Source{[Schema=\"dw_core\",Item=\"dim_date\"]}[Data],\n    Selected = Table.SelectColumns(Data, {\"date_key\", \"calendar_date\", \"calendar_year\", \"calendar_month\", \"calendar_day\", \"calendar_quarter\", \"month_start\", \"_capture_id\", \"ruleset_version\", \"measure_version\"}),\n    VersionIDs = List.Distinct(Selected[_capture_id]),\n    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = \"c825b18e-fc62-4cf1-8837-b37b4c9f9668\" then Selected else error \"Unexpected analytical version\",\n    Typed = Table.TransformColumnTypes(Pinned, {{\"date_key\", Int64.Type}, {\"calendar_date\", type date}, {\"calendar_year\", Int64.Type}, {\"calendar_month\", Int64.Type}, {\"calendar_day\", Int64.Type}, {\"calendar_quarter\", Int64.Type}, {\"month_start\", type date}, {\"_capture_id\", type text}, {\"ruleset_version\", type text}, {\"measure_version\", type text}})\nin\n    Typed"
+            }
+          }
+        ],
+        "dataCategory": "Time",
+        "hierarchies": [
+          {
+            "name": "Calendar",
+            "levels": [
+              {
+                "name": "Year",
+                "ordinal": 0,
+                "column": "calendar_year"
+              },
+              {
+                "name": "Quarter",
+                "ordinal": 1,
+                "column": "Quarter"
+              },
+              {
+                "name": "Month",
+                "ordinal": 2,
+                "column": "Year Month"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Product",
+        "lineageTag": "abcaec7f-2848-4205-bedc-beb33ab5aff6",
+        "description": "Imported from dw_core.dim_product; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.",
+        "columns": [
+          {
+            "name": "product_key",
+            "dataType": "string",
+            "sourceColumn": "product_key",
+            "lineageTag": "5a6e31f0-c7b6-429a-b6b4-69333885580d",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_stock_item_id",
+            "dataType": "int64",
+            "sourceColumn": "source_stock_item_id",
+            "lineageTag": "c1506ca7-860b-43d1-b3ab-d9f013c1e57f",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "stock_item_name",
+            "dataType": "string",
+            "sourceColumn": "stock_item_name",
+            "lineageTag": "51fa2085-1971-4623-9d1b-49b8da243f12",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "brand",
+            "dataType": "string",
+            "sourceColumn": "brand",
+            "lineageTag": "c06ecf92-fbd2-4538-b871-03af48994386",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "size",
+            "dataType": "string",
+            "sourceColumn": "size",
+            "lineageTag": "4d82afbc-1b9c-407f-b0d2-95a14357d202",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "_capture_id",
+            "dataType": "string",
+            "sourceColumn": "_capture_id",
+            "lineageTag": "0f9ebc43-1a3d-4d6b-96ec-e90aff58fa5c",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Product",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = PostgreSQL.Database(\"127.0.0.1:55434\", \"retail_raw\", [CreateNavigationProperties=false]),\n    Data = Source{[Schema=\"dw_core\",Item=\"dim_product\"]}[Data],\n    Selected = Table.SelectColumns(Data, {\"product_key\", \"source_stock_item_id\", \"stock_item_name\", \"brand\", \"size\", \"_capture_id\"}),\n    VersionIDs = List.Distinct(Selected[_capture_id]),\n    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = \"c825b18e-fc62-4cf1-8837-b37b4c9f9668\" then Selected else error \"Unexpected analytical version\",\n    Typed = Table.TransformColumnTypes(Pinned, {{\"product_key\", type text}, {\"source_stock_item_id\", Int64.Type}, {\"stock_item_name\", type text}, {\"brand\", type text}, {\"size\", type text}, {\"_capture_id\", type text}})\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Buyer",
+        "lineageTag": "c8fc0c7d-bbfb-457e-8226-547a9bb4c173",
+        "description": "Imported from dw_core.dim_customer; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.",
+        "columns": [
+          {
+            "name": "customer_key",
+            "dataType": "string",
+            "sourceColumn": "customer_key",
+            "lineageTag": "8e1bf86d-b6f4-4b5b-8bfc-40d7d8427119",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "source_customer_id",
+            "lineageTag": "93f901ad-1935-4b41-bb50-c4713e56a33f",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "customer_name",
+            "dataType": "string",
+            "sourceColumn": "customer_name",
+            "lineageTag": "8f0d3c5d-1f5d-4bb9-a038-b8847cc3d022",
+            "summarizeBy": "none",
+            "isHidden": false
+          },
+          {
+            "name": "_capture_id",
+            "dataType": "string",
+            "sourceColumn": "_capture_id",
+            "lineageTag": "ffad1124-0c73-4c71-a24a-7634d7f2ad4d",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Buyer",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = PostgreSQL.Database(\"127.0.0.1:55434\", \"retail_raw\", [CreateNavigationProperties=false]),\n    Data = Source{[Schema=\"dw_core\",Item=\"dim_customer\"]}[Data],\n    Selected = Table.SelectColumns(Data, {\"customer_key\", \"source_customer_id\", \"customer_name\", \"_capture_id\"}),\n    VersionIDs = List.Distinct(Selected[_capture_id]),\n    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = \"c825b18e-fc62-4cf1-8837-b37b4c9f9668\" then Selected else error \"Unexpected analytical version\",\n    Typed = Table.TransformColumnTypes(Pinned, {{\"customer_key\", type text}, {\"source_customer_id\", Int64.Type}, {\"customer_name\", type text}, {\"_capture_id\", type text}})\nin\n    Typed"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Invoice Lines",
+        "lineageTag": "9bfc772a-bcf4-431f-9549-057fc0c7a5f6",
+        "description": "Imported from dw_core.fact_invoice_line; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.",
+        "columns": [
+          {
+            "name": "source_invoice_line_id",
+            "dataType": "int64",
+            "sourceColumn": "source_invoice_line_id",
+            "lineageTag": "67e03a11-027d-4a72-bd72-4d4375381252",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_invoice_id",
+            "dataType": "int64",
+            "sourceColumn": "source_invoice_id",
+            "lineageTag": "b617eeb0-9452-45ea-b666-c35830ae9bcb",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_order_id",
+            "dataType": "int64",
+            "sourceColumn": "source_order_id",
+            "lineageTag": "ada4c357-7849-41f8-9430-1627f39f7d57",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "invoice_date_key",
+            "dataType": "int64",
+            "sourceColumn": "invoice_date_key",
+            "lineageTag": "c0e2812b-7289-4713-b1a4-1b11df0ce22f",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "invoice_date",
+            "dataType": "dateTime",
+            "sourceColumn": "invoice_date",
+            "lineageTag": "0a104a4f-c4bc-4ccf-9ff3-72f6f5d64b65",
+            "summarizeBy": "none",
+            "formatString": "dd MMM yyyy",
+            "isHidden": true
+          },
+          {
+            "name": "source_buyer_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "source_buyer_customer_id",
+            "lineageTag": "54c57bca-f5d7-4442-b945-99bbc0ffed83",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_bill_to_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "source_bill_to_customer_id",
+            "lineageTag": "98ecb54b-8572-4e00-9edb-69bfb1952056",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "buyer_observed_customer_key",
+            "dataType": "string",
+            "sourceColumn": "buyer_observed_customer_key",
+            "lineageTag": "dfd5c54a-e8d4-42d7-be90-e1215be6eccf",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "bill_to_observed_customer_key",
+            "dataType": "string",
+            "sourceColumn": "bill_to_observed_customer_key",
+            "lineageTag": "a5e81acd-e75f-4060-ba5d-21d874eb07d7",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_stock_item_id",
+            "dataType": "int64",
+            "sourceColumn": "source_stock_item_id",
+            "lineageTag": "148c31ab-cf5e-4c55-ad6c-44c25b16a2dc",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "observed_product_key",
+            "dataType": "string",
+            "sourceColumn": "observed_product_key",
+            "lineageTag": "f61cbaff-2a6b-42df-a53a-b32612b2e6b5",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "quantity",
+            "dataType": "int64",
+            "sourceColumn": "quantity",
+            "lineageTag": "64bc3630-1736-4fce-8edc-a5d4762c242f",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "invoiced_sales_before_tax",
+            "dataType": "decimal",
+            "sourceColumn": "invoiced_sales_before_tax",
+            "lineageTag": "940f9381-1e21-442b-9d21-f8b7eaacf3a4",
+            "summarizeBy": "none",
+            "formatString": "#,0.00",
+            "isHidden": true
+          },
+          {
+            "name": "tax_amount",
+            "dataType": "decimal",
+            "sourceColumn": "tax_amount",
+            "lineageTag": "19ac14be-fe03-42c2-a4ce-161ec9524e4b",
+            "summarizeBy": "none",
+            "formatString": "#,0.00",
+            "isHidden": true
+          },
+          {
+            "name": "invoice_amount_including_tax",
+            "dataType": "decimal",
+            "sourceColumn": "invoice_amount_including_tax",
+            "lineageTag": "677605e9-90a7-4643-a477-97eef8bfef86",
+            "summarizeBy": "none",
+            "formatString": "#,0.00",
+            "isHidden": true
+          },
+          {
+            "name": "source_reported_line_profit",
+            "dataType": "decimal",
+            "sourceColumn": "source_reported_line_profit",
+            "lineageTag": "3ec4c721-d07a-4871-9cfe-a522d5533ea7",
+            "summarizeBy": "none",
+            "formatString": "#,0.00",
+            "isHidden": true
+          },
+          {
+            "name": "is_sales_eligible",
+            "dataType": "boolean",
+            "sourceColumn": "is_sales_eligible",
+            "lineageTag": "c01d051a-b7f0-46d1-a45a-87690c2c5311",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "has_warning",
+            "dataType": "boolean",
+            "sourceColumn": "has_warning",
+            "lineageTag": "57a2bab7-95eb-47c8-ad1d-bcd4e1fb2773",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "_capture_id",
+            "dataType": "string",
+            "sourceColumn": "_capture_id",
+            "lineageTag": "1d19290a-9ff6-4609-95de-3a3c6fac4e22",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ruleset_version",
+            "dataType": "string",
+            "sourceColumn": "ruleset_version",
+            "lineageTag": "14ad9f92-3c8f-4ace-ac96-02874b647a56",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "measure_version",
+            "dataType": "string",
+            "sourceColumn": "measure_version",
+            "lineageTag": "6b4dec7e-d454-4980-8b51-ca1be4c28dc8",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Invoice Lines",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = PostgreSQL.Database(\"127.0.0.1:55434\", \"retail_raw\", [CreateNavigationProperties=false]),\n    Data = Source{[Schema=\"dw_core\",Item=\"fact_invoice_line\"]}[Data],\n    Selected = Table.SelectColumns(Data, {\"source_invoice_line_id\", \"source_invoice_id\", \"source_order_id\", \"invoice_date_key\", \"invoice_date\", \"source_buyer_customer_id\", \"source_bill_to_customer_id\", \"buyer_observed_customer_key\", \"bill_to_observed_customer_key\", \"source_stock_item_id\", \"observed_product_key\", \"quantity\", \"invoiced_sales_before_tax\", \"tax_amount\", \"invoice_amount_including_tax\", \"source_reported_line_profit\", \"is_sales_eligible\", \"has_warning\", \"_capture_id\", \"ruleset_version\", \"measure_version\"}),\n    VersionIDs = List.Distinct(Selected[_capture_id]),\n    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = \"c825b18e-fc62-4cf1-8837-b37b4c9f9668\" then Selected else error \"Unexpected analytical version\",\n    Typed = Table.TransformColumnTypes(Pinned, {{\"source_invoice_line_id\", Int64.Type}, {\"source_invoice_id\", Int64.Type}, {\"source_order_id\", Int64.Type}, {\"invoice_date_key\", Int64.Type}, {\"invoice_date\", type date}, {\"source_buyer_customer_id\", Int64.Type}, {\"source_bill_to_customer_id\", Int64.Type}, {\"buyer_observed_customer_key\", type text}, {\"bill_to_observed_customer_key\", type text}, {\"source_stock_item_id\", Int64.Type}, {\"observed_product_key\", type text}, {\"quantity\", Int64.Type}, {\"invoiced_sales_before_tax\", Currency.Type}, {\"tax_amount\", Currency.Type}, {\"invoice_amount_including_tax\", Currency.Type}, {\"source_reported_line_profit\", Currency.Type}, {\"is_sales_eligible\", type logical}, {\"has_warning\", type logical}, {\"_capture_id\", type text}, {\"ruleset_version\", type text}, {\"measure_version\", type text}})\nin\n    Typed"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "Invoices",
+        "lineageTag": "f6e486c5-468e-5c4d-bf91-fbe6b34ca87c",
+        "description": "Imported from dw_intermediate.int_invoice_header; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.",
+        "columns": [
+          {
+            "name": "source_invoice_id",
+            "dataType": "int64",
+            "sourceColumn": "source_invoice_id",
+            "lineageTag": "e46fc1bb-468f-570b-b733-3d704d54e81c",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_order_id",
+            "dataType": "int64",
+            "sourceColumn": "source_order_id",
+            "lineageTag": "925e82b0-a1ac-59c8-a894-5ba5bb7b0749",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "invoice_date_key",
+            "dataType": "int64",
+            "sourceColumn": "invoice_date_key",
+            "lineageTag": "f0e4fbcc-4b1e-5894-9197-86e0d9dd6b0e",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_buyer_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "source_buyer_customer_id",
+            "lineageTag": "f615640e-0065-5477-a582-954d0685678a",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_bill_to_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "source_bill_to_customer_id",
+            "lineageTag": "ac0a3f60-4cef-57eb-ab7b-09e1e46ad8cd",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "buyer_observed_customer_key",
+            "dataType": "string",
+            "sourceColumn": "buyer_observed_customer_key",
+            "lineageTag": "65cf69fd-e6e5-53d9-9c84-347447c7e355",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "bill_to_observed_customer_key",
+            "dataType": "string",
+            "sourceColumn": "bill_to_observed_customer_key",
+            "lineageTag": "59d63321-7ece-56cc-a7f6-22dab8c82347",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "is_sales_eligible",
+            "dataType": "boolean",
+            "sourceColumn": "is_sales_eligible",
+            "lineageTag": "38d1208d-5c16-52c0-a1b2-8d15ccb1264b",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "_capture_id",
+            "dataType": "string",
+            "sourceColumn": "_capture_id",
+            "lineageTag": "55ffd0a7-1a2c-59f7-95d0-4cc2351b4495",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Invoices",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = PostgreSQL.Database(\"127.0.0.1:55434\", \"retail_raw\", [CreateNavigationProperties=false]),\n    Data = Source{[Schema=\"dw_intermediate\",Item=\"int_invoice_header\"]}[Data],\n    Selected = Table.SelectColumns(Data, {\"source_invoice_id\", \"source_order_id\", \"invoice_date_key\", \"source_buyer_customer_id\", \"source_bill_to_customer_id\", \"buyer_observed_customer_key\", \"bill_to_observed_customer_key\", \"is_sales_eligible\", \"_capture_id\"}),\n    VersionIDs = List.Distinct(Selected[_capture_id]),\n    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = \"c825b18e-fc62-4cf1-8837-b37b4c9f9668\" then Selected else error \"Unexpected analytical version\",\n    Typed = Table.TransformColumnTypes(Pinned, {{\"source_invoice_id\", Int64.Type}, {\"source_order_id\", Int64.Type}, {\"invoice_date_key\", Int64.Type}, {\"source_buyer_customer_id\", Int64.Type}, {\"source_bill_to_customer_id\", Int64.Type}, {\"buyer_observed_customer_key\", type text}, {\"bill_to_observed_customer_key\", type text}, {\"is_sales_eligible\", type logical}, {\"_capture_id\", type text}})\nin\n    Typed"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "Orders",
+        "lineageTag": "fb0157ba-8db4-5050-a4d8-4ea9be434ca8",
+        "description": "Imported from dw_intermediate.int_order_header; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.",
+        "columns": [
+          {
+            "name": "source_order_id",
+            "dataType": "int64",
+            "sourceColumn": "source_order_id",
+            "lineageTag": "56dda978-3ac0-5372-b171-2be176060b63",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "order_date_key",
+            "dataType": "int64",
+            "sourceColumn": "order_date_key",
+            "lineageTag": "21e1477e-1f85-5b6f-a9d1-019ae0e3346e",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "source_buyer_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "source_buyer_customer_id",
+            "lineageTag": "8f19d269-c200-52eb-af42-c701317d4e05",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "buyer_observed_customer_key",
+            "dataType": "string",
+            "sourceColumn": "buyer_observed_customer_key",
+            "lineageTag": "ff84c0fb-e7d6-5492-86ea-f4c0644e5b9a",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "is_order_eligible",
+            "dataType": "boolean",
+            "sourceColumn": "is_order_eligible",
+            "lineageTag": "eea07643-51d1-5506-abb5-7c60f45133ac",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "_capture_id",
+            "dataType": "string",
+            "sourceColumn": "_capture_id",
+            "lineageTag": "3f764dad-082e-5e50-893e-25d40950cb31",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Orders",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = PostgreSQL.Database(\"127.0.0.1:55434\", \"retail_raw\", [CreateNavigationProperties=false]),\n    Data = Source{[Schema=\"dw_intermediate\",Item=\"int_order_header\"]}[Data],\n    Selected = Table.SelectColumns(Data, {\"source_order_id\", \"order_date_key\", \"source_buyer_customer_id\", \"buyer_observed_customer_key\", \"is_order_eligible\", \"_capture_id\"}),\n    VersionIDs = List.Distinct(Selected[_capture_id]),\n    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = \"c825b18e-fc62-4cf1-8837-b37b4c9f9668\" then Selected else error \"Unexpected analytical version\",\n    Typed = Table.TransformColumnTypes(Pinned, {{\"source_order_id\", Int64.Type}, {\"order_date_key\", Int64.Type}, {\"source_buyer_customer_id\", Int64.Type}, {\"buyer_observed_customer_key\", type text}, {\"is_order_eligible\", type logical}, {\"_capture_id\", type text}})\nin\n    Typed"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "Bill-to",
+        "lineageTag": "7041062a-a057-5836-ad20-0a6ef6eeb95f",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "customer_key",
+            "dataType": "string",
+            "sourceColumn": "[customer_key]",
+            "lineageTag": "58ebf82a-3dfe-5180-9d0e-0e4b922b1b93",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "source_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "[source_customer_id]",
+            "lineageTag": "bcd92e29-4985-5f6e-9469-50746f71f8e1",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "customer_name",
+            "dataType": "string",
+            "sourceColumn": "[customer_name]",
+            "lineageTag": "de04f251-d697-59f4-80a6-7b00c7ee9b7d",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Bill-to",
+            "source": {
+              "type": "calculated",
+              "expression": "SELECTCOLUMNS(Buyer,\"customer_key\",Buyer[customer_key],\"source_customer_id\",Buyer[source_customer_id],\"customer_name\",Buyer[customer_name])"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Attribution Customer",
+        "lineageTag": "30a4f0d2-4ff9-5b67-91ae-0e3b69eda05e",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "source_customer_id",
+            "dataType": "int64",
+            "sourceColumn": "[source_customer_id]",
+            "lineageTag": "f4eafa9c-5fad-5f9b-8680-ec4262301a93",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "customer_name",
+            "dataType": "string",
+            "sourceColumn": "[customer_name]",
+            "lineageTag": "b6b79474-520c-5039-91ea-c2581a194653",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Attribution Customer",
+            "source": {
+              "type": "calculated",
+              "expression": "SELECTCOLUMNS(Buyer,\"source_customer_id\",Buyer[source_customer_id],\"customer_name\",Buyer[customer_name])"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Top N",
+        "lineageTag": "7482d9f9-406e-5f80-9541-cd58dfe4b201",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value",
+            "dataType": "int64",
+            "sourceColumn": "[Value]",
+            "lineageTag": "fe3466f9-2327-5b7a-81a0-d3b6d3117682",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Top N",
+            "source": {
+              "type": "calculated",
+              "expression": "GENERATESERIES(5,50,5)"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Role",
+        "lineageTag": "f0c168c5-0bb7-51ab-9d73-6318a85925a1",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Role",
+            "dataType": "string",
+            "sourceColumn": "[Role]",
+            "lineageTag": "f1a4117e-a91e-5f0f-9ef6-bde6caba3cda",
+            "summarizeBy": "none",
+            "sortByColumn": "Role Sort"
+          },
+          {
+            "type": "calculatedTableColumn",
+            "name": "Role Sort",
+            "dataType": "int64",
+            "sourceColumn": "[Role Sort]",
+            "lineageTag": "25a4c92b-b7a7-5a99-bae7-5c57e1848f51",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Role",
+            "source": {
+              "type": "calculated",
+              "expression": "DATATABLE(\"Role\",STRING,\"Role Sort\",INTEGER,{{\"Buyer\",1},{\"Bill-to\",2}})"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Ranking Basis",
+        "lineageTag": "25b7e942-da91-5c94-891f-7bc46572e73e",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Basis",
+            "dataType": "string",
+            "sourceColumn": "[Basis]",
+            "lineageTag": "1ac9755f-1f51-5968-b82f-cd1d61437ed9",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Ranking Basis",
+            "source": {
+              "type": "calculated",
+              "expression": "DATATABLE(\"Basis\",STRING,{{\"Sales\"},{\"Units\"}})"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Concentration Rank",
+        "lineageTag": "79c62447-4ae3-55f7-b058-6abb0a31f74a",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Value",
+            "dataType": "int64",
+            "sourceColumn": "[Value]",
+            "lineageTag": "e858f585-44b9-5e0a-8ff9-a0335fcdca9e",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Concentration Rank",
+            "source": {
+              "type": "calculated",
+              "expression": "VAR N=COALESCE(COUNTROWS(Buyer),0) RETURN FILTER(GENERATESERIES(1,MAX(1,N),1),[Value]<=N)"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Decomposition",
+        "lineageTag": "1b93ea41-a2a5-5be1-bb62-b5776ce2e8ce",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Component",
+            "dataType": "string",
+            "sourceColumn": "[Component]",
+            "lineageTag": "87b84636-e185-5f86-8654-e23c0edb7a1a",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Decomposition",
+            "source": {
+              "type": "calculated",
+              "expression": "DATATABLE(\"Component\",STRING,{{\"Invoice volume\"},{\"AIV\"},{\"Interaction\"}})"
+            }
+          }
+        ]
+      },
+      {
+        "name": "Metrics",
+        "lineageTag": "d8411c02-a906-5db2-a7eb-1d9dbd077ba4",
+        "columns": [
+          {
+            "type": "calculatedTableColumn",
+            "name": "Placeholder",
+            "dataType": "string",
+            "sourceColumn": "[Placeholder]",
+            "lineageTag": "d0385981-4fef-5aa3-a7a3-251d13df4ded",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "Metrics",
+            "source": {
+              "type": "calculated",
+              "expression": "ROW(\"Placeholder\",BLANK())"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Total Sales Before Tax",
+            "expression": "CALCULATE(SUM('Invoice Lines'[invoiced_sales_before_tax]),'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0.00",
+            "displayFolder": "Sales",
+            "description": "S05: invoiced sales before tax, InvoiceDate; not recognized revenue. Eligible WARNING rows retained.",
+            "lineageTag": "17cbbffc-9008-55e8-9479-432ea90e10a0"
+          },
+          {
+            "name": "Total Tax",
+            "expression": "CALCULATE(SUM('Invoice Lines'[tax_amount]),'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0.00",
+            "displayFolder": "Sales",
+            "description": "Total Tax",
+            "lineageTag": "d0f76448-f93f-5166-9577-dc2fa9fea86d"
+          },
+          {
+            "name": "Total Amount Including Tax",
+            "expression": "CALCULATE(SUM('Invoice Lines'[invoice_amount_including_tax]),'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0.00",
+            "displayFolder": "Sales",
+            "description": "Total Amount Including Tax",
+            "lineageTag": "7baef8f5-6111-5c5b-a7f7-d922b2823be5"
+          },
+          {
+            "name": "Units Sold",
+            "expression": "CALCULATE(SUM('Invoice Lines'[quantity]),'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "Units Sold",
+            "lineageTag": "63269e84-0300-5a7c-81b4-ca239469aa8e"
+          },
+          {
+            "name": "Eligible Invoice Lines",
+            "expression": "CALCULATE(COUNTROWS('Invoice Lines'),'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "Eligible Invoice Lines",
+            "lineageTag": "bf05a48d-6da9-5668-b14b-04486cfdf228"
+          },
+          {
+            "name": "Invoice Count",
+            "expression": "VAR BaseCount=CALCULATE(COUNTROWS(Invoices),Invoices[is_sales_eligible]=TRUE())\nRETURN IF(ISCROSSFILTERED(Product),\n CALCULATE(COUNTROWS(Invoices),Invoices[is_sales_eligible]=TRUE(),\n TREATAS(CALCULATETABLE(VALUES('Invoice Lines'[source_invoice_id]),'Invoice Lines'[is_sales_eligible]=TRUE()),Invoices[source_invoice_id])),BaseCount)",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "S02: eligible invoice-header population. Product filtering uses invoice ID semijoin, never summed product distinct counts.",
+            "lineageTag": "ab1a1f16-5c6a-52de-859f-1188adb6ce9b"
+          },
+          {
+            "name": "Order Count",
+            "expression": "CALCULATE(COUNTROWS(Orders),Orders[is_order_eligible]=TRUE())",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "S01: Orders/OrderDate, including uninvoiced orders; intentionally not product-filtered.",
+            "lineageTag": "e3399432-67e0-5688-981e-6f1b087854f9"
+          },
+          {
+            "name": "Average Invoice Value",
+            "expression": "DIVIDE([Total Sales Before Tax],[Invoice Count])",
+            "formatString": "#,0.00",
+            "displayFolder": "Sales",
+            "description": "S06: recomputed ratio of totals in the same context; not AOV.",
+            "lineageTag": "d552b7c9-38b4-517b-9c06-2f8545a124b0"
+          },
+          {
+            "name": "Sales per Unit",
+            "expression": "DIVIDE([Total Sales Before Tax],[Units Sold])",
+            "formatString": "#,0.00",
+            "displayFolder": "Sales",
+            "description": "Source quantity basis; not standardized packaging or piece price.",
+            "lineageTag": "ec35b7f3-d48b-5d1b-88e9-3023d1dce2aa"
+          },
+          {
+            "name": "Sales Previous Year Comparable Period",
+            "expression": "VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),\"PriorDate\",EDATE('Date'[calendar_date],-12))\nRETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))",
+            "formatString": "#,0.00",
+            "displayFolder": "Time intelligence",
+            "description": "Only one selected calendar year. Same selected dates shifted 12 months; leap day maps to prior Feb 28. Other filters retained.",
+            "lineageTag": "28464049-d152-5097-aa0e-177ec617e76c"
+          },
+          {
+            "name": "Sales YoY %",
+            "expression": "DIVIDE([Total Sales Before Tax]-[Sales Previous Year Comparable Period],[Sales Previous Year Comparable Period])",
+            "formatString": "0.00%;-0.00%;0.00%",
+            "displayFolder": "Time intelligence",
+            "description": "Sales YoY %",
+            "lineageTag": "b11e9f70-13e6-5285-ac60-943f05a8cae9"
+          },
+          {
+            "name": "Invoice Count Previous Year Comparable Period",
+            "expression": "VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),\"PriorDate\",EDATE('Date'[calendar_date],-12))\nRETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Invoice Count],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))",
+            "formatString": "#,0.00",
+            "displayFolder": "Time intelligence",
+            "description": "Only one selected calendar year. Same selected dates shifted 12 months; leap day maps to prior Feb 28. Other filters retained.",
+            "lineageTag": "03747330-8800-5951-8266-9d408b1a5bab"
+          },
+          {
+            "name": "Invoice Count YoY %",
+            "expression": "DIVIDE([Invoice Count]-[Invoice Count Previous Year Comparable Period],[Invoice Count Previous Year Comparable Period])",
+            "formatString": "0.00%;-0.00%;0.00%",
+            "displayFolder": "Time intelligence",
+            "description": "Invoice Count YoY %",
+            "lineageTag": "f3fad123-e497-50d8-9617-198795f2ae1b"
+          },
+          {
+            "name": "AIV Previous Year Comparable Period",
+            "expression": "VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),\"PriorDate\",EDATE('Date'[calendar_date],-12))\nRETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Average Invoice Value],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))",
+            "formatString": "#,0.00",
+            "displayFolder": "Time intelligence",
+            "description": "Only one selected calendar year. Same selected dates shifted 12 months; leap day maps to prior Feb 28. Other filters retained.",
+            "lineageTag": "ded4ad27-9683-5956-b161-6d83616a95d5"
+          },
+          {
+            "name": "AIV YoY %",
+            "expression": "DIVIDE([Average Invoice Value]-[AIV Previous Year Comparable Period],[AIV Previous Year Comparable Period])",
+            "formatString": "0.00%;-0.00%;0.00%",
+            "displayFolder": "Time intelligence",
+            "description": "AIV YoY %",
+            "lineageTag": "db70b13c-4461-56e5-8903-cd089880550b"
+          },
+          {
+            "name": "Sales Previous Period",
+            "expression": "IF(HASONEVALUE('Date'[Year Month]),CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),DATEADD('Date'[calendar_date],-1,MONTH)))",
+            "formatString": "#,0.00",
+            "displayFolder": "Time intelligence",
+            "description": "Previous month only in a single year-month context; BLANK at multi-month totals.",
+            "lineageTag": "3906ecf6-59f2-577e-93a3-3b16b19c73d4"
+          },
+          {
+            "name": "Sales MoM %",
+            "expression": "DIVIDE([Total Sales Before Tax]-[Sales Previous Period],[Sales Previous Period])",
+            "formatString": "0.00%;-0.00%;0.00%",
+            "displayFolder": "Time intelligence",
+            "description": "Sales MoM %",
+            "lineageTag": "79e74f5c-cb9d-5f9f-83e3-4c3f6222c23f"
+          },
+          {
+            "name": "Sales YTD",
+            "expression": "VAR Cutoff=MAX('Date'[calendar_date]) RETURN CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),DATESBETWEEN('Date'[calendar_date],DATE(YEAR(Cutoff),1,1),Cutoff))",
+            "formatString": "#,0.00",
+            "displayFolder": "Time intelligence",
+            "description": "Sales YTD",
+            "lineageTag": "9d4ee505-eb15-5f27-b5e2-fea786ddf4e7"
+          },
+          {
+            "name": "Prior Year Comparable YTD",
+            "expression": "VAR Cutoff=MAX('Date'[calendar_date]) VAR Prior=EDATE(Cutoff,-12) RETURN CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),DATESBETWEEN('Date'[calendar_date],DATE(YEAR(Prior),1,1),Prior))",
+            "formatString": "#,0.00",
+            "displayFolder": "Time intelligence",
+            "description": "Prior Year Comparable YTD",
+            "lineageTag": "f0d18c5d-67c7-5ad8-bc01-3cd3db7e74f4"
+          },
+          {
+            "name": "YTD YoY %",
+            "expression": "DIVIDE([Sales YTD]-[Prior Year Comparable YTD],[Prior Year Comparable YTD])",
+            "formatString": "0.00%;-0.00%;0.00%",
+            "displayFolder": "Time intelligence",
+            "description": "YTD YoY %",
+            "lineageTag": "6d2c523d-d495-5e31-83a2-fce7abb65816"
+          },
+          {
+            "name": "Volume Contribution",
+            "expression": "IF(NOT ISBLANK([Invoice Count Previous Year Comparable Period]),([Invoice Count]-[Invoice Count Previous Year Comparable Period])*[AIV Previous Year Comparable Period])",
+            "formatString": "#,0.00",
+            "displayFolder": "Decomposition",
+            "description": "Volume Contribution",
+            "lineageTag": "d22d3868-7b38-5404-b885-cc74b807d5e6"
+          },
+          {
+            "name": "AIV Contribution",
+            "expression": "IF(NOT ISBLANK([Invoice Count Previous Year Comparable Period]),([Average Invoice Value]-[AIV Previous Year Comparable Period])*[Invoice Count Previous Year Comparable Period])",
+            "formatString": "#,0.00",
+            "displayFolder": "Decomposition",
+            "description": "AIV Contribution",
+            "lineageTag": "856d39eb-58eb-5efc-9627-21b0e27ac983"
+          },
+          {
+            "name": "Interaction Contribution",
+            "expression": "IF(NOT ISBLANK([Invoice Count Previous Year Comparable Period]),([Invoice Count]-[Invoice Count Previous Year Comparable Period])*([Average Invoice Value]-[AIV Previous Year Comparable Period]))",
+            "formatString": "#,0.00",
+            "displayFolder": "Decomposition",
+            "description": "Interaction Contribution",
+            "lineageTag": "2b0ce2fb-951b-5f20-a916-dec2ac24dac9"
+          },
+          {
+            "name": "Sales Change Contribution",
+            "expression": "SWITCH(SELECTEDVALUE(Decomposition[Component]),\"Invoice volume\",[Volume Contribution],\"AIV\",[AIV Contribution],\"Interaction\",[Interaction Contribution])",
+            "formatString": "#,0.00",
+            "displayFolder": "Decomposition",
+            "description": "Exact three-term delta: deltaN*A0 + N0*deltaA + deltaN*deltaA. Arithmetic, not causality.",
+            "lineageTag": "c09a738b-8637-5907-85bd-17ce7a41e3cf"
+          },
+          {
+            "name": "Performance Narrative",
+            "expression": "IF(ISBLANK([Sales YoY %]),\"Select one calendar year. 2016 covers January–May only.\",\"Sales \"&FORMAT([Sales YoY %],\"+0.00%;-0.00%\")&\" | invoices \"&FORMAT([Invoice Count YoY %],\"+0.00%;-0.00%\")&\" | AIV \"&FORMAT([AIV YoY %],\"+0.00%;-0.00%\")&\" versus equivalent prior-year dates.\")",
+            "formatString": "",
+            "displayFolder": "Narratives",
+            "description": "Performance Narrative",
+            "lineageTag": "0dacccf1-ec86-5a45-9499-90ba6cc01aec"
+          },
+          {
+            "name": "Product Sales",
+            "expression": "[Total Sales Before Tax]",
+            "formatString": "#,0.00",
+            "displayFolder": "Products",
+            "description": "Product Sales",
+            "lineageTag": "623b19c7-444a-5f45-be31-2f1d5abae36a"
+          },
+          {
+            "name": "Product Units",
+            "expression": "[Units Sold]",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Product Units",
+            "lineageTag": "ca0b61fe-ba03-5142-9eb4-0926704e930b"
+          },
+          {
+            "name": "Product Sales per Unit",
+            "expression": "[Sales per Unit]",
+            "formatString": "#,0.00",
+            "displayFolder": "Products",
+            "description": "Product Sales per Unit",
+            "lineageTag": "f4c9e489-ea7c-5adb-899d-a1e554fea57c"
+          },
+          {
+            "name": "Product Sales Share %",
+            "expression": "DIVIDE([Product Sales],CALCULATE([Product Sales],ALLSELECTED(Product)))",
+            "formatString": "0.00%",
+            "displayFolder": "Products",
+            "description": "Product Sales Share %",
+            "lineageTag": "54488720-5b98-5b91-a041-3d0499d08873"
+          },
+          {
+            "name": "Product Rank by Sales",
+            "expression": "VAR ThisId=SELECTEDVALUE(Product[source_stock_item_id]) VAR ThisValue=[Product Sales]\nVAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),\"@Value\",[Product Sales],\"@Lines\",[Eligible Invoice Lines]),[@Lines]>0)\nRETURN IF(HASONEVALUE(Product[source_stock_item_id])&&NOT ISBLANK(ThisValue),1+COUNTROWS(FILTER(Population,[@Value]>ThisValue||([@Value]=ThisValue&&Product[source_stock_item_id]<ThisId))))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Selected product population; deterministic SKU ID tie-break.",
+            "lineageTag": "bf41dec7-6155-5cef-ab10-cce37d5b52f9"
+          },
+          {
+            "name": "Product Rank by Units",
+            "expression": "VAR ThisId=SELECTEDVALUE(Product[source_stock_item_id]) VAR ThisValue=[Product Units]\nVAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),\"@Value\",[Product Units],\"@Lines\",[Eligible Invoice Lines]),[@Lines]>0)\nRETURN IF(HASONEVALUE(Product[source_stock_item_id])&&NOT ISBLANK(ThisValue),1+COUNTROWS(FILTER(Population,[@Value]>ThisValue||([@Value]=ThisValue&&Product[source_stock_item_id]<ThisId))))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Selected product population; deterministic SKU ID tie-break.",
+            "lineageTag": "c875758a-5c06-53bb-8aff-1846f31a5a12"
+          },
+          {
+            "name": "Product Cumulative Sales",
+            "expression": "VAR ThisId=SELECTEDVALUE(Product[source_stock_item_id]) VAR ThisSales=[Product Sales]\nVAR Population=ADDCOLUMNS(ALLSELECTED(Product),\"@Sales\",[Product Sales])\nRETURN IF(HASONEVALUE(Product[source_stock_item_id]),SUMX(FILTER(Population,[@Sales]>ThisSales||([@Sales]=ThisSales&&Product[source_stock_item_id]<=ThisId)),[@Sales]))",
+            "formatString": "#,0.00",
+            "displayFolder": "Products",
+            "description": "Product Cumulative Sales",
+            "lineageTag": "24a84c6f-1e52-5c36-9a0b-8ee0f1492a11"
+          },
+          {
+            "name": "Product Cumulative Sales %",
+            "expression": "DIVIDE([Product Cumulative Sales],CALCULATE([Product Sales],ALLSELECTED(Product)))",
+            "formatString": "0.0%",
+            "displayFolder": "Products",
+            "description": "Product Cumulative Sales %",
+            "lineageTag": "3a61f5a7-5072-5b0f-8adb-a25fca4638b1"
+          },
+          {
+            "name": "Pareto Threshold",
+            "expression": "0.8",
+            "formatString": "0%",
+            "displayFolder": "Products",
+            "description": "Pareto Threshold",
+            "lineageTag": "e0cad34c-3c9b-554b-9d6f-ce372cebeb5b"
+          },
+          {
+            "name": "Distinct Active Products",
+            "expression": "COUNTROWS(FILTER(VALUES(Product[source_stock_item_id]),[Eligible Invoice Lines]>0))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Distinct Active Products",
+            "lineageTag": "0ddfd239-6e4a-5696-a1fc-705a43693202"
+          },
+          {
+            "name": "Top 20% SKU Sales Share",
+            "expression": "VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),\"@Sales\",[Product Sales],\"@Lines\",[Eligible Invoice Lines]),[@Lines]>0) VAR N=ROUNDUP(COUNTROWS(Population)*0.2,0) RETURN DIVIDE(SUMX(TOPN(N,Population,[@Sales],DESC,Product[source_stock_item_id],ASC),[@Sales]),SUMX(Population,[@Sales]))",
+            "formatString": "0.00%",
+            "displayFolder": "Products",
+            "description": "Top 20% SKU Sales Share",
+            "lineageTag": "33f1e7d6-a256-51d1-874b-37b38bbaaf1c"
+          },
+          {
+            "name": "SKUs for 80% Sales",
+            "expression": "VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),\"@Sales\",[Product Sales],\"@Lines\",[Eligible Invoice Lines]),[@Lines]>0)\nVAR TotalSales=SUMX(Population,[@Sales])\nRETURN IF(TotalSales>0,1+COUNTROWS(FILTER(Population,VAR S=[@Sales] VAR K=Product[source_stock_item_id]\nVAR Cumulative=SUMX(FILTER(Population,[@Sales]>S||([@Sales]=S&&Product[source_stock_item_id]<=K)),[@Sales]) RETURN Cumulative<TotalSales*0.8)))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "SKUs for 80% Sales",
+            "lineageTag": "ccfba092-f68b-5037-a6db-26803f3fa6f2"
+          },
+          {
+            "name": "Selected Top N",
+            "expression": "SELECTEDVALUE('Top N'[Value],10)",
+            "formatString": "#,0",
+            "displayFolder": "Parameters",
+            "description": "Selected Top N",
+            "lineageTag": "26489fba-ac0e-55ca-91e8-c5114b868a19"
+          },
+          {
+            "name": "Top N Ranking Overlap",
+            "expression": "VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),\"@Sales\",[Product Sales],\"@Units\",[Product Units],\"@Lines\",[Eligible Invoice Lines]),[@Lines]>0) VAR N=[Selected Top N] VAR A=SELECTCOLUMNS(TOPN(N,Population,[@Sales],DESC,Product[source_stock_item_id],ASC),\"ID\",Product[source_stock_item_id]) VAR B=SELECTCOLUMNS(TOPN(N,Population,[@Units],DESC,Product[source_stock_item_id],ASC),\"ID\",Product[source_stock_item_id]) RETURN COUNTROWS(INTERSECT(A,B))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Top N Ranking Overlap",
+            "lineageTag": "2ff164c3-108d-5c7b-a668-60641e37eb90"
+          },
+          {
+            "name": "Top N Product Sales",
+            "expression": "IF([Product Rank by Sales]<=[Selected Top N],[Product Sales])",
+            "formatString": "#,0.00",
+            "displayFolder": "Products",
+            "description": "Top N Product Sales",
+            "lineageTag": "9c35e4fc-3e5b-5bca-9e77-4817e1f7e0bd"
+          },
+          {
+            "name": "Top N Product Units",
+            "expression": "IF([Product Rank by Units]<=[Selected Top N],[Product Units])",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Top N Product Units",
+            "lineageTag": "b2616fcf-8fd5-543e-bb37-021c04db9aac"
+          },
+          {
+            "name": "Product Active Months",
+            "expression": "COUNTROWS(FILTER(VALUES('Date'[Year Month]),[Eligible Invoice Lines]>0))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Product Active Months",
+            "lineageTag": "a96ebcad-3112-5b92-9523-3593c790c1af"
+          },
+          {
+            "name": "Product Lifetime Rank",
+            "expression": "CALCULATE([Product Rank by Sales],REMOVEFILTERS('Date'))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Product Lifetime Rank",
+            "lineageTag": "fc8315bd-cb92-5ca8-b499-872cc4950df6"
+          },
+          {
+            "name": "Comparable-Period Product Rank",
+            "expression": "VAR Cutoff=CALCULATE(MAX('Date'[calendar_date]),REMOVEFILTERS('Date')) RETURN CALCULATE([Product Rank by Sales],REMOVEFILTERS('Date'),DATESBETWEEN('Date'[calendar_date],DATE(YEAR(Cutoff),1,1),Cutoff))",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Comparable-Period Product Rank",
+            "lineageTag": "a5f62a99-f91d-57b5-a30a-e45c46fd8d0e"
+          },
+          {
+            "name": "Product Rank Change",
+            "expression": "[Product Lifetime Rank]-[Comparable-Period Product Rank]",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Product Rank Change",
+            "lineageTag": "77e03dab-2232-54a6-b2ba-29e5a6281e59"
+          },
+          {
+            "name": "Product Rank by Selected Basis",
+            "expression": "IF(SELECTEDVALUE('Ranking Basis'[Basis],\"Sales\")=\"Units\",[Product Rank by Units],[Product Rank by Sales])",
+            "formatString": "#,0",
+            "displayFolder": "Products",
+            "description": "Product Rank by Selected Basis",
+            "lineageTag": "8059d154-9502-519f-a085-e3701870fd57"
+          },
+          {
+            "name": "Buyer Sales",
+            "expression": "CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Bill-to'))",
+            "formatString": "#,0.00",
+            "displayFolder": "Attribution",
+            "description": "Same invoice Sales attributed by invoice-time role; never add Buyer and Bill-to totals.",
+            "lineageTag": "7057b866-a5a3-5a28-a71b-7d3588c8693b"
+          },
+          {
+            "name": "Buyer Sales Share %",
+            "expression": "DIVIDE([Buyer Sales],CALCULATE([Buyer Sales],ALLSELECTED('Buyer')))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Buyer Sales Share %",
+            "lineageTag": "4a257d0c-4238-539b-b7c5-c86664a70aa6"
+          },
+          {
+            "name": "Buyer Customer Count",
+            "expression": "COUNTROWS(FILTER(VALUES('Buyer'[source_customer_id]),[Buyer Sales]<>BLANK()))",
+            "formatString": "#,0",
+            "displayFolder": "Attribution",
+            "description": "Buyer Customer Count",
+            "lineageTag": "5fdb8795-5ada-5e53-b7d5-2217fe84deea"
+          },
+          {
+            "name": "Buyer Rank",
+            "expression": "IF(HASONEVALUE('Buyer'[source_customer_id]),RANKX(ALLSELECTED('Buyer'),[Buyer Sales],,DESC,Dense))",
+            "formatString": "#,0",
+            "displayFolder": "Attribution",
+            "description": "Buyer Rank",
+            "lineageTag": "0a3857bb-fed0-5de8-ba01-d4b1ccaa7ea9"
+          },
+          {
+            "name": "Top N Buyer Concentration %",
+            "expression": "VAR Population=ADDCOLUMNS(ALLSELECTED('Buyer'),\"@Sales\",[Buyer Sales]) RETURN DIVIDE(SUMX(TOPN([Selected Top N],Population,[@Sales],DESC,'Buyer'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Top N Buyer Concentration %",
+            "lineageTag": "ab548ee1-444e-5e44-91a2-21f433679e9c"
+          },
+          {
+            "name": "Top 5 Buyer Concentration %",
+            "expression": "VAR Population=ADDCOLUMNS(ALLSELECTED('Buyer'),\"@Sales\",[Buyer Sales]) RETURN DIVIDE(SUMX(TOPN(5,Population,[@Sales],DESC,'Buyer'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Top 5 Buyer Concentration %",
+            "lineageTag": "39ba6af7-8053-596b-99ab-f66ca84c5f18"
+          },
+          {
+            "name": "Top N Buyer Sales",
+            "expression": "IF([Buyer Rank]<=[Selected Top N],[Buyer Sales])",
+            "formatString": "#,0.00",
+            "displayFolder": "Attribution",
+            "description": "Top N Buyer Sales",
+            "lineageTag": "34231c83-2c47-57b5-b93a-8f23731f18e5"
+          },
+          {
+            "name": "Bill-to Sales",
+            "expression": "CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Buyer'))",
+            "formatString": "#,0.00",
+            "displayFolder": "Attribution",
+            "description": "Same invoice Sales attributed by invoice-time role; never add Buyer and Bill-to totals.",
+            "lineageTag": "65cb4100-c655-5bf7-bc26-b09f9f75eb9a"
+          },
+          {
+            "name": "Bill-to Sales Share %",
+            "expression": "DIVIDE([Bill-to Sales],CALCULATE([Bill-to Sales],ALLSELECTED('Bill-to')))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Bill-to Sales Share %",
+            "lineageTag": "dfdd8d94-2d9f-5b9d-a9e7-a48db591e410"
+          },
+          {
+            "name": "Bill-to Customer Count",
+            "expression": "COUNTROWS(FILTER(VALUES('Bill-to'[source_customer_id]),[Bill-to Sales]<>BLANK()))",
+            "formatString": "#,0",
+            "displayFolder": "Attribution",
+            "description": "Bill-to Customer Count",
+            "lineageTag": "2d1bd94d-0f98-5115-a198-af361e3d2adb"
+          },
+          {
+            "name": "Bill-to Rank",
+            "expression": "IF(HASONEVALUE('Bill-to'[source_customer_id]),RANKX(ALLSELECTED('Bill-to'),[Bill-to Sales],,DESC,Dense))",
+            "formatString": "#,0",
+            "displayFolder": "Attribution",
+            "description": "Bill-to Rank",
+            "lineageTag": "3da3765a-5afa-565d-a651-d7d67ae55482"
+          },
+          {
+            "name": "Top N Bill-to Concentration %",
+            "expression": "VAR Population=ADDCOLUMNS(ALLSELECTED('Bill-to'),\"@Sales\",[Bill-to Sales]) RETURN DIVIDE(SUMX(TOPN([Selected Top N],Population,[@Sales],DESC,'Bill-to'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Top N Bill-to Concentration %",
+            "lineageTag": "45c23af2-897c-5fc9-9042-f3e0c203bbc9"
+          },
+          {
+            "name": "Top 5 Bill-to Concentration %",
+            "expression": "VAR Population=ADDCOLUMNS(ALLSELECTED('Bill-to'),\"@Sales\",[Bill-to Sales]) RETURN DIVIDE(SUMX(TOPN(5,Population,[@Sales],DESC,'Bill-to'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Top 5 Bill-to Concentration %",
+            "lineageTag": "5a1360bd-9053-5abd-9936-558a378c7035"
+          },
+          {
+            "name": "Top N Bill-to Sales",
+            "expression": "IF([Bill-to Rank]<=[Selected Top N],[Bill-to Sales])",
+            "formatString": "#,0.00",
+            "displayFolder": "Attribution",
+            "description": "Top N Bill-to Sales",
+            "lineageTag": "23e06351-6567-515e-9731-fe23c9d2ba7e"
+          },
+          {
+            "name": "Selected Role Sales",
+            "expression": "IF(SELECTEDVALUE(Role[Role],\"Buyer\")=\"Buyer\",CALCULATE([Buyer Sales],TREATAS(VALUES('Attribution Customer'[source_customer_id]),Buyer[source_customer_id])),CALCULATE([Bill-to Sales],TREATAS(VALUES('Attribution Customer'[source_customer_id]),'Bill-to'[source_customer_id])))",
+            "formatString": "#,0.00",
+            "displayFolder": "Attribution",
+            "description": "Selected Role Sales",
+            "lineageTag": "5a23a29c-92fb-508f-8cdc-fb6c70c75de7"
+          },
+          {
+            "name": "Selected Role Sales Share %",
+            "expression": "DIVIDE([Selected Role Sales],CALCULATE([Selected Role Sales],ALLSELECTED('Attribution Customer')))",
+            "formatString": "0.00%",
+            "displayFolder": "Attribution",
+            "description": "Selected Role Sales Share %",
+            "lineageTag": "fc105d5d-9b72-5b04-8cdb-f7905bd55a82"
+          },
+          {
+            "name": "Selected Role Rank",
+            "expression": "IF(HASONEVALUE('Attribution Customer'[source_customer_id]),RANKX(ALLSELECTED('Attribution Customer'),[Selected Role Sales],,DESC,Dense))",
+            "formatString": "#,0",
+            "displayFolder": "Attribution",
+            "description": "Selected Role Rank",
+            "lineageTag": "7790cafb-1a23-50c6-be68-bb5376e84ac0"
+          },
+          {
+            "name": "Buyer Cumulative Share %",
+            "expression": "VAR N=MAX(1,COALESCE(MAX('Concentration Rank'[Value]),1)) VAR Population=ADDCOLUMNS(ALLSELECTED('Buyer'),\"@Sales\",[Buyer Sales]) VAR TopSales=SUMX(TOPN(N,Population,[@Sales],DESC,'Buyer'[source_customer_id],ASC),[@Sales]) RETURN DIVIDE(TopSales,SUMX(Population,[@Sales]))",
+            "formatString": "0.0%",
+            "displayFolder": "Attribution",
+            "description": "Buyer Cumulative Share %",
+            "lineageTag": "4d0e0aa4-7545-58fa-a53c-7f327b3b8ac3"
+          },
+          {
+            "name": "Bill-to Cumulative Share %",
+            "expression": "VAR N=MAX(1,COALESCE(MAX('Concentration Rank'[Value]),1)) VAR Population=ADDCOLUMNS(ALLSELECTED('Bill-to'),\"@Sales\",[Bill-to Sales]) VAR TopSales=SUMX(TOPN(N,Population,[@Sales],DESC,'Bill-to'[source_customer_id],ASC),[@Sales]) RETURN DIVIDE(TopSales,SUMX(Population,[@Sales]))",
+            "formatString": "0.0%",
+            "displayFolder": "Attribution",
+            "description": "Bill-to Cumulative Share %",
+            "lineageTag": "c8a49175-065d-5fa6-9164-904f0a931710"
+          },
+          {
+            "name": "Negative LineProfit Records",
+            "expression": "CALCULATE([Eligible Invoice Lines],'Invoice Lines'[source_reported_line_profit]<0)",
+            "formatString": "#,0",
+            "displayFolder": "Exceptions",
+            "description": "Negative LineProfit Records",
+            "lineageTag": "d8c511a4-2a22-5a73-a626-b568f30e1333"
+          },
+          {
+            "name": "Negative LineProfit Rate",
+            "expression": "DIVIDE([Negative LineProfit Records],[Eligible Invoice Lines])",
+            "formatString": "0.00%",
+            "displayFolder": "Exceptions",
+            "description": "Negative LineProfit Rate",
+            "lineageTag": "65617814-20de-57aa-ab8b-3b2aa93126ee"
+          },
+          {
+            "name": "Negative Source LineProfit",
+            "expression": "CALCULATE(SUM('Invoice Lines'[source_reported_line_profit]),'Invoice Lines'[source_reported_line_profit]<0,'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0.00",
+            "displayFolder": "Exceptions",
+            "description": "Source-reported negative component, not certified losses, GP or COGS.",
+            "lineageTag": "f3d2ec5f-6db9-5e1e-87a0-3ca896a55ab9"
+          },
+          {
+            "name": "Affected Product Count",
+            "expression": "CALCULATE(DISTINCTCOUNT('Invoice Lines'[source_stock_item_id]),'Invoice Lines'[source_reported_line_profit]<0,'Invoice Lines'[is_sales_eligible]=TRUE())",
+            "formatString": "#,0",
+            "displayFolder": "Exceptions",
+            "description": "Affected Product Count",
+            "lineageTag": "918c8b83-0404-58df-a072-ae7f2cbea093"
+          },
+          {
+            "name": "Data Coverage Days",
+            "expression": "COUNTROWS(VALUES('Date'[calendar_date]))",
+            "formatString": "#,0",
+            "displayFolder": "Coverage",
+            "description": "Data Coverage Days",
+            "lineageTag": "712a9e9c-4226-5cce-a85f-6d55141d9ee4"
+          },
+          {
+            "name": "Zero-Transaction Days",
+            "expression": "COUNTROWS(FILTER(VALUES('Date'[calendar_date]),COALESCE([Invoice Count],0)=0&&COALESCE([Order Count],0)=0))",
+            "formatString": "#,0",
+            "displayFolder": "Coverage",
+            "description": "Zero-Transaction Days",
+            "lineageTag": "4359e625-94cb-549f-a409-d683ebce6d73"
+          },
+          {
+            "name": "Active Sales Days",
+            "expression": "COUNTROWS(FILTER(VALUES('Date'[calendar_date]),[Invoice Count]>0))",
+            "formatString": "#,0",
+            "displayFolder": "Coverage",
+            "description": "Active Sales Days",
+            "lineageTag": "2ce5294c-2887-5723-9d48-a2d8cf59825e"
+          },
+          {
+            "name": "Zero-Transaction Sundays",
+            "expression": "COUNTROWS(FILTER(VALUES('Date'[calendar_date]),WEEKDAY('Date'[calendar_date],2)=7&&COALESCE([Invoice Count],0)=0&&COALESCE([Order Count],0)=0))",
+            "formatString": "#,0",
+            "displayFolder": "Coverage",
+            "description": "Zero-Transaction Sundays",
+            "lineageTag": "52115f68-531a-5030-b9c6-caab6d7dd170"
+          },
+          {
+            "name": "Orders with Direct Invoice",
+            "expression": "VAR InvoicedOrders=CALCULATETABLE(VALUES(Invoices[source_order_id]),REMOVEFILTERS('Date'),Invoices[is_sales_eligible]=TRUE()) RETURN CALCULATE([Order Count],TREATAS(InvoicedOrders,Orders[source_order_id]))",
+            "formatString": "#,0",
+            "displayFolder": "Coverage",
+            "description": "Selected OrderDate cohort; direct invoice references across captured dates, not a fulfillment status.",
+            "lineageTag": "e26e1b58-a2f2-56fc-9ec2-55744c09613a"
+          },
+          {
+            "name": "Orders without Direct Invoice",
+            "expression": "[Order Count]-[Orders with Direct Invoice]",
+            "formatString": "#,0",
+            "displayFolder": "Coverage",
+            "description": "Orders without Direct Invoice",
+            "lineageTag": "825bbd85-9b58-57c5-be60-07f34a6d94b9"
+          },
+          {
+            "name": "Backorder Diagnostic Status",
+            "expression": "\"BLOCKED: BackorderOrderID is absent from the 12 approved BI objects. Direct-link gap is not a fulfillment failure rate.\"",
+            "formatString": "",
+            "displayFolder": "Narratives",
+            "description": "Backorder Diagnostic Status",
+            "lineageTag": "bc24a287-9d63-5ec3-a72d-6f18b5a8c246"
+          },
+          {
+            "name": "Coverage Narrative",
+            "expression": "\"Observed calendar and source-profit diagnostics only. Zero-transaction Sundays are not missing data; negative source LineProfit is not certified accounting loss.\"",
+            "formatString": "",
+            "displayFolder": "Narratives",
+            "description": "Coverage Narrative",
+            "lineageTag": "0b3002b7-9a95-51b2-bb5d-1651208b52a9"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "7ee80e93-9667-5d03-af61-ec30d75f7149",
+        "fromTable": "Invoice Lines",
+        "fromColumn": "invoice_date_key",
+        "toTable": "Date",
+        "toColumn": "date_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "0077e3dc-2f19-55e2-8980-4e12f0324b4f",
+        "fromTable": "Invoices",
+        "fromColumn": "invoice_date_key",
+        "toTable": "Date",
+        "toColumn": "date_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "b75f2426-5a55-5c7c-b9f2-6d1761e912e2",
+        "fromTable": "Orders",
+        "fromColumn": "order_date_key",
+        "toTable": "Date",
+        "toColumn": "date_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "9fa26b07-2761-5303-a803-dc2a7b7b179d",
+        "fromTable": "Invoice Lines",
+        "fromColumn": "observed_product_key",
+        "toTable": "Product",
+        "toColumn": "product_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "b708d534-d781-583a-ad37-4025d09894d4",
+        "fromTable": "Invoice Lines",
+        "fromColumn": "buyer_observed_customer_key",
+        "toTable": "Buyer",
+        "toColumn": "customer_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "2c07a59b-c520-55fe-bbcf-1f3534192a9e",
+        "fromTable": "Invoices",
+        "fromColumn": "buyer_observed_customer_key",
+        "toTable": "Buyer",
+        "toColumn": "customer_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "1eb5cedc-d2b8-521a-af3a-c16b28b2d1f7",
+        "fromTable": "Orders",
+        "fromColumn": "buyer_observed_customer_key",
+        "toTable": "Buyer",
+        "toColumn": "customer_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "0f99d5f2-b82a-50a6-a6f0-398061c1f65e",
+        "fromTable": "Invoice Lines",
+        "fromColumn": "bill_to_observed_customer_key",
+        "toTable": "Bill-to",
+        "toColumn": "customer_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      },
+      {
+        "name": "ea2f97fa-3f4a-5b5d-b795-541bf8f25bac",
+        "fromTable": "Invoices",
+        "fromColumn": "bill_to_observed_customer_key",
+        "toTable": "Bill-to",
+        "toColumn": "customer_key",
+        "fromCardinality": "many",
+        "toCardinality": "one",
+        "crossFilteringBehavior": "oneDirection",
+        "isActive": true
+      }
+    ],
+    "annotations": [
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      },
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"Date\", \"Product\", \"Buyer\", \"Invoice Lines\", \"Invoices\", \"Orders\"]"
+      }
+    ]
+  }
+}

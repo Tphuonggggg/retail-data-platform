@@ -1,0 +1,12 @@
+﻿{
+    "[DateRows]":  1247,
+    "[ProductRows]":  227,
+    "[CustomerRows]":  663,
+    "[InvoiceLines]":  228265,
+    "[OrderLines]":  231412,
+    "[Sales]":  172261341.20000011,
+    "[Tax]":  25782098.250000063,
+    "[IncludingTax]":  198043439.45000017,
+    "[Units]":  8950628,
+    "[Versions]":  "c825b18e-fc62-4cf1-8837-b37b4c9f9668"
+}

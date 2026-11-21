@@ -1,0 +1,962 @@
+[
+  {
+    "id": "2673a645d7505b7383ff",
+    "name": "01 | Sales Performance",
+    "visuals": [
+      {
+        "id": "39bf5b8e4e8252058af4",
+        "type": "actionButton",
+        "title": "Performance",
+        "position": {
+          "x": 25,
+          "y": 150,
+          "z": 0,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 0
+        }
+      },
+      {
+        "id": "0386d75e3bee5b1bb823",
+        "type": "actionButton",
+        "title": "Products",
+        "position": {
+          "x": 25,
+          "y": 216,
+          "z": 1000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 1000
+        }
+      },
+      {
+        "id": "161c441a255a53578e90",
+        "type": "actionButton",
+        "title": "Attribution",
+        "position": {
+          "x": 25,
+          "y": 282,
+          "z": 2000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 2000
+        }
+      },
+      {
+        "id": "cb25a303ea2e5bd8a833",
+        "type": "actionButton",
+        "title": "Exceptions",
+        "position": {
+          "x": 25,
+          "y": 348,
+          "z": 3000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 3000
+        }
+      },
+      {
+        "id": "6b600e44c3a05896aa10",
+        "type": "actionButton",
+        "title": "Clear slicers",
+        "position": {
+          "x": 25,
+          "y": 970,
+          "z": 4000,
+          "width": 230,
+          "height": 45,
+          "tabOrder": 4000
+        }
+      },
+      {
+        "id": "d401e41226e0506db1a1",
+        "type": "slicer",
+        "title": "Year",
+        "position": {
+          "x": 25,
+          "y": 455,
+          "z": 5000,
+          "width": 230,
+          "height": 150,
+          "tabOrder": 5000
+        }
+      },
+      {
+        "id": "641190010a5952e2960f",
+        "type": "slicer",
+        "title": "Date range",
+        "position": {
+          "x": 25,
+          "y": 625,
+          "z": 6000,
+          "width": 230,
+          "height": 170,
+          "tabOrder": 6000
+        }
+      },
+      {
+        "id": "9da37db4260553ed8676",
+        "type": "textbox",
+        "title": "01 | Sales Performance",
+        "position": {
+          "x": 300,
+          "y": 110,
+          "z": 7000,
+          "width": 1595,
+          "height": 40,
+          "tabOrder": 7000
+        }
+      },
+      {
+        "id": "786566ffbd2755e19d6c",
+        "type": "card",
+        "title": "Total Sales Before Tax",
+        "position": {
+          "x": 300,
+          "y": 155,
+          "z": 8000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 8000
+        }
+      },
+      {
+        "id": "76a231cdc19857278151",
+        "type": "card",
+        "title": "Invoice Count",
+        "position": {
+          "x": 698,
+          "y": 155,
+          "z": 9000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 9000
+        }
+      },
+      {
+        "id": "221de5e998e45dd3924c",
+        "type": "card",
+        "title": "Average Invoice Value",
+        "position": {
+          "x": 1096,
+          "y": 155,
+          "z": 10000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 10000
+        }
+      },
+      {
+        "id": "52d38454c48e5ad0a0ce",
+        "type": "card",
+        "title": "Units Sold",
+        "position": {
+          "x": 1494,
+          "y": 155,
+          "z": 11000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 11000
+        }
+      },
+      {
+        "id": "281be83bcd0158e09aaf",
+        "type": "lineChart",
+        "title": "Monthly Sales and comparable prior-year dates",
+        "position": {
+          "x": 300,
+          "y": 305,
+          "z": 12000,
+          "width": 975,
+          "height": 300,
+          "tabOrder": 12000
+        }
+      },
+      {
+        "id": "8108cf0fdf085826b8f4",
+        "type": "lineClusteredColumnComboChart",
+        "title": "Invoice volume versus AIV — separate axes",
+        "position": {
+          "x": 1295,
+          "y": 305,
+          "z": 13000,
+          "width": 600,
+          "height": 300,
+          "tabOrder": 13000
+        }
+      },
+      {
+        "id": "e9eede3409e0576cad67",
+        "type": "columnChart",
+        "title": "Exact Sales delta decomposition — not causal attribution",
+        "position": {
+          "x": 300,
+          "y": 625,
+          "z": 14000,
+          "width": 580,
+          "height": 290,
+          "tabOrder": 14000
+        }
+      },
+      {
+        "id": "ce6d19958c335fe0aff8",
+        "type": "pivotTable",
+        "title": "Monthly Sales, volume and value",
+        "position": {
+          "x": 900,
+          "y": 625,
+          "z": 15000,
+          "width": 995,
+          "height": 290,
+          "tabOrder": 15000
+        }
+      },
+      {
+        "id": "dd4bf2272a4a5000b93c",
+        "type": "card",
+        "title": "Selected-period interpretation",
+        "position": {
+          "x": 300,
+          "y": 935,
+          "z": 16000,
+          "width": 1595,
+          "height": 90,
+          "tabOrder": 16000
+        }
+      }
+    ]
+  },
+  {
+    "id": "08216825b1425b69adfd",
+    "name": "02 | Product Contribution",
+    "visuals": [
+      {
+        "id": "6df49f69ddde57ae87f7",
+        "type": "actionButton",
+        "title": "Performance",
+        "position": {
+          "x": 25,
+          "y": 150,
+          "z": 0,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 0
+        }
+      },
+      {
+        "id": "2d90d271f99751ab837f",
+        "type": "actionButton",
+        "title": "Products",
+        "position": {
+          "x": 25,
+          "y": 216,
+          "z": 1000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 1000
+        }
+      },
+      {
+        "id": "27c43a26b7615912b74e",
+        "type": "actionButton",
+        "title": "Attribution",
+        "position": {
+          "x": 25,
+          "y": 282,
+          "z": 2000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 2000
+        }
+      },
+      {
+        "id": "43ae3e1b00b35a6d8ff7",
+        "type": "actionButton",
+        "title": "Exceptions",
+        "position": {
+          "x": 25,
+          "y": 348,
+          "z": 3000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 3000
+        }
+      },
+      {
+        "id": "7388e159cc955a52ac5d",
+        "type": "actionButton",
+        "title": "Clear slicers",
+        "position": {
+          "x": 25,
+          "y": 970,
+          "z": 4000,
+          "width": 230,
+          "height": 45,
+          "tabOrder": 4000
+        }
+      },
+      {
+        "id": "cfd5ba519a3b59f7afca",
+        "type": "slicer",
+        "title": "Year",
+        "position": {
+          "x": 25,
+          "y": 455,
+          "z": 5000,
+          "width": 230,
+          "height": 100,
+          "tabOrder": 5000
+        }
+      },
+      {
+        "id": "54c1b3089e8e54448e29",
+        "type": "slicer",
+        "title": "Date range",
+        "position": {
+          "x": 25,
+          "y": 575,
+          "z": 6000,
+          "width": 230,
+          "height": 140,
+          "tabOrder": 6000
+        }
+      },
+      {
+        "id": "ab0dd899ff0152ef9f65",
+        "type": "slicer",
+        "title": "Top N",
+        "position": {
+          "x": 25,
+          "y": 735,
+          "z": 7000,
+          "width": 230,
+          "height": 90,
+          "tabOrder": 7000
+        }
+      },
+      {
+        "id": "3d4ec57d52c256f28e6d",
+        "type": "slicer",
+        "title": "Rank basis (detail)",
+        "position": {
+          "x": 25,
+          "y": 845,
+          "z": 8000,
+          "width": 230,
+          "height": 90,
+          "tabOrder": 8000
+        }
+      },
+      {
+        "id": "c8b9a91a02d15aec9f44",
+        "type": "textbox",
+        "title": "02 | Product Contribution",
+        "position": {
+          "x": 300,
+          "y": 110,
+          "z": 9000,
+          "width": 1595,
+          "height": 40,
+          "tabOrder": 9000
+        }
+      },
+      {
+        "id": "40c5b4f40b8457aa92dc",
+        "type": "card",
+        "title": "Distinct Active Products",
+        "position": {
+          "x": 300,
+          "y": 155,
+          "z": 10000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 10000
+        }
+      },
+      {
+        "id": "449cdbdf26b15a4e8f55",
+        "type": "card",
+        "title": "Top 20% SKU Sales Share",
+        "position": {
+          "x": 698,
+          "y": 155,
+          "z": 11000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 11000
+        }
+      },
+      {
+        "id": "a0f1969cf6d55908b5ee",
+        "type": "card",
+        "title": "SKUs for 80% Sales",
+        "position": {
+          "x": 1096,
+          "y": 155,
+          "z": 12000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 12000
+        }
+      },
+      {
+        "id": "f984924437105571b212",
+        "type": "card",
+        "title": "Top N Ranking Overlap",
+        "position": {
+          "x": 1494,
+          "y": 155,
+          "z": 13000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 13000
+        }
+      },
+      {
+        "id": "18d36b5ae7b05d6c8d24",
+        "type": "lineClusteredColumnComboChart",
+        "title": "Product Pareto — ranked Sales and cumulative contribution",
+        "position": {
+          "x": 300,
+          "y": 305,
+          "z": 14000,
+          "width": 975,
+          "height": 295,
+          "tabOrder": 14000
+        }
+      },
+      {
+        "id": "7647dedfa00c5437bd83",
+        "type": "scatterChart",
+        "title": "Source quantity versus invoiced value",
+        "position": {
+          "x": 1295,
+          "y": 305,
+          "z": 15000,
+          "width": 600,
+          "height": 295,
+          "tabOrder": 15000
+        }
+      },
+      {
+        "id": "5f43eeec5b87538abfe8",
+        "type": "barChart",
+        "title": "Top products by Sales",
+        "position": {
+          "x": 300,
+          "y": 620,
+          "z": 16000,
+          "width": 480,
+          "height": 275,
+          "tabOrder": 16000
+        }
+      },
+      {
+        "id": "f01b19314cf45175b4d5",
+        "type": "barChart",
+        "title": "Top products by source Units",
+        "position": {
+          "x": 800,
+          "y": 620,
+          "z": 17000,
+          "width": 475,
+          "height": 275,
+          "tabOrder": 17000
+        }
+      },
+      {
+        "id": "0df0d811c5565681ae0b",
+        "type": "pivotTable",
+        "title": "History-aware ranking — latest captured year YTD",
+        "position": {
+          "x": 1295,
+          "y": 620,
+          "z": 18000,
+          "width": 600,
+          "height": 400,
+          "tabOrder": 18000
+        }
+      },
+      {
+        "id": "82027fac932657799d38",
+        "type": "slicer",
+        "title": "Product selection",
+        "position": {
+          "x": 300,
+          "y": 915,
+          "z": 19000,
+          "width": 975,
+          "height": 110,
+          "tabOrder": 19000
+        }
+      }
+    ]
+  },
+  {
+    "id": "fd246dc96fe75c51b8fc",
+    "name": "03 | Sales Attribution",
+    "visuals": [
+      {
+        "id": "8c937c1bcc5550f682f8",
+        "type": "actionButton",
+        "title": "Performance",
+        "position": {
+          "x": 25,
+          "y": 150,
+          "z": 0,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 0
+        }
+      },
+      {
+        "id": "2b6693c6915c57509360",
+        "type": "actionButton",
+        "title": "Products",
+        "position": {
+          "x": 25,
+          "y": 216,
+          "z": 1000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 1000
+        }
+      },
+      {
+        "id": "e97897b9d83251b8b620",
+        "type": "actionButton",
+        "title": "Attribution",
+        "position": {
+          "x": 25,
+          "y": 282,
+          "z": 2000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 2000
+        }
+      },
+      {
+        "id": "c69ccc7242795c398f16",
+        "type": "actionButton",
+        "title": "Exceptions",
+        "position": {
+          "x": 25,
+          "y": 348,
+          "z": 3000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 3000
+        }
+      },
+      {
+        "id": "39d36ec2beee563a833c",
+        "type": "actionButton",
+        "title": "Clear slicers",
+        "position": {
+          "x": 25,
+          "y": 970,
+          "z": 4000,
+          "width": 230,
+          "height": 45,
+          "tabOrder": 4000
+        }
+      },
+      {
+        "id": "02169799ca775c60bd56",
+        "type": "slicer",
+        "title": "Year",
+        "position": {
+          "x": 25,
+          "y": 455,
+          "z": 5000,
+          "width": 230,
+          "height": 150,
+          "tabOrder": 5000
+        }
+      },
+      {
+        "id": "d61d098d51675777a7df",
+        "type": "slicer",
+        "title": "Date range",
+        "position": {
+          "x": 25,
+          "y": 625,
+          "z": 6000,
+          "width": 230,
+          "height": 170,
+          "tabOrder": 6000
+        }
+      },
+      {
+        "id": "84172dddfea756a3a40d",
+        "type": "slicer",
+        "title": "Attribution role",
+        "position": {
+          "x": 25,
+          "y": 815,
+          "z": 7000,
+          "width": 230,
+          "height": 110,
+          "tabOrder": 7000
+        }
+      },
+      {
+        "id": "4fd52f0e81ac54e5b8fd",
+        "type": "textbox",
+        "title": "03 | Sales Attribution",
+        "position": {
+          "x": 300,
+          "y": 110,
+          "z": 8000,
+          "width": 1595,
+          "height": 40,
+          "tabOrder": 8000
+        }
+      },
+      {
+        "id": "35824da9b97957e997b4",
+        "type": "card",
+        "title": "Top 5 Buyer Concentration %",
+        "position": {
+          "x": 300,
+          "y": 155,
+          "z": 9000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 9000
+        }
+      },
+      {
+        "id": "06a5fbd234dd5612a71a",
+        "type": "card",
+        "title": "Top 5 Bill-to Concentration %",
+        "position": {
+          "x": 698,
+          "y": 155,
+          "z": 10000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 10000
+        }
+      },
+      {
+        "id": "c1faf56c107e53cebfb5",
+        "type": "card",
+        "title": "Buyer Customer Count",
+        "position": {
+          "x": 1096,
+          "y": 155,
+          "z": 11000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 11000
+        }
+      },
+      {
+        "id": "34a4d586957153169af6",
+        "type": "card",
+        "title": "Bill-to Customer Count",
+        "position": {
+          "x": 1494,
+          "y": 155,
+          "z": 12000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 12000
+        }
+      },
+      {
+        "id": "db36cdd03bb65f83b8ac",
+        "type": "barChart",
+        "title": "Buyer Sales — independently ranked",
+        "position": {
+          "x": 300,
+          "y": 305,
+          "z": 13000,
+          "width": 780,
+          "height": 305,
+          "tabOrder": 13000
+        }
+      },
+      {
+        "id": "c67a0f0a25045dc4b946",
+        "type": "barChart",
+        "title": "Bill-to Sales — same revenue, different attribution",
+        "position": {
+          "x": 1100,
+          "y": 305,
+          "z": 14000,
+          "width": 795,
+          "height": 305,
+          "tabOrder": 14000
+        }
+      },
+      {
+        "id": "34aabce77273531c9954",
+        "type": "lineChart",
+        "title": "Cumulative concentration by number of customers",
+        "position": {
+          "x": 300,
+          "y": 630,
+          "z": 15000,
+          "width": 780,
+          "height": 390,
+          "tabOrder": 15000
+        }
+      },
+      {
+        "id": "974beb29acc35e87b15e",
+        "type": "pivotTable",
+        "title": "Selected role detail — never add Buyer and Bill-to",
+        "position": {
+          "x": 1100,
+          "y": 630,
+          "z": 16000,
+          "width": 795,
+          "height": 390,
+          "tabOrder": 16000
+        }
+      }
+    ]
+  },
+  {
+    "id": "1687fabbc99e58e99fdc",
+    "name": "04 | Exceptions & Coverage",
+    "visuals": [
+      {
+        "id": "dbcb570b72fe5107bc07",
+        "type": "actionButton",
+        "title": "Performance",
+        "position": {
+          "x": 25,
+          "y": 150,
+          "z": 0,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 0
+        }
+      },
+      {
+        "id": "8fdd722e2cd35938bf9f",
+        "type": "actionButton",
+        "title": "Products",
+        "position": {
+          "x": 25,
+          "y": 216,
+          "z": 1000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 1000
+        }
+      },
+      {
+        "id": "c15db55ab07c5dd6b5ae",
+        "type": "actionButton",
+        "title": "Attribution",
+        "position": {
+          "x": 25,
+          "y": 282,
+          "z": 2000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 2000
+        }
+      },
+      {
+        "id": "ea77627e3901592eac1c",
+        "type": "actionButton",
+        "title": "Exceptions",
+        "position": {
+          "x": 25,
+          "y": 348,
+          "z": 3000,
+          "width": 230,
+          "height": 52,
+          "tabOrder": 3000
+        }
+      },
+      {
+        "id": "cd1f0722511156da86f5",
+        "type": "actionButton",
+        "title": "Clear slicers",
+        "position": {
+          "x": 25,
+          "y": 970,
+          "z": 4000,
+          "width": 230,
+          "height": 45,
+          "tabOrder": 4000
+        }
+      },
+      {
+        "id": "40779adcd13a52a2b6b8",
+        "type": "slicer",
+        "title": "Year",
+        "position": {
+          "x": 25,
+          "y": 455,
+          "z": 5000,
+          "width": 230,
+          "height": 150,
+          "tabOrder": 5000
+        }
+      },
+      {
+        "id": "123a292d2f635b198bf1",
+        "type": "slicer",
+        "title": "Date range",
+        "position": {
+          "x": 25,
+          "y": 625,
+          "z": 6000,
+          "width": 230,
+          "height": 170,
+          "tabOrder": 6000
+        }
+      },
+      {
+        "id": "cf73510604955ab985f7",
+        "type": "textbox",
+        "title": "04 | Exceptions & Coverage",
+        "position": {
+          "x": 300,
+          "y": 110,
+          "z": 7000,
+          "width": 1595,
+          "height": 40,
+          "tabOrder": 7000
+        }
+      },
+      {
+        "id": "b0aaaa61325a51259c2d",
+        "type": "card",
+        "title": "Negative LineProfit Records",
+        "position": {
+          "x": 300,
+          "y": 155,
+          "z": 8000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 8000
+        }
+      },
+      {
+        "id": "2d936d010a0e592b8959",
+        "type": "card",
+        "title": "Negative LineProfit Rate",
+        "position": {
+          "x": 698,
+          "y": 155,
+          "z": 9000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 9000
+        }
+      },
+      {
+        "id": "92e3aa92f380520d9de3",
+        "type": "card",
+        "title": "Affected Product Count",
+        "position": {
+          "x": 1096,
+          "y": 155,
+          "z": 10000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 10000
+        }
+      },
+      {
+        "id": "bbfbb1d52da853399184",
+        "type": "card",
+        "title": "Zero-Transaction Sundays",
+        "position": {
+          "x": 1494,
+          "y": 155,
+          "z": 11000,
+          "width": 382,
+          "height": 130,
+          "tabOrder": 11000
+        }
+      },
+      {
+        "id": "c5de1b3673255b8180dc",
+        "type": "barChart",
+        "title": "Negative source LineProfit lines by Product",
+        "position": {
+          "x": 300,
+          "y": 305,
+          "z": 12000,
+          "width": 780,
+          "height": 290,
+          "tabOrder": 12000
+        }
+      },
+      {
+        "id": "3a9d127feb145beb876e",
+        "type": "lineClusteredColumnComboChart",
+        "title": "Warning count and eligible invoice-line rate",
+        "position": {
+          "x": 1100,
+          "y": 305,
+          "z": 13000,
+          "width": 795,
+          "height": 290,
+          "tabOrder": 13000
+        }
+      },
+      {
+        "id": "dfbe077a098b5ab8af71",
+        "type": "columnChart",
+        "title": "Day-of-week activity — zero is not missing data",
+        "position": {
+          "x": 300,
+          "y": 615,
+          "z": 14000,
+          "width": 510,
+          "height": 275,
+          "tabOrder": 14000
+        }
+      },
+      {
+        "id": "ee03ada575c65e128af9",
+        "type": "pivotTable",
+        "title": "Warning investigation — current Product and InvoiceDate",
+        "position": {
+          "x": 830,
+          "y": 615,
+          "z": 15000,
+          "width": 540,
+          "height": 275,
+          "tabOrder": 15000
+        }
+      },
+      {
+        "id": "624e508b4eb651e59521",
+        "type": "pivotTable",
+        "title": "Direct order references — not a fulfillment funnel",
+        "position": {
+          "x": 1390,
+          "y": 615,
+          "z": 16000,
+          "width": 505,
+          "height": 275,
+          "tabOrder": 16000
+        }
+      },
+      {
+        "id": "97a29e28210b59b493ab",
+        "type": "card",
+        "title": "Backorder linkage requires separate approved data extension",
+        "position": {
+          "x": 300,
+          "y": 910,
+          "z": 17000,
+          "width": 1595,
+          "height": 110,
+          "tabOrder": 17000
+        }
+      }
+    ]
+  }
+]

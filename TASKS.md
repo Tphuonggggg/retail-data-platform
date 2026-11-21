@@ -4,6 +4,7 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 
 | ID | Module/dependencies | Acceptance | Status |
 |---|---|---|---|
+| POWERBI-SALES-01 | ACCESS-02 + approved Sales insights/version + Owner PBIX | Real4-page report, Import, DAX/SQL reconciliation, interactions/visuals/save-reopen, source preserved | IN_PROGRESS — POWERBI_SALES_PARTIAL; definitions4 pages/72 containers/77 measures, SQL reader PASS; Desktop Import NoData, DAX/UI acceptance BLOCKED; [evidence](powerbi/validation.md) |
 | POWERBI-ACCESS-02 | ACCESS-01 + Owner authorization; accepted version c825b18e | Model-level SELECT đúng 12; compile/manifest/build/tests; reader trước/sau; đối soát counts/KPI/digests/metadata | DONE — POWERBI_PERSISTENT_GRANTS_ACCEPTED; 12 rebuilt, 39 dbt tests/build và standalone PASS, 181 offline tests PASS; [evidence](powerbi/persistent-grants.md). Không đóng SALES-04/parent phases |
 | POWERBI-ACCESS-01 | Owner-approved exact SQL; accepted Sales version c825b18e | Password login reader; SELECT đúng 12 objects, không DML/DDL/Raw/meta/test; bảo toàn dữ liệu/version/publication; hướng dẫn BI, proposal grants | DONE — POWERBI_ACCESS_ACCEPTED; runtime reader PASS, 44 table contents không đổi; [evidence và hướng dẫn](powerbi/access.md). dbt grants chưa áp dụng; SALES-04 chưa DONE |
 | ANALYTICS-DISCOVERY-01 | Validated Sales version c825b18e + approved KPI/YAML + read-only PostgreSQL | Verify21 model pins/lineage; reproducible Sales exploration,8 evidence-backed candidates, conceptual dashboard/measure mapping; preserve Raw/DW | DONE — SALES_INSIGHT_DISCOVERY_COMPLETE;25 SQL queries/8 cross-checks;19 tables match accepted baseline; Raw/meta and warehouse content unchanged; [report](docs/analytics/sales-discovery-01/README.md). Power BI implementation chưa bắt đầu |
@@ -21,7 +22,7 @@ MVP-RESET-01 supersede operational security gates c?. [Tracker l?ch s?](docs/arc
 | SALES-01 | Reset + private config + runtime authorization | Unpublished selected smoke, durable reconcile and same-run rerun | DONE ? Raw smoke coverage via INGEST-02/03 |
 | SALES-02 | SALES-01 | Sales Raw full scope/dependencies and business reconciliation | DONE ? Sales Raw/dependencies and source controls verified via INGEST-03 |
 | SALES-03 | SALES-02 + approved DW/KPI | dbt staging/core/Sales Mart/basic DQ | DONE — runtime Sales Warehouse/DQ/marts via DBT-SALES-01; [evidence](dbt/README.md) |
-| SALES-04 | SALES-03 | Power BI + repeatable Sales demo | TODO |
+| SALES-04 | SALES-03 | Power BI + repeatable Sales demo | IN_PROGRESS — authoring qua POWERBI-SALES-01; chưa Import/DAX/visual acceptance |
 | NEXT-01 | Sales evidence | SCD2, Customer/Inventory, Airflow, advanced recovery per roadmap; incremental Sales hoàn tất riêng tại INGEST-INCR-01 | TODO |
 
 Current Full Load runtime accepted for unpublished candidates; [counts/evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). WWI-05/06 parent/phase closure remains Owner review; no automatic transition or downstream implementation. Publication remains NOT RUN.

@@ -1,0 +1,70 @@
+{
+  "file": "powerbi\\Sales_Dashboard.pbix",
+  "sha256": "8ec0632bd58ceaf1e81822c316117932d03a4cf056c3b7cbb5fa2423c942d099",
+  "backup": ".local/powerbi-sales-01/original-Sales_Dashboard.pbix (ignored)",
+  "size_bytes": 31612480,
+  "original_model_name": "3476ef39-dac2-48c2-a4a5-6c49b0a0c640",
+  "original_tables": [
+    "dw_core dim_date",
+    "DateTableTemplate_44f5f429-1f03-4f4e-89ef-e0ded104557b",
+    "LocalDateTable_5e758f6d-587a-4f86-a7a7-2d32f856a994",
+    "LocalDateTable_94e5e57d-91fd-4110-b137-28556e8af774",
+    "dw_core dim_product",
+    "dw_core dim_customer",
+    "dw_core fact_invoice_line",
+    "LocalDateTable_670f41a6-3c38-4840-9103-f7576437f71b",
+    "dw_core fact_order_line",
+    "LocalDateTable_45439c80-7104-4b44-8b5b-1659ab053160",
+    "sales_marts mart_sales_monthly",
+    "LocalDateTable_0f4cfc97-1385-4e52-bfd5-05ea22579f08"
+  ],
+  "original_measure_count": 0,
+  "original_relationships": [
+    {
+      "fromTable": "dw_core dim_date",
+      "fromColumn": "calendar_date",
+      "toTable": "LocalDateTable_5e758f6d-587a-4f86-a7a7-2d32f856a994",
+      "toColumn": "Date",
+      "crossFilteringBehavior": null
+    },
+    {
+      "fromTable": "dw_core dim_date",
+      "fromColumn": "month_start",
+      "toTable": "LocalDateTable_94e5e57d-91fd-4110-b137-28556e8af774",
+      "toColumn": "Date",
+      "crossFilteringBehavior": null
+    },
+    {
+      "fromTable": "dw_core fact_invoice_line",
+      "fromColumn": "invoice_date",
+      "toTable": "LocalDateTable_670f41a6-3c38-4840-9103-f7576437f71b",
+      "toColumn": "Date",
+      "crossFilteringBehavior": null
+    },
+    {
+      "fromTable": "dw_core fact_order_line",
+      "fromColumn": "order_date",
+      "toTable": "LocalDateTable_45439c80-7104-4b44-8b5b-1659ab053160",
+      "toColumn": "Date",
+      "crossFilteringBehavior": null
+    },
+    {
+      "fromTable": "sales_marts mart_sales_monthly",
+      "fromColumn": "sales_month",
+      "toTable": "LocalDateTable_0f4cfc97-1385-4e52-bfd5-05ea22579f08",
+      "toColumn": "Date",
+      "crossFilteringBehavior": null
+    },
+    {
+      "fromTable": "dw_core dim_customer",
+      "fromColumn": "source_business_key",
+      "toTable": "dw_core fact_invoice_line",
+      "toColumn": "source_business_key",
+      "crossFilteringBehavior": "bothDirections"
+    }
+  ],
+  "original_pages": 1,
+  "original_visuals": 0,
+  "desktop_version": "2.159.1231.0",
+  "original_preserved": true
+}

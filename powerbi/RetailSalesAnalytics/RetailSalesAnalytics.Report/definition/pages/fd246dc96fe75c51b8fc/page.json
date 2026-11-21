@@ -1,0 +1,62 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "fd246dc96fe75c51b8fc",
+  "displayName": "03 | Sales Attribution",
+  "width": 1920,
+  "height": 1080,
+  "displayOption": "FitToPage",
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "image": {
+            "image": {
+              "name": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Modern Retail Analytics Dashboard Skeleton.png'"
+                  }
+                }
+              },
+              "url": {
+                "expr": {
+                  "ResourcePackageItem": {
+                    "PackageName": "RegisteredResources",
+                    "PackageType": 1,
+                    "ItemName": "Modern_Retail_Analytics_Dashbo24992706228875072.png"
+                  }
+                }
+              },
+              "scaling": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'Fill'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "visualInteractions": [
+    {
+      "source": "db36cdd03bb65f83b8ac",
+      "target": "c67a0f0a25045dc4b946",
+      "type": "NoFilter"
+    },
+    {
+      "source": "c67a0f0a25045dc4b946",
+      "target": "db36cdd03bb65f83b8ac",
+      "type": "NoFilter"
+    }
+  ]
+}
