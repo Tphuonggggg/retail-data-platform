@@ -1,0 +1,195 @@
+{
+  "classification": "HISTORICAL_ACCEPTED_NOT_NEW_RUNTIME",
+  "verified_date": "2026-11-23",
+  "version": "3a2f011d-f3b3-5683-83a2-a64837720f3d",
+  "period": [
+    "2013-01-01",
+    "2016-05-31"
+  ],
+  "query_source": "powerbi/validation.sql",
+  "queries": {
+    "Q01": {
+      "title": "Coverage and approved headline measures",
+      "rows": [
+        {
+          "first_invoice_date": "2013-01-01",
+          "last_invoice_date": "2016-05-31",
+          "invoice_lines": 228265,
+          "invoices_with_lines": 70510,
+          "sales": "172261341.20",
+          "tax": "25782098.25",
+          "including_tax": "198043439.45",
+          "source_units": 8950628,
+          "negative_sales_lines": 0,
+          "zero_sales_lines": 0,
+          "excluded_lines": 0,
+          "invoice_count": 70510,
+          "order_count": 73595,
+          "aiv": "2443.0767437242944263"
+        }
+      ]
+    },
+    "Q02": {
+      "title": "Calendar density and gaps within observed coverage",
+      "rows": [
+        {
+          "first_date": "2013-01-01",
+          "last_date": "2016-05-31",
+          "calendar_rows": 1247,
+          "distinct_dates": 1247,
+          "expected_days": 1247,
+          "missing_daily_mart_dates": 0,
+          "zero_invoice_dates": 178,
+          "zero_order_dates": 178,
+          "zero_sales_dates": 178,
+          "months": 41,
+          "boundary_incomplete_months": 0
+        }
+      ]
+    },
+    "Q05": {
+      "title": "Like-for-like MMDD window through last observed invoice date; NOT current-year YTD",
+      "rows": [
+        {
+          "year": 2013,
+          "sales": "18895274.75",
+          "invoices": "7746",
+          "orders": "8000",
+          "units": "986597",
+          "aiv": "2439.3589917376710560",
+          "calendar_days": 151,
+          "active_invoice_days": 130,
+          "sales_per_active_day": "145348.267307692308",
+          "invoices_per_active_day": "59.5846153846153846",
+          "previous_sales": null,
+          "previous_invoices": null,
+          "previous_aiv": null,
+          "previous_sales_per_active_day": null,
+          "previous_invoices_per_active_day": null,
+          "sales_growth": null,
+          "invoice_growth": null,
+          "aiv_growth": null,
+          "volume_component": null,
+          "aiv_component": null,
+          "interaction_component": null,
+          "sales_per_active_day_growth": null,
+          "invoices_per_active_day_growth": null
+        },
+        {
+          "year": 2014,
+          "sales": "20085549.70",
+          "invoices": "8214",
+          "orders": "8562",
+          "units": "1043292",
+          "aiv": "2445.2824080837594351",
+          "calendar_days": 151,
+          "active_invoice_days": 130,
+          "sales_per_active_day": "154504.228461538462",
+          "invoices_per_active_day": "63.1846153846153846",
+          "previous_sales": "18895274.75",
+          "previous_invoices": "7746",
+          "previous_aiv": "2439.3589917376710560",
+          "previous_sales_per_active_day": "145348.267307692308",
+          "previous_invoices_per_active_day": "59.5846153846153846",
+          "sales_growth": "0.0629932597301873",
+          "invoice_growth": "0.0604182804027885",
+          "aiv_growth": "0.0024282675760934",
+          "volume_component": "1141620.0081332300542080",
+          "aiv_component": "45882.7830168005845086",
+          "interaction_component": "2772.1588499693614188",
+          "sales_per_active_day_growth": "0.0629932597301873",
+          "invoices_per_active_day_growth": "0.0604182804027885"
+        },
+        {
+          "year": 2015,
+          "sales": "22679145.45",
+          "invoices": "9108",
+          "orders": "9523",
+          "units": "1135085",
+          "aiv": "2490.0247529644268775",
+          "calendar_days": 151,
+          "active_invoice_days": 129,
+          "sales_per_active_day": "175807.329069767442",
+          "invoices_per_active_day": "70.6046511627906977",
+          "previous_sales": "20085549.70",
+          "previous_invoices": "8214",
+          "previous_aiv": "2445.2824080837594351",
+          "previous_sales_per_active_day": "154504.228461538462",
+          "previous_invoices_per_active_day": "63.1846153846153846",
+          "sales_growth": "0.1291274467832962",
+          "invoice_growth": "0.1088385682980278",
+          "aiv_growth": "0.0182974141280187",
+          "volume_component": "2186082.4728268809349794",
+          "aiv_component": "367513.6208498023718736",
+          "interaction_component": "39999.6563233166935056",
+          "sales_per_active_day_growth": "0.1378803727273527",
+          "invoices_per_active_day_growth": "0.1174342161142915"
+        },
+        {
+          "year": 2016,
+          "sales": "22633175.55",
+          "invoices": "9190",
+          "orders": "9617",
+          "units": "1241304",
+          "aiv": "2462.8047388465723613",
+          "calendar_days": 152,
+          "active_invoice_days": 130,
+          "sales_per_active_day": "174101.350384615385",
+          "invoices_per_active_day": "70.6923076923076923",
+          "previous_sales": "22679145.45",
+          "previous_invoices": "9108",
+          "previous_aiv": "2490.0247529644268775",
+          "previous_sales_per_active_day": "175807.329069767442",
+          "previous_invoices_per_active_day": "70.6046511627906977",
+          "sales_growth": "-0.00202696790764662608",
+          "invoice_growth": "0.0090030742204655",
+          "aiv_growth": "-0.01093162390672964856",
+          "volume_component": "204182.0297430830039550",
+          "aiv_component": "-247919.8885854189335496",
+          "interaction_component": "-2232.0411576640703284",
+          "sales_per_active_day_growth": "-0.00970368353912626601",
+          "invoices_per_active_day_growth": "0.00124151211107732800"
+        }
+      ]
+    },
+    "Q08": {
+      "title": "Sales attribution roles, NEVER sum across role rows",
+      "rows": [
+        {
+          "role": "BILL_TO",
+          "sales_customers": 263,
+          "sales": "172261341.20",
+          "top1_share": "0.31636355098807276673",
+          "top5_share": "0.63754004372050018614",
+          "top10_share": "0.64771794543533949914",
+          "top20_share": "0.66687334227025047684",
+          "customers_to_80pct": 98
+        },
+        {
+          "role": "BUYER",
+          "sales_customers": 663,
+          "sales": "172261341.20",
+          "top1_share": "0.00221515371552209881",
+          "top5_share": "0.01073852488964598866",
+          "top10_share": "0.02109624205108650344",
+          "top20_share": "0.04129591700868517329",
+          "customers_to_80pct": 484
+        }
+      ]
+    },
+    "Q09": {
+      "title": "Buyer versus Bill-to topology, based on invoice-time roles rather than current CRM mapping",
+      "rows": [
+        {
+          "invoices": 70510,
+          "invoices_with_different_roles": 44245,
+          "buyers": 663,
+          "bill_to_accounts": 263,
+          "bill_accounts_with_multiple_buyers": 2,
+          "maximum_buyers_per_bill_account": 201,
+          "buyers_with_multiple_bill_accounts": 0
+        }
+      ]
+    }
+  }
+}

@@ -109,3 +109,9 @@ The accepted version sync verified six imports, SQL/DAX totals and rendered all 
 [query_model.ps1](query_model.ps1), [dax-validation-queries.json](dax-validation-queries.json), [export_model_metadata.ps1](export_model_metadata.ps1) and SQL validation utilities support controlled local checks with a verified Desktop PID and private outputs. Offline project tests run through `.venv\Scripts\python.exe scripts/run_checks.py`.
 
 Complete click/navigation/sync/reset/drill-through/tooltip acceptance remains outstanding. Structural validation and screenshots are not a substitute. Keep the existing report/assets intact; do not regenerate the dashboard to troubleshoot credentials or change warehouse/KPI logic from the BI layer.
+
+## Portfolio Screenshots and Insights
+
+Ảnh [Sales Performance](../docs/assets/sales-performance.png) và [Product Contribution](../docs/assets/product-contribution.png) được tái sử dụng nguyên byte từ accepted Power BI version-sync evidence; đã kiểm tra trực quan. Mỗi ảnh dưới 425 KB, chữ còn đọc được, không cần resize hoặc nén mất dữ liệu. [Provenance](../docs/assets/provenance.json) ghi SHA256 và filter; năm đang chọn **2014**, Product Top N=5. Không dùng ảnh initial-page trống hoặc ảnh background như runtime evidence. Không refresh report, sửa layout/semantic model hay tạo ảnh tổng hợp trong lượt này.
+
+Ba insights ở [root README](../README.md#business-insights) dẫn đến [aggregate evidence](../docs/assets/sales-evidence.json) và [validation.sql](validation.sql) Q02/Q05/Q08/Q09. Evidence được trích từ accepted SQL/DAX reconciliation ở read version đã pin; không phải query runtime mới. Các tỷ lệ hiển thị làm tròn hai chữ số. Không dùng ảnh lọc 2014 làm bằng chứng cho tổng toàn kỳ hoặc Jan–May 2016.
