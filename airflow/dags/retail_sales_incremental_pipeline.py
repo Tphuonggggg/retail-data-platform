@@ -1,14 +1,20 @@
-"""Manual local DAG; no connections, files or secrets read at import time."""
+"""Manual by default; optional daily timetable, no secrets or connections at parse."""
 from datetime import timedelta
 from pathlib import Path
 import importlib.util
 import json
 import logging
+import os
 
 import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.exceptions import AirflowFailException
+from airflow.timetables.trigger import CronTriggerTimetable
+
+spec=importlib.util.spec_from_file_location('retail_scheduling',Path(__file__).resolve().parents[1]/'scheduling.py')
+scheduling=importlib.util.module_from_spec(spec);spec.loader.exec_module(scheduling)
+schedule_config=scheduling.settings(os.environ)
 
 
 def load_bridge():
@@ -27,11 +33,11 @@ def execute_stage(action, upstream=None, **context):
             'action':action}
     log = logging.getLogger(__name__)
     try:
-        parent = bridge.canonical((run.conf or {})['parent_version'])
+        previous = context['ti'].xcom_pull(task_ids=upstream) if upstream else None
+        parent = scheduling.parent_for_run(run,context.get('params',{}).get('scheduled_parent_version'),previous)
         version = bridge.version_for_run(run.run_id)
         info.update(parent=parent, version=version)
         if upstream:
-            previous = context['ti'].xcom_pull(task_ids=upstream)
             if not previous or previous.get('status') != 'PASS' or previous.get('version') != version or previous.get('parent') != parent:
                 raise ValueError('Missing or conflicting upstream handoff')
         log.info('retail_stage_start %s', json.dumps(info))
@@ -52,8 +58,10 @@ def execute_stage(action, upstream=None, **context):
 
 
 with DAG(
-    'retail_sales_incremental_pipeline', schedule=None, catchup=False,
-    start_date=pendulum.datetime(2026, 1, 1, tz='Asia/Ho_Chi_Minh'),
+    'retail_sales_incremental_pipeline',
+    schedule=None if schedule_config['mode']=='manual' else CronTriggerTimetable(schedule_config['cron'],timezone=scheduling.TIMEZONE),catchup=False,
+    start_date=pendulum.datetime(2026,1,1,tz=scheduling.TIMEZONE) if schedule_config['mode']=='manual' else pendulum.instance(schedule_config['not_before']).in_timezone(scheduling.TIMEZONE),
+    params={'scheduled_parent_version':schedule_config['parent'] or ''},
     max_active_runs=1, is_paused_upon_creation=True, dagrun_timeout=timedelta(hours=5),
     default_args={'owner':'retail','retries':0,'execution_timeout':timedelta(minutes=65)},
     tags=['retail','manual','snapshot-diff'],

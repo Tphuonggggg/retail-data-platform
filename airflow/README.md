@@ -4,6 +4,8 @@
 
 **AIRFLOW_02_ACCEPTED — controlled local recovery.** Owner đã cho phép dbt replacement trong phạm vi Sales được kiểm chứng. Đã phân loại lại toàn bộ DROP log, kiểm tra quyền/dependencies live chỉ đọc và thử lỗi DDL/recovery cô lập; không chạy thêm build live để lặp log cũ. Scheduling vẫn tắt. Phân biệt fixture/mocks, scheduler cô lập và recovery live ở phần dưới; không coi các lỗi mô phỏng là sự cố thật của WWI/PostgreSQL.
 
+**AIRFLOW_03_READY — prepared, not enabled.** Đã chuẩn bị daily timetable có explicit parent/not-before và preview UUID; runtime vẫn manual, gate false, DAG paused. Không tạo scheduled run, không ingestion/build/BI refresh. Daily calendar chưa phải quyền ghi unattended nhiều ngày: mỗi interval vẫn phải được Owner pre-arm đúng parent/version/action.
+
 ## Môi trường đã xác minh
 
 Ubuntu WSL2, kernel6.18.58.1; Airflow2.11.0 trong `~/airflow_env`, Python3.12.16. System Python3.14.4 không được dùng chạy Airflow. `airflow version`, `db check`, `pip check` PASS; `typing_extensions==4.13.2` không có Sentinel nhưng Airflow import/CLI thực tế không lỗi. Không nâng cấp hoặc cài lại package.
@@ -40,7 +42,7 @@ export RETAIL_AIRFLOW_CONFIG="$HOME/.config/retail-airflow/config.json"
 ~/airflow_env/bin/python airflow/start_local.py --start
 ```
 
-`start_local.py` kiểm metadata rồi start scheduler/webserver nếu PID chưa active; không tự initialize/reset DB. Webserver bind127.0.0.1:8080; health endpoint đã HTTP200/metadatabase healthy/scheduler healthy. Service logs/PIDs trong `~/airflow/retail-service-logs`. PID existence check không thay full service supervisor; nếu stale/reused PID hoặc một service được start ngoài script, operator phải inspect trước, không start duplicate. Không tạo/đổi user hoặc mật khẩu UI. Dùng user Airflow đã có; nếu chưa có, owner cần provision riêng.
+`start_local.py` kiểm metadata rồi start scheduler/webserver nếu chưa chạy; không tự initialize/reset DB. `--status` kiểm PID command, UID, process group, private config path và inherited schedule environment. PID/config khác thì dừng để inspect, không start duplicate. `--stop` yêu cầu gate/scope đóng, DAG paused, không active/queued runs; chỉ SIGTERM đúng hai PID đã xác minh, không force-kill. Startup cũng yêu cầu trạng thái idle này. Webserver bind127.0.0.1:8080; service logs/PIDs ở `~/airflow/retail-service-logs`. Dùng Airflow user hiện có, không tạo/đổi password UI.
 
 Launcher đặt airflow_env/bin đầu PATH cho service và task subprocesses. SequentialExecutor gọi lệnh `airflow` không có đường dẫn tuyệt đối; thiếu PATH này khiến scheduler dừng lúc task đầu được queued. Đã bổ sung regression cho inherited PATH, không sửa system PATH hoặc cài lại Airflow. Nếu lỗi này xảy ra trước ingestion: kiểm candidate chưa tồn tại, khởi động scheduler với PATH đúng; giữ nguyên run ID và để orphan handling tiếp tục, không tạo batch mới hoặc clear write task mù.
 
@@ -48,7 +50,7 @@ WSL must remain running for these local services. Nếu cài mới trên máy kh
 
 ## DAG và read-version contract
 
-`retail_sales_incremental_pipeline`: schedule=None, catchup=False, max_active_runs=1, timezone Asia/Ho_Chi_Minh, paused khi tạo; không backfill. DAG parse không đọc secrets hoặc kết nối DB. Chuỗi tám task:
+`retail_sales_incremental_pipeline`: mặc định schedule=None, catchup=False, max_active_runs=1, timezone Asia/Ho_Chi_Minh, paused khi tạo. Optional daily dùng CronTriggerTimetable, explicit future not-before; không historical backfill. DAG parse chỉ đọc bốn non-secret environment settings, không đọc private profile/secrets hoặc kết nối DB. Chuỗi tám task:
 
 ```text
 preflight_source → preflight_target → run_incremental_ingestion
@@ -57,6 +59,8 @@ preflight_source → preflight_target → run_incremental_ingestion
 ```
 
 Manual conf bắt buộc `parent_version` canonical UUID. Mỗi Airflow run_id ánh xạ deterministic uuid5 thành version mới; đây chỉ là naming cho UUID của ledger hiện có, không thêm capture table/checkpoint song song. XCom chỉ cóaction/status/parent/version; không records/DataFrame.
+
+Scheduled run không có manual conf thì dùng explicit `RETAIL_AIRFLOW_SCHEDULE_PARENT`. Sau source task, parent được giữ từ verified upstream handoff; thay environment sau đó không âm thầm đổi parent của run đang recovery. Không chọn latest, tự advance parent/checkpoint hoặc đổi read-version pin BI.
 
 - Source: existing SqlServerSource.preflight đúng sáu Sales dependencies, SELECT-only.
 - Target: existing IncrementalTarget.preflight vàassert_version(parent), không tự chọn latest.
@@ -224,4 +228,131 @@ Tái kiểm tra offline từ Windows: `.venv\Scripts\python.exe scripts/run_chec
 
 Harness dùng DAG/operators hiện hữu, Airflow home/SQLite tạm riêng và fixture worker, không chạy trên metadata hoặc databases vận hành. Retry delay chỉ được rút xuống 1ms trong test in-process; production vẫn 30 giây. PostgreSQL fixture có thể chạy riêng bằng `.venv\Scripts\python.exe tests/integration/incremental_runtime.py --execute` sau khi kiểm tra target/scope; giữ prefix fixture để inspect, không DROP/TRUNCATE. Runtime evidence tại ignored `.local/airflow-02/`, native Airflow logs và ingestion ledger; không tạo audit database/report hay milestone Markdown mới.
 
-Giới hạn còn lại: local SQLite/SequentialExecutor, chưa HA; timeout Windows child cần operator inspect; dbt graph chưa atomic; locks không chặn source business writers; source consistency vẫn UNVERIFIED; chưa nghiệm thu automated scheduling hoặc sự cố thật bằng cách tắt services.
+## AIRFLOW-03 — vận hành local
+
+Windows SQL Server SQLEXPRESS đang Running/Auto. Docker Desktop cần Linux Engine desktop-linux; container Raw có restart policy `no`, nên Owner khởi động lại container hiện hữu sau Engine/Windows restart. WSL có systemd=true nhưng hai Airflow processes hiện do launcher thủ công quản lý; không cài thêm Windows Task Scheduler/systemd units hoặc auto-start jobs trong milestone này. Windows logon/current principal phải dùng đúng context Windows Authentication đã duyệt.
+
+PowerShell tại repository:
+
+```powershell
+docker context show
+docker info --format '{{.OSType}}'
+docker inspect retail-raw-postgres-1 --format '{{.Config.Image}} {{json .Mounts}} {{json .HostConfig.PortBindings}}'
+# Chỉ sau khi xác minh postgres:18, retail-raw_pg_data và localhost:55434 đúng:
+docker start retail-raw-postgres-1
+docker inspect retail-raw-postgres-1 --format '{{.State.Health.Status}}'
+wsl -d Ubuntu
+```
+
+Trong Ubuntu:
+
+```bash
+cd /mnt/d/Code/Retail_Data_Platform/project1_Retail_Data_platform
+export RETAIL_AIRFLOW_CONFIG="$HOME/.config/retail-airflow/config.json"
+export RETAIL_AIRFLOW_SCHEDULE=manual
+unset RETAIL_AIRFLOW_DAILY_TIME RETAIL_AIRFLOW_SCHEDULE_PARENT RETAIL_AIRFLOW_SCHEDULE_NOT_BEFORE
+~/airflow_env/bin/python airflow/start_local.py --status
+~/airflow_env/bin/python airflow/start_local.py --start
+curl --fail http://127.0.0.1:8080/health
+~/airflow_env/bin/airflow dags list-import-errors --output json
+~/airflow_env/bin/airflow dags list-runs -d retail_sales_incremental_pipeline
+```
+
+UI: http://localhost:8080, dùng account hiện có. `--start` giữ nguyên PID nếu đúng identity/config; schedule environment chỉ áp dụng khi process khởi động, vì vậy đổi mode cần pause/drain/stop/start. Nếu reboot để lại gate true hoặc DAG unpaused, đóng gate/pause qua CLI trước startup; không ép launcher chạy qua idle guard. Restart thực tế sau reboot và shutdown live **NOT_RUN** trong AIRFLOW-03; đã kiểm proc/config hiện hành, idle/foreign-PID guards bằng regression và idempotent startup live không spawn process mới.
+
+Manual trigger vẫn dùng explicit conf/scope theo phần Safety preflight. Manual run không nhận parent default của daily. Muốn dừng: pause DAG, đợi active runs/Windows children kết thúc, đóng gate/scope rồi `~/airflow_env/bin/python airflow/start_local.py --stop`. Helper không kill Windows interop children; timeout/unknown COMMIT phải inspect durable state trước. Chỉ khi mọi CLI/BI refresh đã idle mới dừng riêng Raw bằng `docker stop --time 30 retail-raw-postgres-1`; giữ container/volume để `docker start` sau này. Không cần dừng SQL Server/native PostgreSQL/B9.
+
+### Chuẩn bị và bật daily — chỉ Owner thực hiện sau milestone
+
+| Environment | Giá trị |
+|---|---|
+| RETAIL_AIRFLOW_SCHEDULE | manual (default) hoặc daily |
+| RETAIL_AIRFLOW_DAILY_TIME | HH:MM, default 02:00, Asia/Ho_Chi_Minh |
+| RETAIL_AIRFLOW_SCHEDULE_PARENT | Canonical UUID đã VALIDATED, bắt buộc khi daily |
+| RETAIL_AIRFLOW_SCHEDULE_NOT_BEFORE | Future timestamp +07:00 đúng daily boundary, bắt buộc khi daily |
+
+Daily dùng trigger timetable, data interval là một điểm; không đổi thành date filter/extraction window. catchup=False không tạo mọi ngày lịch sử; sau downtime có thể có kỳ gần nhất, scope cũ vẫn chặn UUID khác. Không unpause với plan hết hạn. `is_paused_upon_creation` chỉ áp dụng DAG mới, không tự pause DAG cũ sau reboot.
+
+Not-before cũng là start_date của daily DAG/tasks. Muốn recovery một run cũ hơn boundary này (ví dụ run manual AIRFLOW-01), chuyển về manual theo quy trình pause/drain/restart trước khi clear; giữ nguyên run ID/conf/P/V. Không lùi not-before hoặc bật catchup để ép chạy lịch sử.
+
+**Các lệnh dưới đây chưa được chạy để enable trong AIRFLOW-03.** Trước hết DAG phải paused, không active/queued/Windows child, gate false/scope null, source/target và DDL gates PASS. Planner chỉ tạo preview và file exports, không đọc SQL hoặc mở gate. Thay PARENT bằng version thực tế đã kiểm chứng trước mỗi lần:
+
+```bash
+PARENT=3a2f011d-f3b3-5683-83a2-a64837720f3d
+export RETAIL_OWNER_PLAN=".local/airflow-03/owner-$(date +%Y%m%dT%H%M%S).json"
+ENV_PLAN="${RETAIL_OWNER_PLAN%.json}.env"
+~/airflow_env/bin/python airflow/schedule_local.py --parent "$PARENT" --daily-time 02:00 \
+  --output "$RETAIL_OWNER_PLAN" --env-output "$ENV_PLAN"
+cat "$RETAIL_OWNER_PLAN"
+# Review future run_after, parent, run_id, version và đúng actions ingest/build.
+~/airflow_env/bin/python airflow/start_local.py --stop
+source "$ENV_PLAN"
+~/airflow_env/bin/python airflow/start_local.py --start
+curl --fail http://127.0.0.1:8080/health
+~/airflow_env/bin/airflow dags list-import-errors --output json
+~/airflow_env/bin/python airflow/start_local.py --status
+./.venv/Scripts/python.exe -X utf8 -m ingestion.incremental preflight --parent-id "$PARENT"
+```
+
+Run ID/UUID phải lấy từ planner, không ghép ngày local bằng tay: DAG/scheduler normalize logical date UTC; cùng instant nhưng chuỗi +07 và +00 sẽ cho UUID khác. Planner đã đối chiếu actual DAG và serialization. Nếu bất kỳ preflight/import/health check lỗi, giữ paused/gate false.
+
+Sau review và kiểm tra tất cả gates, Owner pre-arm **một** interval bằng đoạn sau. Đoạn này chỉ sửa đúng boolean/scope trong private profile; không cấp quyền SQL:
+
+```bash
+~/airflow_env/bin/python - <<'PY'
+import os,json,sys
+from pathlib import Path
+sys.path.insert(0,str(Path.cwd()/'airflow'))
+from schedule_local import plan
+p=json.loads(Path(os.environ['RETAIL_OWNER_PLAN']).read_text())
+e=p['environment']
+v=plan(e['RETAIL_AIRFLOW_DAILY_TIME'],e['RETAIL_AIRFLOW_SCHEDULE_PARENT'],e['RETAIL_AIRFLOW_SCHEDULE_NOT_BEFORE'])
+assert p['run_id']==v['run_id'] and p['write_scope']==v['write_scope']
+assert all(os.environ.get(k)==value for k,value in e.items())
+f=Path.home()/'.config/retail-airflow/config.json';c=json.loads(f.read_text())
+assert c.get('allow_pipeline_writes') is False and c.get('write_scope') is None
+c.update(allow_pipeline_writes=True,write_scope=v['write_scope'])
+f.write_text(json.dumps(c,indent=2)+'\n')
+print('Armed one reviewed interval; no SQL executed')
+PY
+~/airflow_env/bin/airflow dags unpause retail_sales_incremental_pipeline
+~/airflow_env/bin/airflow dags next-execution retail_sales_incremental_pipeline
+```
+
+Không có tự xoay parent/scope để chạy unattended nhiều ngày. Kỳ kế tiếp có UUID khác sẽ bị write gate chặn nếu Owner chưa pre-arm lại. Parent cũ vẫn phải qua eligibility/depth checks; không reset chain/checkpoint để tiếp tục. Sau mỗi kỳ (PASS/FAIL), pause và đóng gate; kiểm source/Raw metadata, read version, marts/DQ/KPI trước kỳ tiếp theo.
+
+### Đóng gate và tắt daily
+
+Pause chỉ ngăn run mới, không hủy task đang chạy. Đợi/inspect mọi active run và Windows child trước shutdown/restart. Đóng gate không rollback giao dịch đã bắt đầu.
+
+```bash
+~/airflow_env/bin/airflow dags pause retail_sales_incremental_pipeline
+~/airflow_env/bin/airflow dags list-runs -d retail_sales_incremental_pipeline
+~/airflow_env/bin/python - <<'PY'
+import json
+from pathlib import Path
+f=Path.home()/'.config/retail-airflow/config.json';c=json.loads(f.read_text())
+c.update(allow_pipeline_writes=False,write_scope=None)
+f.write_text(json.dumps(c,indent=2)+'\n')
+PY
+# Sau khi idle; đổi sang manual và restart để bỏ timetable:
+~/airflow_env/bin/python airflow/start_local.py --stop
+export RETAIL_AIRFLOW_SCHEDULE=manual
+unset RETAIL_AIRFLOW_DAILY_TIME RETAIL_AIRFLOW_SCHEDULE_PARENT RETAIL_AIRFLOW_SCHEDULE_NOT_BEFORE
+~/airflow_env/bin/python airflow/start_local.py --start
+~/airflow_env/bin/python airflow/start_local.py --status
+```
+
+### Phối hợp Power BI
+
+`pipeline_complete=PASS` xác nhận candidate/dbt/DQ/marts, **không phải BI refresh complete**. Trong CREATE/RENAME/GRANT/backup cleanup và khi graph chưa được validate: không refresh Desktop hoặc client BI khác. Chỉ mở cửa sổ refresh khi run SUCCESS, mart validation PASS, không writer/child đang chạy, 12 objects cùng V, ownership/reader SELECT đúng và core KPI đối soát đạt. Nếu run mới đã được pre-arm thì đóng gate/pause và drain trước refresh để tránh đụng lần rebuild kế tiếp.
+
+Pin Power BI giữ nguyên cho đến bước đồng bộ được review riêng; không auto đổi UUID, fallback latest hoặc refresh với guard bị bỏ. Owner xác minh version mới rồi đồng bộ sáu import guards bằng workflow Power BI hiện hữu; Refresh thủ công, kiểm DAX/KPI/visuals và Save cache. Trong thời gian chờ, imported cache cũ không được gọi là dashboard đã cập nhật. Không Power BI REST API hoặc completion flag BI giả trong DAG.
+
+### Kiểm chứng AIRFLOW-03 và giới hạn
+
+Manual/default và daily preview, timezone, future boundary, UTC UUID, serialized timetable, ba daily points, parent handoff và gate block đã test không tạo DagRun. Task graph vẫn tám tasks/all_success; preflight retry 1/30s, ingestion/dbt retry 0; worker CLI timeout 3300s, bridge 3600s, task 3900s, DAG 5h. Timeout có thể để Windows child sống; inspect locks/durable version, không retry ghi mù. max_active_runs=1 và locks 941061/941062 giữ nguyên; không phải coherent source snapshot hoặc mutex cho mọi DBA.
+
+Live read-only: WSL→Windows source/target preflight, parent/read-version/marts/DDL gates, BI reader, Compose config, dbt compile, scheduler/UI health và idempotent startup PASS. Shutdown/reboot và scheduled ingestion/build **NOT_RUN**. Runtime vẫn manual/paused/gate false; không thêm run/capture/version, không thay data/checkpoint/publication hoặc Power BI. Evidence ở ignored .local/airflow-03, không thêm Markdown reports.
+
+Giới hạn: WSL/Windows logon và Docker Engine/container phải online tại giờ chạy; không có autostart/HA/service supervisor mới. SQLite/SequentialExecutor dành cho local; graph dbt chưa atomic, source consistency UNVERIFIED, BI refresh riêng và per-interval write authorization vẫn bắt buộc. Không tự nghiệm thu unattended scheduling nhiều ngày.
