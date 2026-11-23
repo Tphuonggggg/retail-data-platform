@@ -1,23 +1,23 @@
 # Retail Data Platform
 
-### End-to-End Retail Analytics with Python, SQL Server, PostgreSQL, dbt, Apache Airflow & Power BI
+Batch retail analytics with Python, SQL Server, PostgreSQL, dbt, Apache Airflow and Power BI.
 
-Retail Data Platform is an end-to-end **batch data engineering project** that transforms operational retail transactions into a structured analytics warehouse and a Power BI sales dashboard. Built using Microsoft's **WideWorldImporters** sample database, it demonstrates the complete journey from source extraction and incremental processing to data modeling, orchestration, data quality, and business reporting.
+## Overview
 
-The project is designed to answer a practical question: **How can a retail business turn transactional data from multiple related tables into reliable, consistent sales insights?**
+Retail Data Platform turns operational retail transactions into a reconciled Data Warehouse and a Power BI sales dashboard. It uses Microsoft's WideWorldImporters sample database to connect source extraction, Incremental Loading, dimensional modeling and business reporting in a local batch ELT workflow.
 
-[Explore the architecture](#architecture) · [View the dashboard](#power-bi-dashboard) · [Try the demo](#quickstart--try-the-demo) · [Explore the code](#repository-guide)
+The platform addresses a common reporting problem: orders, invoices and line items have different grains, while buyers and bill-to accounts describe different roles in the same sale. Explicit Read Versions, Data Quality rules and shared measure definitions keep these populations consistent across SQL and Power BI.
 
-## What the Platform Delivers
+[Architecture](#architecture) · [Dashboard](#analytics-dashboard) · [Demo](#getting-started) · [Module documentation](#project-structure)
 
-| Capability | What it enables |
-|---|---|
-| **Data ingestion** | Extracts retail data from SQL Server and loads typed records into PostgreSQL, supporting full loads and incremental snapshot comparison. |
-| **Data warehouse** | Transforms operational tables into reusable dimensions, facts, and sales-oriented data marts with dbt. |
-| **Data quality** | Reconciles source and target records, validates transformation outputs, and protects analytical consistency. |
-| **Orchestration** | Coordinates ingestion, version validation, dbt transformations, and downstream checks through an eight-task Airflow DAG. |
-| **Business intelligence** | Provides Power BI views of sales performance, product contribution, customer attribution, and reporting exceptions. |
-| **Developer experience** | Includes a separate sample-data demo, portable GitHub Actions validation, and documented ingestion benchmarks. |
+## Features
+
+- Full Load initialization and Snapshot-Diff Incremental Loading with an explicit parent version.
+- Typed Raw Layer storage, content digests, transactional deltas and idempotent version reuse.
+- A dbt Data Warehouse with Staging Models, Data Quality, Dimensions, Facts and five Sales Marts.
+- An eight-task Airflow DAG with version handoff, scoped write authorization and controlled recovery.
+- Power BI Import analytics for sales, product contribution, customer attribution and reporting exceptions.
+- An isolated sample-data demo, repeatable fixture benchmarks and portable regression checks.
 
 ## Architecture
 
@@ -35,96 +35,83 @@ flowchart LR
     H -. Validates .-> F
 ```
 
-**How data moves through the platform:**
+Full Load initializes the Raw Layer from 11 source objects, including temporal archives. Incremental Loading scans six Sales-related inputs, compares them with a validated parent and stores INSERT/UPDATE deltas. Both paths retain counts, typed content digests and lineage metadata.
 
-1. **Extract & load.** Python reads WideWorldImporters source tables using read-only SQL Server access, then writes normalized data to PostgreSQL Raw storage.
-2. **Detect changes.** Incremental runs compare six Sales-related source snapshots with a validated parent version and classify records as inserted, updated, or unchanged.
-3. **Transform.** dbt organizes the data into staging, quality checks, dimensional models, line-level facts, and five Sales Marts.
-4. **Validate.** Counts, content digests, business rules, version checks, and reconciled KPI definitions help keep reporting consistent.
-5. **Analyze.** Power BI imports a curated set of warehouse tables for interactive reporting. Airflow orchestrates pipeline execution; dashboard refresh remains a separate manual step.
+dbt reads one explicit version and builds the analytical layers. Power BI imports six core/header tables; Sales Marts provide independent SQL aggregates for reconciliation. Airflow coordinates ingestion, transformations and validation. Manual Refresh remains separate from orchestration.
 
 ## Technology Stack
 
-| Layer | Technologies |
+| Layer | Technology and responsibility |
 |---|---|
-| Operational source | Microsoft SQL Server, WideWorldImporters |
-| Data ingestion | Python, SQL, pyodbc |
-| Raw storage & warehouse | PostgreSQL, Docker |
-| Transformation & modeling | dbt, SQL |
-| Workflow orchestration | Apache Airflow, WSL2 |
-| Analytics & visualization | Power BI, DAX |
-| Testing & automation | Python regression tests, dbt data tests, GitHub Actions |
+| Source | SQL Server WideWorldImporters; SELECT-only Windows Authentication through ODBC Driver 18 |
+| Ingestion | Python 3.12, pyodbc and psycopg; extraction, codecs, versioning and reconciliation |
+| Storage | PostgreSQL 18 in Docker; Raw Layer, metadata and analytical schemas |
+| Transformation | dbt-core/dbt-postgres; SQL models and Data Quality tests |
+| Orchestration | Apache Airflow 2.11.0 on Ubuntu WSL2; Windows Python bridge |
+| Analytics | Power BI Desktop, Import semantic model and DAX |
+| Development | unittest, GitHub Actions and offline documentation checks |
 
-## Project at a Glance
+## Data Warehouse
 
-The following figures come from validated project runs and represent different stages of the platform rather than one combined performance benchmark.
+The production dbt project contains 21 models: six Staging Models, three Data Quality models, two intermediate headers, three Dimensions, two line-level Facts and five Sales Marts.
 
-| Project result | Value |
-|---|---:|
-| Source data loaded during initial Full Load | **939,208 records** across 11 objects |
-| Sales records evaluated by incremental snapshot comparison | **604,672** across 6 objects |
-| Warehouse transformation models | **21 dbt models** |
-| Data quality checks in the accepted dbt build | **69 passing dbt tests** |
-| Completed orchestration tasks in the accepted Airflow run | **8/8 tasks** |
-
-### Sales Analytics Snapshot
-
-For eligible invoice lines dated **January 2013 through May 2016**, the validated sales model reports:
-
-| KPI | Value |
-|---|---:|
-| Sales before tax | **172,261,341.20** |
-| Invoices | **70,510** |
-| Orders | **73,595** |
-| Units | **8,950,628** |
-
-Sales before tax follows the project's invoice-line measure definition; no currency or profit interpretation is assumed. See the [metric definitions](dbt/config/measures.yml) and [validation SQL](powerbi/validation.sql).
-
-## Data Warehouse & Lineage
-
-dbt chuyển Raw retail data qua staging và kiểm tra chất lượng, sau đó tạo dimensions, transaction-level facts và Sales Marts. Warehouse có **21 production dbt models**, trong đó có **năm Sales Marts**.
+Order and invoice headers retain independent business populations. Facts preserve order-line and invoice-line grain; marts summarize sales by day, month, product and customer role. Buyer and Bill-to attribution describe the same invoice sales and are never additive across roles. Customer and product labels reflect observed source attributes rather than complete historical SCD Type 2 lookup.
 
 ![dbt Data Lineage — Monthly Sales Mart](docs/assets/dbt-lineage.png)
 
-Ảnh dbt Docs do chủ dự án cung cấp hiển thị các dependency upstream của `mart_sales_monthly`: sáu Raw sources và staging models, Data Quality, invoice/order headers, `dim_date`, `fact_invoice_line` và `mart_sales_daily`. Đây là một phần lineage, không phải toàn bộ 21 models; ảnh không chứng minh kết quả chạy data tests. Xem [model grains và lineage đầy đủ](dbt/README.md#verified-model-lineage).
+Upstream dependencies of `mart_sales_monthly`, from six Raw sources through staging, quality, headers and core models. The image shows this model's dependency subset; the [Data Warehouse guide](dbt/README.md#data-lineage) contains the full dependency graph and model grains.
 
 ## Pipeline Orchestration
 
-Apache Airflow điều phối batch ELT qua source/target preflight, incremental snapshot-diff ingestion, xác thực batch, bàn giao read version cho dbt, transformations và kiểm tra Sales Marts. DAG tám task nối các bước phụ thuộc, giữ xử lý theo version tường minh và hỗ trợ recovery có kiểm soát.
+The `retail_sales_incremental_pipeline` DAG connects source/target preflight, Incremental Loading, batch validation, Read Version resolution, dbt transformations and Sales Mart verification. Each task checks the upstream parent/version handoff. Recovery can rebuild the dbt tail while retaining successful ingestion.
 
 ![Apache Airflow — Retail Sales Pipeline](docs/assets/airflow-graph.png)
 
-Ảnh Graph View do chủ dự án cung cấp ghi lại **run lịch sử thành công ngày 23/11/2026, 06:13:22 UTC** của `retail_sales_incremental_pipeline`: đủ tám task, các đường nối và trạng thái success màu xanh. Ảnh hiển thị `Schedule: None`; unattended daily scheduling chưa được chứng minh và Power BI Import vẫn refresh thủ công. Xem [Airflow operations và recovery](airflow/README.md#portfolio-evidence).
+Eight dependent tasks shown in a completed reference run. The DAG defaults to a manual schedule, paused state and a closed write gate. See the [orchestration guide](airflow/README.md) for execution and recovery.
 
-## Power BI Dashboard
+## Analytics Dashboard
 
-The analytics report focuses on four business perspectives: **sales performance**, **product contribution**, **buyer vs. bill-to attribution**, and **exceptions & coverage**. Four additional detail pages support deeper exploration.
+The report answers four groups of business questions:
 
-### Sales Performance
+- Sales Performance: how sales, invoice activity and average invoice value change over comparable periods.
+- Product Contribution: which products contribute sales and units, and how concentrated those contributions are.
+- Sales Attribution: how Buyer and Bill-to roles change the view of customer concentration.
+- Exceptions & Coverage: where source warnings and zero-activity dates affect interpretation.
 
 ![Power BI Sales Performance dashboard](docs/assets/sales-performance.png)
 
-### Product Contribution
+Sales Performance, filtered to 2014.
 
 ![Power BI Product Contribution dashboard](docs/assets/product-contribution.png)
 
-*The screenshots show a 2014 report filter, not the full-period totals presented above.*
+Product Contribution, filtered to 2014 with Top N set to 5. Four additional detail pages support exploration. The [Power BI guide](powerbi/README.md) describes measures, filters and Manual Refresh.
 
-### Business Insights
+## Business Insights
 
-**1. Invoice volume and sales value can move in different directions.** From January–May 2015 to January–May 2016, invoice count increased **0.90%**, while sales before tax decreased **0.20%**. Average invoice value declined **1.09%**. Reviewing transaction volume alone would miss this change in value per invoice.
+The following insights use the reference dataset from January 2013 through May 2016.
 
-**2. Buyer and bill-to customer views answer different questions.** Across the validated 2013–2016 period, the top five buyers account for **1.07%** of sales when attributed by buyer, while the top five bill-to customers account for **63.75%** when attributed by bill-to. The two totals describe different roles for the same invoice sales and must not be added together.
+1. **Invoice volume does not explain sales value alone.** Comparing January–May 2016 with January–May 2015, invoice count increased 0.90%, sales before tax decreased 0.20% and average invoice value declined 1.09%. Monitoring volume alongside value per invoice gives a more complete view; the calendar windows include an extra leap day in 2016.
+2. **Customer concentration depends on attribution.** The top five Buyers account for 1.07% of sales, while the top five Bill-to accounts represent 63.75%. Bill-to concentration supports a different account-management question from Buyer activity; the two role totals represent the same sales.
+3. **Zero activity belongs in the calendar.** The daily mart contains 1,247 continuous dates, including 178 dates with zero invoices and no missing calendar dates. Keeping these dates supports time comparisons without equating zero activity with missing data.
 
-**3. Zero-sales dates should remain visible.** The daily sales mart covers **1,247** calendar dates, including **178** dates with zero invoices and **no missing calendar dates**. Maintaining a complete date series supports accurate time-based comparisons without treating zero activity as missing data.
+[Aggregate evidence](docs/assets/sales-evidence.json) and [SQL queries](powerbi/validation.sql) document the populations and calculations. These findings describe sample data, not current retail trading conditions.
 
-These findings are backed by [analytical evidence](docs/assets/sales-evidence.json), [SQL reconciliation queries](powerbi/validation.sql), and dbt models. They describe historical sample data, not current retail trading conditions.
+## Project Highlights
 
-## Quickstart — Try the Demo
+Reference executions loaded 939,208 records across 11 source objects and examined a six-object Sales state of 604,672 rows. The project defines 21 production dbt models, 69 data tests and an eight-task Airflow graph.
 
-The repository includes an **isolated sample-data demo** that exercises ingestion, PostgreSQL storage, dbt models, and data quality checks without requiring the original SQL Server instance or private project credentials.
+| Reference Sales metric | January 2013–May 2016 |
+|---|---:|
+| Sales Before Tax | 172,261,341.20 |
+| Invoice Count | 70,510 |
+| Order Count | 73,595 |
+| Source Units Sold | 8,950,628 |
 
-**Prerequisites:** Windows, Python 3.12, Docker Desktop with Linux containers, and Git. See the [demo setup notes](infrastructure/README.md#isolated-portfolio-demo) for environment details.
+Sales Before Tax sums `ExtendedPrice - TaxAmount` on eligible invoice lines by InvoiceDate. Orders use OrderDate, and source units retain their packaging definitions. The project does not assign a currency or interpret these measures as recognized revenue, COGS or net profit. See the [measure contract](dbt/config/measures.yml).
+
+## Getting Started
+
+The isolated demo uses synthetic data and a separate PostgreSQL container. It requires Windows, Python 3.12, Git and Docker Desktop with Linux containers; it does not need SQL Server or private project credentials.
 
 ```powershell
 git clone https://github.com/Tphuonggggg/retail-data-platform.git
@@ -143,34 +130,33 @@ py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m ingestion.demo down
 ```
 
-The demo demonstrates initial ingestion, no-change detection, controlled updates/inserts, reconciliation, and dbt results on a small fixture dataset. It is separate from the full WideWorldImporters environment. To reproduce the entire development stack, start with the [infrastructure guide](infrastructure/README.md).
+The demo exercises initial ingestion, no-change detection, controlled INSERT/UPDATE, reconciliation, rollback/recovery and two separate dbt demo models with seven data tests. Its output is independent of the production warehouse. See [demo configuration](infrastructure/README.md#demo-environment) and [sample behavior](ingestion/README.md#sample-demo).
 
-## Repository Guide
+The full environment additionally requires WideWorldImporters, Windows Authentication/ODBC, WSL Airflow and Power BI Desktop. Start with the [environment setup guide](infrastructure/README.md).
 
-| Module | What you'll find |
+## Project Structure
+
+| Module | Contents |
 |---|---|
-| [ingestion/](ingestion/README.md) | Full-load and incremental pipelines, source contracts, reconciliation, demo and benchmarks |
-| [infrastructure/](infrastructure/README.md) | PostgreSQL setup, Docker configuration, roles and environment provisioning |
-| [dbt/](dbt/README.md) | Warehouse models, grains, transformations, data tests and lineage |
-| [airflow/](airflow/README.md) | Eight-task DAG, execution, recovery and operational instructions |
-| [powerbi/](powerbi/README.md) | Dashboard pages, semantic model, measures and refresh guidance |
-
-### Testing and CI
+| [ingestion](ingestion/README.md) | Full Load, Incremental Loading, codecs, reconciliation, demo and benchmarks |
+| [infrastructure](infrastructure/README.md) | Docker, PostgreSQL provisioning, credentials and persistence |
+| [dbt](dbt/README.md) | Data Warehouse models, grains, measures, Data Quality and Data Lineage |
+| [airflow](airflow/README.md) | Task graph, configuration, execution, scheduling and recovery |
+| [powerbi](powerbi/README.md) | Semantic model, dashboard pages, DAX and Manual Refresh |
 
 [![Offline validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
 
-GitHub Actions runs portable checks on pushes and pull requests. The repository also includes deeper local regression and environment-specific validation. For details, see the module documentation rather than treating the README as a test log.
+GitHub Actions runs portable regression checks, Compose configuration validation and offline dbt documentation checks on pushes and pull requests. Desktop-dependent Power BI structural checks remain part of the full local suite.
 
-## Design Choices & Scope
+## Design Decisions & Limitations
 
-This is a **local batch analytics platform and portfolio project**, not a cloud-hosted production service. A few important boundaries are intentional:
-
-- Incremental ingestion uses **snapshot comparison**, not SQL Server CDC or streaming; unchanged source rows are still scanned.
-- The Airflow workflow runs with controlled authorization. Scheduling is prepared, but continuous unattended daily operation is not part of the demonstrated MVP.
-- Power BI uses **Import mode and manual refresh**, with an explicit warehouse read-version pin.
-- dbt replaces tables individually; the full transformation graph is not an atomic publication transaction.
-- The full WideWorldImporters setup depends on local SQL Server, Windows/WSL, ODBC, Docker and Power BI. A clean-machine full-stack installation has not been validated; the isolated demo is intended as the simpler entry point.
+- Snapshot-Diff reduces written payload but still scans the complete source and parent state. CDC, streaming and coherent cross-table source snapshots are outside the implementation; live DELETE detection remains blocked.
+- Read Version validation identifies a candidate, not Certified publication. Historical SCD Type 2 lookup and Certified coverage remain future work.
+- Airflow requires explicit authorization for each parent/version/action scope. Unattended daily operation and automatic restart/reboot recovery are not guaranteed.
+- dbt replaces relations individually rather than publishing an atomic graph. Power BI Import uses a fixed Read Version pin and Manual Refresh after the graph validates.
+- The full stack uses local Windows/WSL/Docker services and machine-specific source guards. Complete installation on a clean machine is not yet validated; the demo provides a smaller entry point.
+- Sales Analytics is the delivered analytical scope. Inventory, Purchasing and Finance analytics remain outside the MVP.
 
 ## Further Reading
 
-Explore the [ingestion pipeline](ingestion/README.md), [warehouse and lineage](dbt/README.md), [Airflow operations](airflow/README.md), [Power BI implementation](powerbi/README.md), or [PostgreSQL infrastructure](infrastructure/README.md) for implementation details, recovery procedures, and deeper technical validation.
+Continue with [ingestion design](ingestion/README.md), [warehouse modeling](dbt/README.md), [Airflow operations](airflow/README.md), [dashboard usage](powerbi/README.md) or [database infrastructure](infrastructure/README.md).

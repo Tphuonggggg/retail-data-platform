@@ -1,24 +1,30 @@
 # Python Ingestion
 
-This module owns SELECT-only extraction from WideWorldImporters, typed PostgreSQL Raw loading, immutable version metadata and reconciliation. It does not provision schemas, transform analytical models or publish candidates. See the [project overview](../README.md) and [infrastructure setup](../infrastructure/README.md).
+## Overview
 
-## Source and Configuration
+The ingestion component reads WideWorldImporters through SELECT-only SQL Server access and loads typed records into the PostgreSQL Raw Layer. It owns extraction, codecs, version metadata and reconciliation. [Infrastructure](../infrastructure/README.md) provisions schemas; [dbt](../dbt/README.md) transforms analytical data.
 
-[Contracts](common/contracts.py) freeze ordered projections, SQL types, NULL policy and the exact F2 temporal formatting expression. Full Load covers:
+## Data Sources
 
-- `Sales.Customers`, `Orders`, `OrderLines`, `Invoices`, `InvoiceLines`, `CustomerTransactions`.
-- `Warehouse.StockItems`, `StockItemHoldings`, `StockItemTransactions`.
-- `Sales.Customers_Archive`, `Warehouse.StockItems_Archive`.
+Full Load covers 11 objects:
 
-Nine current tables have source primary keys. Archives preserve repeated natural keys and zero-duration occurrences. Independent fixtures in [tests/fixtures](tests/fixtures) retain the 156-column current-source dictionary and verified F2 expression.
+- `Sales.Customers`, `Orders`, `OrderLines`, `Invoices`, `InvoiceLines` and `CustomerTransactions`.
+- `Warehouse.StockItems`, `StockItemHoldings` and `StockItemTransactions`.
+- `Sales.Customers_Archive` and `Warehouse.StockItems_Archive`.
 
-Use Windows Python and ODBC Driver 18 with current-principal Windows Authentication. [.env.example](../.env.example) documents `WWI_SQLSERVER_*`, batch/timeouts and `RAW_PG_*` settings. The implementation validates the reviewed local machine/instance/database; changing the hostname alone does not port those guards. `Encrypt=yes` and `TrustServerCertificate=no` are defaults. Approved development-only trust/admin opt-ins require `APP_ENV=development`; they are not production defaults or credential fallbacks. Keep real `.env` and passwords outside Git.
+The nine current tables have source primary keys. Archives retain repeated natural keys and zero-duration occurrences. [Source contracts](common/contracts.py) fix ordered projections, SQL types and NULL policy. [Independent fixtures](tests/fixtures) retain the 156-column current-source dictionary and exact F2 temporal expression.
 
-The normal target is `127.0.0.1:55434/retail_raw` as `retail_ingest`. Administrative credentials are for separately reviewed provisioning, not extraction.
+Incremental Loading operates on six inputs: Customers, Orders, OrderLines, Invoices, InvoiceLines and StockItems.
+
+## Ingestion Architecture
+
+Full Load initializes a candidate from source populations. Incremental Loading merges complete, ordered source and parent streams using Snapshot-Diff, writes changed payload and records lineage events. Neither path provisions schemas or advances publication pointers.
+
+`ingestion_meta.incremental_versions` stores parent, root, depth, contract, algorithm, extraction boundary and status. Events store key/change/hash lineage. `raw.delta_*` holds payloads; `raw.sales_state_*(uuid)` resolves a version's ancestor chain. No-change extraction still creates a new Read Version.
 
 ## Full Load
 
-Run from the repository root. Commands containing `<...>` require actual reviewed values; they are templates, not copy-and-run defaults.
+Run commands from the repository root. UUID placeholders below are templates: replace them with canonical identifiers for the intended target. `load --execute` writes a new unpublished candidate and requires target/scope authorization.
 
 ```powershell
 .venv\Scripts\python.exe -m ingestion.full_load --help
@@ -29,18 +35,20 @@ Run from the repository root. Commands containing `<...>` require actual reviewe
 .venv\Scripts\python.exe -m ingestion.full_load reconcile --all --run-id <full-run-uuid> --env-file .env
 ```
 
-Check each exit code. Full Load records invocation, object status, frozen contract and audits. Reconciliation compares source/extracted/loaded counts, current-table distinct keys, numeric totals, NULL controls and typed content digests. Known zero and unknown NULL remain different. `_run_id` and `_row_ordinal` identify stored occurrences; ordinal is not a business key. Select the Full Load **run UUID** for downstream dbt, not an unrelated metadata capture UUID or an implicit latest run.
+Full Load records invocation, object status, frozen contract and reconciliation controls. `_run_id` and `_row_ordinal` identify stored occurrences; the ordinal is not a business key. Downstream dbt selects the successful Full Load run UUID, not a metadata capture UUID or an implicit latest run.
 
-## Incremental Snapshot Diff
+## Incremental Loading
 
-The six inputs are Customers, Orders, OrderLines, Invoices, InvoiceLines and StockItems. Every run scans their complete snapshots and compares the result with an explicit eligible parent. It is not CDC, Change Tracking or timestamp-watermark extraction.
+Snapshot-Diff compares all six source snapshots with one explicit eligible parent. It is not CDC, Change Tracking or timestamp-watermark extraction.
 
-| Change | Target behavior | Runtime boundary |
+| Classification | Storage behavior | Support boundary |
 |---|---|---|
-| INSERT | Typed delta payload and event | Live supported |
-| UPDATE | New typed payload, before-version/hash lineage and event | Live supported |
-| UNCHANGED | Counters; no duplicate payload/event | Live supported |
-| DELETE | Tombstone/state propagation in consistent fixture adapter | Live absence stops; source snapshot consistency is unproven |
+| INSERT | Typed payload and lineage event | Live source |
+| UPDATE | New payload with before-version/hash lineage | Live source |
+| UNCHANGED | Counters without duplicate payload/events | Live source |
+| DELETE | Tombstone/state propagation | Consistent isolated fixture adapter only; live absence detection stops |
+
+Live DELETE inference requires a coherent, complete source snapshot, which the source extraction path does not establish. Counts detect some incomplete scans but do not establish snapshot isolation.
 
 ```powershell
 .venv\Scripts\python.exe -m ingestion.incremental --help
@@ -52,38 +60,45 @@ The six inputs are Customers, Orders, OrderLines, Invoices, InvoiceLines and Sto
 .venv\Scripts\python.exe -m ingestion.incremental reconcile --version-id <version-uuid>
 ```
 
-`ingestion_meta.incremental_versions` records parent/root/depth, contract, algorithm, boundary and status; events record key/change/hash lineage. `raw.delta_*` stores payloads and `raw.sales_state_*(uuid)` resolves the ancestor chain. Maximum chain depth is 32; compaction is not implemented. A no-change run still creates a new validated read version.
+Incremental payloads, events, reconciliation and the `VALIDATED` state commit together across all six objects. On failure, payload/events roll back and a separate `FAILED` ledger entry records the failure.
 
 ## Data Contracts
 
-- Preserve Decimal without float coercion, Unicode, binary/geography bytes, NULL and empty strings. Native geography bytes are not advertised as WKB.
-- Preserve source `datetime2(7)` as the verified F2 27-character string or `None`, stored as `TEXT COLLATE "C"`. Do not use Python datetime or PostgreSQL microsecond timestamps as authoritative source identity.
-- Source system-time is distinct from business-effective time. Exact representation does not prove complete historical SCD2 coverage.
-- Freeze schema/projection rather than inferring target DDL from sampled values.
-
-## Transactions, Idempotency and Recovery
-
-Incremental payloads, events, reconciliation and VALIDATED state commit together across all six objects. On failure, payload/events roll back and a FAILED ledger entry is recorded separately. Guards protect terminal states.
-
-A matching successful UUID returns `ALREADY_VALIDATED_NO_REEXTRACTION` and reconciles stored state. Parent/contract/algorithm changes are rejected. FAILED/RUNNING UUIDs cannot be overwritten; a fresh extraction requires a new UUID. Full Load retries also use a fresh run identity with the supported retry linkage, rather than truncating or replaying sealed chunks. Inspect subcommand help before retrying.
-
-For unknown COMMIT or timeout: inspect the durable ledger, read back data and check active Windows processes/locks before retry. Do not infer rollback from a failed client acknowledgment. Cooperating ingestion uses advisory lock 941061; dbt uses 941062. These locks do not establish a coherent SQL Server source snapshot.
-
-`VALIDATED`/`SUCCEEDED` is candidate progress. It does not advance `raw_current`, a source checkpoint or publication ACK. `acknowledged_publication_id` remains NULL for the current workflow. See [dbt version selection](../dbt/README.md) and [Airflow recovery](../airflow/README.md).
-
-## Checks and Troubleshooting
-
-Run `.venv\Scripts\python.exe scripts/run_checks.py` for offline regression, syntax, links and repository checks. Integration fixtures under [tests/integration](../tests/integration) require their own reviewed `--execute` scope and are not routine operational commands.
-
-| Symptom | Safe next step |
+| Source value | Raw Layer representation |
 |---|---|
-| Source authentication/TLS/permission error | Verify approved identity, instance and configuration; stop rather than changing source grants/certificates |
-| PostgreSQL timeout | Check Docker Engine, existing container, loopback binding and health; retain the volume |
-| Missing target objects | Review provisioning inventory/target; ingestion must not create schemas automatically |
-| Contract/digest mismatch | Keep private evidence and stop; do not relax rules to pass |
-| FAILED/RUNNING/uncertain version | Inspect durable state and active child processes before selecting recovery identity |
+| Decimal | Exact Decimal/numeric, without float coercion |
+| NULL / empty text | Distinct values |
+| Unicode | Preserved text |
+| Binary / geography | Native bytes; geography bytes are not represented as WKB |
+| `datetime2(7)` | Exact F2 27-character text or NULL, stored as `TEXT COLLATE "C"` |
 
-## Portfolio Demo
+Python datetime and PostgreSQL microsecond timestamps are not authoritative representations of the source's 100-nanosecond identity. Source system-time is distinct from business-effective time; exact storage does not provide complete historical SCD Type 2 coverage. Target DDL follows the frozen contract rather than inferred sample types.
+
+## Versioning and Idempotency
+
+A matching successful UUID returns `ALREADY_VALIDATED_NO_REEXTRACTION` and reconciles durable state. Reusing the identity with a different parent, contract or algorithm is rejected. `FAILED`/`RUNNING` identities cannot be overwritten; fresh extraction uses a new UUID. Full Load retries also use a fresh run identity with the supported retry linkage instead of truncating sealed chunks.
+
+The maximum incremental chain depth is 32; compaction is not implemented. `VALIDATED` and `SUCCEEDED` describe candidate state. They do not advance `raw_current`, source checkpoints or publication ACK; `acknowledged_publication_id` remains NULL in this workflow.
+
+## Data Reconciliation
+
+Source-to-Raw checks compare extracted/loaded counts, current-table distinct keys, numeric totals, NULL controls and ordered typed content digests. Zero and unknown NULL remain different. Successful version reuse includes durable read-back rather than relying only on a prior status value.
+
+## Running the Pipeline
+
+Use `plan` to inspect scope, then `preflight` to validate the selected objects and target identity/schema/privileges. History INSERT permission is not a global source prerequisite. Follow with the explicitly authorized load/run and reconciliation commands above, checking every exit code.
+
+For offline regression, syntax and repository links:
+
+```powershell
+.venv\Scripts\python.exe scripts/run_checks.py --portable
+```
+
+[Integration fixtures](../tests/integration) have separate `--execute` scopes and are not routine read-only checks.
+
+## Sample Demo
+
+[demo.py](demo.py) uses authored synthetic rows, the production comparator/codecs and an isolated upsert adapter. It uses neither live parent/version identifiers nor production metadata. The independent [dbt demo project](../dbt/demo/dbt_project.yml) contains two models and seven data tests.
 
 ```powershell
 .venv\Scripts\python.exe -m ingestion.demo config
@@ -92,21 +107,26 @@ Run `.venv\Scripts\python.exe scripts/run_checks.py` for offline regression, syn
 .venv\Scripts\python.exe -m ingestion.demo down
 ```
 
-Entrypoint [demo.py](demo.py) dùng fixture tự tạo (không lấy WWI), production `compare`, typed codecs và count/digest. Adapter upsert riêng chỉ cho database demo; không đổi source adapter hoặc metadata production. Không dùng parent/version UUID live. Một transaction chứa delta và read-back; failure chủ động trước COMMIT phải rollback, sau đó retry fixture an toàn.
+The sequence loads two rows, repeats an unchanged snapshot, injects a pre-COMMIT failure, verifies rollback, then applies one UPDATE and one INSERT. Count/digest read-back includes Unicode, NULL versus empty text and seven-digit temporal text. Expected final output:
 
-Lượt chạy cô lập ngày 23/11/2026: initial INSERT=2; no-change UNCHANGED=2; thử lỗi rollback giữ digest cũ; recovery UPDATE=1/INSERT=1/UNCHANGED=1. dbt build hai models và bảy data tests PASS. Kết quả cuối: 2024-01-01 Sales=45.00, units=6; 2024-01-02 Sales=10.00, units=1. Unicode `Cà phê`, NULL so với chuỗi rỗng và F2 7 chữ số đi qua read-back digest. Chạy lại toàn entrypoint trên demo đã xong kiểm tra digest và trả ba UNCHANGED. State bất ngờ hoặc DELETE bị từ chối; không reset ngầm.
+| Sales date | Sales | Units |
+|---|---:|---:|
+| 2024-01-01 | 45.00 | 6 |
+| 2024-01-02 | 10.00 | 1 |
 
-Kết quả/logs/profile/credentials nằm trong `.local/portfolio-demo`, được ignore. Demo cần Docker Engine Linux và các package từ requirements.txt; không cần ODBC server hay private `.env`. `down` chỉ tác động project demo và mất dữ liệu tmpfs; không xóa named volumes. Xem [isolation và teardown](../infrastructure/README.md#isolated-portfolio-demo). Đây là isolated local runtime PASS, chưa phải clean-machine full-stack validation.
+A completed rerun verifies the three-row state and reports three UNCHANGED rows. Unexpected state and DELETE are rejected rather than silently reset. Results, logs and generated credentials stay in ignored `.local/portfolio-demo`. `down` removes only demo resources and discards tmpfs data. See [environment isolation](../infrastructure/README.md#demo-environment).
 
-## Snapshot-Diff Fixture Benchmark
+## Performance Characteristics
+
+Snapshot-Diff saves payload writes when few rows change, but still reads source and parent populations. The comparator merges ordered streams; unchanged data is still examined.
 
 ```powershell
 .venv\Scripts\python.exe -m ingestion.benchmark --rows 10000 --repeats 3 --seed 20261123
 ```
 
-Harness [benchmark.py](benchmark.py) gọi nguyên `ingestion.incremental.compare` với contract fixture bảy cột. Baseline 10,000 rows; delta tính theo baseline, chia đều INSERT/UPDATE (odd count nghiêng UPDATE). Không DELETE. Vì INSERT thêm dòng nên source sau thay đổi có 10,000/10,050/10,500 rows. UPDATE tăng chính xác Decimal 0.01; seed ổn định. Mỗi scenario warm-up một lần rồi đo ba lần với cùng instrumentation; kiểm tra count/change mix/digest sau mỗi lần.
+[benchmark.py](benchmark.py) measures in-memory fixtures, not database throughput. The baseline contains 10,000 seven-column rows, with seed 20261123 and 0%, 1% or 10% changes relative to baseline. Changed rows split between INSERT and UPDATE, with an odd remainder assigned to UPDATE. INSERTs increase source size to 10,050 or 10,500 rows; UPDATEs add exactly Decimal 0.01. Each scenario uses one warm-up and three measured repetitions, checking counts, classifications and reconstructed digests.
 
-**Đo thật ngày 23/11/2026, in-memory fixture, không phải database benchmark:** Windows 11 build 26300, Python 3.12.10, Intel64 Family 6 Model 154. Tracemalloc bật trong mọi phase. Extract=copy tuples trong RAM; compare=typed admission và merge; load=apply delta vào dict; không có network/COPY/transaction/fsync. Setup parent/fixture và digest verification nằm ngoài thời gian; total là elapsed ba phase, throughput=source rows/total. Các medians theo phase không nhất thiết cộng đúng median total.
+A reference experiment on 23 November 2026 used Windows 11 build 26300, Python 3.12.10 and Intel64 Family 6 Model 154. Tracemalloc was enabled throughout the timed phases:
 
 | Delta / baseline | Examined | INSERT / UPDATE / UNCHANGED | Extract / compare / load median (s) | Total median [min–max] (s) | Rows/s median | Peak traced MiB |
 |---|---:|---|---|---|---:|---:|
@@ -114,6 +134,28 @@ Harness [benchmark.py](benchmark.py) gọi nguyên `ingestion.incremental.compar
 | 1% | 10,050 | 50 / 50 / 9950 | 0.0262 / 3.8134 / 0.0007 | 3.8403 [3.8087–4.2032] | 2617 | 5.65 |
 | 10% | 10,500 | 500 / 500 / 9500 | 0.0271 / 3.9800 / 0.0011 | 4.0194 [3.9967–4.1353] | 2612 | 5.82 |
 
-Raw repetitions, min/max/stdev từng metric và môi trường được ghi tại `.local/portfolio-benchmark/result.json`, không commit. Các lần đo được chạy khi máy còn thực hiện validation/demo khác; không phải máy benchmark chuyên dụng. Peak là allocated Python bytes kể từ khi bật tracemalloc, không phải RSS hay tổng bộ nhớ fixture/parent đã tạo trước đó.
+Extraction copies tuples in RAM; comparison performs typed admission and merge; loading applies deltas to a dictionary. Fixture/parent preparation and digest verification are outside the timing. Total measures the three phases; throughput is examined source rows divided by total. Phase medians need not sum to the total median.
 
-0% vẫn kiểm tra toàn bộ 10,000 rows để biết chắc không có delta; chi phí scan/typed comparison vẫn còn. Ghi delta giảm payload nhưng không loại bỏ source scan hoặc parent read. Comparator merge có streaming semantics; harness cố ý materialize extracted rows/change list để tách phase, nên peak memory không biểu diễn memory streaming production. Không suy ra lợi ích indexes/threads/materialization hay tốc độ production từ số đo này. Timings database/extraction thật: NOT_RUN.
+The harness materializes rows and changes to separate phases, so peak traced allocations do not represent streaming production memory. Peak excludes earlier fixture/parent allocations and is not RSS. Other validation/demo work ran on the same machine during the experiment. Raw repetitions, min/max, standard deviation and environment details are written to ignored `.local/portfolio-benchmark/result.json`. Network, COPY, transactions and fsync are not measured; these results cannot establish production speed or justify index/thread changes.
+
+## Error Handling and Recovery
+
+| Symptom | Next step |
+|---|---|
+| Authentication, TLS or source permission failure | Check the intended identity/configuration; retain source grants and certificate settings |
+| PostgreSQL timeout | Inspect Engine, existing container, loopback port and health; retain the volume |
+| Missing target objects | Review provisioning inventory rather than creating schemas through ingestion |
+| Contract/digest mismatch | Preserve private diagnostics and investigate the discrepancy |
+| Failed, running or uncertain version | Inspect durable ledger/state and active Windows children before choosing a recovery identity |
+
+For unknown COMMIT or timeout, reconcile durable state before retrying: a failed client acknowledgment does not imply rollback. Cooperating ingestion uses advisory lock 941061; dbt uses 941062. These locks do not create source snapshot consistency. See [Airflow recovery](../airflow/README.md#retry-and-recovery).
+
+## Configuration
+
+Install the pinned [requirements](../requirements.txt) in Windows Python 3.12 with ODBC Driver 18. [.env.example](../.env.example) defines `WWI_SQLSERVER_*`, `RAW_PG_*`, batch size and timeout settings. The target is `127.0.0.1:55434/retail_raw` as `retail_ingest`; administrative credentials belong to provisioning only.
+
+Windows Authentication uses the current development account. Source configuration validates machine, principal, instance and database; porting requires reviewing these guards, not just changing a hostname. TLS defaults to `Encrypt=yes`, `TrustServerCertificate=no`. Explicit trust/admin development opt-ins require `APP_ENV=development` and separate authorization; there is no fallback credential. Keep `.env`, credentials, extracts and private diagnostics outside Git.
+
+## Known Limitations
+
+Source consistency across tables is unproven, live DELETE detection is blocked and Snapshot-Diff scans complete populations. Chain compaction, complete historical SCD Type 2 lookup and Certified publication remain future scope. The demo exercises comparator/codecs and an isolated adapter rather than the complete SQL Server/production metadata path.

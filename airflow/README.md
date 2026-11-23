@@ -1,14 +1,55 @@
-# Airflow Operations
+# Airflow Pipeline Orchestration
 
-This module orchestrates the existing Python incremental engine and dbt Sales graph. It does not reimplement extraction, advance publication pointers or refresh Power BI. See the [project overview](../README.md), [ingestion](../ingestion/README.md), [dbt](../dbt/README.md) and [infrastructure](../infrastructure/README.md).
+## Overview
 
-## Runtime Architecture and Setup
+Airflow coordinates Snapshot-Diff Incremental Loading, Read Version validation, dbt transformations and Sales Mart verification. It calls the existing ingestion/dbt CLIs rather than reimplementing their behavior. Publication pointers and Power BI Manual Refresh remain outside the DAG.
 
-The verified local environment uses Ubuntu WSL2, Airflow 2.11.0/Python 3.12 in `~/airflow_env`, SequentialExecutor and SQLite metadata at `~/airflow/airflow.db`. This is a local development configuration, not HA infrastructure. Scheduler and webserver are managed by [start_local.py](start_local.py); the UI binds to `127.0.0.1:8080`.
+See [ingestion](../ingestion/README.md) for extraction semantics, [dbt](../dbt/README.md) for model replacement and [infrastructure](../infrastructure/README.md) for database setup.
 
-[bridge.py](bridge.py) invokes the existing Windows `.venv/Scripts/python.exe` and [worker.py](worker.py) using an argument list and explicit working directory. This preserves Windows Authentication/ODBC access to SQL Server. There is no WSL ODBC installation, shell interpolation or password in XCom. XCom carries only small action/status/parent/version metadata.
+## Workflow Architecture
 
-A new machine needs a separate supported Python 3.12 WSL virtual environment, an initialized Airflow metadata database and an operator UI account. For a genuinely new installation only, follow the [Airflow 2.11 constrained installation](https://airflow.apache.org/docs/apache-airflow/2.11.0/installation/installing-from-pypi.html):
+Airflow 2.11.0 runs with Python 3.12 in Ubuntu WSL2, using SequentialExecutor and SQLite metadata at `~/airflow/airflow.db`. [start_local.py](start_local.py) manages scheduler/webserver processes; the UI binds to `127.0.0.1:8080`.
+
+[bridge.py](bridge.py) launches Windows `.venv/Scripts/python.exe` and [worker.py](worker.py) through an explicit argument list and working directory. Windows Authentication and SQL Server ODBC access therefore stay in Windows. The bridge does not interpolate shell commands or require WSL ODBC. XCom contains only small action/status/parent/version metadata, without passwords.
+
+## DAG Overview
+
+![Apache Airflow — Retail Sales Pipeline](../docs/assets/airflow-graph.png)
+
+The `retail_sales_incremental_pipeline` graph shows eight tasks in a completed reference run. Manual scheduling remains the default.
+
+| Task | Responsibility |
+|---|---|
+| `preflight_source` | SELECT, projection and source-security checks for the six Sales dependencies |
+| `preflight_target` | Target identity, schema, privileges and explicit parent eligibility |
+| `run_incremental_ingestion` | Existing incremental CLI with a deterministic version UUID derived from the exact run ID |
+| `validate_ingestion_batch` | Durable VALIDATED state, parent/contract/algorithm/scope, ACK=NULL and six-object reconciliation |
+| `resolve_dbt_read_version` | Handoff of that same validated UUID without parent/latest fallback |
+| `run_dbt_build` | Sales graph build with command/input/version receipt and model/data-test checks |
+| `validate_sales_marts` | Five nonempty, consistently pinned marts reconciled against core/header totals |
+| `pipeline_complete` | Final version/mart checks, without publication, ACK or BI refresh |
+
+## Task Dependencies
+
+```text
+preflight_source → preflight_target → run_incremental_ingestion
+→ validate_ingestion_batch → resolve_dbt_read_version → run_dbt_build
+→ validate_sales_marts → pipeline_complete
+```
+
+Each dependency uses `all_success`. A failed upstream check blocks downstream completion rather than allowing a partial pipeline to appear complete.
+
+## Execution Model
+
+The DAG defaults to `schedule=None`, `catchup=False`, `max_active_runs=1`, timezone `Asia/Ho_Chi_Minh` and paused upon creation. The private execution profile starts with `allow_pipeline_writes=false` and `write_scope=null`. Paused-upon-creation does not re-pause an existing DAG after a reboot.
+
+Manual configuration supplies canonical `parent_version`. Scheduled runs without conf use an explicit environment parent. A new exact run ID determines a new version UUID, including when extraction finds no changes. The current Power BI pin does not change automatically.
+
+## Configuration
+
+### Airflow installation
+
+Use a separate Python 3.12 WSL virtual environment. For a new installation, follow the [Airflow 2.11 constrained package installation](https://airflow.apache.org/docs/apache-airflow/2.11.0/installation/installing-from-pypi.html):
 
 ```bash
 # First installation only: do not run against the existing environment/metadata.
@@ -24,9 +65,11 @@ export AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=True
 ~/airflow_env/bin/airflow users create --help
 ```
 
-Create the operator UI account interactively with `airflow users create`, supplying the reviewed username/contact fields and entering its password at the prompt. Preserve the above executor/example settings in the new installation's configuration or startup shell. The launcher does not initialize/migrate/reset metadata or create credentials. Reuse the current environment without reinstalling packages or replacing `airflow.cfg`; this fresh-install sequence was not executed during documentation work.
+Create the UI account with `airflow users create`, supplying username/contact fields and entering its password interactively. Preserve the executor, disabled examples and paused-at-creation settings in configuration/startup. The launcher does not initialize, migrate or reset metadata or create credentials. Reuse an existing installation without reinstalling packages or replacing `airflow.cfg`.
 
-From the repository in WSL, adapt the four path fields in [config.example.json](config.example.json) to the actual Windows/WSL checkout. Keep `allow_pipeline_writes=false` and `write_scope=null`. Do not put database credentials in this profile.
+### Bridge profile
+
+Adapt all four path fields in [config.example.json](config.example.json) to the Windows/WSL checkout. Keep the gate closed and scope NULL during setup; database credentials belong to the component configuration, not the bridge profile.
 
 ```bash
 cd /mnt/d/Code/Retail_Data_Platform/project1_Retail_Data_platform
@@ -43,32 +86,11 @@ unset RETAIL_AIRFLOW_DAILY_TIME RETAIL_AIRFLOW_SCHEDULE_PARENT RETAIL_AIRFLOW_SC
 ~/airflow_env/bin/airflow dags list-import-errors --output json
 ```
 
-## DAG and Read-Version Contract
+Inspect an existing or broken DAG symlink before creating another. Run repository-relative commands from the WSL checkout; the path above is the original layout and must match the actual installation.
 
-[retail_sales_incremental_pipeline](dags/retail_sales_incremental_pipeline.py) defaults to `schedule=None`, `catchup=False`, `max_active_runs=1`, timezone `Asia/Ho_Chi_Minh`, and paused upon initial creation. Eight tasks run with `all_success` dependencies:
+## Starting Airflow
 
-```text
-preflight_source → preflight_target → run_incremental_ingestion
-→ validate_ingestion_batch → resolve_dbt_read_version → run_dbt_build
-→ validate_sales_marts → pipeline_complete
-```
-
-| Task | Contract |
-|---|---|
-| preflight_source | SELECT/projection/security checks for exactly six Sales dependencies |
-| preflight_target | Verify target/schema/permissions and explicit parent eligibility |
-| run_incremental_ingestion | Existing incremental CLI, deterministic version UUID derived from exact Airflow run ID |
-| validate_ingestion_batch | Durable VALIDATED status, parent/contract/algorithm/scope, ACK=NULL and six-object reconciliation |
-| resolve_dbt_read_version | Return the same validated UUID; no fallback to parent/latest |
-| run_dbt_build | Existing full Sales graph; verify command/input/version receipt and successful model/data-test results |
-| validate_sales_marts | Five nonempty, consistently pinned marts; independently reconcile core/header totals |
-| pipeline_complete | Recheck version/mart gates; no publication, ACK or BI refresh |
-
-Manual conf must include canonical `parent_version`. Scheduled runs without conf use an explicit environment parent. After preflight, the verified upstream handoff freezes that parent for recovery. No-change extraction still produces a new validated candidate/read version, not a silent reuse of the old BI pin.
-
-## Startup and Health
-
-Windows SQL Server must be running under the approved configuration. Start Docker Desktop Linux Engine, then inspect the existing Raw container before starting it:
+Start SQL Server with its configured identity/TLS settings and Docker Desktop with Linux containers. Inspect the existing Raw container, its dedicated volume and loopback binding before starting it:
 
 ```powershell
 docker context show
@@ -90,15 +112,15 @@ curl --fail http://127.0.0.1:8080/health
 ~/airflow_env/bin/airflow dags list-runs -d retail_sales_incremental_pipeline
 ```
 
-Before startup/restart the DAG must be paused, no run queued/running, and gate/scope closed. If a reboot left an open gate/unpaused DAG, close/pause it before starting; do not bypass the idle guard. `--start` is idempotent only for matching process identity/configuration. The launcher verifies PID command, UID/process group, profile path and inherited schedule environment, and sets `airflow_env/bin` on service/subprocess PATH. This matters because SequentialExecutor invokes the bare `airflow` executable.
+Startup/restart requires a paused DAG, no queued/running execution and a closed gate/scope. If reboot leaves execution armed, pause/close it before startup. `--start` is idempotent for matching process identity/configuration only. The launcher checks PID command, UID/process group, profile path and inherited schedule environment, and puts `airflow_env/bin` on service/subprocess PATH for SequentialExecutor's bare `airflow` invocation.
 
-Logs/PIDs are under `~/airflow/retail-service-logs`; task logs are under the existing Airflow home and available through the UI. WSL and Windows logon context must remain available. No Windows Task Scheduler job, new systemd unit or automatic Docker restart has been installed.
+Service logs/PIDs are in `~/airflow/retail-service-logs`; task logs are under Airflow home and available in the UI. Windows logon context and WSL must remain available. No autostart service, Windows Task Scheduler integration or automatic Docker restart is configured.
 
-## Supervised Manual Operation
+## Manual Execution
 
-The following write/trigger examples are **operator actions for a separately authorized run**, not documentation validation commands. First verify source/target identity, TLS, counts/digests, eligible parent/chain depth, no competing CLI/Windows child, Raw metadata baseline and an acceptable DDL scope. Snapshot consistency remains unverified.
+Execution requires an explicit, version-scoped write authorization. Before arming a run, inspect source/target identity, TLS, selected-object preflight, parent eligibility/chain depth, durable metadata baseline, active CLI/Windows children and the dbt replacement scope. Source snapshot consistency remains unproven even when these checks succeed.
 
-Use a new exact run ID and a validated parent. Compute the version through the existing bridge, then authorize only that parent/version/actions in the private profile:
+Use a fresh exact run ID and a verified parent. The bridge derives the version; the private profile then authorizes only that parent/version and the necessary actions:
 
 ```bash
 export PARENT=3a2f011d-f3b3-5683-83a2-a64837720f3d  # Revalidate before using.
@@ -122,47 +144,24 @@ PY
 ~/airflow_env/bin/airflow dags list-runs -d retail_sales_incremental_pipeline
 ```
 
-Both bridge and worker enforce exact parent/version/action scope; a true boolean alone is insufficient. Rebuild-only recovery uses `actions=["build"]`. Scope covers existing delta/events/version and Sales transformation writes, never source writes, publication or BI. Pause and close gate/scope after success or failure using the shutdown section.
+Both bridge and worker enforce the exact scope; the boolean alone is insufficient. Scope includes incremental delta/events/version and Sales transformation writes, never SQL Server writes, publication or BI refresh. After success or failure, pause the DAG, drain activity and close the gate using [shutdown](#shutdown).
 
-## Retry and Recovery
+## Scheduling
 
-| Stage | Automatic retry | Required handling |
-|---|---|---|
-| Source/target preflight | One retry after 30 seconds for recognized transient transport errors | Authentication, TLS, permissions and contract/configuration errors fail immediately |
-| Ingestion | None | Inspect durable version and Windows process; never overwrite FAILED/RUNNING identity |
-| dbt build | None | Inspect partial graph, version, artifacts and grants before manual recovery |
-| Validation/resolve/marts/complete | None | Fix the cause; clear only the necessary read task if the data remains valid |
-
-Same successful version returns `ALREADY_VALIDATED_NO_REEXTRACTION`; a new run ID creates a different UUID. Unknown COMMIT requires ledger/read-back inspection, not an assumption that rollback occurred. A fresh extraction needs a new run ID and independently eligible parent/scope. Do not reset checkpoints, delete ledger records or clear successful ingestion just to rebuild dbt.
-
-For a dbt-tail recovery: pause, identify the exact run/logical date, inspect native logs and durable P/V, drain Windows children and fix the DDL/dependency cause. Pre-arm build-only scope for that same P/V. Clear only `run_dbt_build`, `validate_sales_marts` and `pipeline_complete`, preserving the first five successful tasks; constrain the clear operation to the exact run, with no upstream/past/future selection. Reconcile all outputs before closing the gate.
-
-Timeouts are CLI 3,300 seconds, bridge 3,600, task 3,900 and DAG five hours. A WSL timeout may leave a Windows child alive. Advisory locks 941061 (ingestion) and 941062 (dbt) protect cooperating runners, not every DBA or an atomic source/serving snapshot.
-
-## Controlled dbt DDL
-
-The approved replacement lifecycle covers the 21 reviewed Sales models, their intermediate/backup relations and the two known dependent header views. CREATE/RENAME/GRANT/COMMIT and backup DROP, including verified CASCADE effects, can be expected dbt behavior. Raw, ingestion metadata, capture/checkpoint/publication state, SQL Server and unrelated schemas remain outside this scope.
-
-[ddl_policy.py](../dbt/ddl_policy.py) runs under the dbt lock before `run`/`build`. It checks project paths/schema/alias, role/ownership, protected permissions, stale artifacts and relation/row-type/function/trigger/RLS dependencies. Unknown consumers or orphan `__dbt_tmp`/`__dbt_backup` objects fail closed. `retail_transform` cannot write/create in Raw or ingestion metadata and has no administrative role flags.
-
-The graph is non-atomic. Replacement can drop the two managed header views and rebuild them later. Isolated tests verified rollback before COMMIT; after successful COMMIT with acknowledgment/cleanup failure, canonical data may be new while backup/dependent views remain old. Inspect canonical/backup versions, ownership, grants and dependencies before any cleanup. Approved isolated recovery rebound the managed header, then used DROP RESTRICT on the verified backup. Unexpected consumers keep the gate closed. Never blanket-clean with CASCADE or assume a client failure undid committed work.
-
-The policy requires reviewed code and no concurrent administrative DDL; it is not a generic SQL firewall. Do not add dependencies or expand permissions to force a build through the gate.
-
-## Daily Schedule Preparation
-
-Manual mode remains the default. [scheduling.py](scheduling.py) reads only these non-secret parse-time settings:
+Manual operation is the default. [scheduling.py](scheduling.py) reads only non-secret parse-time settings:
 
 | Variable | Meaning |
 |---|---|
-| `RETAIL_AIRFLOW_SCHEDULE` | `manual` (default) or `daily` |
-| `RETAIL_AIRFLOW_DAILY_TIME` | HH:MM, default 02:00, Asia/Ho_Chi_Minh |
+| `RETAIL_AIRFLOW_SCHEDULE` | `manual` or `daily`; default `manual` |
+| `RETAIL_AIRFLOW_DAILY_TIME` | HH:MM; default 02:00 in Asia/Ho_Chi_Minh |
 | `RETAIL_AIRFLOW_SCHEDULE_PARENT` | Explicit eligible parent UUID |
-| `RETAIL_AIRFLOW_SCHEDULE_NOT_BEFORE` | Future +07:00 timestamp on the chosen daily boundary |
+| `RETAIL_AIRFLOW_SCHEDULE_NOT_BEFORE` | Future +07:00 timestamp at the selected daily boundary |
 
-Daily mode uses CronTriggerTimetable, not an extraction date window. `catchup=False` prevents historical backfill; a latest missed interval may still be considered after downtime. Its different UUID remains blocked by the exact write scope. Paused-upon-creation does not pause an existing DAG after reboot.
+Daily mode uses CronTriggerTimetable, not an extraction date window. `catchup=False` prevents historical backfill, but a latest missed interval may still be considered after downtime; its distinct UUID remains blocked without a matching scope.
 
-Only after operator approval, start paused/drained with a closed gate and generate a **single-interval preview**:
+### Prepare one interval
+
+With the DAG paused/drained and the gate closed, generate a single-interval plan for an authorized future boundary:
 
 ```bash
 PARENT=3a2f011d-f3b3-5683-83a2-a64837720f3d  # Verify actual parent again.
@@ -181,9 +180,11 @@ curl --fail http://127.0.0.1:8080/health
 ./.venv/Scripts/python.exe -X utf8 -m ingestion.incremental preflight --parent-id "$PARENT"
 ```
 
-The planner does not connect to SQL, arm writes or trigger a run. It derives the run ID from actual scheduler UTC normalization; do not construct a different UUID from a local-time string. If any health/import/preflight gate fails, leave the DAG paused and write gate closed.
+The planner does not connect to SQL, arm writes or trigger execution. It derives the run ID from scheduler UTC normalization; using a differently formatted local-time string can produce a different UUID. Review the plan and stop with the DAG paused/gate closed if any import, health or preflight check fails.
 
-After reviewing all gates, the operator can arm that exact future interval:
+### Authorize the planned interval
+
+Recompute and compare the exact environment, run ID and scope before arming that one interval:
 
 ```bash
 ~/airflow_env/bin/python - <<'PY'
@@ -204,11 +205,54 @@ PY
 ~/airflow_env/bin/airflow dags next-execution retail_sales_incremental_pipeline
 ```
 
-No automatic parent/scope rotation exists. The next date has a different UUID and requires new preparation. After each run, pause/close the gate, inspect lineage/DQ/KPIs and prepare another interval only if eligible. To recover a run older than daily start_date, switch back to manual through pause/drain/restart before clearing it; retain its run ID/conf/P/V. Do not enable catchup or move the boundary backward.
+There is no automatic parent/scope rotation. Each later interval has a different UUID and requires new preparation. After execution, pause/close the gate and inspect lineage, Data Quality and KPIs before preparing another interval. To recover a run older than the daily start boundary, pause/drain and restart in manual mode while preserving its run ID/conf/parent/version. Do not enable catchup or move the boundary backward to recover it. Unattended daily operation is not guaranteed.
 
-## Shutdown and Disable Scheduling
+## Retry and Recovery
 
-Pause prevents new runs, not cancellation of existing tasks. Drain active/queued runs and Windows children before stopping. Closing a gate does not roll back a transaction already started.
+| Stage | Automatic retry | Recovery action |
+|---|---|---|
+| Source/target preflight | One retry after 30 seconds for recognized transient transport errors | Authentication, TLS, permissions and contract/configuration errors stop immediately |
+| Ingestion | None | Inspect durable version and Windows processes; retain FAILED/RUNNING identities |
+| dbt build | None | Inspect partial graph, version, artifacts, dependencies and grants |
+| Validation/resolve/marts/complete | None | Correct the cause and clear only the required read task when durable data remains valid |
+
+Successful version reuse returns `ALREADY_VALIDATED_NO_REEXTRACTION`. Unknown COMMIT requires ledger/read-back inspection rather than assuming rollback. Fresh extraction needs a new run ID and independently eligible parent/scope. Preserve checkpoints, ledger records and successful ingestion when only transformations need recovery.
+
+For dbt-tail recovery:
+
+1. Pause the DAG; identify the exact run/logical date and inspect native logs, durable parent/version and partial DDL state.
+2. Drain Windows children and correct the dependency/DDL cause.
+3. Authorize build-only recovery with `actions=["build"]` for the same parent/version.
+4. Clear only `run_dbt_build`, `validate_sales_marts` and `pipeline_complete` in that exact run, preserving the first five successful tasks. Exclude upstream, past and future task instances.
+5. Reconcile the complete graph and serving permissions, then close the gate.
+
+Timeouts are 3,300 seconds for the CLI, 3,600 for the bridge, 3,900 for a task and five hours for the DAG. A WSL timeout can leave a Windows child running; inspect it before retrying.
+
+## Version Handoff
+
+`validate_ingestion_batch` reconciles durable data and validates lineage/scope. `resolve_dbt_read_version` returns that same UUID, and `run_dbt_build` records its command/input/version receipt. Mart checks and pipeline completion recheck the identity and analytical totals. No implicit latest or fallback version substitutes for a failed handoff.
+
+## Concurrency and Write Authorization
+
+`max_active_runs=1` limits DAG overlap. Advisory locks 941061 and 941062 serialize cooperating ingestion and dbt runners respectively; they do not protect against every DBA action or establish a coherent source/serving snapshot. Write authorization is specific to parent, version and actions and does not extend to future intervals.
+
+## Coordination with dbt and Power BI
+
+### Controlled dbt replacement
+
+[ddl_policy.py](../dbt/ddl_policy.py) checks the 21-model Sales scope under the dbt lock before `run`/`build`. It validates project paths/schema/alias, ownership, protected permissions, stale artifacts and relation/row-type/function/trigger/RLS dependencies. Unknown consumers or orphan `__dbt_tmp`/`__dbt_backup` objects stop execution. `retail_transform` has no administrative flags or Raw/metadata write/create access.
+
+Replacement can CREATE/RENAME/GRANT/COMMIT and DROP identified backups, including CASCADE effects on two managed header views that are rebuilt later. The graph is non-atomic. Before COMMIT, rollback protects the transaction; after a committed write with acknowledgment/cleanup failure, canonical data and dependent/backup objects can differ. Inspect versions, ownership, grants and dependencies, rebind managed views where needed and use DROP RESTRICT for identified cleanup. Unexpected consumers keep the gate closed. Avoid blanket CASCADE cleanup, concurrent administrative DDL or permission expansion to bypass policy. See [dbt operational considerations](../dbt/README.md#operational-considerations).
+
+### Power BI refresh window
+
+`pipeline_complete=PASS` reports warehouse gates, not a refreshed dashboard. Open a Manual Refresh window only after run SUCCESS, no active writer/Windows child, consistent version on all 12 serving objects, reader SELECT and reconciled KPIs. Pause/drain a pre-armed next run before refresh. Never refresh during model replacement or cleanup.
+
+The six-import version pin remains fixed until deliberately synchronized through the [Power BI procedure](../powerbi/README.md#read-version-pin). Imported cache alone does not establish the current warehouse version. No automatic pin update or Power BI REST refresh is implemented.
+
+## Shutdown
+
+Pausing blocks new runs; it does not cancel active tasks. Drain queued/running work and Windows children before stopping. Closing a gate cannot roll back an already-started transaction.
 
 ```bash
 ~/airflow_env/bin/airflow dags pause retail_sales_incremental_pipeline
@@ -229,37 +273,20 @@ unset RETAIL_AIRFLOW_DAILY_TIME RETAIL_AIRFLOW_SCHEDULE_PARENT RETAIL_AIRFLOW_SC
 ~/airflow_env/bin/python airflow/start_local.py --status
 ```
 
-Stop Raw only when all CLI and BI clients are idle: `docker stop --time 30 retail-raw-postgres-1` from Windows. Retain container/volume for later `docker start`. Do not stop/reconfigure source SQL Server, native PostgreSQL or B9 resources as part of this workflow. Live shutdown/reboot recovery has not been exercised end-to-end; current identity/idle guards and idempotent startup have been checked.
+Stop Raw only when CLI and BI clients are idle, using `docker stop --time 30 retail-raw-postgres-1` from Windows. Retain its container/volume for later `docker start`. Source SQL Server, native PostgreSQL and unrelated sandbox resources are outside this shutdown procedure.
 
-## Power BI Coordination
+## Troubleshooting
 
-`pipeline_complete=PASS` means the warehouse gates passed, not that the dashboard refreshed. Do not refresh BI during CREATE/RENAME/GRANT/cleanup or before the complete graph validates. Confirm run SUCCESS, no active writer/child, all 12 serving objects on V, reader SELECT and reconciled KPIs. Pause/drain a pre-armed next run before opening a refresh window.
+| Symptom | Check |
+|---|---|
+| DAG import failure | Configuration paths, schedule settings and `dags list-import-errors` |
+| Service startup refused | Paused/idle state, closed gate, matching process identity and inherited environment |
+| Handoff or write-scope rejection | Exact run ID, parent, derived version, upstream XCom and allowed actions |
+| CLI timeout | Durable ledger, advisory locks and active Windows children before recovery |
+| dbt replacement failure | Partial graph, stale relations and dependent consumers; retain successful ingestion |
 
-The existing Power BI pin stays unchanged until separately reviewed. Follow [Power BI version synchronization](../powerbi/README.md), refresh manually, check SQL/DAX/visuals and save. An old imported cache is not the new version; no fallback latest or automatic REST API refresh is implemented.
+Offline regression uses `python scripts/run_checks.py --portable`. [reliability_runtime.py](tests/reliability_runtime.py) is a separate isolated Airflow harness; inspect its options before executing its sandbox scenarios. Mocked/isolated failures cover different boundaries from a real-source run and are not interchangeable with end-to-end operational evidence.
 
-## Validation and Known Limitations
+## Operational Limitations
 
-One accepted supervised run completed all eight tasks, 21 dbt models and 69 data tests. Reliability evidence separates mocked/isolated transport and ingestion failures, isolated DDL rollback/recovery, live same-version read-back and supervised live dbt-tail recovery. It does not claim that every simulated failure occurred on the real source.
-
-Run `.venv\Scripts\python.exe scripts/run_checks.py` from Windows for offline regression. [reliability_runtime.py](tests/reliability_runtime.py) is an explicit isolated Airflow harness, not a production trigger; inspect its `--help` before use. Source/target preflight, dbt compile, DAG discovery, role checks and health checks can be performed without ingestion/build.
-
-Scheduled ingestion and unattended multi-day recovery remain unverified. Windows logon, WSL, Docker and SQL Server must be online; no new autostart service was added. Source consistency is UNVERIFIED, the dbt graph is non-atomic, and publication/BI refresh remain separate controlled operations.
-
-## Portfolio Evidence
-
-Chuỗi tám task và dependencies ở trên là workflow thực; read-version handoff nối `validate_ingestion_batch` → `resolve_dbt_read_version` → `run_dbt_build`, rồi mart gates kiểm tra cùng identity. `max_active_runs=1` hạn chế DAG overlap; locks 941061/941062 bảo vệ các cooperating writers. Preflight transport transient retry một lần; task ghi không tự retry. Downstream default all_success truyền failure và không cho complete giả.
-
-Walkthrough dựa trên **accepted AIRFLOW-01/02/03**, không trigger live trong lượt tài liệu này:
-
-1. AIRFLOW-01 supervised run hoàn tất 8/8 tasks với version đã pin. Không biến kết quả này thành bằng chứng daily unattended.
-2. AIRFLOW-02 tách isolated failure/serialization tests với live same-version read-back và dbt-tail recovery. Trong recovery giữ nguyên năm task đầu đã thành công, parent/version không đổi; scope chỉ `actions=["build"]`.
-3. Sau khi inspect ledger/process/partial DDL và sửa nguyên nhân, chỉ clear ba task cuối của đúng run: `run_dbt_build`, `validate_sales_marts`, `pipeline_complete`. Ingestion không chạy lại. Xác nhận marts/version/privileges trước khi đóng gate.
-4. AIRFLOW-03 chuẩn bị lịch và lifecycle guards; không chứng minh unattended multi-day. Mặc định vẫn manual (`schedule=None`), paused, `catchup=False`, gate=false; không tự cấp quyền cho interval tương lai.
-
-Tái hiện offline: `python -m unittest discover -s airflow/tests -p test_reliability.py -v` và `test_worker.py`; kiểm tra failure propagation, write scope, retry và version validation bằng mocks. Chúng không thay thế live Airflow recovery. Harness isolated Airflow đã có tại [reliability_runtime.py](tests/reliability_runtime.py), chỉ chạy trong scope sandbox riêng; không dừng live database để giả lỗi.
-
-![Apache Airflow — Retail Sales Pipeline](../docs/assets/airflow-graph.png)
-
-Ảnh Graph View thật do chủ dự án cung cấp ghi lại run lịch sử ngày 23/11/2026, 06:13:22 UTC: đủ tám task theo chuỗi dependency, tất cả hiển thị success. `Schedule: None` và nút DAG paused vẫn hiện trên ảnh. Đây là bằng chứng run lịch sử; không có DAG execution mới trong lượt cập nhật tài liệu, không chứng minh daily unattended hoặc automatic Power BI refresh. Ảnh được giữ nguyên, không chỉnh task names/states; [provenance và SHA256](../docs/assets/provenance.json).
-
-Ảnh task logs/recovery chi tiết vẫn chưa được bổ sung. Khi cần, chủ dự án có thể chụp log resolve read version hoặc recovery tail của accepted run, giữ DAG paused/gate closed và che thông tin nhạy cảm; không cần trigger lại pipeline.
+This is a local SequentialExecutor/SQLite deployment, not a highly available service. Windows logon, WSL, Docker and SQL Server must remain available. End-to-end shutdown/reboot recovery and unattended multi-day operation are not established. Source snapshot consistency remains unverified, dbt graph replacement is non-atomic, and publication and Power BI Manual Refresh are independent controlled operations.
