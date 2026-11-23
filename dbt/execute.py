@@ -11,6 +11,7 @@ import time
 from uuid import UUID,uuid4
 import yaml
 from configuration import load,ContractError
+from ddl_policy import DDLPolicyError,verify_project,inspect_scope
 
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
@@ -83,6 +84,9 @@ def main():
             from ingestion.incremental import assert_version
             if assert_version(guard,UUID(args.capture_id))!='INCREMENTAL':raise ValueError('Incremental version required')
         else:guard.execute('select dw_staging.assert_capture(%s)',(args.capture_id,))
+        if args.command in ('run','build'):
+            verify_project(ROOT/'dbt')
+            inspect_scope(guard)
         invocation=str(uuid4()); project=local/'invocations'/invocation
         project.mkdir(parents=True)
         base=ROOT/'dbt'
@@ -135,6 +139,7 @@ def main():
         print(json.dumps(evidence));return result.returncode
     except Exception as error:
         print(json.dumps({'status':'FAIL','error_type':type(error).__name__,
+                          'error':str(error) if isinstance(error,DDLPolicyError) else 'CONFIGURATION_CAPTURE_OR_EXECUTION_GATE',
                           'message':str(error) if isinstance(error,ContractError) else
                           'Configuration/capture/execution gate failed; no secrets logged'}));return 1
     finally:

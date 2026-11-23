@@ -2,7 +2,7 @@
 
 **AIRFLOW_01_ACCEPTED — local supervised runtime, 2026-11-23.** Đã chạy một DAG end-to-end, đủ 8 tasks SUCCESS; 21 dbt models, 69 tests và run-start operation PASS. Không đồng nghĩa production readiness hoặc certified/source-consistent publication.
 
-**AIRFLOW_02_PARTIAL.** Các kiểm thử reliability/recovery trên DAG hiện hữu đã chạy, scheduling vẫn tắt. Recovery live đã rebuild bằng dbt table materialization và DROP các backup tables; điều này vi phạm ràng buộc không DROP bất kỳ PostgreSQL table của AIRFLOW-02, dù dữ liệu trước/sau khớp nhau. Chưa đủ điều kiện nghiệm thu. Phân biệt fixture/mocks, scheduler cô lập và recovery live ở phần dưới; không coi các lỗi mô phỏng là sự cố thật của WWI/PostgreSQL.
+**AIRFLOW_02_ACCEPTED — controlled local recovery.** Owner đã cho phép dbt replacement trong phạm vi Sales được kiểm chứng. Đã phân loại lại toàn bộ DROP log, kiểm tra quyền/dependencies live chỉ đọc và thử lỗi DDL/recovery cô lập; không chạy thêm build live để lặp log cũ. Scheduling vẫn tắt. Phân biệt fixture/mocks, scheduler cô lập và recovery live ở phần dưới; không coi các lỗi mô phỏng là sự cố thật của WWI/PostgreSQL.
 
 ## Môi trường đã xác minh
 
@@ -86,7 +86,7 @@ Chỉ bật boolean không còn đủ quyền. Scope private phải khớp **par
 }
 ```
 
-Recovery chỉ rebuild thì `actions=["build"]`; bridge và worker đều kiểm scope trước gọi CLI. **dbt table rebuild có DROP backup relations**: scope này không phù hợp với một yêu cầu cấm DROP tuyệt đối. Khi chưa có chấp thuận cho table replacement, giữ gate đóng và chỉ kiểm thử cô lập/đọc. Không cho scope wildcard, không cho một scope áp dụng nhiều version. Gate là interlock local, không thay SQL least privilege hoặc bảo vệ private profile/repository.
+Recovery chỉ rebuild thì `actions=["build"]`; bridge và worker đều kiểm scope trước gọi CLI. Owner cho phép CREATE/RENAME/GRANT và DROP phục vụ replacement đúng các Sales models ở phần controlled DDL bên dưới. Không cho scope wildcard hoặc áp dụng một scope cho nhiều version. Gate không cấp quyền DROP Raw/metadata hoặc đối tượng ngoài phạm vi, không thay SQL least privilege hoặc bảo vệ private profile/repository.
 
 Sau khi các gates thực tế PASS, operator bật write gate trong profile private vàtrigger:
 
@@ -117,7 +117,7 @@ Quy trình rerun phần dbt:
 2. Giữ nguyên run ID/conf/parent; xác minh V vẫn VALIDATED, đủ sáu nguồn, contract/algorithm khớp, ACK=NULL. Đối soát baseline Raw/current-state, serving counts/digests/KPI và pin BI.
 3. Trong Grid chọn đúng run và ba task `run_dbt_build`, `validate_sales_marts`, `pipeline_complete`; clear cả failed/upstream_failed, không chọn upstream/past/future. Năm upstream đã SUCCESS được giữ nguyên. Không mark success thủ công.
 4. Nếu dùng CLI, lấy **logical date chính xác** từ run rồi dùng `airflow tasks clear -s "$LOGICAL_DATE" -e "$LOGICAL_DATE" -t '^(run_dbt_build|validate_sales_marts|pipeline_complete)$' retail_sales_incremental_pipeline`; review danh sách đúng ba task trước xác nhận. Không dùng chỉ ngày khi cùng ngày có nhiều run.
-5. Chỉ khi Owner cho phép DDL table replacement của dbt: mở scope `build` cho đúng P/V rồi unpause DAG manual. Nếu vẫn cấm DROP tuyệt đối thì dừng trước bước này, dùng fixtures để chứng minh recovery. dbt kiểm eligibility lại trước CLI và dùng đúng V; không clear ingestion. Chỉ hoàn tất sau execution receipt và mọi model/data test PASS, mart reconciliation PASS.
+5. Theo phạm vi replacement đã được Owner phê duyệt: mở scope `build` cho đúng P/V rồi unpause DAG manual. Pre-build DDL gate phải PASS; nếu có artifact/dependency ngoài dự kiến thì dừng và inspect, không sửa gate để chạy qua. dbt kiểm eligibility lại trước CLI và dùng đúng V; không clear ingestion. Chỉ hoàn tất sau execution receipt và mọi model/data test PASS, mart reconciliation PASS.
 6. Đóng gate, xóa scope hoặc đặt null, pause DAG; so sánh baseline và giữ logs. Không refresh Power BI tự động. Nếu output/receipt/mart mismatch: giữ failure, không fallback capture cũ hoặc tự chạy cả DAG.
 
 Timeout của bridge/worker được báofailure; Windows interopchild có thể còn chạy sau WSLtasktimeout. Không tự kill/retry/createbatch; inspectWindows processes vàdurableversion, đợi/cancel cókiểm soát trước rerun. max_active_runs=1 chỉserializeDAG này; external CLI hoặcDAG khác vẫn cần operator coordination. Existing ingestion/dbt advisory locks vẫn làguard từngengine, khôngglobalatomicpublication. AirflowSQLite sequential chỉ phù hợp localsingleDAG; không HA hoặcdistributedexecutor.
@@ -167,7 +167,54 @@ Recovery live dùng lại `manual__airflow01_20261123T061320Z`, V=`3a2f011d-f3b3
 
 Before/after: count và SHA256 của tám metadata tables giữ nguyên; Raw base/delta/current-state counts và content digests của toàn bộ serving tables giữ nguyên; Sales 172261341.20, Tax 25782098.25, IncludingTax 198043439.45, Units 8950628, Invoices 70510, Orders 73595 giữ nguyên. Hash file Power BI, pin V, publication/checkpoint không đổi. Source chỉ SELECT, không refresh BI. Scope/profile được khôi phục, gate false, DAG paused, schedule=None; scheduler/UI vẫn healthy.
 
-**Sai lệch safety cần Owner review:** SQL log của recovery invocation có 42 câu DROP IF EXISTS cho dbt temporary/backup relations, trong đó 21 câu dành cho `__dbt_backup`; không có TRUNCATE. Các bảng phục vụ đã được thay thế theo cơ chế materialization của dbt; data digests/KPI khớp hoàn toàn, nhưng không thể tuyên bố đã tuân thủ lệnh cấm DROP bất kỳ bảng PostgreSQL. Đã dừng mọi thao tác ghi tiếp theo, không tự coi normal dbt rebuild là ngoại lệ được duyệt. Cần Owner quyết định liệu cho phép table replacement có kiểm soát trong recovery tương lai hay giữ cấm DROP và chỉ demo bằng môi trường cô lập. Không mở scheduling hoặc đánh dấu AIRFLOW-02 accepted khi chưa xử lý sai lệch này.
+Kết quả đếm DROP trước đây đã được sửa: **42 dòng khớp pattern gồm 21 câu SQL và 21 dòng SQL status**, không phải 42 câu SQL. SQL thực tế có 19 DROP TABLE và 2 DROP VIEW, đều hậu tố `__dbt_backup`, không có TRUNCATE hoặc DROP nhắm canonical name/Raw/metadata. Quyết định Owner mới cho phép replacement có kiểm soát; không xóa lịch sử sai lệch hoặc tự coi mọi tên backup là hợp lệ. Phân loại đầy đủ, số dòng và hash log ở ignored `.local/airflow-02/finalize/drop-classification.json`; mỗi dòng status được liên kết đúng câu SQL, không tính thành lần DROP nữa.
+
+## Controlled dbt DDL
+
+Database duy nhất `retail_raw`; 21 models dưới đây là allowlist. Full target của từng DROP là `retail_raw.<schema>.<model>__dbt_backup`. T = table, V = view. Từng table có bằng chứng old→backup rename, intermediate→canonical rename, COMMIT và DROP acknowledgement. Hai view-backup không được tạo/rename trong trace: no-op được **suy luận từ trace đầy đủ và adapter lifecycle**, không suy từ riêng command tag DROP VIEW.
+
+| Schema | Model | Materialization | Backup tồn tại / bị xóa |
+|---|---|---|---|
+| dw_staging | stg_sales_customers | T | Có / Có |
+| dw_staging | stg_sales_invoicelines | T | Có / Có |
+| dw_staging | stg_sales_invoices | T | Có / Có |
+| dw_staging | stg_sales_orderlines | T | Có / Có |
+| dw_staging | stg_sales_orders | T | Có / Có |
+| dw_staging | stg_warehouse_stockitems | T | Có / Có |
+| dw_core | dim_date | T | Có / Có |
+| dq | validation_violations | T | Có / Có |
+| dq | record_status | T | Có / Có |
+| dw_core | dim_customer | T | Có / Có |
+| dw_core | dim_product | T | Có / Có |
+| dw_intermediate | int_invoice_header | V | Không / Không — suy luận |
+| dw_intermediate | int_order_header | V | Không / Không — suy luận |
+| dq | quarantine_records | T | Có / Có |
+| dw_core | fact_invoice_line | T | Có / Có |
+| dw_core | fact_order_line | T | Có / Có |
+| sales_marts | mart_customer_sales | T | Có / Có |
+| sales_marts | mart_sales_daily | T | Có / Có |
+| sales_marts | mart_sales_product_daily | T | Có / Có |
+| sales_marts | mart_sales_customer_summary | T | Có / Có |
+| sales_marts | mart_sales_monthly | T | Có / Có |
+
+Các macro dbt đang cài tạo intermediate, rename old→backup/new→canonical, áp grants và COMMIT, sau đó DROP backup ngoài transaction model. Cả 21 SQL có CASCADE. Khi staging invoices/orders được thay bảng, view headers cũ vẫn trỏ OID của bảng đã rename; CASCADE xóa hai view này. Graph dbt sau đó tạo lại đúng headers và áp SELECT grants. Đây là hai collateral objects thuộc allowlist, không phải bằng chứng CASCADE luôn an toàn. Không có temporary target nào bị DROP trong trace này; intermediate được rename thành canonical.
+
+Cho phép replacement/cleanup đúng model, intermediate và backup tương ứng; giữ materialization table/view đã kiểm chứng. Cấm DROP/DML/DDL lên Raw, ingestion_meta, capture/checkpoint/publication, SQL Server, public hoặc schema/objects ngoài graph Sales. Cấm arbitrary CASCADE và tự cleanup artifact lạ. Quyền `retail_transform` không có superuser/CREATEDB/CREATEROLE/REPLICATION/BYPASSRLS; không sở hữu hoặc có CREATE/DML trên raw/ingestion_meta. Không tăng quyền để khắc phục lỗi.
+
+`dbt/ddl_policy.py` là SELECT-only pre-build check cụ thể cho graph này, chạy trong `execute.py` sau khi giữ lock 941062 và validate read version, trước spawn dbt run/build. Check model paths/schema/alias, owner/kind, quyền bảo vệ Raw/meta, orphan tmp/backup, normal dependencies cả relation/row-type và custom triggers/RLS. Chỉ chấp nhận dependent views là hai headers đã biết; consumer khác, FK/function hay artifact còn sót làm fail closed bằng `DDL_*`. Gate live đã PASS: 21 relations, hai dependent views. Không có privileged GRANT mới hoặc framework security tổng quát.
+
+Quy trình này yêu cầu repository đã review và **không có DDL/admin process khác** trong cửa sổ build. Advisory lock chặn CLI tương ứng, không khóa mọi DBA. Gate không phải SQL firewall chống mã SQL/hook độc hại; thay model, macro, alias/schema, dependency hoặc quyền phải review lại. Không auto-refresh BI trong lúc graph đang rebuild; graph chưa atomic và hai views có thể tạm vắng.
+
+## DDL failure/recovery đã thử
+
+20 cases PostgreSQL cô lập, không phải build live mới: table và view ở before CREATE, sau CREATE, sau rename thứ nhất/thứ hai, sau GRANT, trước COMMIT, lost-COMMIT-ack simulation, cleanup failure và success; thêm unapproved view và row-type function consumers. Bằng chứng `.local/airflow-02/finalize/ddl-fixtures.json`. Schema test riêng được tạo vì transform không có TEMP privilege; không tăng quyền TEMP. Mọi fixture được xóa bằng danh sách tên cụ thể và schema rỗng được DROP RESTRICT; không dùng DROP SCHEMA CASCADE.
+
+- Lỗi trước COMMIT: PostgreSQL rollback khôi phục old names/data/SELECT grants/view dependency; không còn tmp/backup. Same-input rerun sau rollback đã thành công.
+- COMMIT đã thành công nhưng ack/cleanup lỗi: canonical mới vẫn tồn tại, backup còn và view có thể vẫn đọc backup cũ. **Không rollback giả định, không re-extract**. Gate chặn blind rerun bằng DDL_STALE_ARTIFACT_INSPECT_BEFORE_RERUN.
+- Recovery fixture sau COMMIT: kiểm tra data/version/grants của canonical và backup; rebind đúng managed header view tới canonical, sau đó DROP backup RESTRICT. Kiểm tra không còn artifacts và quyền/giá trị đúng rồi mới cho rerun graph cùng V. Nếu có consumer lạ hoặc chưa xác minh trạng thái thì giữ gate đóng.
+- Positive control trong sandbox xác nhận CASCADE thực sự có thể xóa consumer ngoài model; DDL gate đã từ chối trước khi DROP. Row-type function dependency cũng bị chặn. Không thử destructive failure trên Sales đang phục vụ.
+
+Live read-only sau kiểm thử: cả 12 BI objects đúng V, owner retail_transform, retail_bi_reader SELECT thật qua chính login; không DML/admin/schema CREATE hoặc SELECT ngoài allowlist. Hai headers tồn tại đúng row counts; không có orphan tmp/backup. Raw/current-state counts, tám metadata digests, serving data digests, KPI và toàn bộ file Power BI khớp baseline. dbt compile đọc-only PASS; model SQL/dependencies/grants không đổi. Gate vẫn false, DAG paused, schedule=None. Không chạy ingestion, live dbt build hay refresh Power BI trong FINALIZE.
 
 Tái kiểm tra offline từ Windows: `.venv\Scripts\python.exe scripts/run_checks.py`. Trên WSL dùng Python Airflow hiện có:
 
