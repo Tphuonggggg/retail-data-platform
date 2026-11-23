@@ -1,0 +1,12 @@
+retail_portfolio_demo:
+  target: demo
+  outputs:
+    demo:
+      type: postgres
+      host: 127.0.0.1
+      port: 55439
+      user: portfolio_demo
+      password: "{{ env_var('RETAIL_DEMO_PASSWORD') }}"
+      dbname: retail_portfolio_demo
+      schema: demo_analytics
+      threads: 1
