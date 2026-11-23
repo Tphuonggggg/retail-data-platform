@@ -8,12 +8,13 @@ flowchart LR
   PY --> RAW[PostgreSQL Raw + version metadata]
   RAW --> DBT[dbt staging / DQ / core / Sales marts]
   DBT --> BI[Power BI Sales Analytics]
-  AF[Airflow WSL: manual E2E verified] -. next milestone .-> PY
+  AF[Airflow WSL: manual E2E verified] -. orchestration .-> PY
+  AF -. orchestration .-> DBT
 ```
 
 ## Công nghệ và cấu trúc
 
-Python3.12, pyodbc/ODBC18, psycopg3, SQL Server WWI, PostgreSQL18/Docker, dbt-core1.11/dbt-postgres1.11 và Power BI Desktop/PBIP. requirements.txt là dependency manifest; không cài Airflow khi chưa triển khai.
+Python3.12, pyodbc/ODBC18, psycopg3, SQL Server WWI, PostgreSQL18/Docker, dbt-core1.11/dbt-postgres1.11 và Power BI Desktop/PBIP. requirements.txt là dependency manifest của Windows worker/dbt; Airflow2.11 dùng venv riêng trên WSL, xem hướng dẫn module Airflow.
 
 | Module | Trách nhiệm |
 |---|---|
@@ -21,7 +22,7 @@ Python3.12, pyodbc/ODBC18, psycopg3, SQL Server WWI, PostgreSQL18/Docker, dbt-co
 | [dbt](dbt/README.md) | Staging, DQ, dimensions/facts và Sales marts; business YAML |
 | [infrastructure](infrastructure/README.md) | Docker/PostgreSQL, migrations và provisioning/recovery |
 | [powerbi](powerbi/README.md) | Active PBIP/TMDL, dashboard, BI access và refresh |
-| [airflow](airflow/README.md) | Orchestration tương lai, chưa có DAG |
+| [airflow](airflow/README.md) | DAG Sales tám tasks; manual E2E/recovery đã kiểm chứng, daily đã chuẩn bị nhưng chưa bật |
 
 scripts/ giữ kiểm tra chung; tests/ giữ integration utilities. Các Python/SQL trong docs/analytics vẫn được BI utilities import, không phải tài liệu có thể xóa. Runtime source contract nằm trong ingestion/common/contracts.py; KPI/DQ contract nằm trong dbt/config. AGENTS.md là hướng dẫn cộng tác, không phải README module thứ bảy.
 
@@ -30,6 +31,8 @@ scripts/ giữ kiểm tra chung; tests/ giữ integration utilities. Các Python
 Trên máy mới: cài SQL Server WWI, Python3.12/ODBC18, Docker Desktop Linux Engine và Power BI Desktop. Tạo .venv, cài requirements.txt; nếu chưa có .env thì sao chép .env.example và điền private settings. Không ghi đè .env/.venv hiện có. Provision target theo infrastructure README; dùng quyền phù hợp, không chạy migration trên target sai hoặc đã có objects.
 
 Chỉ khi môi trường chưa tồn tại: `py -3.12 -m venv .venv`, rồi `.venv\Scripts\python.exe -m pip install -r requirements.txt`. Các placeholders `<uuid>` trong README module phải thay bằng run/version thực tế trước khi chạy. Cài đặt môi trường không được thực hiện tự động trong cleanup này.
+
+Source identity hiện được khóa theo SQL Server local DESKTOP-OBDFK6B/SQLEXPRESS trong ingestion/common/config.py và extractor guard. Trên máy khác phải review endpoint/instance/identity contract; đổi riêng .env không vượt được guard. Credentials, WWI database, local PBIX backup và imported caches không nằm trong Git; provisioning/ingestion có kiểm soát tái tạo warehouse theo hướng dẫn module. Unit checks kiểm PBIX backup nếu có tại máy local, luôn kiểm các assets đã tracked.
 
 ```powershell
 .venv\Scripts\python.exe -m ingestion.full_load --help

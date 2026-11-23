@@ -7,7 +7,7 @@
 - Preflight chỉ selected objects: SELECT/projection/schema và target identity/schema/privileges. History INSERT không là global blocker.
 - Giữ Decimal/NULL/Unicode/datetime2(7), count/digest reconciliation, transaction/idempotency/recovery; không tự sửa business KPI/grain/source contract hoặc accepted DW design.
 - Dùng requirements.txt và unittest hiện hữu; không tự thêm package/framework. Phân biệt code/offline/runtime checks; không ghi PASS khi chưa chạy. Routine local/offline commands không cần approval riêng.
-- Ingestion sở hữu extract/load/codecs; dbt sở hữu staging/core/marts/DQ; infrastructure sở hữu Compose/provisioning/recovery; powerbi sở hữu reports; airflow sở hữu orchestration tương lai. scripts/tests/docs có source tiện ích hỗ trợ đang được import, không xóa theo tên thư mục.
+- Ingestion sở hữu extract/load/codecs; dbt sở hữu staging/core/marts/DQ; infrastructure sở hữu Compose/provisioning/recovery; powerbi sở hữu reports; airflow sở hữu DAG/orchestration và local operations. scripts/tests/docs có source tiện ích hỗ trợ đang được import, không xóa theo tên thư mục.
 - Mỗi module cấp cao chỉ một README. Hướng dẫn vận hành: README root và README của ingestion/dbt/infrastructure/powerbi/airflow. AGENTS.md được giữ riêng cho quy tắc cộng tác.
 
-MVP: Sales Full/Incremental snapshot-diff → Raw → dbt/DQ → DW/Sales marts → Power BI. Airflow/historical SCD2 và domain analytics khác chưa hoàn tất. Không chạy ingestion/build hoặc đổi database khi chỉ làm tài liệu.
+MVP: Sales Full/Incremental snapshot-diff → Raw → dbt/DQ → DW/Sales marts → Power BI. Airflow local E2E/recovery đã kiểm chứng; daily đã chuẩn bị, mặc định manual/gate đóng. Historical SCD2 và domain analytics khác chưa hoàn tất. Không chạy ingestion/build hoặc đổi database khi chỉ làm tài liệu.
