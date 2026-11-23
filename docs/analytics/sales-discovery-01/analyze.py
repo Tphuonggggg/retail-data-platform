@@ -59,7 +59,7 @@ def fingerprints(db,schemas):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--execute',action='store_true');p.add_argument('--capture-id',default=PIN)
-    p.add_argument('--output',type=Path,default=HERE/'results.json');args=p.parse_args()
+    p.add_argument('--output',type=Path,default=ROOT/'.local/sales-analysis.json');args=p.parse_args()
     if not args.execute:p.print_help();return 0
     if args.capture_id!=PIN:raise SystemExit('This reviewed discovery is pinned to '+PIN)
     db=None;raw=None;result={'status':'IN_PROGRESS','capture_id':PIN,'started_at':datetime.now(timezone.utc).isoformat(),'queries':{}}
@@ -106,7 +106,7 @@ def main():
             for path in sorted(list((ROOT/'dbt/models').rglob('*.sql'))+list((ROOT/'dbt/config').glob('*.yml'))+[ROOT/'dbt/macros/capture.sql',HERE/'queries.sql'])}
         before_raw=fingerprints(raw.connection,('raw','ingestion_meta'))
         before_dw=fingerprints(db,SCHEMAS)
-        prior_path=ROOT/'docs/audits/ingest-incr-01/evidence.json'
+        prior_path=ROOT/'.local/incremental-fixture-evidence.json'
         prior=json.loads(prior_path.read_text(encoding='utf-8'))
         if prior['dbt']['same_version_rebuild']['capture_id']!=PIN or prior['dbt']['same_version_rebuild']['exit_code']!=0:
             raise ValueError('Prior acceptance does not cover this version')

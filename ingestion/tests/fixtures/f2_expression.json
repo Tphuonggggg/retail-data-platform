@@ -1,0 +1,3 @@
+{
+  "F2_SQL": "CASE WHEN v.source_value IS NULL THEN CAST(NULL AS varchar(27))\n            ELSE CONVERT(char(19), v.source_value, 126) + '.' +\n                 RIGHT('0000000' + CONVERT(varchar(7),\n                       DATEPART(NANOSECOND, v.source_value) / 100), 7)\n       END"
+}

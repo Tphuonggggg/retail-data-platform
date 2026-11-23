@@ -145,10 +145,10 @@ class RawBootstrapTests(unittest.TestCase):
             self.assertIn(fragment, self.sql)
         self.assertEqual(self.sql.count("CREATE TABLE "), 2)
 
-    def test_object_allowlist_matches_source_security_package(self) -> None:
+    def test_object_allowlist_matches_source_contract(self) -> None:
         import re
-        source = (ROOT / "data-sources/security/wwi_extraction_identity_setup.sql").read_text(encoding="utf-8")
-        expected = set(re.findall(r"\(N'(Sales|Warehouse)',\s*N'([^']+)'\)", source))
+        from ingestion.common.contracts import catalog
+        expected = {tuple(name.split(".")) for name in catalog()}
         actual = re.findall(r"\('(Sales|Warehouse)',\s*'([^']+)'\)", self.sql)
         self.assertEqual(len(actual), 11)
         self.assertEqual(set(actual), expected)

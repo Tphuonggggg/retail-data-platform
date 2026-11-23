@@ -1,78 +1,49 @@
 # Retail Data Platform
 
-**DBT_SALES_RUNTIME_ACCEPTED — 2026-11-20:** 21 models (8 views/13 tables), 69 dbt tests, 129 independent reconciliation checks, 153 offline tests. [Runbook, model counts và evidence](dbt/README.md). Raw vẫn unpublished/UNVERIFIED; Power BI/Airflow chưa triển khai.
+Đồ án xây dựng Sales Analytics từ WideWorldImporters: bảo toàn dữ liệu nguồn, nạp lặp được, đối soát độc lập và trình bày KPI có grain/date basis rõ ràng.
 
-Đồ án Data Engineering: **SQL Server WWI → Python Full Load → PostgreSQL Raw → dbt DW/Marts → Power BI**. Ưu tiên Sales; incremental/SCD2/Customer/Inventory/Airflow ở milestones sau.
-
-**Full Load đã nghiệm thu ngày 2026-11-19:** 11 objects, 939.208 dòng của run `5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8`, consistency UNVERIFIED, chưa publish. [Runtime evidence](ingestion/README.md#ingest-010203--runtime-acceptance-2026-11-19). Sales dbt Warehouse/Marts đã runtime accepted trong DBT-SALES-01; historical SCD2 và các domain ngoài Sales vẫn chưa triển khai.
-
-## Cấu trúc theo pipeline stage
-
-```text
-ingestion/             extractors, loaders, codecs, Full Load CLI
-  common/              config, source contract, fidelity/evidence
-  extractors/          SQL Server SELECT-only
-  loaders/             PostgreSQL COPY, metadata, reconciliation
-  scripts/             source diagnostics
-  tests/               ingestion unit/offline tests
-dbt/                   project, staging/intermediate/core/marts, macros, tests (implemented)
-airflow/               orchestration ownership; chưa có DAG/config/plugin
-powerbi/               report/dashboard ownership; chưa có report assets
-infrastructure/
-  docker/              Compose và resource identities
-  postgres/            bootstrap, Raw DDL/runbook; warehouse draft riêng
-  scripts/             connection, recovery, provisioning utilities
-  tests/               infrastructure offline/read-only checks
-monitoring/            cross-pipeline logging/metrics/observability
-docs/                  architecture, requirements/KPI, data models, ADR, archive
-data-sources/          source documentation và historical security artifacts
-scripts/               project-wide validation utilities
-tests/                 cross-module integration, B9 và historical security tests
+```mermaid
+flowchart LR
+  WWI[SQL Server WWI: SELECT only] --> PY[Python Full / Snapshot Diff]
+  PY --> RAW[PostgreSQL Raw + version metadata]
+  RAW --> DBT[dbt staging / DQ / core / Sales marts]
+  DBT --> BI[Power BI Sales Analytics]
+  AF[Airflow: NOT_IMPLEMENTED] -. next milestone .-> PY
 ```
 
-Marts SQL thuộc dbt; Power BI chỉ sở hữu báo cáo. [DQ ownership](docs/architecture/data-quality-ownership.md): checks đặt gần stage thực thi, không duy trì module rỗng song song.
+## Công nghệ và cấu trúc
 
-## Local setup và kiểm tra
+Python3.12, pyodbc/ODBC18, psycopg3, SQL Server WWI, PostgreSQL18/Docker, dbt-core1.11/dbt-postgres1.11 và Power BI Desktop/PBIP. requirements.txt là dependency manifest; không cài Airflow khi chưa triển khai.
 
-Dùng Python 3.12 của development account, ODBC Driver 18, Docker Desktop Linux Engine. Giữ .venv/.env hiện có, không ghi đè/xóa/tạo lại tự động. [requirements.txt](requirements.txt) là nguồn version duy nhất; dbt pins được bảo toàn từ draft trước refactor, không chứng minh runtime PASS. Windows Authentication dùng current development account; development TLS/admin opt-in chỉ theo Owner approval. Không in credentials/DSN.
+| Module | Trách nhiệm |
+|---|---|
+| [ingestion](ingestion/README.md) | Source contracts, Full Load, snapshot-diff, reconciliation/recovery |
+| [dbt](dbt/README.md) | Staging, DQ, dimensions/facts và Sales marts; business YAML |
+| [infrastructure](infrastructure/README.md) | Docker/PostgreSQL, migrations và provisioning/recovery |
+| [powerbi](powerbi/README.md) | Active PBIP/TMDL, dashboard, BI access và refresh |
+| [airflow](airflow/README.md) | Orchestration tương lai, chưa có DAG |
 
-Chạy từ repository root:
+scripts/ giữ kiểm tra chung; tests/ giữ integration utilities. Các Python/SQL trong docs/analytics vẫn được BI utilities import, không phải tài liệu có thể xóa. Runtime source contract nằm trong ingestion/common/contracts.py; KPI/DQ contract nằm trong dbt/config. AGENTS.md là hướng dẫn cộng tác, không phải README module thứ bảy.
+
+## Quick start
+
+Trên máy mới: cài SQL Server WWI, Python3.12/ODBC18, Docker Desktop Linux Engine và Power BI Desktop. Tạo .venv, cài requirements.txt; nếu chưa có .env thì sao chép .env.example và điền private settings. Không ghi đè .env/.venv hiện có. Provision target theo infrastructure README; dùng quyền phù hợp, không chạy migration trên target sai hoặc đã có objects.
+
+Chỉ khi môi trường chưa tồn tại: `py -3.12 -m venv .venv`, rồi `.venv\Scripts\python.exe -m pip install -r requirements.txt`. Các placeholders `<uuid>` trong README module phải thay bằng run/version thực tế trước khi chạy. Cài đặt môi trường không được thực hiện tự động trong cleanup này.
 
 ```powershell
-.venv\Scripts\python.exe -m pip install -r requirements.txt
-docker compose --env-file .env -f infrastructure/docker/compose.raw.yaml config --quiet
 .venv\Scripts\python.exe -m ingestion.full_load --help
-.venv\Scripts\python.exe -m ingestion.full_load plan --object Warehouse.StockItemHoldings
-.venv\Scripts\python.exe -m ingestion.full_load preflight --all --env-file .env
-.venv\Scripts\python.exe -m ingestion.full_load reconcile --all --run-id 5abc4a32-3eb6-4d17-9a29-37eb26bfc5f8 --env-file .env
+.venv\Scripts\python.exe -m ingestion.incremental --help
+docker compose --env-file .env -f infrastructure/docker/compose.raw.yaml config --quiet
 .venv\Scripts\python.exe scripts/run_checks.py
 ```
 
-Preflight/reconcile cần runtime sẵn sàng, không nạp lại/publish. [Runbook](ingestion/README.md). Không chạy lại bootstrap/full_load.sql trên database đã provision.
+## Workflow và giới hạn
 
-Compose project `retail-raw`, container `retail-raw-postgres-1`, volume `retail-raw_pg_data`, binding `127.0.0.1:55434` giữ nguyên. Bootstrap bind source nay là `infrastructure/postgres/bootstrap.sql`. Không chạy compose up/recreate chỉ để áp dụng đường dẫn mới trên container hiện có; refactor không yêu cầu restart.
+Plan → source/target preflight → run được cho phép → reconcile → chọn explicit capture/version cho dbt → DQ → warehouse/marts → Power BI refresh. Không tự publish, chọn latest hoặc advance checkpoint từ một run chưa đối soát.
 
-## REPO-STRUCTURE-02 — ngày 2026-11-20
+Sales Full/Incremental và dbt/DQ đã có implementation; incremental quét toàn bộ sáu nguồn Sales để snapshot-diff, không phải CDC. Source consistency vẫn chưa được chứng minh bằng coherent atomic snapshot. Historical SCD2 chưa được triển khai đầy đủ; observed-current labels không thay historical attribution. Customer/Product hiện là dimensions Sales; Inventory/Customer analytics độc lập, Purchasing/Finance/BigQuery là mở rộng.
 
-| Đường dẫn cũ | Đường dẫn hiện hành |
-|---|---|
-| `transformation/dbt/*` | `dbt/*` |
-| `transformation/run_dbt.py` | `dbt/run_dbt.py` |
-| `transformation/provision.py`, `provision.sql` | `infrastructure/scripts/provision_warehouse.py`, `infrastructure/postgres/warehouse/provision.sql` |
-| `storage/raw/*` | `infrastructure/postgres/*` |
-| `orchestration/README.md` | `airflow/README.md` |
-| `analytics/README.md` | `powerbi/README.md` |
-| `analytics/kpi-definitions/*` | `docs/requirements/kpi-definitions/*` |
-| `scripts/inspect_wwi_source.py` | `ingestion/scripts/inspect_wwi_source.py` |
-| Raw connection/recovery scripts | `infrastructure/scripts/` |
-| `tests/full_load_offline.py` | `ingestion/tests/full_load_offline.py` |
-| Raw foundation/provisioning tests | `infrastructure/tests/` |
-| `tests/ingest_acceptance_offline.py` | `tests/integration/ingest_acceptance_offline.py` |
-| `storage/README.md` | `docs/archive/pre-reset/storage-module.md` |
-| `data-quality/README.md` | `docs/architecture/data-quality-ownership.md` |
+Dashboard có bốn trang chính và bốn detail ẩn; DAX đã đối soát, nhưng click/sync/reset/drill-through UI acceptance chưa đầy đủ. Serving local không được gọi Certified/atomic publication. Trong lần smoke check gần nhất Docker Linux Engine unavailable nên PostgreSQL/preflight/dbt runtime bị chặn; cần kiểm tra lại hạ tầng trước khi vận hành, không coi đó là lỗi cần reset dữ liệu.
 
-CLI `python -m ingestion.full_load` không đổi. Imports/path discovery, SQL references, Markdown links và Compose bind source được cập nhật; Raw SQL/contracts và business definitions giữ nguyên. Draft DW-IMPLEMENT-01 có sẵn trước task được giữ và di chuyển, không triển khai tiếp; bản sao nguyên trạng ở `.local/repo-structure-02/preserved-dw-draft/` (ignored).
-
-Blocker runtime của REPO-STRUCTURE-02 đã được giải quyết trong DBT-SALES-01: Docker Engine/container cũ khởi động, legacy bind path được khôi phục bằng runtime-only junction; typed digest all11 và metadata/pointer được kiểm lại nguyên vẹn. Không rerun Full Load, recreate container/volume hoặc publish. [Recovery](infrastructure/README.md#dbt-sales-01--khôi-phục-runtime-ngày-2026-11-20).
-
-[Scope](PROJECT_SCOPE.md) · [Roadmap](ROADMAP.md) · [Tasks](TASKS.md) · [Data models](docs/data-models/README.md) · [KPI](docs/requirements/kpi-definitions/wwi-kpi-candidate-catalog.md) · [Archive](docs/archive/pre-reset/README.md).
+Không commit credentials, source extracts hoặc .local/.pbi caches. Không chạy load/build/migrations chỉ để kiểm tra tài liệu.

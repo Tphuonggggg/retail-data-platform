@@ -152,18 +152,10 @@ class ContractTests(unittest.TestCase):
         self.assertIsNone(c['Sales.Customers_Archive'].primary_key)
         self.assertEqual(c['Sales.Customers'].columns,c['Sales.Customers_Archive'].columns)
     def test_frozen_current_contract_exactly_matches_accepted_dictionary(self):
-        import re
-        text=(ROOT/'docs/data-models/wwi-metadata-dictionary.md').read_text(encoding='utf-8')
-        found={}
-        for m in re.finditer(r'## `((?:Sales|Warehouse)\.\w+)` \(\d+[^\n]*\)\n(.*?)(?=\n## |\Z)',text,re.S):
-            cols=[]
-            for line in m[2].splitlines():
-                row=re.match(r'\| `(\w+)` \| `([^`]+)` \| ([^|]+) \|',line)
-                if row:cols.append((row[1],row[2],row[3].strip()!='Kh\u00f4ng'))
-            found[m[1]]=cols
+        found=json.loads((ROOT/'ingestion/tests/fixtures/source_dictionary.json').read_text())
         self.assertEqual(len(found),9)
         for obj in catalog().values():
-            if obj.origin=='CURRENT':self.assertEqual([(c.name,c.source_type,c.nullable) for c in obj.columns],found[obj.name])
+            if obj.origin=='CURRENT':self.assertEqual([[c.name,c.source_type,c.nullable] for c in obj.columns],found[obj.name])
     def test_identifier_and_type_injection_rejected(self):
         for names in (['Sales.Orders;DELETE'],['sys.tables'],['Sales.Orders','Sales.Orders']):
             with self.assertRaises(PipelineError):select_objects(names)
@@ -178,9 +170,7 @@ class ContractTests(unittest.TestCase):
             with patch('ingestion.common.contracts.CONTRACT_PATH',path):
                 self.assertEqual(contract_hash(),expected)
     def test_verbatim_verified_f2_and_no_native_timestamp_projection(self):
-        tree=ast.parse((ROOT/'tests/integration/b9_precision/poc.py').read_text(encoding='utf-8'))
-        original=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign)
-                      and any(isinstance(t,ast.Name) and t.id=='F2_SQL' for t in n.targets))
+        original=json.loads((ROOT/'ingestion/tests/fixtures/f2_expression.json').read_text())['F2_SQL']
         self.assertEqual(F2_SQL,original)
         query=catalog()['Sales.Orders'].query
         self.assertIn('DATEPART(NANOSECOND, [LastEditedWhen]) / 100',query)

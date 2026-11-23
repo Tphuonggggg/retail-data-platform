@@ -1,2 +1,0 @@
-# B9 uses the same runtime adapters.
--r ../../../requirements.txt

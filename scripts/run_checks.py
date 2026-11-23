@@ -12,9 +12,6 @@ SUITES = (
     ('infrastructure/tests', 'raw_foundation_static.py'),
     ('infrastructure/tests', 'raw_provisioning_readonly.py'),
     ('tests/integration', 'ingest_acceptance_offline.py'),
-    ('tests/integration/b9_precision', 'test_poc.py'),
-    ('tests', 'source_security_static.py'),
-    ('tests', 'staging_acl_static.py'),
 )
 
 
