@@ -1,4 +1,4 @@
-/// Imported from dw_intermediate.int_order_header; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+/// Imported from dw_intermediate.int_order_header; version 3a2f011d-f3b3-5683-83a2-a64837720f3d. Observed-current labels, not historical SCD2 attribution.
 table Orders
 	isHidden
 	lineageTag: fb0157ba-8db4-5050-a4d8-4ea9be434ca8
@@ -53,7 +53,7 @@ table Orders
 				    Data = Source{[Schema="dw_intermediate",Item="int_order_header"]}[Data],
 				    Selected = Table.SelectColumns(Data, {"source_order_id", "order_date_key", "source_buyer_customer_id", "buyer_observed_customer_key", "is_order_eligible", "_capture_id"}),
 				    VersionIDs = List.Distinct(Selected[_capture_id]),
-				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "3a2f011d-f3b3-5683-83a2-a64837720f3d" then Selected else error "Unexpected analytical version",
 				    Typed = Table.TransformColumnTypes(Pinned, {{"source_order_id", Int64.Type}, {"order_date_key", Int64.Type}, {"source_buyer_customer_id", Int64.Type}, {"buyer_observed_customer_key", type text}, {"is_order_eligible", type logical}, {"_capture_id", type text}})
 				in
 				    Typed

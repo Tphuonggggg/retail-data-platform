@@ -11,7 +11,7 @@ ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'docs/analytics/sales-discovery-01'))
 from analyze import query_suite
 
-PIN='c825b18e-fc62-4cf1-8837-b37b4c9f9668'
+PIN='3a2f011d-f3b3-5683-83a2-a64837720f3d'
 QUERIES=('Q01','Q02','Q03','Q04','Q05','Q06','Q07','Q08','Q09','Q11','Q13','Q14','Q15','Q17','Q19','Q22')
 
 

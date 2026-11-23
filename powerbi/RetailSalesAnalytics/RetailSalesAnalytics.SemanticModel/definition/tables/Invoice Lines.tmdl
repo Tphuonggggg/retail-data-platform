@@ -1,4 +1,4 @@
-/// Imported from dw_core.fact_invoice_line; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+/// Imported from dw_core.fact_invoice_line; version 3a2f011d-f3b3-5683-83a2-a64837720f3d. Observed-current labels, not historical SCD2 attribution.
 table 'Invoice Lines'
 	isHidden
 	lineageTag: 9bfc772a-bcf4-431f-9549-057fc0c7a5f6
@@ -165,7 +165,7 @@ table 'Invoice Lines'
 				    Data = Source{[Schema="dw_core",Item="fact_invoice_line"]}[Data],
 				    Selected = Table.SelectColumns(Data, {"source_invoice_line_id", "source_invoice_id", "source_order_id", "invoice_date_key", "invoice_date", "source_buyer_customer_id", "source_bill_to_customer_id", "buyer_observed_customer_key", "bill_to_observed_customer_key", "source_stock_item_id", "observed_product_key", "quantity", "invoiced_sales_before_tax", "tax_amount", "invoice_amount_including_tax", "source_reported_line_profit", "is_sales_eligible", "has_warning", "_capture_id", "ruleset_version", "measure_version"}),
 				    VersionIDs = List.Distinct(Selected[_capture_id]),
-				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "3a2f011d-f3b3-5683-83a2-a64837720f3d" then Selected else error "Unexpected analytical version",
 				    Typed = Table.TransformColumnTypes(Pinned, {{"source_invoice_line_id", Int64.Type}, {"source_invoice_id", Int64.Type}, {"source_order_id", Int64.Type}, {"invoice_date_key", Int64.Type}, {"invoice_date", type date}, {"source_buyer_customer_id", Int64.Type}, {"source_bill_to_customer_id", Int64.Type}, {"buyer_observed_customer_key", type text}, {"bill_to_observed_customer_key", type text}, {"source_stock_item_id", Int64.Type}, {"observed_product_key", type text}, {"quantity", Int64.Type}, {"invoiced_sales_before_tax", Currency.Type}, {"tax_amount", Currency.Type}, {"invoice_amount_including_tax", Currency.Type}, {"source_reported_line_profit", Currency.Type}, {"is_sales_eligible", type logical}, {"has_warning", type logical}, {"_capture_id", type text}, {"ruleset_version", type text}, {"measure_version", type text}})
 				in
 				    Typed

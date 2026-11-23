@@ -1,5 +1,5 @@
 -- Reader-only POWERBI-SALES-01 validation. Bind %(pin)s through psycopg.
--- pin = c825b18e-fc62-4cf1-8837-b37b4c9f9668
+-- pin = 3a2f011d-f3b3-5683-83a2-a64837720f3d
 -- No Raw/DQ/staging/metadata access; use retail_bi_reader.
 
 -- Q01 Coverage and approved headline measures

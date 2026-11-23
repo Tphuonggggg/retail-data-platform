@@ -23,7 +23,8 @@ class ProjectTests(unittest.TestCase):
         for t in imports:
             m=t['partitions'][0]['source']['expression']
             self.assertIn('PostgreSQL.Database("127.0.0.1:55434", "retail_raw"',m)
-            self.assertIn('c825b18e-fc62-4cf1-8837-b37b4c9f9668',m)
+            self.assertIn('List.Count(VersionIDs) = 1',m)
+            self.assertIn('Text.From(VersionIDs{0}) = "3a2f011d-f3b3-5683-83a2-a64837720f3d" then Selected else error "Unexpected analytical version"',m)
             for banned in ('Binary.FromText','File.Contents','Value.NativeQuery','password','Username','dw_staging','ingestion_meta','Schema="raw"','Schema="dq"'):
                 self.assertNotIn(banned,m)
 

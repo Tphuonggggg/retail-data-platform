@@ -107,4 +107,4 @@ Troubleshooting: source Windows auth/ODBC/TLS fail thìdừng, khôngfallbackSQL
 - Scheduler gặp PATH thiếu airflow khi task đầu queued. Sau sửa launcher và restart, scheduler tiếp tục cùng run; không clear task, không tạo batch mới. Regression kiểm inherited PATH đã được bổ sung.
 - Gate private false, DAG paused; scheduler/webserver giữ chạy. Temporary evidence ở ignored .local/airflow-01, không commit logs/private profiles.
 
-Power BI không auto-refresh hoặc đổi pin trong task này. PBIP vẫn pin c825b18e trong khi serving tables hiện pin 3a2f011d; imported cache cũ được giữ nguyên, refresh trực tiếp sẽ bị version guard từ chối. Muốn refresh cần review/đồng bộ pin riêng, không bỏ guard hoặc fallback latest. Đây là giới hạn manual handoff, không sửa Power BI âm thầm.
+AIRFLOW-01 không auto-refresh hoặc đổi pin Power BI. Bước POWERBI-VERSION-SYNC-01 sau đó đã xác minh và đồng bộ sáu import guards với serving version 3a2f011d-f3b3-5683-83a2-a64837720f3d; refresh, SQL/DAX reconciliation và render tám trang đã kiểm chứng. Các lần chạy Airflow tiếp theo vẫn cần review/đồng bộ pin riêng trước refresh; không bỏ guard hoặc fallback latest.

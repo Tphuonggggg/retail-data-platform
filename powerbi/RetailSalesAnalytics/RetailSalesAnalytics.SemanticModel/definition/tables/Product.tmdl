@@ -1,4 +1,4 @@
-/// Imported from dw_core.dim_product; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+/// Imported from dw_core.dim_product; version 3a2f011d-f3b3-5683-83a2-a64837720f3d. Observed-current labels, not historical SCD2 attribution.
 table Product
 	lineageTag: abcaec7f-2848-4205-bedc-beb33ab5aff6
 
@@ -49,7 +49,7 @@ table Product
 				    Data = Source{[Schema="dw_core",Item="dim_product"]}[Data],
 				    Selected = Table.SelectColumns(Data, {"product_key", "source_stock_item_id", "stock_item_name", "brand", "size", "_capture_id"}),
 				    VersionIDs = List.Distinct(Selected[_capture_id]),
-				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "3a2f011d-f3b3-5683-83a2-a64837720f3d" then Selected else error "Unexpected analytical version",
 				    Typed = Table.TransformColumnTypes(Pinned, {{"product_key", type text}, {"source_stock_item_id", Int64.Type}, {"stock_item_name", type text}, {"brand", type text}, {"size", type text}, {"_capture_id", type text}})
 				in
 				    Typed

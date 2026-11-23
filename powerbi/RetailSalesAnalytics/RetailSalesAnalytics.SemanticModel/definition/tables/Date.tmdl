@@ -1,4 +1,4 @@
-/// Imported from dw_core.dim_date; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+/// Imported from dw_core.dim_date; version 3a2f011d-f3b3-5683-83a2-a64837720f3d. Observed-current labels, not historical SCD2 attribution.
 table Date
 	lineageTag: d0df121a-2a4a-41df-85b1-4ddeb2f5c365
 	dataCategory: Time
@@ -130,7 +130,7 @@ table Date
 				    Data = Source{[Schema="dw_core",Item="dim_date"]}[Data],
 				    Selected = Table.SelectColumns(Data, {"date_key", "calendar_date", "calendar_year", "calendar_month", "calendar_day", "calendar_quarter", "month_start", "_capture_id", "ruleset_version", "measure_version"}),
 				    VersionIDs = List.Distinct(Selected[_capture_id]),
-				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "3a2f011d-f3b3-5683-83a2-a64837720f3d" then Selected else error "Unexpected analytical version",
 				    Typed = Table.TransformColumnTypes(Pinned, {{"date_key", Int64.Type}, {"calendar_date", type date}, {"calendar_year", Int64.Type}, {"calendar_month", Int64.Type}, {"calendar_day", Int64.Type}, {"calendar_quarter", Int64.Type}, {"month_start", type date}, {"_capture_id", type text}, {"ruleset_version", type text}, {"measure_version", type text}})
 				in
 				    Typed
