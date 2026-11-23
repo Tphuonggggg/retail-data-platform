@@ -1,90 +1,95 @@
 # dbt Sales Warehouse
 
-21 models: six staging inputs, quality violations/status/quarantine, Orders/Invoices headers, Date/Customer/Product dimensions, OrderLine/InvoiceLine facts and five Sales marts. YAML trong config là nguồn business rules, measures, DQ thresholds và performance; không sửa để vượt validation.
+This module transforms one explicit, reconciled Raw version into staging, data quality records, a core warehouse and five Sales Marts. It owns SQL models and executable business contracts. [Ingestion](../ingestion/README.md) owns extraction; [infrastructure](../infrastructure/README.md) owns privileged provisioning.
 
-## Cài đặt
+## Setup and Version Selection
 
-Cài requirements.txt ở root. Private transform profile do run_dbt.py tạo trong .local/dbt/invocations; xem profiles.yml.example. Target retail_raw, localhost55434, retail_transform; không dùng postgres cho transformations. Role/schema provisioning nằm ở infrastructure/postgres/warehouse và cần authorization riêng.
+Install the pinned root [requirements](../requirements.txt) in the Windows `.venv`: dbt-core 1.11.17 and dbt-postgres 1.11.0. Provision `retail_transform` and its schemas first, set a private password and prepare ignored `.local/dbt/connection.json` with a `password` field. See the infrastructure README for the BI reader pre-build identity requirement.
 
-## Lệnh
+[run_dbt.py](run_dbt.py) validates YAML and creates an invocation-specific project/profile under `.local/dbt/invocations`. [profiles.yml.example](profiles.yml.example) describes the profile; it is not the active credentials file. Target: `127.0.0.1:55434/retail_raw`, non-admin `retail_transform`, one thread. Do not use `postgres` for transformations.
+
+- `FULL`: select a successful, complete 11-object Full Load **run UUID**; source rows are pinned by `_run_id`.
+- `INCREMENTAL`: select an eligible immutable version UUID; staging reads the six typed state functions for its parent/root chain.
+- No fallback to latest, a previous version or the publication pointer. `_capture_id` carries the selected read identity through models.
 
 ```powershell
+# Run from the repository root. Replace UUID placeholders with verified values.
 .venv\Scripts\python.exe dbt/run_dbt.py validate --capture-id <uuid>
 .venv\Scripts\python.exe dbt/run_dbt.py debug --input-kind FULL --capture-id <full-run-uuid>
 .venv\Scripts\python.exe dbt/run_dbt.py compile --input-kind FULL --capture-id <full-run-uuid>
+# First build on a new, provisioned target; writes analytical objects.
+.venv\Scripts\python.exe dbt/run_dbt.py build --input-kind FULL --capture-id <full-run-uuid>
+# Subsequent explicitly authorized version-specific build and tests:
 .venv\Scripts\python.exe dbt/run_dbt.py build --input-kind INCREMENTAL --capture-id <validated-version-uuid>
 .venv\Scripts\python.exe dbt/run_dbt.py test --input-kind INCREMENTAL --capture-id <validated-version-uuid>
 ```
 
-validate chỉ kiểm tra config. compile/build/test có runtime guards và có thể kết nối DB; build thay serving tables nên cần authorization/lý do vận hành. Không chạy khi chỉ cleanup. Không fallback latest/publication pointer. FULL dùng _run_id; INCREMENTAL dùng immutable parent/root/version và typed state functions.
+`validate` is configuration-only. `debug`/`compile` connect through runtime guards; `build` replaces analytical relations and runs data tests. `test` can execute assertion/fidelity queries but is not an ingestion operation. The wrapper does not expose a `parse` command; ordinary dbt parse can inspect its generated private project without building models. Keep outputs and receipts out of Git.
 
-Staging FULL dùng views; INCREMENTAL có thể materialize tables theo performance.yml để tránh repeated Function Scans. Runner truyền PGOPTIONS ở session, giữ inherited read-only safeguards; không ALTER SYSTEM. ANALYZE chỉ trên bảng transform sở hữu. Advisory runner lock ngăn hai transformations đồng thời; không phải atomic publication cho consumers.
+## Model Layers and Grains
 
-## DQ, grains và grants
+All grains below are within a single read version. There are **21 models**.
 
-Giữ tests SQL trong tests/integration, tests/reconciliation và staging_fidelity.sql: pins, population accounting, keys, grains, historical unresolved handling, ratios, quarantine và per-row fidelity. Python regression ở tests/unit kiểm business configuration và model-level BI grants. acceptance.py/bi_grants_acceptance.py là các tiện ích kiểm chứng có kiểm soát, không phải bước build mặc định; đọc --help trước khi chạy fixtures/rebuild.
+| Schema | Models | Grain / responsibility |
+|---|---|---|
+| `dw_staging` | `stg_sales_customers`, `stg_sales_orders`, `stg_sales_orderlines`, `stg_sales_invoices`, `stg_sales_invoicelines`, `stg_warehouse_stockitems` | Six typed source populations, no silent deduplication |
+| `dq` | `validation_violations`, `record_status`, `quarantine_records` | Rule failures; evaluated source record; quarantined record |
+| `dw_intermediate` | `int_order_header`, `int_invoice_header` | OrderID; InvoiceID, independently retained header populations |
+| `dw_core` | `dim_date`, `dim_customer`, `dim_product` | Calendar date; observed customer key; observed product key |
+| `dw_core` | `fact_order_line`, `fact_invoice_line` | OrderID + OrderLineID; InvoiceLineID |
+| `sales_marts` | `mart_sales_daily`, `mart_sales_monthly` | Calendar date; calendar month |
+| `sales_marts` | `mart_sales_product_daily` | Invoice date + product |
+| `sales_marts` | `mart_customer_sales`, `mart_sales_customer_summary` | Invoice date + customer + role; customer + role |
 
-Sales theo approved eligibility/InvoiceDate; Order Count theo Orders/OrderDate. Buyer và Bill-to không cộng. Historical keys chưa resolve giữ U/NK/reasons, observed keys chỉ phục vụ current labels. Không suy COGS/revenue accounting từ source LineProfit.
+FULL staging uses views; INCREMENTAL staging is materialized according to [performance.yml](config/performance.yml) to avoid repeated state-function scans. The two headers are views. Core, quality and marts use tables. Customer marts currently contain BUYER attribution only; their role column does not imply two independent revenue populations.
 
-Grants SELECT cho retail_bi_reader được khai báo ở đúng12 models, không ở project/folder level. Không mở Raw/staging/DQ/meta cho BI. Xem [quyền BI](../README.md), [model](README.md), [KPI](README.md) và [vận hành](README.md).
+Order counts come from Orders and preserve orders without invoices. Invoice counts come from Invoices. Customer/Product observed keys support current labels; historical unresolved references remain distinguishable. Never join the two facts, or facts and aggregate marts, to sum Sales. Distinct counts across overlapping product/customer groups cannot simply be added.
 
-## Model grains và measures
+## Business Measures
 
-Date: ngày/version; Customer/Product: observed key/version; int_order_header:OrderID; int_invoice_header:InvoiceID; fact_order_line:OrderID+OrderLineID; fact_invoice_line:InvoiceLineID. Marts daily/monthly/product-daily/customer-daily/customer-summary có grain riêng; không join fact-to-fact để cộng Sales hoặc cộng overlapping distinct counts.
+[measures.yml](config/measures.yml) defines aggregation, date basis, eligibility, NULL/zero policy and dimensional scope. [business_rules.yml](config/business_rules.yml) and [quality_rules.yml](config/quality_rules.yml) control evaluation; do not change them to bypass a failed gate.
 
-| ID | Measure | Source / grain | Aggregation / ratio | Date | Eligibility |
-|---|---|---|---|---|---|
-|S01|Order Count|int_order_header / OrderID|count|OrderDate|is_order_eligible|
-|S02|Invoice Count|int_invoice_header / InvoiceID|count|InvoiceDate|is_sales_eligible|
-|S03|Invoice Amount Including Tax|fact_invoice_line / InvoiceLineID|sum|InvoiceDate|is_sales_eligible|
-|S04|Invoice Tax Amount|fact_invoice_line / InvoiceLineID|sum|InvoiceDate|is_sales_eligible|
-|S05|Invoiced Sales Before Tax|fact_invoice_line / InvoiceLineID|sum|InvoiceDate|is_sales_eligible|
-|S06|Average Invoice Value Before Tax|fact_invoice_line / InvoiceLineID|S05/S02|InvoiceDate|is_sales_eligible|
-|UNITS|Source Units Sold|fact_invoice_line / InvoiceLineID|sum|InvoiceDate|is_sales_eligible|
-|C03|Sales by Selected Customer Role|fact_invoice_line / InvoiceLineID|sum|InvoiceDate|is_sales_eligible|
-|MOM|Month-over-Month Captured Sales Growth|mart_sales_monthly / month|S05/S05|InvoiceDate|is_sales_eligible|
-|YOY|Year-over-Year Captured Sales Growth|mart_sales_monthly / month|S05/S05|InvoiceDate|is_sales_eligible|
+| ID | Measure | Definition / population | Date basis |
+|---|---|---|---|
+| S01 | Order Count | Eligible order headers | OrderDate |
+| S02 | Invoice Count | Eligible invoice headers | InvoiceDate |
+| S03 | Invoice Amount Including Tax | Sum ExtendedPrice, eligible invoice lines | InvoiceDate |
+| S04 | Invoice Tax Amount | Sum TaxAmount, same eligible lines | InvoiceDate |
+| S05 | Invoiced Sales Before Tax | Sum (ExtendedPrice − TaxAmount), same eligible lines | InvoiceDate |
+| S06 | Average Invoice Value Before Tax | S05 / S02, ratio of totals | InvoiceDate |
+| UNITS | Source Units Sold | Sum Quantity; source packaging units | InvoiceDate |
+| C03 | Sales by Selected Customer Role | S05 attributed separately to Buyer or Bill-to | InvoiceDate |
+| MOM / YOY | Captured Sales Growth | (Current − comparable prior) / prior; monthly coverage guards | InvoiceDate |
 
-Các công thức/NULL/zero policies và dimension eligibility đầy đủ nằm trong config/measures.yml; config/business_rules.yml và quality_rules.yml là contracts executable, không phải historical reports. Zero denominator giữ NULL, money reconciliation tolerance0, ratio1e-12. Sales dùng invoice eligibility, WARNING không tự bị loại; invalid/quarantine không contribute. Profit/COGS/refund accounting chưa được certified.
+Zero denominator returns NULL. Money reconciliation tolerance is zero; ratio tolerance is `1e-12`. Warning records remain eligible where allowed; invalid/quarantined populations are accounted for separately. Buyer and Bill-to represent the same Sales and must not be added. Source LineProfit is not a certified COGS/profit/revenue-recognition definition.
 
-## Thiết kế SCD deferred — không phải runtime đã hoàn tất
+## Data Quality and Validation
 
-### ADR-SCD-01 — Product Attribute Tracking (D01)
+SQL tests in [tests](tests) cover pins, populations, keys, grains, source fidelity, eligibility, ratios, quarantine, reconciliation and historical unresolved handling. An accepted local build passed **21 models and 69 data tests**; this historical result is not proof for a future build/version.
 
-Tập Type 2 của dim_product chỉ gồm **UnitPackageID, OuterPackageID, QuantityPerOuter**. Các analytical attributes còn lại dùng Type 1 **nếu đã được duyệt đưa vào dimension**. Không tự đưa thuộc tính Excluded hoặc technical/audit metadata thành Type 1; CustomFields/Tags tiếp tục ngoài analytical scope. NK và metadata không là Type1 descriptive attributes.
+[acceptance.py](acceptance.py) and [bi_grants_acceptance.py](bi_grants_acceptance.py) are controlled validation utilities; inspect their help/scope before runtime use. Fixtures and rebuild modes are not routine read-only checks. Run the root offline suite with `.venv\Scripts\python.exe scripts/run_checks.py`.
 
-Chỉ tracked Type2 attributes kích hoạt analytical historical version; Type1 changes không tự tạo SCD2 episode. Không thay transaction UnitPrice bằng master product price. Type1 correction lên các versions hiện có phải được đánh giá impact trước khi triển khai.
+## Controlled DDL, Grants and Recovery
 
-### ADR-SCD-02 — Persistent Surrogate Key Registry (D02)
+Before `run`/`build`, [ddl_policy.py](ddl_policy.py) checks the reviewed project, target/role, existing ownership, protected Raw/metadata permissions, stale artifacts and dependent relations/functions/triggers/policies while the runner holds advisory lock 941062.
 
-Persistent Registry cấp và quản lý **Opaque SK** cho analytical versions của Customer/Product. Natural key, source occurrence identity, analytical version identity và warehouse SK là các khái niệm riêng. Không dùng ROW_NUMBER theo thời gian làm durable SK; không mặc định CustomerID + ValidFrom unique.
+Approved replacement is limited to the 21 Sales transformation models and their dbt intermediate/backup relations. Table replacement may rename old/new relations, reapply grants, commit, then DROP the backup with CASCADE. The two known header views may be removed as dependencies and rebuilt later in the graph. Unapproved consumers or stale `__dbt_tmp`/`__dbt_backup` objects stop the build. Raw, ingestion metadata, checkpoints, publication state, source objects and unrelated schemas are protected.
 
-Registry phải có stable mapping, backup/recovery, version supersession và integrity validation. SK stability chỉ được claim khi registry/identity evidence đầy đủ. Boundary corrections, split/merge và late corrections phải có rekey/restatement policy; không đổi nghĩa SK đang referenced.
+This is not an atomic graph publication or a generic SQL firewall. Use reviewed models/macros and exclude concurrent administrative DDL. A failed build may leave partial serving state. Before COMMIT, rollback behavior was verified in isolated tests; after a successful COMMIT with lost acknowledgment/cleanup failure, inspect canonical/backup data, dependencies and grants. Do not blindly rerun or re-extract. See [Airflow recovery](../airflow/README.md).
 
-### ADR-SCD-03 — Whole-Day Analytical Consensus (D03)
+SELECT grants for `retail_bi_reader` are configured on exactly five core models, two headers and five marts in [dbt_project.yml](dbt_project.yml). No project/folder grants expose Raw, staging, DQ or metadata. After rebuilding, verify all 12 objects share the intended version and reader access before a separate Power BI refresh.
 
-Date-only facts chỉ resolve khi chứng minh **full relevant-day coverage** và duy nhất **một analytical version identity** cho toàn khoảng thời gian sự kiện có thể phát sinh. Thiếu analytical validity/coverage hoặc có nhiều analytical episodes phù hợp thì unresolved. Không dùng beginning/end-of-day proxy.
+## Historical Modeling Boundaries
 
-Nhiều source occurrences không nhất thiết là nhiều analytical versions nếu được hợp nhất hợp lệ theo tracked attributes và validity. Không gộp noncontiguous episodes chỉ vì cùng values. Integrity multi-match phải chặn publication trong scope bị ảnh hưởng.
+Approved design direction is retained here; these policies do not claim a completed historical implementation:
 
-### ADR-SCD-04 — Reconciled Hybrid Cutover (D04)
+| Policy | Preserved decision / implementation boundary |
+|---|---|
+| Product attributes | Type 2 whitelist: UnitPackageID, OuterPackageID, QuantityPerOuter. Only approved analytical attributes are Type 1; Tags/CustomFields remain excluded. Transaction prices stay transactional. |
+| Surrogate identity | A persistent registry should manage opaque analytical SKs, supersession and recovery. Natural key, source occurrence and analytical version differ; ROW_NUMBER is not a durable SK. Registry/rekey implementation remains deferred. |
+| Date-only lookup | Resolve only with full relevant-day coverage and exactly one analytical version identity. No beginning/end-of-day proxy; do not merge disjoint episodes because values match. |
+| Hybrid history | Reconcile verified source history with forward observations; preserve lineage and distinguish system-time, observation-time and analytical validity. Do not invent intermediate changes or lose forward evidence on reload. |
+| Exact precision | Raw source identity uses verified 100-ns F2 text. This does not select the final analytical-validity datatype/algorithm or permit microsecond-only historical predicates. |
+| Unresolved and Certified gates | Retain source facts with controlled unresolved keys/reasons. No current/earliest fallback, silent fact removal or successful-match claim; multi-match integrity blocks affected publication. Certified coverage remains unimplemented. |
 
-Reconcile verified WWI temporal history với forward-observed changes. Bảo toàn source-backed/observation-backed lineage; source system-time, observation-time và analytical validity là các ngữ nghĩa riêng.
-
-Không invent business-effective timestamps/intermediate changes, không double-create analytical versions khi cùng thay đổi xuất hiện ở history và observation. Full reload không được làm mất forward evidence. Không hòa giải được thì giữ trạng thái chưa xác minh, không ép nối timeline.
-
-### ADR-SCD-05 — Exact Temporal Precision (D05)
-
-Bảo toàn exact **100 ns** representation của SQL Server temporal values liên quan tới source identity và validity assessment. Chưa phê duyệt PostgreSQL physical datatype.
-
-Không phụ thuộc duy nhất vào microsecond timestamps cho identity hoặc interval predicates khi precision loss có thể làm sai lookup. Phân biệt source exact values với timestamps dùng display/ordinary analytics. Phải kiểm chứng round-trip, boundary predicates, collisions, sentinels và open-ended intervals.
-
-### ADR-SCD-06 — Controlled Unresolved Publication & Certified Mart Gate (D06)
-
-Core facts được giữ unresolved historical dimension references **có kiểm soát**, giữ source population và reconciliation. Certified analytical marts phải qua quality/coverage gates đã được xác định và phê duyệt. Integrity multi-match do history/identity/interval phải chặn publication ở scope bị ảnh hưởng.
-
-Phân biệt missing reference, historical coverage gap, date-only ambiguity, precision error và integrity violation. Unknown/unresolved không là successful historical match. Không silent fallback current/earliest, không drop source fact chỉ vì unresolved dimension lookup. Marts không được claim historical grouping đầy đủ khi chưa qua coverage gate.
-
-Không tự chốt physical algorithms/cutover hoặc coi system-time làbusiness effective time. Runtime hiện giữ unresolved historical keys/reasons và observed-current references; không tuyên bố historical lookup đầy đủ.
-
-Type1 correction cần impact scope, audit/reconciliation và rollback riêng; không tự overwrite mọi version hoặc biến AccountOpenedDate correction thành episode SCD2. Packaging Type2 whitelist không mở rộng sang Tags/CustomFields. Các giá trị cutover, historical fallback, schema/algorithm chưa triển khai không được tự chốt chỉ từ thiết kế này.
+Type 1 corrections need explicit impact, reconciliation and recovery handling; an AccountOpenedDate correction does not automatically create an SCD2 episode. Physical cutover, complete historical lookup and Certified mart coverage must be resolved separately from the implemented observed-current MVP.
