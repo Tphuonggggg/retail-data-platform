@@ -1,0 +1,21 @@
+version: 2
+sources:
+  - name: demo_raw
+    schema: demo_raw
+    tables:
+      - name: lines
+models:
+  - name: stg_demo_lines
+    description: 'Dòng bán hàng tổng hợp do dự án tự tạo; grain line_id; không chứa dữ liệu WWI.'
+    columns:
+      - name: line_id
+        data_tests: [unique, not_null]
+      - name: sales_date
+        data_tests: [not_null]
+      - name: sales_amount
+        data_tests: [not_null]
+  - name: mart_demo_daily
+    description: 'Một dòng mỗi ngày; tổng Sales và số lượng của fixture, không phải KPI WWI.'
+    columns:
+      - name: sales_date
+        data_tests: [unique, not_null]

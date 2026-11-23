@@ -1,0 +1,9 @@
+name: retail_portfolio_demo
+version: '1.0.0'
+config-version: 2
+profile: retail_portfolio_demo
+model-paths: [models]
+test-paths: [tests]
+models:
+  retail_portfolio_demo:
+    +materialized: table

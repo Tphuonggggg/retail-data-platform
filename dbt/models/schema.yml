@@ -6,36 +6,64 @@ models:
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
+  description: 'Lịch liên tục từ ngày Order/Invoice nhỏ nhất đến lớn nhất. Grain: một calendar_date; PK date_key
+    (YYYYMMDD). Fact tham chiếu ngày giao dịch. Table; kiểm tra unique/not_null và coverage.'
+  meta:
+    grain: calendar_date
+    business_key: date_key
+    version_scope: one explicit _capture_id/read version
 - name: dim_customer
   columns:
   - name: customer_key
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
+  description: Khách hàng quan sát trong read version. Grain/PK customer_key; business key source_customer_id. Thuộc
+    tính hiện tại từ staging và record_status; Buyer/Bill-to tham chiếu cùng dimension qua observed key. Table;
+    không khẳng định historical SCD2.
+  meta:
+    grain: observed customer
+    business_key: customer_key
+    version_scope: one explicit _capture_id/read version
 - name: dim_product
   columns:
   - name: product_key
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
+  description: Sản phẩm quan sát trong read version. Grain/PK product_key; business key source_stock_item_id. Staging
+    StockItems và DQ cung cấp nhãn hiện tại; fact tham chiếu observed_product_key. Table; không chứng minh nhãn
+    tại thời điểm giao dịch.
+  meta:
+    grain: observed product
+    business_key: product_key
+    version_scope: one explicit _capture_id/read version
 - name: fact_invoice_line
   columns:
   - name: source_invoice_line_id
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
   - name: observed_product_key
     data_tests:
     - not_null:
@@ -80,15 +108,25 @@ models:
           field: customer_key
         config:
           where: is_sales_eligible
+  description: Một InvoiceLineID trong read version; PK source_invoice_line_id. Phụ thuộc staging InvoiceLines,
+    int_invoice_header, record_status. S05=ExtendedPrice-TaxAmount, S03=ExtendedPrice, S04=TaxAmount, UNITS=Quantity;
+    chỉ cộng khi is_sales_eligible. Relationships đến observed customer/product và date; historical key chưa giải
+    quyết giữ U. Table.
+  meta:
+    grain: InvoiceLineID
+    business_key: source_invoice_line_id
+    version_scope: one explicit _capture_id/read version
 - name: fact_order_line
   columns:
   - name: source_order_line_id
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
   - name: observed_product_key
     data_tests:
     - not_null:
@@ -122,30 +160,55 @@ models:
           field: date_key
         config:
           where: is_order_eligible
+  description: Một OrderLineID (thuộc OrderID) trong read version; PK source_order_line_id. Phụ thuộc staging OrderLines,
+    int_order_header và record_status; lọc is_order_eligible. Observed customer/product/date relationships được
+    kiểm tra. Table; không cộng với invoice fact để tính Sales.
+  meta:
+    grain: OrderID + OrderLineID
+    business_key: source_order_line_id
+    version_scope: one explicit _capture_id/read version
 - name: int_invoice_header
   columns:
   - name: source_invoice_id
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
+  description: Một InvoiceID; PK source_invoice_id. View của staging Invoices và record_status; giữ Buyer/Bill-to
+    tại invoice-time, order/date keys và is_sales_eligible. Nguồn độc lập cho Invoice Count S02; không đếm bằng
+    tổng dòng hàng.
+  meta:
+    grain: InvoiceID
+    business_key: source_invoice_id
+    version_scope: one explicit _capture_id/read version
 - name: int_order_header
   columns:
   - name: source_order_id
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: _capture_id
     data_tests:
     - not_null
+    description: Read version tường minh; không chọn latest và không phải publication ACK.
+  description: Một OrderID; PK source_order_id. View của staging Orders và record_status; nguồn Order Count S01
+    theo OrderDate, kể cả order chưa có invoice. Kiểm tra key/pin và eligibility.
+  meta:
+    grain: OrderID
+    business_key: source_order_id
+    version_scope: one explicit _capture_id/read version
 - name: record_status
   columns:
   - name: record_identity
     data_tests:
     - unique
     - not_null
+    description: Khóa duy nhất trong read version; không phải định danh SCD2 bền vững.
   - name: dq_status
     data_tests:
     - accepted_values:
@@ -154,3 +217,61 @@ models:
           - VALID
           - WARNING
           - INVALID
+  description: Một record_identity trong ruleset/evaluation của read version. Table tổng hợp validation_violations
+    và sáu staging; VALID/WARNING/INVALID cùng quarantine flags. Unique/not_null và accepted_values; warning có
+    thể còn đủ điều kiện.
+  meta:
+    grain: record_identity + ruleset/evaluation
+    business_key: record_identity
+    version_scope: one explicit _capture_id/read version
+- name: validation_violations
+  description: Một vi phạm rule trên source record và evaluation; có thể nhiều dòng mỗi record. Table phụ thuộc
+    sáu staging và relationship rules; grain được kiểm tra bằng SQL violation_grain. Không phải population doanh
+    số.
+  meta:
+    grain: record + rule + evaluation
+    business_key: record_identity + rule_id + evaluation_id
+    version_scope: one explicit _capture_id/read version
+- name: quarantine_records
+  description: Một record_status bị quarantine trong evaluation. Table phụ thuộc record_status; truy ngược validation_violations
+    qua record identity/ruleset/evaluation để xem nhiều lý do.
+  meta:
+    grain: quarantined record + evaluation
+    business_key: record_identity + evaluation_id
+    version_scope: one explicit _capture_id/read version
+- name: mart_sales_daily
+  description: Một sales_date/date_key trong read version. Table ghép dim_date với fact_invoice_line, invoice/order
+    headers. S05, S03, S04, UNITS, S01/S02 và AIV=S05/S02; zero denominator NULL. Kiểm tra grain và reconciliation
+    độc lập.
+  meta:
+    grain: calendar date
+    business_key: sales_date
+    version_scope: one explicit _capture_id/read version
+- name: mart_sales_monthly
+  description: Một sales_month. Table tổng hợp mart_sales_daily; int_invoice_header xác định coverage. Sales, invoices,
+    units; MoM/YoY chỉ có giá trị khi hai tháng so sánh đủ coverage. Kiểm tra grain và ratio semantics.
+  meta:
+    grain: calendar month
+    business_key: sales_month
+    version_scope: one explicit _capture_id/read version
+- name: mart_sales_product_daily
+  description: 'Một invoice_date + source_stock_item_id. Table tổng hợp fact_invoice_line đủ điều kiện: S05, UNITS,
+    count distinct InvoiceID trong nhóm sản phẩm. Không cộng distinct invoice counts giữa sản phẩm.'
+  meta:
+    grain: invoice date + product
+    business_key: invoice_date + source_stock_item_id
+    version_scope: one explicit _capture_id/read version
+- name: mart_customer_sales
+  description: Một invoice_date + source_customer_id + customer_role. Table ghép invoice headers và eligible lines;
+    Sales, units, invoice_count theo customer role cấu hình (hiện BUYER). Không cộng BUYER và BILL_TO với nhau.
+  meta:
+    grain: invoice date + customer + role
+    business_key: invoice_date + source_customer_id + customer_role
+    version_scope: one explicit _capture_id/read version
+- name: mart_sales_customer_summary
+  description: 'Một source_customer_id + customer_role. Table tổng hợp mart_customer_sales: Sales, units, invoice_count,
+    ngày invoice đầu/cuối. Grain/reconciliation SQL kiểm tra cùng read version.'
+  meta:
+    grain: customer + role
+    business_key: source_customer_id + customer_role
+    version_scope: one explicit _capture_id/read version

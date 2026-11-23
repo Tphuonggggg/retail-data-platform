@@ -1,0 +1,14 @@
+{
+  "sales-performance.png": {
+    "origin": "Ảnh Power BI lưu trong bằng chứng accepted POWERBI version sync; tái sử dụng nguyên byte, không chụp mới.",
+    "sha256": "d9ed810c84cd808886563afa18552688b1ea3150f36e31ac8e97b23a643c0eea",
+    "bytes": 424400,
+    "filter": "Year=2014; Product: Top N=5; các bộ lọc khác xem trên ảnh"
+  },
+  "product-contribution.png": {
+    "origin": "Ảnh Power BI lưu trong bằng chứng accepted POWERBI version sync; tái sử dụng nguyên byte, không chụp mới.",
+    "sha256": "2c84ff04db1bcaaa3ec2ad9738af342c94b2d52fa675fbde484827547f40aa08",
+    "bytes": 399802,
+    "filter": "Year=2014; Product: Top N=5; các bộ lọc khác xem trên ảnh"
+  }
+}

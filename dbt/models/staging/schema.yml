@@ -1,7 +1,8 @@
 version: 2
 models:
 - name: stg_sales_customers
-  description: Explicit typed population pinned to one development capture.
+  description: Một dòng source trong read version tường minh; giữ kiểu/NULL và record_identity, không deduplicate.
+    FULL là view; INCREMENTAL là table theo performance.yml. DQ đọc staging rồi core mới áp eligibility.
   columns:
   - name: record_identity
     data_tests:
@@ -11,7 +12,8 @@ models:
     data_tests:
     - not_null
 - name: stg_sales_orders
-  description: Explicit typed population pinned to one development capture.
+  description: Một dòng source trong read version tường minh; giữ kiểu/NULL và record_identity, không deduplicate.
+    FULL là view; INCREMENTAL là table theo performance.yml. DQ đọc staging rồi core mới áp eligibility.
   columns:
   - name: record_identity
     data_tests:
@@ -21,7 +23,8 @@ models:
     data_tests:
     - not_null
 - name: stg_sales_orderlines
-  description: Explicit typed population pinned to one development capture.
+  description: Một dòng source trong read version tường minh; giữ kiểu/NULL và record_identity, không deduplicate.
+    FULL là view; INCREMENTAL là table theo performance.yml. DQ đọc staging rồi core mới áp eligibility.
   columns:
   - name: record_identity
     data_tests:
@@ -31,7 +34,8 @@ models:
     data_tests:
     - not_null
 - name: stg_sales_invoices
-  description: Explicit typed population pinned to one development capture.
+  description: Một dòng source trong read version tường minh; giữ kiểu/NULL và record_identity, không deduplicate.
+    FULL là view; INCREMENTAL là table theo performance.yml. DQ đọc staging rồi core mới áp eligibility.
   columns:
   - name: record_identity
     data_tests:
@@ -41,7 +45,8 @@ models:
     data_tests:
     - not_null
 - name: stg_sales_invoicelines
-  description: Explicit typed population pinned to one development capture.
+  description: Một dòng source trong read version tường minh; giữ kiểu/NULL và record_identity, không deduplicate.
+    FULL là view; INCREMENTAL là table theo performance.yml. DQ đọc staging rồi core mới áp eligibility.
   columns:
   - name: record_identity
     data_tests:
@@ -51,7 +56,8 @@ models:
     data_tests:
     - not_null
 - name: stg_warehouse_stockitems
-  description: Explicit typed population pinned to one development capture.
+  description: Một dòng source trong read version tường minh; giữ kiểu/NULL và record_identity, không deduplicate.
+    FULL là view; INCREMENTAL là table theo performance.yml. DQ đọc staging rồi core mới áp eligibility.
   columns:
   - name: record_identity
     data_tests:

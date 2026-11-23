@@ -128,3 +128,11 @@ Inspect Engine/context, exact container identity, port, health and inventory fir
 A legacy existing container may still bind `storage/raw/bootstrap.sql`. [ensure_raw_bind.ps1](scripts/ensure_raw_bind.ps1) can inspect/restore the ignored compatibility junction to canonical `infrastructure/postgres`; do not recreate the container just to change that historical bind.
 
 After any failed provisioning, investigate partial state before another attempt. Prefer a reviewed manual correction to deleting a volume. Backup/restore and destructive reset need separate target-specific authorization; there is no broad volume-prune recovery procedure. Existing scripts do not constitute a tested one-command cold deployment on another machine.
+
+## Isolated Portfolio Demo
+
+[compose.demo.yaml](docker/compose.demo.yaml) dùng project `retail-portfolio-demo`, PostgreSQL 18, database `retail_portfolio_demo`, user `portfolio_demo`, loopback port **55439**, schemas `demo_raw`/`demo_analytics`. Không đọc `.env`, không bind source/config production, không dùng named volume; PGDATA ở tmpfs `/var/lib/postgresql`. User khởi tạo có quyền admin **chỉ trong container demo riêng**, không chứng minh production least privilege. Credential ngẫu nhiên độc lập ở ignored `.local/portfolio-demo/demo.env`.
+
+Từ root chạy `python -m ingestion.demo config`, sau đó `python -m ingestion.demo run`. Lệnh `up --wait` chỉ khởi động service demo; cổng đang bị chiếm sẽ fail thay vì chuyển sang target khác. Python cố định endpoint/database/user, kiểm tra identity và từ chối nếu có schema `raw`, `ingestion_meta` hoặc `dw_core`. Không fallback credential. dbt profile demo được tạo từ template riêng và không tham chiếu Raw/metadata live. Không chạy Compose Raw trong quá trình demo.
+
+`python -m ingestion.demo down` dừng/xóa resource của riêng project demo, không gọi `--volumes`, `prune` hay xóa database hiện hữu. Vì tmpfs, dừng container làm mất fixture; chạy lại tạo fresh demo. Nếu cần inspect output, thực hiện trước khi down. Không dùng cùng project name/cổng cho dịch vụ cá nhân khác. Lượt này đã kiểm chứng startup/build/no-change/rollback/recovery/output và teardown trên Docker Linux local; chưa kiểm chứng full stack trên máy sạch.

@@ -244,3 +244,18 @@ One accepted supervised run completed all eight tasks, 21 dbt models and 69 data
 Run `.venv\Scripts\python.exe scripts/run_checks.py` from Windows for offline regression. [reliability_runtime.py](tests/reliability_runtime.py) is an explicit isolated Airflow harness, not a production trigger; inspect its `--help` before use. Source/target preflight, dbt compile, DAG discovery, role checks and health checks can be performed without ingestion/build.
 
 Scheduled ingestion and unattended multi-day recovery remain unverified. Windows logon, WSL, Docker and SQL Server must be online; no new autostart service was added. Source consistency is UNVERIFIED, the dbt graph is non-atomic, and publication/BI refresh remain separate controlled operations.
+
+## Portfolio Evidence
+
+Chuỗi tám task và dependencies ở trên là workflow thực; read-version handoff nối `validate_ingestion_batch` → `resolve_dbt_read_version` → `run_dbt_build`, rồi mart gates kiểm tra cùng identity. `max_active_runs=1` hạn chế DAG overlap; locks 941061/941062 bảo vệ các cooperating writers. Preflight transport transient retry một lần; task ghi không tự retry. Downstream default all_success truyền failure và không cho complete giả.
+
+Walkthrough dựa trên **accepted AIRFLOW-01/02/03**, không trigger live trong lượt tài liệu này:
+
+1. AIRFLOW-01 supervised run hoàn tất 8/8 tasks với version đã pin. Không biến kết quả này thành bằng chứng daily unattended.
+2. AIRFLOW-02 tách isolated failure/serialization tests với live same-version read-back và dbt-tail recovery. Trong recovery giữ nguyên năm task đầu đã thành công, parent/version không đổi; scope chỉ `actions=["build"]`.
+3. Sau khi inspect ledger/process/partial DDL và sửa nguyên nhân, chỉ clear ba task cuối của đúng run: `run_dbt_build`, `validate_sales_marts`, `pipeline_complete`. Ingestion không chạy lại. Xác nhận marts/version/privileges trước khi đóng gate.
+4. AIRFLOW-03 chuẩn bị lịch và lifecycle guards; không chứng minh unattended multi-day. Mặc định vẫn manual (`schedule=None`), paused, `catchup=False`, gate=false; không tự cấp quyền cho interval tương lai.
+
+Tái hiện offline: `python -m unittest discover -s airflow/tests -p test_reliability.py -v` và `test_worker.py`; kiểm tra failure propagation, write scope, retry và version validation bằng mocks. Chúng không thay thế live Airflow recovery. Harness isolated Airflow đã có tại [reliability_runtime.py](tests/reliability_runtime.py), chỉ chạy trong scope sandbox riêng; không dừng live database để giả lỗi.
+
+Chưa có ảnh Graph View/task logs thật để đưa vào Git. Chủ dự án có thể mở accepted run ở UI, chụp Graph/Grid thấy đủ tám task và run state, sau đó chụp log resolve read version hoặc recovery tail. Giữ DAG paused/gate closed; không cần trigger/refresh dữ liệu. Che credentials, private hostname/path và thông tin phiên trước khi lưu `docs/assets/airflow-graph.png`; không tạo ảnh từ log giả.
