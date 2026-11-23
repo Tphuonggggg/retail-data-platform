@@ -1,0 +1,136 @@
+/// Imported from dw_core.dim_date; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+table Date
+	lineageTag: d0df121a-2a4a-41df-85b1-4ddeb2f5c365
+	dataCategory: Time
+
+	column date_key
+		dataType: int64
+		isHidden
+		lineageTag: 6e709c9d-778a-44ad-9539-7fab33d857e9
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column calendar_date
+		dataType: dateTime
+		isKey
+		formatString: dd MMM yyyy
+		lineageTag: d9c49483-8cdd-4908-a4a7-a90fea724a87
+		summarizeBy: none
+		sourceColumn: calendar_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column calendar_year
+		dataType: int64
+		lineageTag: abc612da-3d11-4d8c-9420-f1cadfb006c4
+		summarizeBy: none
+		sourceColumn: calendar_year
+
+	column calendar_month
+		dataType: int64
+		isHidden
+		lineageTag: 916feac7-0335-4b65-aa85-32fc88cc282f
+		summarizeBy: none
+		sourceColumn: calendar_month
+
+	column calendar_day
+		dataType: int64
+		isHidden
+		lineageTag: e8ea69c7-f860-483f-9d3a-1c035cc1dcfd
+		summarizeBy: none
+		sourceColumn: calendar_day
+
+	column calendar_quarter
+		dataType: int64
+		isHidden
+		lineageTag: f9766e20-3dd1-4046-ad2d-0b2ff7cc1fa7
+		summarizeBy: none
+		sourceColumn: calendar_quarter
+
+	column month_start
+		dataType: dateTime
+		isHidden
+		formatString: dd MMM yyyy
+		lineageTag: fde51497-cb30-42d7-98fb-693f98a331ee
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column _capture_id
+		dataType: string
+		isHidden
+		lineageTag: 8526d48f-8a35-4140-a38c-e88b99364582
+		summarizeBy: none
+		sourceColumn: _capture_id
+
+	column ruleset_version
+		dataType: string
+		isHidden
+		lineageTag: 7582d7f0-2ba4-474b-a879-b57053e936ff
+		summarizeBy: none
+		sourceColumn: ruleset_version
+
+	column measure_version
+		dataType: string
+		isHidden
+		lineageTag: 4eb568a2-fb6a-43ce-8673-ed16bad3615b
+		summarizeBy: none
+		sourceColumn: measure_version
+
+	column 'Year Month' = FORMAT('Date'[calendar_date],"yyyy-MM")
+		dataType: string
+		lineageTag: 90a6586e-0ad9-597d-a20a-9d0e79bd49dd
+		summarizeBy: none
+		sortByColumn: 'Year Month Sort'
+
+	column 'Year Month Sort' = YEAR('Date'[calendar_date])*100+MONTH('Date'[calendar_date])
+		dataType: int64
+		isHidden
+		lineageTag: 79e21b92-4665-54a0-9dea-376c1d7d8276
+		summarizeBy: none
+
+	column Quarter = "Q"&'Date'[calendar_quarter]
+		dataType: string
+		lineageTag: cdefb13d-8bde-52bb-8957-e4fdf3ae3c32
+		summarizeBy: none
+
+	column Weekday = FORMAT('Date'[calendar_date],"ddd")
+		dataType: string
+		lineageTag: fd13ac02-d6ec-5990-9f78-8ea74ed8ca48
+		summarizeBy: none
+		sortByColumn: 'Weekday Sort'
+
+	column 'Weekday Sort' = WEEKDAY('Date'[calendar_date],2)
+		dataType: int64
+		isHidden
+		lineageTag: da4b05cf-51b6-570c-b2cf-2e8ca7e83684
+		summarizeBy: none
+
+	hierarchy Calendar
+		lineageTag: 54b3bfcc-01e2-4e82-bd61-13d3e0fb907a
+
+		level Year
+			lineageTag: 37153331-be6a-4b33-a479-5b4750363f37
+			column: calendar_year
+
+		level Quarter
+			lineageTag: fd392d51-002c-4238-9d80-87599a2a3467
+			column: Quarter
+
+		level Month
+			lineageTag: f67dd191-5f52-4869-96c8-4c009d323d82
+			column: 'Year Month'
+
+	partition Date = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("127.0.0.1:55434", "retail_raw", [CreateNavigationProperties=false]),
+				    Data = Source{[Schema="dw_core",Item="dim_date"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"date_key", "calendar_date", "calendar_year", "calendar_month", "calendar_day", "calendar_quarter", "month_start", "_capture_id", "ruleset_version", "measure_version"}),
+				    VersionIDs = List.Distinct(Selected[_capture_id]),
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Typed = Table.TransformColumnTypes(Pinned, {{"date_key", Int64.Type}, {"calendar_date", type date}, {"calendar_year", Int64.Type}, {"calendar_month", Int64.Type}, {"calendar_day", Int64.Type}, {"calendar_quarter", Int64.Type}, {"month_start", type date}, {"_capture_id", type text}, {"ruleset_version", type text}, {"measure_version", type text}})
+				in
+				    Typed

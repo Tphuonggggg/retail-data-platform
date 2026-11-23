@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
   "name": "f984924437105571b212",
   "position": {
-    "x": 1494,
+    "x": 1500,
     "y": 155,
     "z": 13000,
     "width": 382,
-    "height": 130,
+    "height": 110,
     "tabOrder": 13000
   },
   "visual": {
@@ -121,12 +121,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Top N Ranking Overlap"
+                  "Property": "Product Ranking Overlap Count"
                 }
               },
-              "queryRef": "Metrics.Top N Ranking Overlap",
-              "nativeQueryRef": "Top N Ranking Overlap",
-              "displayName": "Top N Ranking Overlap"
+              "queryRef": "Metrics.Product Ranking Overlap Count",
+              "nativeQueryRef": "Product Ranking Overlap Count",
+              "displayName": "Product Ranking Overlap Count"
             }
           ]
         }
@@ -139,7 +139,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "28D"
+                  "Value": "27D"
                 }
               }
             },
@@ -155,6 +155,13 @@
               }
             },
             "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "labelPrecision": {
               "expr": {
                 "Literal": {
                   "Value": "0D"

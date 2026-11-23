@@ -1,0 +1,80 @@
+/// Imported from dw_intermediate.int_invoice_header; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+table Invoices
+	isHidden
+	lineageTag: f6e486c5-468e-5c4d-bf91-fbe6b34ca87c
+
+	column source_invoice_id
+		dataType: int64
+		isHidden
+		lineageTag: e46fc1bb-468f-570b-b733-3d704d54e81c
+		summarizeBy: none
+		sourceColumn: source_invoice_id
+
+	column source_order_id
+		dataType: int64
+		isHidden
+		lineageTag: 925e82b0-a1ac-59c8-a894-5ba5bb7b0749
+		summarizeBy: none
+		sourceColumn: source_order_id
+
+	column invoice_date_key
+		dataType: int64
+		isHidden
+		lineageTag: f0e4fbcc-4b1e-5894-9197-86e0d9dd6b0e
+		summarizeBy: none
+		sourceColumn: invoice_date_key
+
+	column source_buyer_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: f615640e-0065-5477-a582-954d0685678a
+		summarizeBy: none
+		sourceColumn: source_buyer_customer_id
+
+	column source_bill_to_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: ac0a3f60-4cef-57eb-ab7b-09e1e46ad8cd
+		summarizeBy: none
+		sourceColumn: source_bill_to_customer_id
+
+	column buyer_observed_customer_key
+		dataType: string
+		isHidden
+		lineageTag: 65cf69fd-e6e5-53d9-9c84-347447c7e355
+		summarizeBy: none
+		sourceColumn: buyer_observed_customer_key
+
+	column bill_to_observed_customer_key
+		dataType: string
+		isHidden
+		lineageTag: 59d63321-7ece-56cc-a7f6-22dab8c82347
+		summarizeBy: none
+		sourceColumn: bill_to_observed_customer_key
+
+	column is_sales_eligible
+		dataType: boolean
+		isHidden
+		lineageTag: 38d1208d-5c16-52c0-a1b2-8d15ccb1264b
+		summarizeBy: none
+		sourceColumn: is_sales_eligible
+
+	column _capture_id
+		dataType: string
+		isHidden
+		lineageTag: 55ffd0a7-1a2c-59f7-95d0-4cc2351b4495
+		summarizeBy: none
+		sourceColumn: _capture_id
+
+	partition Invoices = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("127.0.0.1:55434", "retail_raw", [CreateNavigationProperties=false]),
+				    Data = Source{[Schema="dw_intermediate",Item="int_invoice_header"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"source_invoice_id", "source_order_id", "invoice_date_key", "source_buyer_customer_id", "source_bill_to_customer_id", "buyer_observed_customer_key", "bill_to_observed_customer_key", "is_sales_eligible", "_capture_id"}),
+				    VersionIDs = List.Distinct(Selected[_capture_id]),
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Typed = Table.TransformColumnTypes(Pinned, {{"source_invoice_id", Int64.Type}, {"source_order_id", Int64.Type}, {"invoice_date_key", Int64.Type}, {"source_buyer_customer_id", Int64.Type}, {"source_bill_to_customer_id", Int64.Type}, {"buyer_observed_customer_key", type text}, {"bill_to_observed_customer_key", type text}, {"is_sales_eligible", type logical}, {"_capture_id", type text}})
+				in
+				    Typed

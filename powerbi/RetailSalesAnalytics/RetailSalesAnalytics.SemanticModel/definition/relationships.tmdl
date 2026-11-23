@@ -1,0 +1,35 @@
+relationship 7ee80e93-9667-5d03-af61-ec30d75f7149
+	fromColumn: 'Invoice Lines'.invoice_date_key
+	toColumn: Date.date_key
+
+relationship 0077e3dc-2f19-55e2-8980-4e12f0324b4f
+	fromColumn: Invoices.invoice_date_key
+	toColumn: Date.date_key
+
+relationship b75f2426-5a55-5c7c-b9f2-6d1761e912e2
+	fromColumn: Orders.order_date_key
+	toColumn: Date.date_key
+
+relationship 9fa26b07-2761-5303-a803-dc2a7b7b179d
+	fromColumn: 'Invoice Lines'.observed_product_key
+	toColumn: Product.product_key
+
+relationship b708d534-d781-583a-ad37-4025d09894d4
+	fromColumn: 'Invoice Lines'.buyer_observed_customer_key
+	toColumn: Buyer.customer_key
+
+relationship 2c07a59b-c520-55fe-bbcf-1f3534192a9e
+	fromColumn: Invoices.buyer_observed_customer_key
+	toColumn: Buyer.customer_key
+
+relationship 1eb5cedc-d2b8-521a-af3a-c16b28b2d1f7
+	fromColumn: Orders.buyer_observed_customer_key
+	toColumn: Buyer.customer_key
+
+relationship 0f99d5f2-b82a-50a6-a6f0-398061c1f65e
+	fromColumn: 'Invoice Lines'.bill_to_observed_customer_key
+	toColumn: Bill-to.customer_key
+
+relationship ea2f97fa-3f4a-5b5d-b795-541bf8f25bac
+	fromColumn: Invoices.bill_to_observed_customer_key
+	toColumn: Bill-to.customer_key

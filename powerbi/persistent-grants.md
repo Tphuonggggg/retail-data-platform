@@ -12,7 +12,7 @@ Cú pháp model-level theo [dbt grants documentation](https://docs.getdbt.com/re
 
 ## Kết quả kiểm chứng
 
-[Evidence đầy đủ](persistent-grants-verification.json) chứa commands, invocation IDs, manifest grants, từng dbt result, metrics, counts/digests, reader privileges và catalog fingerprints trước/sau.
+[Evidence đầy đủ](dashboard-guide.md) chứa commands, invocation IDs, manifest grants, từng dbt result, metrics, counts/digests, reader privileges và catalog fingerprints trước/sau.
 
 | Tiêu chí | Kết quả |
 |---|---|

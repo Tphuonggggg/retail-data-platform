@@ -1,0 +1,551 @@
+table Metrics
+	lineageTag: d8411c02-a906-5db2-a7eb-1d9dbd077ba4
+
+	/// S05: invoiced sales before tax, InvoiceDate; not recognized revenue. Eligible WARNING rows retained.
+	measure 'Total Sales Before Tax' = CALCULATE(SUM('Invoice Lines'[invoiced_sales_before_tax]),'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0.00
+		displayFolder: Sales
+		lineageTag: 17cbbffc-9008-55e8-9479-432ea90e10a0
+
+	/// Total Tax
+	measure 'Total Tax' = CALCULATE(SUM('Invoice Lines'[tax_amount]),'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0.00
+		displayFolder: Sales
+		lineageTag: d0f76448-f93f-5166-9577-dc2fa9fea86d
+
+	/// Total Amount Including Tax
+	measure 'Total Amount Including Tax' = CALCULATE(SUM('Invoice Lines'[invoice_amount_including_tax]),'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0.00
+		displayFolder: Sales
+		lineageTag: 7baef8f5-6111-5c5b-a7f7-d922b2823be5
+
+	/// Units Sold
+	measure 'Units Sold' = CALCULATE(SUM('Invoice Lines'[quantity]),'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0
+		displayFolder: Sales
+		lineageTag: 63269e84-0300-5a7c-81b4-ca239469aa8e
+
+	/// Eligible Invoice Lines
+	measure 'Eligible Invoice Lines' = CALCULATE(COUNTROWS('Invoice Lines'),'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0
+		displayFolder: Sales
+		lineageTag: bf05a48d-6da9-5668-b14b-04486cfdf228
+
+	/// S02: eligible invoice-header population. Product filtering uses invoice ID semijoin, never summed product distinct counts.
+	measure 'Invoice Count' =
+			VAR BaseCount=CALCULATE(COUNTROWS(Invoices),Invoices[is_sales_eligible]=TRUE())
+			RETURN IF(ISCROSSFILTERED(Product),
+			 CALCULATE(COUNTROWS(Invoices),Invoices[is_sales_eligible]=TRUE(),
+			 TREATAS(CALCULATETABLE(VALUES('Invoice Lines'[source_invoice_id]),'Invoice Lines'[is_sales_eligible]=TRUE()),Invoices[source_invoice_id])),BaseCount)
+		formatString: #,0
+		displayFolder: Sales
+		lineageTag: ab1a1f16-5c6a-52de-859f-1188adb6ce9b
+
+	/// S01: Orders/OrderDate, including uninvoiced orders; intentionally not product-filtered.
+	measure 'Order Count' = CALCULATE(COUNTROWS(Orders),Orders[is_order_eligible]=TRUE())
+		formatString: #,0
+		displayFolder: Sales
+		lineageTag: e3399432-67e0-5688-981e-6f1b087854f9
+
+	/// S06: recomputed ratio of totals in the same context; not AOV.
+	measure 'Average Invoice Value' = DIVIDE(CONVERT([Total Sales Before Tax], DOUBLE), [Invoice Count])
+		formatString: #,0.00
+		displayFolder: Sales
+		lineageTag: d552b7c9-38b4-517b-9c06-2f8545a124b0
+
+	/// Source quantity basis; not standardized packaging or piece price.
+	measure 'Sales per Unit' = DIVIDE([Total Sales Before Tax],[Units Sold])
+		formatString: #,0.00
+		displayFolder: Sales
+		lineageTag: ec35b7f3-d48b-5d1b-88e9-3023d1dce2aa
+
+	/// Only one selected calendar year. Same selected dates shifted 12 months; leap day maps to prior Feb 28. Other filters retained.
+	measure 'Sales Previous Year Comparable Period' =
+			VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),"PriorDate",EDATE('Date'[calendar_date],-12))
+			RETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))
+		formatString: #,0.00
+		displayFolder: Time intelligence
+		lineageTag: 28464049-d152-5097-aa0e-177ec617e76c
+
+	/// Sales YoY %
+	measure 'Sales YoY %' = DIVIDE([Total Sales Before Tax]-[Sales Previous Year Comparable Period],[Sales Previous Year Comparable Period])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Time intelligence
+		lineageTag: b11e9f70-13e6-5285-ac60-943f05a8cae9
+
+	/// Only one selected calendar year. Same selected dates shifted 12 months; leap day maps to prior Feb 28. Other filters retained.
+	measure 'Invoice Count Previous Year Comparable Period' =
+			VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),"PriorDate",EDATE('Date'[calendar_date],-12))
+			RETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Invoice Count],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))
+		formatString: #,0.00
+		displayFolder: Time intelligence
+		lineageTag: 03747330-8800-5951-8266-9d408b1a5bab
+
+	/// Invoice Count YoY %
+	measure 'Invoice Count YoY %' = DIVIDE([Invoice Count]-[Invoice Count Previous Year Comparable Period],[Invoice Count Previous Year Comparable Period])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Time intelligence
+		lineageTag: f3fad123-e497-50d8-9617-198795f2ae1b
+
+	/// Only one selected calendar year. Same selected dates shifted 12 months; leap day maps to prior Feb 28. Other filters retained.
+	measure 'AIV Previous Year Comparable Period' =
+			VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),"PriorDate",EDATE('Date'[calendar_date],-12))
+			RETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Average Invoice Value],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))
+		formatString: #,0.00
+		displayFolder: Time intelligence
+		lineageTag: ded4ad27-9683-5956-b161-6d83616a95d5
+
+	/// AIV YoY %
+	measure 'AIV YoY %' = DIVIDE([Average Invoice Value]-[AIV Previous Year Comparable Period],[AIV Previous Year Comparable Period])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Time intelligence
+		lineageTag: db70b13c-4461-56e5-8903-cd089880550b
+
+	/// Previous month only in a single year-month context; BLANK at multi-month totals.
+	measure 'Sales Previous Period' = IF(HASONEVALUE('Date'[Year Month]),CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),DATEADD('Date'[calendar_date],-1,MONTH)))
+		formatString: #,0.00
+		displayFolder: Time intelligence
+		lineageTag: 3906ecf6-59f2-577e-93a3-3b16b19c73d4
+
+	/// Sales MoM %
+	measure 'Sales MoM %' = DIVIDE([Total Sales Before Tax]-[Sales Previous Period],[Sales Previous Period])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Time intelligence
+		lineageTag: 79e74f5c-cb9d-5f9f-83e3-4c3f6222c23f
+
+	/// Sales YTD
+	measure 'Sales YTD' = VAR Cutoff=MAX('Date'[calendar_date]) RETURN CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),DATESBETWEEN('Date'[calendar_date],DATE(YEAR(Cutoff),1,1),Cutoff))
+		formatString: #,0.00
+		displayFolder: Time intelligence
+		lineageTag: 9d4ee505-eb15-5f27-b5e2-fea786ddf4e7
+
+	/// Prior Year Comparable YTD
+	measure 'Prior Year Comparable YTD' = VAR Cutoff=MAX('Date'[calendar_date]) VAR Prior=EDATE(Cutoff,-12) RETURN CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),DATESBETWEEN('Date'[calendar_date],DATE(YEAR(Prior),1,1),Prior))
+		formatString: #,0.00
+		displayFolder: Time intelligence
+		lineageTag: f0d18c5d-67c7-5ad8-bc01-3cd3db7e74f4
+
+	/// YTD YoY %
+	measure 'YTD YoY %' = DIVIDE([Sales YTD]-[Prior Year Comparable YTD],[Prior Year Comparable YTD])
+		formatString: 0.00%;-0.00%;0.00%
+		displayFolder: Time intelligence
+		lineageTag: 6d2c523d-d495-5e31-83a2-fce7abb65816
+
+	/// Volume Contribution
+	measure 'Volume Contribution' = IF(NOT ISBLANK([Invoice Count Previous Year Comparable Period]), CONVERT(ROUND(([Invoice Count]-[Invoice Count Previous Year Comparable Period])*[AIV Previous Year Comparable Period], 2), CURRENCY))
+		formatString: #,0.00
+		displayFolder: Decomposition
+		lineageTag: d22d3868-7b38-5404-b885-cc74b807d5e6
+
+	/// AIV Contribution
+	measure 'AIV Contribution' = IF(NOT ISBLANK([Invoice Count Previous Year Comparable Period]), CONVERT(ROUND(([Average Invoice Value]-[AIV Previous Year Comparable Period])*[Invoice Count Previous Year Comparable Period], 2), CURRENCY))
+		formatString: #,0.00
+		displayFolder: Decomposition
+		lineageTag: 856d39eb-58eb-5efc-9627-21b0e27ac983
+
+	/// Interaction Contribution
+	measure 'Interaction Contribution' = IF(NOT ISBLANK([Invoice Count Previous Year Comparable Period]), [Total Sales Before Tax]-[Sales Previous Year Comparable Period]-[Volume Contribution]-[AIV Contribution])
+		formatString: #,0.00
+		displayFolder: Decomposition
+		lineageTag: 2b0ce2fb-951b-5f20-a916-dec2ac24dac9
+
+	/// Three-term delta at reporting cents; Interaction includes cent-rounding residue. Arithmetic, not causality.
+	measure 'Sales Change Contribution' = SWITCH(SELECTEDVALUE(Decomposition[Component]),"Invoice volume",[Volume Contribution],"AIV",[AIV Contribution],"Interaction",[Interaction Contribution])
+		formatString: #,0.00
+		displayFolder: Decomposition
+		lineageTag: c09a738b-8637-5907-85bd-17ce7a41e3cf
+
+	/// Performance Narrative
+	measure 'Performance Narrative' = IF(ISBLANK([Sales YoY %]),"Select one calendar year. 2016 covers January–May only.","Sales "&FORMAT([Sales YoY %],"+0.00%;-0.00%")&" | invoices "&FORMAT([Invoice Count YoY %],"+0.00%;-0.00%")&" | AIV "&FORMAT([AIV YoY %],"+0.00%;-0.00%")&" versus equivalent prior-year dates.")
+		displayFolder: Narratives
+		lineageTag: 0dacccf1-ec86-5a45-9499-90ba6cc01aec
+
+	/// Product Sales
+	measure 'Product Sales' = [Total Sales Before Tax]
+		formatString: #,0.00
+		displayFolder: Products
+		lineageTag: 623b19c7-444a-5f45-be31-2f1d5abae36a
+
+	/// Product Units
+	measure 'Product Units' = [Units Sold]
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: ca0b61fe-ba03-5142-9eb4-0926704e930b
+
+	/// Product Sales per Unit
+	measure 'Product Sales per Unit' = [Sales per Unit]
+		formatString: #,0.00
+		displayFolder: Products
+		lineageTag: f4c9e489-ea7c-5adb-899d-a1e554fea57c
+
+	/// Product Sales Share %
+	measure 'Product Sales Share %' = DIVIDE([Product Sales],CALCULATE([Product Sales],ALLSELECTED(Product)))
+		formatString: 0.00%
+		displayFolder: Products
+		lineageTag: 54488720-5b98-5b91-a041-3d0499d08873
+
+	/// Selected product population; deterministic SKU ID tie-break.
+	measure 'Product Rank by Sales' =
+			VAR ThisId=SELECTEDVALUE(Product[source_stock_item_id]) VAR ThisValue=[Product Sales]
+			VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Value",[Product Sales],"@Lines",[Eligible Invoice Lines]),[@Lines]>0)
+			RETURN IF(HASONEVALUE(Product[source_stock_item_id])&&NOT ISBLANK(ThisValue),1+COUNTROWS(FILTER(Population,[@Value]>ThisValue||([@Value]=ThisValue&&Product[source_stock_item_id]<ThisId))))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: bf41dec7-6155-5cef-ab10-cce37d5b52f9
+
+	/// Selected product population; deterministic SKU ID tie-break.
+	measure 'Product Rank by Units' =
+			VAR ThisId=SELECTEDVALUE(Product[source_stock_item_id]) VAR ThisValue=[Product Units]
+			VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Value",[Product Units],"@Lines",[Eligible Invoice Lines]),[@Lines]>0)
+			RETURN IF(HASONEVALUE(Product[source_stock_item_id])&&NOT ISBLANK(ThisValue),1+COUNTROWS(FILTER(Population,[@Value]>ThisValue||([@Value]=ThisValue&&Product[source_stock_item_id]<ThisId))))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: c875758a-5c06-53bb-8aff-1846f31a5a12
+
+	/// Product Cumulative Sales
+	measure 'Product Cumulative Sales' =
+			VAR ThisId=SELECTEDVALUE(Product[source_stock_item_id]) VAR ThisSales=[Product Sales]
+			VAR Population=ADDCOLUMNS(ALLSELECTED(Product),"@Sales",[Product Sales])
+			RETURN IF(HASONEVALUE(Product[source_stock_item_id]),SUMX(FILTER(Population,[@Sales]>ThisSales||([@Sales]=ThisSales&&Product[source_stock_item_id]<=ThisId)),[@Sales]))
+		formatString: #,0.00
+		displayFolder: Products
+		lineageTag: 24a84c6f-1e52-5c36-9a0b-8ee0f1492a11
+
+	/// Product Cumulative Sales %
+	measure 'Product Cumulative Sales %' = DIVIDE([Product Cumulative Sales],CALCULATE([Product Sales],ALLSELECTED(Product)))
+		formatString: 0.0%
+		displayFolder: Products
+		lineageTag: 3a61f5a7-5072-5b0f-8adb-a25fca4638b1
+
+	/// Pareto Threshold
+	measure 'Pareto Threshold' = 0.8
+		formatString: 0%
+		displayFolder: Products
+		lineageTag: e0cad34c-3c9b-554b-9d6f-ce372cebeb5b
+
+	/// Distinct Active Products
+	measure 'Distinct Active Products' = COUNTROWS(FILTER(VALUES(Product[source_stock_item_id]),[Eligible Invoice Lines]>0))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: 0ddfd239-6e4a-5696-a1fc-705a43693202
+
+	/// Top 20% SKU Sales Share
+	measure 'Top 20% SKU Sales Share' = VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Sales",[Product Sales],"@Lines",[Eligible Invoice Lines]),[@Lines]>0) VAR N=ROUNDUP(COUNTROWS(Population)*0.2,0) RETURN DIVIDE(SUMX(TOPN(N,Population,[@Sales],DESC,Product[source_stock_item_id],ASC),[@Sales]),SUMX(Population,[@Sales]))
+		formatString: 0.00%
+		displayFolder: Products
+		lineageTag: 33f1e7d6-a256-51d1-874b-37b38bbaaf1c
+
+	/// SKUs for 80% Sales
+	measure 'SKUs for 80% Sales' =
+			VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Sales",[Product Sales],"@Lines",[Eligible Invoice Lines]),[@Lines]>0)
+			VAR TotalSales=SUMX(Population,[@Sales])
+			RETURN IF(TotalSales>0,1+COUNTROWS(FILTER(Population,VAR S=[@Sales] VAR K=Product[source_stock_item_id]
+			VAR Cumulative=SUMX(FILTER(Population,[@Sales]>S||([@Sales]=S&&Product[source_stock_item_id]<=K)),[@Sales]) RETURN Cumulative<TotalSales*0.8)))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: ccfba092-f68b-5037-a6db-26803f3fa6f2
+
+	/// Selected Top N
+	measure 'Selected Top N' = SELECTEDVALUE('Top N'[Value],10)
+		formatString: #,0
+		displayFolder: Parameters
+		lineageTag: 26489fba-ac0e-55ca-91e8-c5114b868a19
+
+	/// Top N Ranking Overlap
+	measure 'Top N Ranking Overlap' = VAR Population=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Sales",[Product Sales],"@Units",[Product Units],"@Lines",[Eligible Invoice Lines]),[@Lines]>0) VAR N=[Selected Top N] VAR A=SELECTCOLUMNS(TOPN(N,Population,[@Sales],DESC,Product[source_stock_item_id],ASC),"ID",Product[source_stock_item_id]) VAR B=SELECTCOLUMNS(TOPN(N,Population,[@Units],DESC,Product[source_stock_item_id],ASC),"ID",Product[source_stock_item_id]) RETURN IF(COUNTROWS(Population)>0,COALESCE(COUNTROWS(INTERSECT(A,B)),0))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: 2ff164c3-108d-5c7b-a668-60641e37eb90
+
+	/// Top N Product Sales
+	measure 'Top N Product Sales' = IF([Product Rank by Sales]<=[Selected Top N],[Product Sales])
+		formatString: #,0.00
+		displayFolder: Products
+		lineageTag: 9c35e4fc-3e5b-5bca-9e77-4817e1f7e0bd
+
+	/// Top N Product Units
+	measure 'Top N Product Units' = IF([Product Rank by Units]<=[Selected Top N],[Product Units])
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: b2616fcf-8fd5-543e-bb37-021c04db9aac
+
+	/// Product Active Months
+	measure 'Product Active Months' = COUNTROWS(FILTER(VALUES('Date'[Year Month]),[Eligible Invoice Lines]>0))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: a96ebcad-3112-5b92-9523-3593c790c1af
+
+	/// Product Lifetime Rank
+	measure 'Product Lifetime Rank' = CALCULATE([Product Rank by Sales],REMOVEFILTERS('Date'))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: fc8315bd-cb92-5ca8-b499-872cc4950df6
+
+	/// Comparable-Period Product Rank
+	measure 'Comparable-Period Product Rank' = VAR Cutoff=CALCULATE(MAX('Date'[calendar_date]),REMOVEFILTERS('Date')) RETURN CALCULATE([Product Rank by Sales],REMOVEFILTERS('Date'),DATESBETWEEN('Date'[calendar_date],DATE(YEAR(Cutoff),1,1),Cutoff))
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: a5f62a99-f91d-57b5-a30a-e45c46fd8d0e
+
+	/// Product Rank Change
+	measure 'Product Rank Change' = [Product Lifetime Rank]-[Comparable-Period Product Rank]
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: 77e03dab-2232-54a6-b2ba-29e5a6281e59
+
+	/// Same invoice Sales attributed by invoice-time role; never add Buyer and Bill-to totals.
+	measure 'Buyer Sales' = CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Bill-to'))
+		formatString: #,0.00
+		displayFolder: Attribution
+		lineageTag: 7057b866-a5a3-5a28-a71b-7d3588c8693b
+
+	/// Buyer Sales Share %
+	measure 'Buyer Sales Share %' = DIVIDE([Buyer Sales],CALCULATE([Buyer Sales],ALLSELECTED('Buyer')))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: 4a257d0c-4238-539b-b7c5-c86664a70aa6
+
+	/// Buyer Customer Count
+	measure 'Buyer Customer Count' = COUNTROWS(FILTER(VALUES('Buyer'[source_customer_id]),[Buyer Sales]<>BLANK()))
+		formatString: #,0
+		displayFolder: Attribution
+		lineageTag: 5fdb8795-5ada-5e53-b7d5-2217fe84deea
+
+	/// Buyer Rank
+	measure 'Buyer Rank' = VAR Amount=[Buyer Sales] VAR Population=FILTER(ALLSELECTED('Buyer'),NOT ISBLANK([Buyer Sales])&&[Buyer Sales]<>0) RETURN IF(HASONEVALUE('Buyer'[source_customer_id])&&NOT ISBLANK(Amount)&&Amount<>0,RANKX(Population,[Buyer Sales],Amount,DESC,Dense))
+		formatString: #,0
+		displayFolder: Attribution
+		lineageTag: 0a3857bb-fed0-5de8-ba01-d4b1ccaa7ea9
+
+	/// Top N Buyer Concentration %
+	measure 'Top N Buyer Concentration %' = VAR Population=ADDCOLUMNS(ALLSELECTED('Buyer'),"@Sales",[Buyer Sales]) RETURN DIVIDE(SUMX(TOPN([Selected Top N],Population,[@Sales],DESC,'Buyer'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: ab548ee1-444e-5e44-91a2-21f433679e9c
+
+	/// Top 5 Buyer Concentration %
+	measure 'Top 5 Buyer Concentration %' = VAR Population=ADDCOLUMNS(ALLSELECTED('Buyer'),"@Sales",[Buyer Sales]) RETURN DIVIDE(SUMX(TOPN(5,Population,[@Sales],DESC,'Buyer'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: 39ba6af7-8053-596b-99ab-f66ca84c5f18
+
+	/// Top N Buyer Sales
+	measure 'Top N Buyer Sales' = IF([Buyer Rank]<=[Selected Top N],[Buyer Sales])
+		formatString: #,0.00
+		displayFolder: Attribution
+		lineageTag: 34231c83-2c47-57b5-b93a-8f23731f18e5
+
+	/// Same invoice Sales attributed by invoice-time role; never add Buyer and Bill-to totals.
+	measure 'Bill-to Sales' = CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Buyer'))
+		formatString: #,0.00
+		displayFolder: Attribution
+		lineageTag: 65cb4100-c655-5bf7-bc26-b09f9f75eb9a
+
+	/// Bill-to Sales Share %
+	measure 'Bill-to Sales Share %' = DIVIDE([Bill-to Sales],CALCULATE([Bill-to Sales],ALLSELECTED('Bill-to')))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: dfdd8d94-2d9f-5b9d-a9e7-a48db591e410
+
+	/// Bill-to Customer Count
+	measure 'Bill-to Customer Count' = COUNTROWS(FILTER(VALUES('Bill-to'[source_customer_id]),[Bill-to Sales]<>BLANK()))
+		formatString: #,0
+		displayFolder: Attribution
+		lineageTag: 2d1bd94d-0f98-5115-a198-af361e3d2adb
+
+	/// Bill-to Rank
+	measure 'Bill-to Rank' = VAR Amount=[Bill-to Sales] VAR Population=FILTER(ALLSELECTED('Bill-to'),NOT ISBLANK([Bill-to Sales])&&[Bill-to Sales]<>0) RETURN IF(HASONEVALUE('Bill-to'[source_customer_id])&&NOT ISBLANK(Amount)&&Amount<>0,RANKX(Population,[Bill-to Sales],Amount,DESC,Dense))
+		formatString: #,0
+		displayFolder: Attribution
+		lineageTag: 3da3765a-5afa-565d-a651-d7d67ae55482
+
+	/// Top N Bill-to Concentration %
+	measure 'Top N Bill-to Concentration %' = VAR Population=ADDCOLUMNS(ALLSELECTED('Bill-to'),"@Sales",[Bill-to Sales]) RETURN DIVIDE(SUMX(TOPN([Selected Top N],Population,[@Sales],DESC,'Bill-to'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: 45c23af2-897c-5fc9-9042-f3e0c203bbc9
+
+	/// Top 5 Bill-to Concentration %
+	measure 'Top 5 Bill-to Concentration %' = VAR Population=ADDCOLUMNS(ALLSELECTED('Bill-to'),"@Sales",[Bill-to Sales]) RETURN DIVIDE(SUMX(TOPN(5,Population,[@Sales],DESC,'Bill-to'[source_customer_id],ASC),[@Sales]),SUMX(Population,[@Sales]))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: 5a1360bd-9053-5abd-9936-558a378c7035
+
+	/// Top N Bill-to Sales
+	measure 'Top N Bill-to Sales' = IF([Bill-to Rank]<=[Selected Top N],[Bill-to Sales])
+		formatString: #,0.00
+		displayFolder: Attribution
+		lineageTag: 23e06351-6567-515e-9731-fe23c9d2ba7e
+
+	/// Selected Role Sales
+	measure 'Selected Role Sales' = IF(SELECTEDVALUE(Role[Role],"Buyer")="Buyer",CALCULATE([Buyer Sales],TREATAS(VALUES('Attribution Customer'[source_customer_id]),Buyer[source_customer_id])),CALCULATE([Bill-to Sales],TREATAS(VALUES('Attribution Customer'[source_customer_id]),'Bill-to'[source_customer_id])))
+		formatString: #,0.00
+		displayFolder: Attribution
+		lineageTag: 5a23a29c-92fb-508f-8cdc-fb6c70c75de7
+
+	/// Selected Role Sales Share %
+	measure 'Selected Role Sales Share %' = DIVIDE([Selected Role Sales],CALCULATE([Selected Role Sales],ALLSELECTED('Attribution Customer')))
+		formatString: 0.00%
+		displayFolder: Attribution
+		lineageTag: fc105d5d-9b72-5b04-8cdb-f7905bd55a82
+
+	/// Selected Role Rank
+	measure 'Selected Role Rank' = VAR Amount=[Selected Role Sales] VAR Population=FILTER(ALLSELECTED('Attribution Customer'),NOT ISBLANK([Selected Role Sales])&&[Selected Role Sales]<>0) RETURN IF(HASONEVALUE('Attribution Customer'[source_customer_id])&&NOT ISBLANK(Amount)&&Amount<>0,RANKX(Population,[Selected Role Sales],Amount,DESC,Dense))
+		formatString: #,0
+		displayFolder: Attribution
+		lineageTag: 7790cafb-1a23-50c6-be68-bb5376e84ac0
+
+	/// Buyer Cumulative Share %
+	measure 'Buyer Cumulative Share %' = VAR N=MAX(1,COALESCE(MAX('Concentration Rank'[Value]),1)) VAR Population=ADDCOLUMNS(ALLSELECTED('Buyer'),"@Sales",[Buyer Sales]) VAR TopSales=SUMX(TOPN(N,Population,[@Sales],DESC,'Buyer'[source_customer_id],ASC),[@Sales]) RETURN DIVIDE(TopSales,SUMX(Population,[@Sales]))
+		formatString: 0.0%
+		displayFolder: Attribution
+		lineageTag: 4d0e0aa4-7545-58fa-a53c-7f327b3b8ac3
+
+	/// Bill-to Cumulative Share %
+	measure 'Bill-to Cumulative Share %' = VAR N=MAX(1,COALESCE(MAX('Concentration Rank'[Value]),1)) VAR Population=ADDCOLUMNS(ALLSELECTED('Bill-to'),"@Sales",[Bill-to Sales]) VAR TopSales=SUMX(TOPN(N,Population,[@Sales],DESC,'Bill-to'[source_customer_id],ASC),[@Sales]) RETURN DIVIDE(TopSales,SUMX(Population,[@Sales]))
+		formatString: 0.0%
+		displayFolder: Attribution
+		lineageTag: c8a49175-065d-5fa6-9164-904f0a931710
+
+	/// Negative LineProfit Records
+	measure 'Negative LineProfit Records' = CALCULATE([Eligible Invoice Lines],'Invoice Lines'[source_reported_line_profit]<0)
+		formatString: #,0
+		displayFolder: Exceptions
+		lineageTag: d8c511a4-2a22-5a73-a626-b568f30e1333
+
+	/// Negative LineProfit Rate
+	measure 'Negative LineProfit Rate' = DIVIDE([Negative LineProfit Records],[Eligible Invoice Lines])
+		formatString: 0.00%
+		displayFolder: Exceptions
+		lineageTag: 65617814-20de-57aa-ab8b-3b2aa93126ee
+
+	/// Source-reported negative component, not certified losses, GP or COGS.
+	measure 'Negative Source LineProfit' = CALCULATE(SUM('Invoice Lines'[source_reported_line_profit]),'Invoice Lines'[source_reported_line_profit]<0,'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0.00
+		displayFolder: Exceptions
+		lineageTag: f3d2ec5f-6db9-5e1e-87a0-3ca896a55ab9
+
+	/// Affected Product Count
+	measure 'Affected Product Count' = CALCULATE(DISTINCTCOUNT('Invoice Lines'[source_stock_item_id]),'Invoice Lines'[source_reported_line_profit]<0,'Invoice Lines'[is_sales_eligible]=TRUE())
+		formatString: #,0
+		displayFolder: Exceptions
+		lineageTag: 918c8b83-0404-58df-a072-ae7f2cbea093
+
+	/// Data Coverage Days
+	measure 'Data Coverage Days' = COUNTROWS(VALUES('Date'[calendar_date]))
+		formatString: #,0
+		displayFolder: Coverage
+		lineageTag: 712a9e9c-4226-5cce-a85f-6d55141d9ee4
+
+	/// Zero-Transaction Days
+	measure 'Zero-Transaction Days' = COUNTROWS(FILTER(VALUES('Date'[calendar_date]),COALESCE([Invoice Count],0)=0&&COALESCE([Order Count],0)=0))
+		formatString: #,0
+		displayFolder: Coverage
+		lineageTag: 4359e625-94cb-549f-a409-d683ebce6d73
+
+	/// Active Sales Days
+	measure 'Active Sales Days' = COUNTROWS(FILTER(VALUES('Date'[calendar_date]),[Invoice Count]>0))
+		formatString: #,0
+		displayFolder: Coverage
+		lineageTag: 2ce5294c-2887-5723-9d48-a2d8cf59825e
+
+	/// Zero-Transaction Sundays
+	measure 'Zero-Transaction Sundays' = COUNTROWS(FILTER(VALUES('Date'[calendar_date]),WEEKDAY('Date'[calendar_date],2)=7&&COALESCE([Invoice Count],0)=0&&COALESCE([Order Count],0)=0))
+		formatString: #,0
+		displayFolder: Coverage
+		lineageTag: 52115f68-531a-5030-b9c6-caab6d7dd170
+
+	/// Selected OrderDate cohort; direct invoice references across captured dates, not a fulfillment status.
+	measure 'Orders with Direct Invoice' = VAR InvoicedOrders=CALCULATETABLE(VALUES(Invoices[source_order_id]),REMOVEFILTERS('Date'),Invoices[is_sales_eligible]=TRUE()) RETURN CALCULATE([Order Count],TREATAS(InvoicedOrders,Orders[source_order_id]))
+		formatString: #,0
+		displayFolder: Coverage
+		lineageTag: e26e1b58-a2f2-56fc-9ec2-55744c09613a
+
+	/// Orders without Direct Invoice
+	measure 'Orders without Direct Invoice' = [Order Count]-[Orders with Direct Invoice]
+		formatString: #,0
+		displayFolder: Coverage
+		lineageTag: 825bbd85-9b58-57c5-be60-07f34a6d94b9
+
+	/// Backorder Diagnostic Status
+	measure 'Backorder Diagnostic Status' = "BLOCKED: BackorderOrderID is absent from the 12 approved BI objects. Direct-link gap is not a fulfillment failure rate."
+		displayFolder: Narratives
+		lineageTag: bc24a287-9d63-5ec3-a72d-6f18b5a8c246
+
+	/// Coverage Narrative
+	measure 'Coverage Narrative' = "Observed calendar and source-profit diagnostics only. Zero-transaction Sundays are not missing data; negative source LineProfit is not certified accounting loss."
+		displayFolder: Narratives
+		lineageTag: 0b3002b7-9a95-51b2-bb5d-1651208b52a9
+
+	/// Product Rank by Selected Basis
+	measure 'Product Rank by Selected Basis' = IF(SELECTEDVALUE('Ranking Basis'[Basis],"Sales")="Units",[Product Rank by Units],[Product Rank by Sales])
+		formatString: #,0
+		displayFolder: Products
+		lineageTag: 8059d154-9502-519f-a085-e3701870fd57
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Pareto Cumulative Share by Rank' = VAR N=SELECTEDVALUE('Concentration Rank'[Value]) VAR P=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Sales",[Product Sales],"@Lines",[Eligible Invoice Lines]),[@Lines]>0) RETURN IF(N>=1&&N<=COUNTROWS(P),DIVIDE(SUMX(TOPN(N,P,[@Sales],DESC,Product[source_stock_item_id],ASC),[@Sales]),SUMX(P,[@Sales])))
+		formatString: 0.0%
+		displayFolder: UX helpers
+		lineageTag: 3086b7ba-3931-52e5-8b13-faff84bc53cc
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Pareto 80% Guide' = IF(NOT ISBLANK([Pareto Cumulative Share by Rank]),0.8)
+		formatString: 0%
+		displayFolder: UX helpers
+		lineageTag: 7e2556da-b41d-5e66-93f0-29c383456add
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Pareto Product at Rank' = VAR N=SELECTEDVALUE('Concentration Rank'[Value]) VAR P=FILTER(ADDCOLUMNS(ALLSELECTED(Product),"@Sales",[Product Sales],"@Lines",[Eligible Invoice Lines]),[@Lines]>0) RETURN IF(N>=1&&N<=COUNTROWS(P),CONCATENATEX(TOPN(1,TOPN(N,P,[@Sales],DESC,Product[source_stock_item_id],ASC),[@Sales],ASC,Product[source_stock_item_id],DESC),Product[stock_item_name],", "))
+		displayFolder: UX helpers
+		lineageTag: 95fef6e7-2eec-5a0f-8533-22158f9ab077
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Weekday Invoice Activity' = IF([Data Coverage Days]>0,COALESCE([Invoice Count],0))
+		formatString: #,0
+		displayFolder: UX helpers
+		lineageTag: 35f9c0ed-3c2b-52f4-8f9f-5ba6300005e7
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Weekday Order Activity' = IF([Data Coverage Days]>0,COALESCE([Order Count],0))
+		formatString: #,0
+		displayFolder: UX helpers
+		lineageTag: 2186bed0-c478-55dd-a969-1fed9c99c99d
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Top N Buyer Share %' = IF(NOT ISBLANK([Buyer Rank])&&[Buyer Rank]<=[Selected Top N],[Buyer Sales Share %])
+		formatString: 0.00%
+		displayFolder: UX helpers
+		lineageTag: da4cf122-84da-5dbc-b8eb-8f278ac5efeb
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Top N Bill-to Share %' = IF(NOT ISBLANK([Bill-to Rank])&&[Bill-to Rank]<=[Selected Top N],[Bill-to Sales Share %])
+		formatString: 0.00%
+		displayFolder: UX helpers
+		lineageTag: 2c37c19f-2f68-530e-ae83-74c9f57902bb
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Customer Roles Note' = "Buyer = purchasing customer | Bill-to = billing account. Same Sales, two views; never add the roles."
+		displayFolder: UX helpers
+		lineageTag: 4594d43b-8d0b-5026-8a3d-e126f66bb9f1
+
+	/// UX helper; preserves approved base KPI definitions.
+	measure 'Coverage Note' = "Source warnings are not certified accounting losses. Direct-invoice gaps are not fulfillment failures."
+		displayFolder: UX helpers
+		lineageTag: 2d7b9f7c-6d93-542e-bd58-b036f7e1cca7
+
+	/// Alias forces a fresh visual query after Desktop model-definition reload.
+	measure 'Product Ranking Overlap Count' = [Top N Ranking Overlap]
+		formatString: #,0
+		displayFolder: UX helpers
+		lineageTag: 8e619d3c-d0f3-580e-89fe-0c65fa463a43
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: d0385981-4fef-5aa3-a7a3-251d13df4ded
+		summarizeBy: none
+		sourceColumn: [Placeholder]
+
+	partition Metrics = calculated
+		source = ROW("Placeholder",BLANK())

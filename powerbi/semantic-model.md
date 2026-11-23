@@ -1,6 +1,8 @@
 # Semantic model — POWERBI-SALES-01
 
-**Implemented definitions; runtime Import acceptance BLOCKED.** [Model TMSL](RetailSalesAnalytics/RetailSalesAnalytics.SemanticModel/model.bim) được TOM deserialize và Desktop mở thành công. Bảng nguồn trong Desktop hiện `NoData`; không xem structural checks là kiểm chứng số liệu DAX.
+**Current: POWERBI-UX-REDESIGN-01.** [Model TMDL](RetailSalesAnalytics/RetailSalesAnalytics.SemanticModel/definition/) là nguồn hiện hành sau chuyển đổi đã lưu của Owner. Live model có 14 tables Ready, 9 relationships, 87 measures; [137 SQL/DAX checks PASS](dashboard-guide.md). Giữ sáu imports và version đã nghiệm thu. NoData/model.bim trong báo cáo cũ là trạng thái lịch sử.
+
+AIV vẫn là Sales/Invoice Count cùng scope, nhưng cast tử số sang Double trước phép chia để tránh làm tròn sớm. Monetary source columns vẫn fixed decimal. Volume/AIV contributions làm tròn đến xu; Interaction bằng monetary Sales delta trừ hai component đó và nhận phần bù rounding. Đây là cùng identity ba thành phần, không suy diễn nguyên nhân kinh doanh. Rank Buyer/Bill-to/Selected Role loại attributed Sales BLANK/0. Overlap trả 0 cho giao rỗng có population, giữ BLANK khi không có population. Thêm 10 UX helpers, không thêm bảng/import. [Evidence và giới hạn](dashboard-guide.md).
 
 ## Imports và grain
 
@@ -40,7 +42,7 @@ Bill-to lấy invoice-time role key, không dùng current_bill_to_customer_id đ
 
 ## Measures, dates và types
 
-[77 measures](measures.json), [DAX dễ đọc](measures.dax). Sales/tax/including-tax/quantity theo eligible invoice lines; WARNING giữ lại. Invoice Count theo eligible **Invoices**, Product filter dùng distinct invoice-ID semijoin. Order Count theo **Orders/OrderDate**, giữ order chưa invoice và không áp Product filter. AIV = Sales / Invoice Count, tính lại ratio theo context; zero denominator → BLANK.
+[87 measures](dashboard-guide.md), [DAX dễ đọc](dashboard-guide.md). Sales/tax/including-tax/quantity theo eligible invoice lines; WARNING giữ lại. Invoice Count theo eligible **Invoices**, Product filter dùng distinct invoice-ID semijoin. Order Count theo **Orders/OrderDate**, giữ order chưa invoice và không áp Product filter. AIV = Sales / Invoice Count, tính lại ratio theo context; zero denominator → BLANK.
 
 Date có 1247 ngày liên tục 2013-01-01–2016-05-31, `calendar_date` kiểu dateTime/isKey, table category Time; Year–Quarter–Month hierarchy, Year Month sort YYYYMM, weekday sort ISO. Auto date tables tắt bằng model annotation. Calendar year, không tự đặt fiscal calendar.
 

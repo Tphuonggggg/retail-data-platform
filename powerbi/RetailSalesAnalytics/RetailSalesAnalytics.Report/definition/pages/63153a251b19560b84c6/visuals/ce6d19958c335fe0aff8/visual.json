@@ -1,0 +1,476 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "ce6d19958c335fe0aff8",
+  "position": {
+    "x": 300,
+    "y": 195,
+    "z": 15000,
+    "height": 420,
+    "width": 1595,
+    "tabOrder": 15000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Date"
+                    }
+                  },
+                  "Property": "Year Month"
+                }
+              },
+              "queryRef": "Date.Year Month",
+              "nativeQueryRef": "Year Month",
+              "active": true,
+              "displayName": "Year Month"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Total Sales Before Tax"
+                }
+              },
+              "queryRef": "Metrics.Total Sales Before Tax",
+              "nativeQueryRef": "Total Sales Before Tax",
+              "active": true,
+              "displayName": "Total Sales Before Tax"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Invoice Count"
+                }
+              },
+              "queryRef": "Metrics.Invoice Count",
+              "nativeQueryRef": "Invoice Count",
+              "active": true,
+              "displayName": "Invoice Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Average Invoice Value"
+                }
+              },
+              "queryRef": "Metrics.Average Invoice Value",
+              "nativeQueryRef": "Average Invoice Value",
+              "active": true,
+              "displayName": "Average Invoice Value"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Units Sold"
+                }
+              },
+              "queryRef": "Metrics.Units Sold",
+              "nativeQueryRef": "Units Sold",
+              "active": true,
+              "displayName": "Units Sold"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Sales YoY %"
+                }
+              },
+              "queryRef": "Metrics.Sales YoY %",
+              "nativeQueryRef": "Sales YoY %",
+              "active": true,
+              "displayName": "Sales YoY %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Invoice Count YoY %"
+                }
+              },
+              "queryRef": "Metrics.Invoice Count YoY %",
+              "nativeQueryRef": "Invoice Count YoY %",
+              "active": true,
+              "displayName": "Invoice Count YoY %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "AIV YoY %"
+                }
+              },
+              "queryRef": "Metrics.AIV YoY %",
+              "nativeQueryRef": "AIV YoY %",
+              "active": true,
+              "displayName": "AIV YoY %"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "264.0664138219427D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Total Sales Before Tax"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "213.3187018765327D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Invoice Count"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "204.60976706059301D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.AIV YoY %"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "237.3913356215D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Average Invoice Value"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "131.51654219223647D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Units Sold"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "154.9247950926199D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Sales YoY %"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "244.85796422090112D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Invoice Count YoY %"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Monthly Sales, volume and value'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "13D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#15273D'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "faeda87a2bb1ee3f8e59",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Date"
+              }
+            },
+            "Property": "Year Month"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "bbc21f17ce1e2558d774",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Total Sales Before Tax"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f8b5df963f84b58299b4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Invoice Count"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "e7f32296dd0e02596786",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Average Invoice Value"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "8313d7b159cce9f12a38",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Units Sold"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "a182c2d8b747c3ade0d1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Sales YoY %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "20adc29be7b03ebe53f2",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Invoice Count YoY %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "b54241f487eee0ef0f20",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "AIV YoY %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

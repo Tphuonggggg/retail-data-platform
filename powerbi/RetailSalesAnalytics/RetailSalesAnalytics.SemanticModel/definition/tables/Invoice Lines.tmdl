@@ -1,0 +1,171 @@
+/// Imported from dw_core.fact_invoice_line; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+table 'Invoice Lines'
+	isHidden
+	lineageTag: 9bfc772a-bcf4-431f-9549-057fc0c7a5f6
+
+	column source_invoice_line_id
+		dataType: int64
+		isHidden
+		lineageTag: 67e03a11-027d-4a72-bd72-4d4375381252
+		summarizeBy: none
+		sourceColumn: source_invoice_line_id
+
+	column source_invoice_id
+		dataType: int64
+		isHidden
+		lineageTag: b617eeb0-9452-45ea-b666-c35830ae9bcb
+		summarizeBy: none
+		sourceColumn: source_invoice_id
+
+	column source_order_id
+		dataType: int64
+		isHidden
+		lineageTag: ada4c357-7849-41f8-9430-1627f39f7d57
+		summarizeBy: none
+		sourceColumn: source_order_id
+
+	column invoice_date_key
+		dataType: int64
+		isHidden
+		lineageTag: c0e2812b-7289-4713-b1a4-1b11df0ce22f
+		summarizeBy: none
+		sourceColumn: invoice_date_key
+
+	column invoice_date
+		dataType: dateTime
+		isHidden
+		formatString: dd MMM yyyy
+		lineageTag: 0a104a4f-c4bc-4ccf-9ff3-72f6f5d64b65
+		summarizeBy: none
+		sourceColumn: invoice_date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column source_buyer_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: 54c57bca-f5d7-4442-b945-99bbc0ffed83
+		summarizeBy: none
+		sourceColumn: source_buyer_customer_id
+
+	column source_bill_to_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: 98ecb54b-8572-4e00-9edb-69bfb1952056
+		summarizeBy: none
+		sourceColumn: source_bill_to_customer_id
+
+	column buyer_observed_customer_key
+		dataType: string
+		isHidden
+		lineageTag: dfd5c54a-e8d4-42d7-be90-e1215be6eccf
+		summarizeBy: none
+		sourceColumn: buyer_observed_customer_key
+
+	column bill_to_observed_customer_key
+		dataType: string
+		isHidden
+		lineageTag: a5e81acd-e75f-4060-ba5d-21d874eb07d7
+		summarizeBy: none
+		sourceColumn: bill_to_observed_customer_key
+
+	column source_stock_item_id
+		dataType: int64
+		isHidden
+		lineageTag: 148c31ab-cf5e-4c55-ad6c-44c25b16a2dc
+		summarizeBy: none
+		sourceColumn: source_stock_item_id
+
+	column observed_product_key
+		dataType: string
+		isHidden
+		lineageTag: f61cbaff-2a6b-42df-a53a-b32612b2e6b5
+		summarizeBy: none
+		sourceColumn: observed_product_key
+
+	column quantity
+		dataType: int64
+		isHidden
+		lineageTag: 64bc3630-1736-4fce-8edc-a5d4762c242f
+		summarizeBy: none
+		sourceColumn: quantity
+
+	column invoiced_sales_before_tax
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: 940f9381-1e21-442b-9d21-f8b7eaacf3a4
+		summarizeBy: none
+		sourceColumn: invoiced_sales_before_tax
+
+	column tax_amount
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: 19ac14be-fe03-42c2-a4ce-161ec9524e4b
+		summarizeBy: none
+		sourceColumn: tax_amount
+
+	column invoice_amount_including_tax
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: 677605e9-90a7-4643-a477-97eef8bfef86
+		summarizeBy: none
+		sourceColumn: invoice_amount_including_tax
+
+	column source_reported_line_profit
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: 3ec4c721-d07a-4871-9cfe-a522d5533ea7
+		summarizeBy: none
+		sourceColumn: source_reported_line_profit
+
+	column is_sales_eligible
+		dataType: boolean
+		isHidden
+		lineageTag: c01d051a-b7f0-46d1-a45a-87690c2c5311
+		summarizeBy: none
+		sourceColumn: is_sales_eligible
+
+	column has_warning
+		dataType: boolean
+		isHidden
+		lineageTag: 57a2bab7-95eb-47c8-ad1d-bcd4e1fb2773
+		summarizeBy: none
+		sourceColumn: has_warning
+
+	column _capture_id
+		dataType: string
+		isHidden
+		lineageTag: 1d19290a-9ff6-4609-95de-3a3c6fac4e22
+		summarizeBy: none
+		sourceColumn: _capture_id
+
+	column ruleset_version
+		dataType: string
+		isHidden
+		lineageTag: 14ad9f92-3c8f-4ace-ac96-02874b647a56
+		summarizeBy: none
+		sourceColumn: ruleset_version
+
+	column measure_version
+		dataType: string
+		isHidden
+		lineageTag: 6b4dec7e-d454-4980-8b51-ca1be4c28dc8
+		summarizeBy: none
+		sourceColumn: measure_version
+
+	partition 'Invoice Lines' = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("127.0.0.1:55434", "retail_raw", [CreateNavigationProperties=false]),
+				    Data = Source{[Schema="dw_core",Item="fact_invoice_line"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"source_invoice_line_id", "source_invoice_id", "source_order_id", "invoice_date_key", "invoice_date", "source_buyer_customer_id", "source_bill_to_customer_id", "buyer_observed_customer_key", "bill_to_observed_customer_key", "source_stock_item_id", "observed_product_key", "quantity", "invoiced_sales_before_tax", "tax_amount", "invoice_amount_including_tax", "source_reported_line_profit", "is_sales_eligible", "has_warning", "_capture_id", "ruleset_version", "measure_version"}),
+				    VersionIDs = List.Distinct(Selected[_capture_id]),
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Typed = Table.TransformColumnTypes(Pinned, {{"source_invoice_line_id", Int64.Type}, {"source_invoice_id", Int64.Type}, {"source_order_id", Int64.Type}, {"invoice_date_key", Int64.Type}, {"invoice_date", type date}, {"source_buyer_customer_id", Int64.Type}, {"source_bill_to_customer_id", Int64.Type}, {"buyer_observed_customer_key", type text}, {"bill_to_observed_customer_key", type text}, {"source_stock_item_id", Int64.Type}, {"observed_product_key", type text}, {"quantity", Int64.Type}, {"invoiced_sales_before_tax", Currency.Type}, {"tax_amount", Currency.Type}, {"invoice_amount_including_tax", Currency.Type}, {"source_reported_line_profit", Currency.Type}, {"is_sales_eligible", type logical}, {"has_warning", type logical}, {"_capture_id", type text}, {"ruleset_version", type text}, {"measure_version", type text}})
+				in
+				    Typed

@@ -1,0 +1,19 @@
+table Role
+	lineageTag: f0c168c5-0bb7-51ab-9d73-6318a85925a1
+
+	column Role
+		dataType: string
+		lineageTag: f1a4117e-a91e-5f0f-9ef6-bde6caba3cda
+		summarizeBy: none
+		sourceColumn: [Role]
+		sortByColumn: 'Role Sort'
+
+	column 'Role Sort'
+		dataType: int64
+		isHidden
+		lineageTag: 25a4c92b-b7a7-5a99-bae7-5c57e1848f51
+		summarizeBy: none
+		sourceColumn: [Role Sort]
+
+	partition Role = calculated
+		source = DATATABLE("Role",STRING,"Role Sort",INTEGER,{{"Buyer",1},{"Bill-to",2}})

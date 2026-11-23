@@ -6,7 +6,7 @@
     "y": 155,
     "z": 8000,
     "width": 382,
-    "height": 130,
+    "height": 110,
     "tabOrder": 8000
   },
   "visual": {
@@ -139,7 +139,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "28D"
+                  "Value": "27D"
                 }
               }
             },
@@ -157,7 +157,14 @@
             "labelDisplayUnits": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "1000000D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
                 }
               }
             }

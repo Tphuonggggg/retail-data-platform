@@ -1,17 +1,110 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "c67a0f0a25045dc4b946",
   "position": {
-    "x": 1100,
-    "y": 305,
+    "x": 1105,
+    "y": 725,
     "z": 14000,
-    "width": 795,
-    "height": 305,
+    "height": 285,
+    "width": 790,
     "tabOrder": 14000
   },
   "visual": {
     "visualType": "barChart",
-    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Bill-to"
+                    }
+                  },
+                  "Property": "customer_name"
+                }
+              },
+              "queryRef": "Bill-to.customer_name",
+              "nativeQueryRef": "customer_name",
+              "displayName": "customer_name",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Top N Bill-to Share %"
+                }
+              },
+              "queryRef": "Metrics.Top N Bill-to Share %",
+              "nativeQueryRef": "Top N Bill-to Share %",
+              "displayName": "Top N Bill-to Share %"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Bill-to Sales"
+                }
+              },
+              "queryRef": "Metrics.Bill-to Sales",
+              "nativeQueryRef": "Bill-to Sales",
+              "displayName": "Bill-to Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Bill-to Rank"
+                }
+              },
+              "queryRef": "Metrics.Bill-to Rank",
+              "nativeQueryRef": "Bill-to Rank",
+              "displayName": "Bill-to Rank"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Metrics"
+                  }
+                },
+                "Property": "Top N Bill-to Share %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -26,14 +119,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Bill-to Sales — same revenue, different attribution'"
+                  "Value": "'Bill-to accounts | share of role Sales, same 0–100% scale'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "14D"
                 }
               }
             },
@@ -109,65 +202,96 @@
         }
       ]
     },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Bill-to"
-                    }
-                  },
-                  "Property": "customer_name"
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
-              },
-              "queryRef": "Bill-to.customer_name",
-              "nativeQueryRef": "customer_name",
-              "displayName": "Customer"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Top N Bill-to Sales"
-                }
-              },
-              "queryRef": "Metrics.Top N Bill-to Sales",
-              "nativeQueryRef": "Top N Bill-to Sales",
-              "displayName": "Top N Bill-to Sales"
-            }
-          ]
-        }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Metrics"
-                  }
-                },
-                "Property": "Top N Bill-to Sales"
               }
             },
-            "direction": "Descending"
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "maxMarginFactor": {
+              "expr": {
+                "Literal": {
+                  "Value": "38D"
+                }
+              }
+            }
           }
-        ],
-        "isDefaultSort": false
-      }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "start": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "end": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

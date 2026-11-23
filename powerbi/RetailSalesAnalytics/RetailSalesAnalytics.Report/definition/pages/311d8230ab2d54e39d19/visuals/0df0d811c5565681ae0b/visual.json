@@ -1,0 +1,388 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "0df0d811c5565681ae0b",
+  "position": {
+    "x": 300,
+    "y": 200,
+    "z": 18000,
+    "height": 480,
+    "width": 1595,
+    "tabOrder": 18000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Product"
+                    }
+                  },
+                  "Property": "stock_item_name"
+                }
+              },
+              "queryRef": "Product.stock_item_name",
+              "nativeQueryRef": "stock_item_name",
+              "active": true,
+              "displayName": "Product"
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Product Rank by Selected Basis"
+                }
+              },
+              "queryRef": "Metrics.Product Rank by Selected Basis",
+              "nativeQueryRef": "Product Rank by Selected Basis",
+              "active": true,
+              "displayName": "Selected metric rank"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Product Lifetime Rank"
+                }
+              },
+              "queryRef": "Metrics.Product Lifetime Rank",
+              "nativeQueryRef": "Product Lifetime Rank",
+              "active": true,
+              "displayName": "Lifetime Sales rank"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Comparable-Period Product Rank"
+                }
+              },
+              "queryRef": "Metrics.Comparable-Period Product Rank",
+              "nativeQueryRef": "Comparable-Period Product Rank",
+              "active": true,
+              "displayName": "Latest YTD Sales rank"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Product Active Months"
+                }
+              },
+              "queryRef": "Metrics.Product Active Months",
+              "nativeQueryRef": "Product Active Months",
+              "active": true,
+              "displayName": "Active months"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Product Rank Change"
+                }
+              },
+              "queryRef": "Metrics.Product Rank Change",
+              "nativeQueryRef": "Product Rank Change",
+              "active": true,
+              "displayName": "Sales rank delta"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "437.48591854703994D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Product.stock_item_name"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "304.08964931660057D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Product Rank by Selected Basis"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "208.83605195932734D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Product Lifetime Rank"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "238.6762766483916D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Product Rank Change"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "153.67045441217147D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Metrics.Product Active Months"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {}
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Product ranks within selection | lifetime versus latest captured YTD'"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "13D"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#15273D'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "7ace5f3300c0307adcb5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Product"
+              }
+            },
+            "Property": "stock_item_name"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "ebfd76491717263986a1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Product Rank by Selected Basis"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "77701a56007d3e679930",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Product Lifetime Rank"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "c9fab1a37c4e6a3d6b31",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Comparable-Period Product Rank"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "f078d34014d058e154c1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Product Active Months"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ef18aa77725ad363b100",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Metrics"
+              }
+            },
+            "Property": "Product Rank Change"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

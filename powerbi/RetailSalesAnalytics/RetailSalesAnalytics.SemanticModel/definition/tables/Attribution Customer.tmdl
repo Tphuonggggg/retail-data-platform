@@ -1,0 +1,18 @@
+table 'Attribution Customer'
+	lineageTag: 30a4f0d2-4ff9-5b67-91ae-0e3b69eda05e
+
+	column source_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: f4eafa9c-5fad-5f9b-8680-ec4262301a93
+		summarizeBy: none
+		sourceColumn: [source_customer_id]
+
+	column customer_name
+		dataType: string
+		lineageTag: b6b79474-520c-5039-91ea-c2581a194653
+		summarizeBy: none
+		sourceColumn: [customer_name]
+
+	partition 'Attribution Customer' = calculated
+		source = SELECTCOLUMNS(Buyer,"source_customer_id",Buyer[source_customer_id],"customer_name",Buyer[customer_name])

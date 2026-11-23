@@ -1,0 +1,59 @@
+/// Imported from dw_intermediate.int_order_header; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+table Orders
+	isHidden
+	lineageTag: fb0157ba-8db4-5050-a4d8-4ea9be434ca8
+
+	column source_order_id
+		dataType: int64
+		isHidden
+		lineageTag: 56dda978-3ac0-5372-b171-2be176060b63
+		summarizeBy: none
+		sourceColumn: source_order_id
+
+	column order_date_key
+		dataType: int64
+		isHidden
+		lineageTag: 21e1477e-1f85-5b6f-a9d1-019ae0e3346e
+		summarizeBy: none
+		sourceColumn: order_date_key
+
+	column source_buyer_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: 8f19d269-c200-52eb-af42-c701317d4e05
+		summarizeBy: none
+		sourceColumn: source_buyer_customer_id
+
+	column buyer_observed_customer_key
+		dataType: string
+		isHidden
+		lineageTag: ff84c0fb-e7d6-5492-86ea-f4c0644e5b9a
+		summarizeBy: none
+		sourceColumn: buyer_observed_customer_key
+
+	column is_order_eligible
+		dataType: boolean
+		isHidden
+		lineageTag: eea07643-51d1-5506-abb5-7c60f45133ac
+		summarizeBy: none
+		sourceColumn: is_order_eligible
+
+	column _capture_id
+		dataType: string
+		isHidden
+		lineageTag: 3f764dad-082e-5e50-893e-25d40950cb31
+		summarizeBy: none
+		sourceColumn: _capture_id
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("127.0.0.1:55434", "retail_raw", [CreateNavigationProperties=false]),
+				    Data = Source{[Schema="dw_intermediate",Item="int_order_header"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"source_order_id", "order_date_key", "source_buyer_customer_id", "buyer_observed_customer_key", "is_order_eligible", "_capture_id"}),
+				    VersionIDs = List.Distinct(Selected[_capture_id]),
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Typed = Table.TransformColumnTypes(Pinned, {{"source_order_id", Int64.Type}, {"order_date_key", Int64.Type}, {"source_buyer_customer_id", Int64.Type}, {"buyer_observed_customer_key", type text}, {"is_order_eligible", type logical}, {"_capture_id", type text}})
+				in
+				    Typed

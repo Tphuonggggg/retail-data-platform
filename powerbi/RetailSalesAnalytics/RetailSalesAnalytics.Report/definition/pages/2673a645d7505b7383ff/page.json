@@ -46,5 +46,87 @@
         }
       }
     ]
-  }
+  },
+  "visualInteractions": [
+    {
+      "source": "641190010a5952e2960f",
+      "target": "221de5e998e45dd3924c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "641190010a5952e2960f",
+      "target": "281be83bcd0158e09aaf",
+      "type": "DataFilter"
+    },
+    {
+      "source": "641190010a5952e2960f",
+      "target": "52d38454c48e5ad0a0ce",
+      "type": "DataFilter"
+    },
+    {
+      "source": "641190010a5952e2960f",
+      "target": "76a231cdc19857278151",
+      "type": "DataFilter"
+    },
+    {
+      "source": "641190010a5952e2960f",
+      "target": "786566ffbd2755e19d6c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "641190010a5952e2960f",
+      "target": "8108cf0fdf085826b8f4",
+      "type": "DataFilter"
+    },
+    {
+      "source": "641190010a5952e2960f",
+      "target": "dd4bf2272a4a5000b93c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "221de5e998e45dd3924c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "281be83bcd0158e09aaf",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "52d38454c48e5ad0a0ce",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "76a231cdc19857278151",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "786566ffbd2755e19d6c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "8108cf0fdf085826b8f4",
+      "type": "DataFilter"
+    },
+    {
+      "source": "d401e41226e0506db1a1",
+      "target": "dd4bf2272a4a5000b93c",
+      "type": "DataFilter"
+    },
+    {
+      "source": "281be83bcd0158e09aaf",
+      "target": "8108cf0fdf085826b8f4",
+      "type": "DataFilter"
+    },
+    {
+      "source": "8108cf0fdf085826b8f4",
+      "target": "281be83bcd0158e09aaf",
+      "type": "DataFilter"
+    }
+  ]
 }

@@ -1,17 +1,91 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "dfbe077a098b5ab8af71",
   "position": {
-    "x": 300,
-    "y": 615,
+    "x": 1105,
+    "y": 725,
     "z": 14000,
-    "width": 510,
-    "height": 275,
+    "height": 285,
+    "width": 790,
     "tabOrder": 14000
   },
   "visual": {
-    "visualType": "columnChart",
-    "drillFilterOtherVisuals": true,
+    "visualType": "clusteredColumnChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Date"
+                    }
+                  },
+                  "Property": "Weekday"
+                }
+              },
+              "queryRef": "Date.Weekday",
+              "nativeQueryRef": "Weekday",
+              "displayName": "Weekday",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Weekday Invoice Activity"
+                }
+              },
+              "queryRef": "Metrics.Weekday Invoice Activity",
+              "nativeQueryRef": "Weekday Invoice Activity",
+              "displayName": "Weekday Invoice Activity"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Weekday Order Activity"
+                }
+              },
+              "queryRef": "Metrics.Weekday Order Activity",
+              "nativeQueryRef": "Weekday Order Activity",
+              "displayName": "Weekday Order Activity"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Date"
+                  }
+                },
+                "Property": "Weekday"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -26,14 +100,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Day-of-week activity — zero is not missing data'"
+                  "Value": "'Weekday activity | Orders and Invoices counted separately'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "14D"
                 }
               }
             },
@@ -109,80 +183,41 @@
         }
       ]
     },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Date"
-                    }
-                  },
-                  "Property": "Weekday"
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
-              },
-              "queryRef": "Date.Weekday",
-              "nativeQueryRef": "Weekday",
-              "displayName": "Weekday"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Invoice Count"
-                }
-              },
-              "queryRef": "Metrics.Invoice Count",
-              "nativeQueryRef": "Invoice Count",
-              "displayName": "Invoice Count"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Order Count"
-                }
-              },
-              "queryRef": "Metrics.Order Count",
-              "nativeQueryRef": "Order Count",
-              "displayName": "Order Count"
-            }
-          ]
-        }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Date"
-                  }
-                },
-                "Property": "Weekday"
               }
             },
-            "direction": "Ascending"
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
-        ],
-        "isDefaultSort": false
-      }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

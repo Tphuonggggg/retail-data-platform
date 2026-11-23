@@ -1,0 +1,57 @@
+/// Imported from dw_core.dim_product; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+table Product
+	lineageTag: abcaec7f-2848-4205-bedc-beb33ab5aff6
+
+	column product_key
+		dataType: string
+		isHidden
+		lineageTag: 5a6e31f0-c7b6-429a-b6b4-69333885580d
+		summarizeBy: none
+		sourceColumn: product_key
+
+	column source_stock_item_id
+		dataType: int64
+		isHidden
+		lineageTag: c1506ca7-860b-43d1-b3ab-d9f013c1e57f
+		summarizeBy: none
+		sourceColumn: source_stock_item_id
+
+	column stock_item_name
+		dataType: string
+		lineageTag: 51fa2085-1971-4623-9d1b-49b8da243f12
+		summarizeBy: none
+		sourceColumn: stock_item_name
+
+	column brand
+		dataType: string
+		lineageTag: c06ecf92-fbd2-4538-b871-03af48994386
+		summarizeBy: none
+		sourceColumn: brand
+
+	column size
+		dataType: string
+		lineageTag: 4d82afbc-1b9c-407f-b0d2-95a14357d202
+		summarizeBy: none
+		sourceColumn: size
+
+	column _capture_id
+		dataType: string
+		isHidden
+		lineageTag: 0f9ebc43-1a3d-4d6b-96ec-e90aff58fa5c
+		summarizeBy: none
+		sourceColumn: _capture_id
+
+	partition Product = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("127.0.0.1:55434", "retail_raw", [CreateNavigationProperties=false]),
+				    Data = Source{[Schema="dw_core",Item="dim_product"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"product_key", "source_stock_item_id", "stock_item_name", "brand", "size", "_capture_id"}),
+				    VersionIDs = List.Distinct(Selected[_capture_id]),
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Typed = Table.TransformColumnTypes(Pinned, {{"product_key", type text}, {"source_stock_item_id", Int64.Type}, {"stock_item_name", type text}, {"brand", type text}, {"size", type text}, {"_capture_id", type text}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Exception

@@ -3,10 +3,10 @@
   "name": "97a29e28210b59b493ab",
   "position": {
     "x": 300,
-    "y": 910,
+    "y": 1020,
     "z": 17000,
     "width": 1595,
-    "height": 110,
+    "height": 42,
     "tabOrder": 17000
   },
   "visual": {
@@ -19,7 +19,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },
@@ -121,12 +121,12 @@
                       "Entity": "Metrics"
                     }
                   },
-                  "Property": "Backorder Diagnostic Status"
+                  "Property": "Coverage Note"
                 }
               },
-              "queryRef": "Metrics.Backorder Diagnostic Status",
-              "nativeQueryRef": "Backorder Diagnostic Status",
-              "displayName": "Backorder Diagnostic Status"
+              "queryRef": "Metrics.Coverage Note",
+              "nativeQueryRef": "Coverage Note",
+              "displayName": "Coverage Note"
             }
           ]
         }
@@ -139,7 +139,7 @@
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "12D"
                 }
               }
             }

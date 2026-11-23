@@ -1,0 +1,31 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["Date", "Product", "Buyer", "Invoice Lines", "Invoices", "Orders"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Date
+ref table Product
+ref table Buyer
+ref table 'Invoice Lines'
+ref table Invoices
+ref table Orders
+ref table Bill-to
+ref table 'Attribution Customer'
+ref table 'Top N'
+ref table Role
+ref table 'Concentration Rank'
+ref table Decomposition
+ref table Metrics
+ref table 'Ranking Basis'
+
+ref cultureInfo en-US

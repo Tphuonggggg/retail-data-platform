@@ -1,17 +1,123 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "281be83bcd0158e09aaf",
   "position": {
     "x": 300,
-    "y": 305,
+    "y": 285,
     "z": 12000,
-    "width": 975,
-    "height": 300,
+    "height": 420,
+    "width": 1595,
     "tabOrder": 12000
   },
   "visual": {
     "visualType": "lineChart",
-    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Date"
+                    }
+                  },
+                  "Property": "month_start"
+                }
+              },
+              "queryRef": "Date.month_start",
+              "nativeQueryRef": "month_start",
+              "displayName": "month_start",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Total Sales Before Tax"
+                }
+              },
+              "queryRef": "Metrics.Total Sales Before Tax",
+              "nativeQueryRef": "Total Sales Before Tax",
+              "displayName": "Total Sales Before Tax"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Sales Previous Year Comparable Period"
+                }
+              },
+              "queryRef": "Metrics.Sales Previous Year Comparable Period",
+              "nativeQueryRef": "Sales Previous Year Comparable Period",
+              "displayName": "Sales Previous Year Comparable Period"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Sales YoY %"
+                }
+              },
+              "queryRef": "Metrics.Sales YoY %",
+              "nativeQueryRef": "Sales YoY %",
+              "displayName": "Sales YoY %"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Invoice Count"
+                }
+              },
+              "queryRef": "Metrics.Invoice Count",
+              "nativeQueryRef": "Invoice Count",
+              "displayName": "Invoice Count"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Average Invoice Value"
+                }
+              },
+              "queryRef": "Metrics.Average Invoice Value",
+              "nativeQueryRef": "Average Invoice Value",
+              "displayName": "Average Invoice Value"
+            }
+          ]
+        }
+      }
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -26,14 +132,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Monthly Sales and comparable prior-year dates'"
+                  "Value": "'Monthly Sales | prior-year comparison uses the same dates'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "14D"
                 }
               }
             },
@@ -109,80 +215,48 @@
         }
       ]
     },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Date"
-                    }
-                  },
-                  "Property": "Year Month"
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
-              },
-              "queryRef": "Date.Year Month",
-              "nativeQueryRef": "Year Month",
-              "displayName": "Year Month"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Total Sales Before Tax"
-                }
-              },
-              "queryRef": "Metrics.Total Sales Before Tax",
-              "nativeQueryRef": "Total Sales Before Tax",
-              "displayName": "Total Sales Before Tax"
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Sales Previous Year Comparable Period"
-                }
-              },
-              "queryRef": "Metrics.Sales Previous Year Comparable Period",
-              "nativeQueryRef": "Sales Previous Year Comparable Period",
-              "displayName": "Sales Previous Year Comparable Period"
-            }
-          ]
-        }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Date"
-                  }
-                },
-                "Property": "Year Month"
               }
             },
-            "direction": "Ascending"
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "axisType": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Scalar'"
+                }
+              }
+            }
           }
-        ],
-        "isDefaultSort": false
-      }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

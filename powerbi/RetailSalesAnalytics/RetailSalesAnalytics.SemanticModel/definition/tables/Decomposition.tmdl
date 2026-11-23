@@ -1,0 +1,11 @@
+table Decomposition
+	lineageTag: 1b93ea41-a2a5-5be1-bb62-b5776ce2e8ce
+
+	column Component
+		dataType: string
+		lineageTag: 87b84636-e185-5f86-8654-e23c0edb7a1a
+		summarizeBy: none
+		sourceColumn: [Component]
+
+	partition Decomposition = calculated
+		source = DATATABLE("Component",STRING,{{"Invoice volume"},{"AIV"},{"Interaction"}})

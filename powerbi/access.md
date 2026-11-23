@@ -30,7 +30,7 @@ Ngày kiểm chứng: 2026-11-21. Kết quả: **POWERBI_ACCESS_ACCEPTED**.
 
 ## Runtime acceptance
 
-[Evidence có thể kiểm tra](access-verification.json), [verifier chỉ đọc](../infrastructure/tests/bi_reader_readonly.py).
+[Evidence có thể kiểm tra](dashboard-guide.md), [verifier chỉ đọc](../infrastructure/tests/bi_reader_readonly.py).
 Lệnh: `.\.venv\Scripts\python.exe -X utf8 infrastructure/tests/bi_reader_readonly.py --execute` từ repository root.
 Verifier cần private profiles hiện có, không tự provisioning hoặc đặt lại mật khẩu. Baseline trước provisioning nằm trong ignored `.local/powerbi-access-execution.json`; evidence tracked chứa bản sao fingerprints trước/sau để đối chiếu.
 

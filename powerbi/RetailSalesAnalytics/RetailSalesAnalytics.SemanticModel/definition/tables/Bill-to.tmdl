@@ -1,0 +1,25 @@
+table Bill-to
+	lineageTag: 7041062a-a057-5836-ad20-0a6ef6eeb95f
+
+	column customer_key
+		dataType: string
+		isHidden
+		lineageTag: 58ebf82a-3dfe-5180-9d0e-0e4b922b1b93
+		summarizeBy: none
+		sourceColumn: [customer_key]
+
+	column source_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: bcd92e29-4985-5f6e-9469-50746f71f8e1
+		summarizeBy: none
+		sourceColumn: [source_customer_id]
+
+	column customer_name
+		dataType: string
+		lineageTag: de04f251-d697-59f4-80a6-7b00c7ee9b7d
+		summarizeBy: none
+		sourceColumn: [customer_name]
+
+	partition Bill-to = calculated
+		source = SELECTCOLUMNS(Buyer,"customer_key",Buyer[customer_key],"source_customer_id",Buyer[source_customer_id],"customer_name",Buyer[customer_name])

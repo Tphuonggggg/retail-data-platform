@@ -1,29 +1,30 @@
-# Dashboard guide — bản triển khai chưa nghiệm thu dữ liệu
+# Hướng dẫn Retail Sales Analytics — bản redesign
 
-Mở [RetailSalesAnalytics.pbip](RetailSalesAnalytics/RetailSalesAnalytics.pbip) bằng Desktop. Bản gốc `Sales_Dashboard.pbix` được bảo toàn và backup trong ignored `.local/powerbi-sales-01`. Không dùng các screenshots như dashboard thay thế.
+Mở [RetailSalesAnalytics.pbip](RetailSalesAnalytics/RetailSalesAnalytics.pbip). Dữ liệu có sẵn, đúng version `c825b18e-fc62-4cf1-8837-b37b4c9f9668`; không cần chạy dbt/ingestion để xem. Kết nối theo [hướng dẫn reader](access.md); không lưu mật khẩu trong Git/report definitions.
 
-## Bốn trang
+| Trang chính | Nội dung |
+|---|---|
+| Sales Performance | Bốn KPI Sales/Invoices/AIV/Units; monthly Sales/PY trend lớn và volume/AIV cùng timeline. Monthly matrix/decomposition ở Explore details. |
+| Product Contribution | Pareto theo rank số/đường 80%, hai TopN bars. Ranking matrix và scatter ở detail. |
+| Sales Attribution | Concentration curve chủ đạo; hai bars có cùng trục 0–100% và nhãn tỷ trọng. Đây là cùng Sales theo hai roles, không cộng. |
+| Exceptions & Coverage | Warning concentration, monthly count/rate, clustered weekday counts đủ Sunday. Không gọi negative LineProfit là certified accounting loss. |
 
-| Trang | Visuals đã định nghĩa | Slicers/interaction | Runtime status |
-|---|---|---|---|
-| 01 Sales Performance | 4 cards; monthly Sales/PY line; Invoice Count/AIV dual axis; exact decomposition bars; monthly matrix; dynamic narrative | Year/Date, page navigation, clear slicers | Chưa có Import data; chưa đối soát DAX |
-| 02 Product Contribution | 4 cards; Pareto/80% line; TopN Sales và Units bars; scatter; history-aware rank matrix | Year/Date/Product/TopN/rank basis cho detail | Chưa có Import data; scroll/rank interactions chưa nghiệm thu |
-| 03 Sales Attribution | 4 cards; aligned Buyer và Bill-to bars; cumulative concentration; selected-role detail matrix | Year/Date/Role; hai bar charts không cross-filter nhau | Chưa có Import data; scale consistency/filter behavior còn cần kiểm |
-| 04 Exceptions & Coverage | 4 cards; negative LineProfit by Product; monthly warning count/rate; weekday activity; warning matrix; direct order-reference matrix; blocked-data notice | Year/Date, product drill qua warning chart | Warning fields đủ; backorder classification chưa được hỗ trợ |
+## Filter và navigation
 
-Tổng 72 visual containers gồm charts/cards/matrices/slicers/text/buttons. Tất cả analytical visuals bind vào columns/measures thật, không background charts. Background nguyên bản được trích từ Owner PBIX; theme navy/blue/teal/orange, sidebar buttons thật có PageNavigation, active-page styling; reset dùng ClearAllSlicers. Có thể cần Ctrl+click khi authoring trong Desktop. Chưa chứng minh thao tác click/sync/drill-through bằng runtime tests.
+- Year/Date đồng bộ giữa bốn main pages và detail. Product chỉ đồng bộ Product overview/detail. TopN đồng bộ Product/Attribution; Top5 cards luôn là Top5.
+- Attribution role ở Customer Roles detail, điều khiển matrix. Hai role charts overview luôn độc lập để so sánh, không bị role selector làm mất một phía.
+- Explore details là page navigation; không đồng nghĩa với truyền data-point filter. Drill-through context menu chỉ áp dụng khi visual có field phù hợp. Monthly detail nhận Date.month_start; Product detail nhận Product.stock_item_name. Customer detail khai báo theo Buyer.customer_name; không khẳng định mọi Bill-to point có cùng drill target. Back trả về selection nguồn.
+- Reset filters dùng ClearAllSlicers, không restore bookmark defaults. Sync group có thể làm date/TopN ở trang khác đổi theo. Không hứa reset xóa mọi external/drill-through filter.
+- Chart selection cấu hình DataFilter giữa các charts thông thường; Pareto numeric-rank axis không lọc TopN bars, các charts Buyer/Bill-to không lọc chéo nhau. Tooltips giữ context. Các hành vi click thực tế còn chờ kiểm thử.
 
-Không cross-page sync mặc định để tránh chọn Product/Role vô tình đổi population các trang khác. Tooltips cơ bản đã bind vào scatter; custom tooltip/drill-through pages chưa triển khai. Không Region/Store/Category giả. Các cards trống hiện tại thể hiện model chưa được refresh, không phải doanh số bằng 0.
+## Cách đọc
 
-## Thao tác còn cần để hoàn thành
+2016 chỉ có January–May. PY dịch cùng các ngày đang chọn lùi 12 tháng; không so full2016 với full2015. Decomposition cần một calendar year; BLANK khi nhiều năm là guard có chủ đích. Trend vẫn hiển thị monthly comparisons qua nhiều năm.
 
-1. Trong Desktop mở project trên, bấm **Refresh** để xử lý đủ 6 imported tables và các calculated tables. Nếu hỏi credential, dùng Database / `retail_bi_reader` với mật khẩu local đã đồng bộ; không dùng postgres/transform/ingest. Private profile không tự đồng bộ vào Power BI credential store.
-2. Nếu còn credential cũ cho đúng server/database, sửa credential của riêng nguồn đó. Không tắt privacy/TLS hoặc thay security settings. Bản source cuối dùng navigation, không còn native query identity phụ.
-3. Save project; khi có data, chạy [bộ DAX test](dax-validation-queries.json) bằng [query_model.ps1](query_model.ps1), đối soát với [SQL](validation.sql). Chỉ sau khi headline đúng mới kiểm các filtered contexts và charts.
-4. Page1 chọn năm2016: Jan–May Sales YoY −0,20%, invoices +0,90%, AIV −1,09% theo SQL. Page2 clear filters: top20% share64,52%, 69/227 SKU đạt80%, Top10 overlap0. Page3 clear filters: top5 Buyer1,07%, Bill-to63,75%, hai totals đều172261341,20. Đây là SQL benchmarks, không hardcode vào DAX.
-5. Page4 kiểm4626 negative eligible invoice lines, warning rate denominator228265 lines,178 zero-transaction Sundays. Không gọi warnings là official losses hoặc Chủ nhật không giao dịch là thiếu dữ liệu. Direct-link gaps không là failed fulfillment.
-6. Kiểm tất cả navigation/slicers, empty periods, matrix totals, TopN, product/multi-product và role contexts; chụp lại4 trang có data. Đo refresh/model size/query times thật, save rồi reopen. Chưa thực hiện các bước này nên chưa được nghiệm thu dashboard.
+Sales là invoiced sales before tax theo InvoiceDate; không tự gọi recognized revenue/net profit. Chưa có currency contract để gắn USD/BRL/VND. Units là source quantity, không bảo đảm cùng packaging. AIV là ratio của totals, không phải trung bình AIV con.
 
-## Backorder extension chờ phê duyệt riêng
+Ranks dùng product selection hiện hành. Lifetime bỏ Date filter; latest captured YTD dùng năm cuối dữ liệu, không phải năm máy. Zero overlap khác empty population. Zero-transaction Sundays không phải missing calendar dates. Order chưa direct invoice không mặc nhiên fulfillment failure; BackorderOrderID chưa mở rộng vào model.
 
-12 objects hiện tại không chứa BackorderOrderID. [SELECT proposal](proposals/order_reference_extension.sql) cho view `sales_marts.mart_order_invoice_reference`, grain một eligible OrderID/version, chỉ source FK references, không lifecycle status. Cần Owner phê duyệt object thứ13 + SELECT reader + dbt model/tests và điều chỉnh allowlist/preflight; chưa tạo view, chưa chạy dbt/GRANT. Source dependencies là existing order header, invoice header và staging Orders; BI reader chỉ được đọc view mới nếu được duyệt, không được cấp staging. Chỉ sau runtime reconciliation mới bổ sung linked/unresolved categories.
+## Nghiệm thu
+
+[Báo cáo redesign](dashboard-guide.md) có ảnh trước/sau, inventories và checklist. **137 checks/12 tests PASS không thay UI click tests.** Original PBIX được bảo toàn; không publish và không thay PostgreSQL/Raw/dbt/ingestion.

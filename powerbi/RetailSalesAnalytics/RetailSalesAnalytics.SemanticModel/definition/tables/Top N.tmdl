@@ -1,0 +1,11 @@
+table 'Top N'
+	lineageTag: 7482d9f9-406e-5f80-9541-cd58dfe4b201
+
+	column Value
+		dataType: int64
+		lineageTag: fe3466f9-2327-5b7a-81a0-d3b6d3117682
+		summarizeBy: none
+		sourceColumn: [Value]
+
+	partition 'Top N' = calculated
+		source = GENERATESERIES(5,50,5)

@@ -1,0 +1,46 @@
+{
+  "measures": [
+    {
+      "name": "Total Sales Before Tax",
+      "expression": "CALCULATE(SUM('Invoice Lines'[invoiced_sales_before_tax]),'Invoice Lines'[is_sales_eligible]=TRUE())"
+    },
+    {
+      "name": "Total Tax",
+      "expression": "CALCULATE(SUM('Invoice Lines'[tax_amount]),'Invoice Lines'[is_sales_eligible]=TRUE())"
+    },
+    {
+      "name": "Total Amount Including Tax",
+      "expression": "CALCULATE(SUM('Invoice Lines'[invoice_amount_including_tax]),'Invoice Lines'[is_sales_eligible]=TRUE())"
+    },
+    {
+      "name": "Units Sold",
+      "expression": "CALCULATE(SUM('Invoice Lines'[quantity]),'Invoice Lines'[is_sales_eligible]=TRUE())"
+    },
+    {
+      "name": "Invoice Count",
+      "expression": "VAR BaseCount=CALCULATE(COUNTROWS(Invoices),Invoices[is_sales_eligible]=TRUE())\nRETURN IF(ISCROSSFILTERED(Product),\n CALCULATE(COUNTROWS(Invoices),Invoices[is_sales_eligible]=TRUE(),\n TREATAS(CALCULATETABLE(VALUES('Invoice Lines'[source_invoice_id]),'Invoice Lines'[is_sales_eligible]=TRUE()),Invoices[source_invoice_id])),BaseCount)"
+    },
+    {
+      "name": "Order Count",
+      "expression": "CALCULATE(COUNTROWS(Orders),Orders[is_order_eligible]=TRUE())"
+    },
+    {
+      "name": "Sales Previous Year Comparable Period",
+      "expression": "VAR PreviousDates=SELECTCOLUMNS(VALUES('Date'[calendar_date]),\"PriorDate\",EDATE('Date'[calendar_date],-12))\nRETURN IF(HASONEVALUE('Date'[calendar_year]),CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Date'),TREATAS(PreviousDates,'Date'[calendar_date])))"
+    },
+    {
+      "name": "Buyer Sales",
+      "expression": "CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Bill-to'))"
+    },
+    {
+      "name": "Bill-to Sales",
+      "expression": "CALCULATE([Total Sales Before Tax],REMOVEFILTERS('Buyer'))"
+    }
+  ],
+  "hashes": {
+    "powerbi/RetailSalesAnalytics/RetailSalesAnalytics.Report/StaticResources/RegisteredResources/Modern_Retail_Analytics_Dashbo24992706228875072.png": "c0a715cb2ee8c8522c7f17871feb1f7083f91e3f91f41324b995cd97011e1505",
+    "powerbi/RetailSalesAnalytics/RetailSalesAnalytics.Report/StaticResources/RegisteredResources/retail-theme.json": "d6f3131c3ff9eaa671e30f68e93f34ae5ab5e809668185376c821cd57faf748d",
+    "powerbi/RetailSalesAnalytics/RetailSalesAnalytics.Report/StaticResources/SharedResources/BaseThemes/Fluent2-CY26SU10.json": "781f98416b262f95d1f7860f5037bb8bd4dd00ceef17f56382864ac3aed5d3e8",
+    "powerbi/Sales_Dashboard.pbix": "8ec0632bd58ceaf1e81822c316117932d03a4cf056c3b7cbb5fa2423c942d099"
+  }
+}

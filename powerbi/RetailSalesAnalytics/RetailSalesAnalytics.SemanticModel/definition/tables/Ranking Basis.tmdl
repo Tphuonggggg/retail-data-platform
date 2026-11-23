@@ -1,0 +1,11 @@
+table 'Ranking Basis'
+	lineageTag: 25b7e942-da91-5c94-891f-7bc46572e73e
+
+	column Basis
+		dataType: string
+		lineageTag: 1ac9755f-1f51-5968-b82f-cd1d61437ed9
+		summarizeBy: none
+		sourceColumn: [Basis]
+
+	partition 'Ranking Basis' = calculated
+		source = DATATABLE("Basis",STRING,{{"Sales"},{"Units"}})

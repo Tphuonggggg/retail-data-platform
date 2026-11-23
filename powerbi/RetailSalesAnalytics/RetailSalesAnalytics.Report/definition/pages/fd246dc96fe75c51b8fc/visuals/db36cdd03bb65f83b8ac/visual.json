@@ -1,17 +1,110 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "db36cdd03bb65f83b8ac",
   "position": {
     "x": 300,
-    "y": 305,
+    "y": 725,
     "z": 13000,
-    "width": 780,
-    "height": 305,
+    "height": 285,
+    "width": 790,
     "tabOrder": 13000
   },
   "visual": {
     "visualType": "barChart",
-    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Buyer"
+                    }
+                  },
+                  "Property": "customer_name"
+                }
+              },
+              "queryRef": "Buyer.customer_name",
+              "nativeQueryRef": "customer_name",
+              "displayName": "customer_name",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Top N Buyer Share %"
+                }
+              },
+              "queryRef": "Metrics.Top N Buyer Share %",
+              "nativeQueryRef": "Top N Buyer Share %",
+              "displayName": "Top N Buyer Share %"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Buyer Sales"
+                }
+              },
+              "queryRef": "Metrics.Buyer Sales",
+              "nativeQueryRef": "Buyer Sales",
+              "displayName": "Buyer Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Metrics"
+                    }
+                  },
+                  "Property": "Buyer Rank"
+                }
+              },
+              "queryRef": "Metrics.Buyer Rank",
+              "nativeQueryRef": "Buyer Rank",
+              "displayName": "Buyer Rank"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Metrics"
+                  }
+                },
+                "Property": "Top N Buyer Share %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
     "visualContainerObjects": {
       "title": [
         {
@@ -26,14 +119,14 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Buyer Sales — independently ranked'"
+                  "Value": "'Buyer accounts | share of role Sales, same 0–100% scale'"
                 }
               }
             },
             "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "13D"
+                  "Value": "14D"
                 }
               }
             },
@@ -109,65 +202,96 @@
         }
       ]
     },
-    "query": {
-      "queryState": {
-        "Category": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Buyer"
-                    }
-                  },
-                  "Property": "customer_name"
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "categoryAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
                 }
-              },
-              "queryRef": "Buyer.customer_name",
-              "nativeQueryRef": "customer_name",
-              "displayName": "Customer"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Metrics"
-                    }
-                  },
-                  "Property": "Top N Buyer Sales"
-                }
-              },
-              "queryRef": "Metrics.Top N Buyer Sales",
-              "nativeQueryRef": "Top N Buyer Sales",
-              "displayName": "Top N Buyer Sales"
-            }
-          ]
-        }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Metrics"
-                  }
-                },
-                "Property": "Top N Buyer Sales"
               }
             },
-            "direction": "Descending"
+            "showAxisTitle": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "maxMarginFactor": {
+              "expr": {
+                "Literal": {
+                  "Value": "38D"
+                }
+              }
+            }
           }
-        ],
-        "isDefaultSort": false
-      }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
+            "start": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "end": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "2D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
     }
   }
 }

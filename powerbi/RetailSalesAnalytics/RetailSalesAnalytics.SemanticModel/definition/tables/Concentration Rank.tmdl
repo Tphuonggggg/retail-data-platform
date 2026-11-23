@@ -1,0 +1,11 @@
+table 'Concentration Rank'
+	lineageTag: 79c62447-4ae3-55f7-b058-6abb0a31f74a
+
+	column Value
+		dataType: int64
+		lineageTag: e858f585-44b9-5e0a-8ff9-a0335fcdca9e
+		summarizeBy: none
+		sourceColumn: [Value]
+
+	partition 'Concentration Rank' = calculated
+		source = VAR N=COALESCE(COUNTROWS(Buyer),0) RETURN FILTER(GENERATESERIES(1,MAX(1,N),1),[Value]<=N)

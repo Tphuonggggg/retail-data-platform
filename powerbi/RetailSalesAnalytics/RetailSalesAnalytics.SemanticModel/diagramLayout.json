@@ -1,0 +1,204 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1150.8308756034303,
+            "y": 433.66970443608079
+          },
+          "nodeIndex": "Metrics",
+          "nodeLineageTag": "d8411c02-a906-5db2-a7eb-1d9dbd077ba4",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1434.8308756034303,
+            "y": 519.66970443608079
+          },
+          "nodeIndex": "Attribution Customer",
+          "nodeLineageTag": "30a4f0d2-4ff9-5b67-91ae-0e3b69eda05e",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 442.07349372067881,
+            "y": 965.33940887216158
+          },
+          "nodeIndex": "Bill-to",
+          "nodeLineageTag": "7041062a-a057-5836-ad20-0a6ef6eeb95f",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 506.376031084909,
+            "y": 383.57799363643778
+          },
+          "nodeIndex": "Buyer",
+          "nodeLineageTag": "c8fc0c7d-bbfb-457e-8226-547a9bb4c173",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1718.8308756034303,
+            "y": 483.66970443608079
+          },
+          "nodeIndex": "Concentration Rank",
+          "nodeLineageTag": "79c62447-4ae3-55f7-b058-6abb0a31f74a",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 792.22680799686145,
+            "y": 225.88192695594
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "d0df121a-2a4a-41df-85b1-4ddeb2f5c365",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2002.8308756034303,
+            "y": 483.66970443608079
+          },
+          "nodeIndex": "Decomposition",
+          "nodeLineageTag": "1b93ea41-a2a5-5be1-bb62-b5776ce2e8ce",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 316.15455960407371,
+            "y": 612.61724549863857
+          },
+          "nodeIndex": "Invoice Lines",
+          "nodeLineageTag": "9bfc772a-bcf4-431f-9549-057fc0c7a5f6",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 672.89925517189693,
+            "y": 616.43960933175367
+          },
+          "nodeIndex": "Invoices",
+          "nodeLineageTag": "f6e486c5-468e-5c4d-bf91-fbe6b34ca87c",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 916.8308756034304,
+            "y": -50
+          },
+          "nodeIndex": "Orders",
+          "nodeLineageTag": "fb0157ba-8db4-5050-a4d8-4ea9be434ca8",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 337.48757053767474
+          },
+          "nodeIndex": "Product",
+          "nodeLineageTag": "abcaec7f-2848-4205-bedc-beb33ab5aff6",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2286.8308756034303,
+            "y": 483.66970443608079
+          },
+          "nodeIndex": "Ranking Basis",
+          "nodeLineageTag": "25b7e942-da91-5c94-891f-7bc46572e73e",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2570.8308756034303,
+            "y": 519.66970443608079
+          },
+          "nodeIndex": "Role",
+          "nodeLineageTag": "f0c168c5-0bb7-51ab-9d73-6318a85925a1",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2854.8308756034303,
+            "y": 483.66970443608079
+          },
+          "nodeIndex": "Top N",
+          "nodeLineageTag": "7482d9f9-406e-5f80-9541-cd58dfe4b201",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

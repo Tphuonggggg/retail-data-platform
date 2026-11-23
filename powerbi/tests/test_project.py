@@ -2,10 +2,16 @@
 import json
 from pathlib import Path
 import unittest
+import subprocess
 
 ROOT=Path(__file__).resolve().parents[2]
 PROJECT=ROOT/'powerbi/RetailSalesAnalytics'
-MODEL=json.loads((PROJECT/'RetailSalesAnalytics.SemanticModel/model.bim').read_text())['model']
+legacy=PROJECT/'RetailSalesAnalytics.SemanticModel/model.bim'
+if legacy.exists():
+    MODEL=json.loads(legacy.read_text(encoding='utf-8'))['model']
+else:
+    serialized=subprocess.run(['powershell.exe','-NoProfile','-File',str(ROOT/'powerbi/export_model_metadata.ps1')],capture_output=True,encoding='utf-8-sig',check=True).stdout
+    MODEL=json.loads(serialized)
 TABLES={t['name']:t for t in MODEL['tables']}
 MEASURES={m['name']:m for m in TABLES['Metrics']['measures']}
 
@@ -24,8 +30,9 @@ class ProjectTests(unittest.TestCase):
     def test_relationships_are_explicit_single_direction_dimension_edges(self):
         self.assertEqual(len(MODEL['relationships']),9)
         for r in MODEL['relationships']:
-            self.assertEqual(r['fromCardinality'],'many');self.assertEqual(r['toCardinality'],'one')
-            self.assertEqual(r['crossFilteringBehavior'],'oneDirection')
+            # TOM's canonical serializer omits these standard defaults.
+            self.assertEqual(r.get('fromCardinality','many'),'many');self.assertEqual(r.get('toCardinality','one'),'one')
+            self.assertEqual(r.get('crossFilteringBehavior','oneDirection'),'oneDirection')
             self.assertIn(r['toTable'],{'Date','Product','Buyer','Bill-to'})
             self.assertIn(r['fromTable'],{'Invoice Lines','Invoices','Orders'})
             self.assertNotIn('source_business_key',(r['fromColumn'],r['toColumn']))
@@ -48,7 +55,9 @@ class ProjectTests(unittest.TestCase):
         self.assertIn('COUNTROWS(Invoices)',MEASURES['Invoice Count']['expression'])
         self.assertIn('TREATAS',MEASURES['Invoice Count']['expression'])
         self.assertIn('COUNTROWS(Orders)',MEASURES['Order Count']['expression'])
-        self.assertEqual(MEASURES['Average Invoice Value']['expression'],'DIVIDE([Total Sales Before Tax],[Invoice Count])')
+        self.assertIn('DIVIDE(',MEASURES['Average Invoice Value']['expression'])
+        self.assertIn('CONVERT([Total Sales Before Tax], DOUBLE)',MEASURES['Average Invoice Value']['expression'])
+        self.assertIn('[Invoice Count]',MEASURES['Average Invoice Value']['expression'])
 
     def test_comparisons_and_diagnostic_limit(self):
         self.assertIn('HASONEVALUE',MEASURES['Sales Previous Year Comparable Period']['expression'])
@@ -57,7 +66,8 @@ class ProjectTests(unittest.TestCase):
 
     def test_real_bindings_and_page_navigation_targets(self):
         pages=json.loads((PROJECT/'RetailSalesAnalytics.Report/definition/pages/pages.json').read_text())['pageOrder']
-        self.assertEqual(len(pages),4)
+        self.assertEqual(len(pages),8)
+        primary=pages[:4]
         for page in pages:
             directory=PROJECT/'RetailSalesAnalytics.Report/definition/pages'/page
             visuals=[json.loads(p.read_text()) for p in directory.glob('visuals/*/visual.json')]
@@ -76,7 +86,11 @@ class ProjectTests(unittest.TestCase):
                     if 'navigationSection' in link['properties']:
                         value=link['properties']['navigationSection']['expr']['Literal']['Value'].strip("'")
                         links.append(value)
-            self.assertEqual(set(links),set(pages))
+            if page in primary:
+                self.assertTrue(set(primary).issubset(links))
+                self.assertEqual(len(set(links)),5)
+            else:
+                self.assertEqual(json.loads((directory/'page.json').read_text(encoding='utf-8'))['visibility'],'HiddenInViewMode')
 
 
 if __name__=='__main__':unittest.main()

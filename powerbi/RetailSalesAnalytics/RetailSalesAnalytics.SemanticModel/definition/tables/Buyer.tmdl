@@ -1,0 +1,45 @@
+/// Imported from dw_core.dim_customer; version c825b18e-fc62-4cf1-8837-b37b4c9f9668. Observed-current labels, not historical SCD2 attribution.
+table Buyer
+	lineageTag: c8fc0c7d-bbfb-457e-8226-547a9bb4c173
+
+	column customer_key
+		dataType: string
+		isHidden
+		lineageTag: 8e1bf86d-b6f4-4b5b-8bfc-40d7d8427119
+		summarizeBy: none
+		sourceColumn: customer_key
+
+	column source_customer_id
+		dataType: int64
+		isHidden
+		lineageTag: 93f901ad-1935-4b41-bb50-c4713e56a33f
+		summarizeBy: none
+		sourceColumn: source_customer_id
+
+	column customer_name
+		dataType: string
+		lineageTag: 8f0d3c5d-1f5d-4bb9-a038-b8847cc3d022
+		summarizeBy: none
+		sourceColumn: customer_name
+
+	column _capture_id
+		dataType: string
+		isHidden
+		lineageTag: ffad1124-0c73-4c71-a24a-7634d7f2ad4d
+		summarizeBy: none
+		sourceColumn: _capture_id
+
+	partition Buyer = m
+		mode: import
+		source =
+				let
+				    Source = PostgreSQL.Database("127.0.0.1:55434", "retail_raw", [CreateNavigationProperties=false]),
+				    Data = Source{[Schema="dw_core",Item="dim_customer"]}[Data],
+				    Selected = Table.SelectColumns(Data, {"customer_key", "source_customer_id", "customer_name", "_capture_id"}),
+				    VersionIDs = List.Distinct(Selected[_capture_id]),
+				    Pinned = if List.Count(VersionIDs) = 1 and Text.From(VersionIDs{0}) = "c825b18e-fc62-4cf1-8837-b37b4c9f9668" then Selected else error "Unexpected analytical version",
+				    Typed = Table.TransformColumnTypes(Pinned, {{"customer_key", type text}, {"source_customer_id", Int64.Type}, {"customer_name", type text}, {"_capture_id", type text}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Exception
