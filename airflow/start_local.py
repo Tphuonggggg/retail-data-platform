@@ -5,6 +5,13 @@ from pathlib import Path
 import subprocess
 
 
+def service_environment(executable, config):
+    # SequentialExecutor launches the bare `airflow` command in task subprocesses.
+    return dict(os.environ, RETAIL_AIRFLOW_CONFIG=str(config),
+                AIRFLOW__CORE__LOAD_EXAMPLES='False',
+                PATH=str(executable.parent) + os.pathsep + os.environ.get('PATH', ''))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--start', action='store_true')
@@ -16,8 +23,7 @@ def main():
     config = home / '.config/retail-airflow/config.json'
     if not executable.is_file() or not config.is_file():
         raise SystemExit('Configure existing Airflow and private path profile first')
-    env = dict(os.environ, RETAIL_AIRFLOW_CONFIG=str(config),
-               AIRFLOW__CORE__LOAD_EXAMPLES='False')
+    env = service_environment(executable, config)
     subprocess.run([str(executable), 'db', 'check'], env=env, check=True)
     if not args.start:
         return

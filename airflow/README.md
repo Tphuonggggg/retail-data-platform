@@ -1,6 +1,6 @@
 # Airflow — Retail Sales orchestration
 
-**AIRFLOW_01_PARTIAL** — implementation/import/services đã kiểm tra; chưa chạy end-to-end vì PostgreSQL timeout/Docker Engine unavailable. Không ghi ingestion/dbt/DQ runtime PASS từ DAG import.
+**AIRFLOW_01_ACCEPTED — local supervised runtime, 2026-11-23.** Đã chạy một DAG end-to-end, đủ 8 tasks SUCCESS; 21 dbt models, 69 tests và run-start operation PASS. Không đồng nghĩa production readiness hoặc certified/source-consistent publication.
 
 ## Môi trường đã xác minh
 
@@ -39,6 +39,8 @@ export RETAIL_AIRFLOW_CONFIG="$HOME/.config/retail-airflow/config.json"
 ```
 
 `start_local.py` kiểm metadata rồi start scheduler/webserver nếu PID chưa active; không tự initialize/reset DB. Webserver bind127.0.0.1:8080; health endpoint đã HTTP200/metadatabase healthy/scheduler healthy. Service logs/PIDs trong `~/airflow/retail-service-logs`. PID existence check không thay full service supervisor; nếu stale/reused PID hoặc một service được start ngoài script, operator phải inspect trước, không start duplicate. Không tạo/đổi user hoặc mật khẩu UI. Dùng user Airflow đã có; nếu chưa có, owner cần provision riêng.
+
+Launcher đặt airflow_env/bin đầu PATH cho service và task subprocesses. SequentialExecutor gọi lệnh `airflow` không có đường dẫn tuyệt đối; thiếu PATH này khiến scheduler dừng lúc task đầu được queued. Đã bổ sung regression cho inherited PATH, không sửa system PATH hoặc cài lại Airflow. Nếu lỗi này xảy ra trước ingestion: kiểm candidate chưa tồn tại, khởi động scheduler với PATH đúng; giữ nguyên run ID và để orphan handling tiếp tục, không tạo batch mới hoặc clear write task mù.
 
 WSL must remain running for these local services. Nếu cài mới trên máy khác cần Airflow release/Python hỗ trợ và official version-specific constraints trong venv riêng; không chạy lệnh reinstall trên environment đang hoạt động. Task này reuse installation đã kiểm chứng, không thêm dependency root.
 
@@ -79,7 +81,7 @@ Sau khi các gates thực tế PASS, operator bật write gate trong profile pri
 ~/airflow_env/bin/airflow dags list-runs -d retail_sales_incremental_pipeline
 ```
 
-**Chưa thực thi lệnh trigger này.** Docker Engine hiện unavailable nên target preflight ConnectionTimeout; không đủ baseline/reconciliation/debug/compile để chạy level3. Không create version hoặcbuild một phần khi target chưapass. `allow_pipeline_writes` làoperator interlock, không cơ chếauthorization chống malicious local process; repo vàprivateprofile phải trusted.
+Đã thực thi một supervised trigger sau khi source/target preflight, dbt debug/compile và baseline checks PASS. Write gate đã trả false và DAG đã pause sau validation. Các lệnh trigger trên chỉ dành cho lần được phép tiếp theo; interlock không thay quyền bảo vệ local profile/repository.
 
 ## Retry, rerun, failure
 
@@ -89,8 +91,20 @@ Timeout của bridge/worker được báofailure; Windows interopchild có thể
 
 ## Kiểm tra và trạng thái
 
-Airflow2.11 runtime import đủ8tasks, DAG discovery, noimporterrors, metadata/db/pipcheck vàUIhealth PASS. N?m bridge tests vàworker receipt/write/version gate tests làmock/offline failure tests, không giảnetworkchaos hoặcmutationproof. Root scripts/run_checks.py bao gồm airflow/tests.
+Airflow runtime import đủ 8 tasks, discovery, no import errors, metadata/pip checks và UI health PASS. Toàn repo 160 regression tests PASS, gồm 10 Airflow tests. Failure/receipt/version tests dùng mocks hoặc fixtures, không giả network chaos hoặc source mutation proof.
 
-Source read-only preflight từWSL bridge PASS. Target BLOCKED(ConnectionTimeout), Docker daemonpipe missing. dbt debug/compile trêntarget, read-version liveinspection, metadata before/after vàend-to-endDAG **NOT_RUN/BLOCKED**. Không runFullLoad, incrementalexecute, dbtbuild, sourcewrites hoặcpublication trongtask này. No-change/mutation/runtime rerun cases chưa testtrongAirflow; engine regressions hiện hữu vẫnđược giữ.
+Source/target preflight từ WSL bridge và dbt debug/compile chỉ đọc PASS. Đã chạy incremental ingestion và dbt build qua supervised DAG; không Full Load/source writes/publication. No-change run và same-ID durable readback đã test thật; INSERT/UPDATE/DELETE/failure cases vẫn là offline/fixture.
 
 Troubleshooting: source Windows auth/ODBC/TLS fail thìdừng, khôngfallbackSQLlogin/trust; targettimeout kiểmDocker trước, khôngprunevolume; DAGnotfound kiểmsymlink/resolvedpath; writegatedisabled khôngbật trướclevel2; dbtfailed khôngchọnolderversion; warnings/testskip khôngđượccoi fullbuildPASS. Logs/errors vàrunUUIDs ởAirflowtasklogs, temporaryevidence ởignored.local/airflow-01. PowerBI vẫnmanualImport/Refresh, khôngsửareport.
+
+## Runtime đã xác minh
+
+- Run `manual__airflow01_20261123T061320Z`; candidate `3a2f011d-f3b3-5683-83a2-a64837720f3d`, parent `c825b18e-fc62-4cf1-8837-b37b4c9f9668`. Candidate VALIDATED, depth 3, ACK=NULL. Tám task SUCCESS; không fallback phiên bản cũ.
+- Quét 604672 rows: tất cả UNCHANGED, INSERT/UPDATE/DELETE=0. Không thêm delta payload/events. Chỉ thêm một incremental version; runs/object_runs/load_contracts/load_audits/incremental_events/raw_current/raw_publications giữ nguyên count và content hash so baseline.
+- dbt invocation `87a1ee86-1c6b-41c0-874a-794fed249c05`: 21 models, 69 tests, một run-start operation PASS. Cả năm marts chỉ có version mới, row counts giữ nguyên. Sales 172261341.20; Tax 25782098.25; IncludingTax 198043439.45; Units 8950628; Invoices 70510; Orders 73595 giữ nguyên và đối soát PASS.
+- Gọi lại CLI cùng V/P trả ALREADY_VALIDATED_NO_REEXTRACTION; metadata toàn bộ không đổi. Đây là engine readback, không phải clear/retry Airflow write task hoặc DAG run thứ hai.
+- Container cũ không start do bind `storage/raw/bootstrap.sql` mất sau refactor. Dùng script hiện hữu `infrastructure/scripts/ensure_raw_bind.ps1 -Apply` khôi phục junction đến canonical infrastructure/postgres; start đúng container ID9fd7b79b và volume retail-raw_pg_data, không recreate/reset/migration/bootstrap.
+- Scheduler gặp PATH thiếu airflow khi task đầu queued. Sau sửa launcher và restart, scheduler tiếp tục cùng run; không clear task, không tạo batch mới. Regression kiểm inherited PATH đã được bổ sung.
+- Gate private false, DAG paused; scheduler/webserver giữ chạy. Temporary evidence ở ignored .local/airflow-01, không commit logs/private profiles.
+
+Power BI không auto-refresh hoặc đổi pin trong task này. PBIP vẫn pin c825b18e trong khi serving tables hiện pin 3a2f011d; imported cache cũ được giữ nguyên, refresh trực tiếp sẽ bị version guard từ chối. Muốn refresh cần review/đồng bộ pin riêng, không bỏ guard hoặc fallback latest. Đây là giới hạn manual handoff, không sửa Power BI âm thầm.

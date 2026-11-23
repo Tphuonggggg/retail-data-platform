@@ -8,7 +8,7 @@ flowchart LR
   PY --> RAW[PostgreSQL Raw + version metadata]
   RAW --> DBT[dbt staging / DQ / core / Sales marts]
   DBT --> BI[Power BI Sales Analytics]
-  AF[Airflow WSL: implemented, E2E blocked] -. next milestone .-> PY
+  AF[Airflow WSL: manual E2E verified] -. next milestone .-> PY
 ```
 
 ## Công nghệ và cấu trúc
@@ -44,6 +44,6 @@ Plan → source/target preflight → run được cho phép → reconcile → ch
 
 Sales Full/Incremental và dbt/DQ đã có implementation; incremental quét toàn bộ sáu nguồn Sales để snapshot-diff, không phải CDC. Source consistency vẫn chưa được chứng minh bằng coherent atomic snapshot. Historical SCD2 chưa được triển khai đầy đủ; observed-current labels không thay historical attribution. Customer/Product hiện là dimensions Sales; Inventory/Customer analytics độc lập, Purchasing/Finance/BigQuery là mở rộng.
 
-Dashboard có bốn trang chính và bốn detail ẩn; DAX đã đối soát, nhưng click/sync/reset/drill-through UI acceptance chưa đầy đủ. Serving local không được gọi Certified/atomic publication. Trong lần smoke check gần nhất Docker Linux Engine unavailable nên PostgreSQL/preflight/dbt runtime bị chặn; cần kiểm tra lại hạ tầng trước khi vận hành, không coi đó là lỗi cần reset dữ liệu.
+Dashboard có bốn trang chính và bốn detail ẩn; DAX đã đối soát, nhưng click/sync/reset/drill-through UI acceptance chưa đầy đủ. Serving local không được gọi Certified/atomic publication. Airflow đã chạy một supervised local DAG thành công; write gate đã tắt và DAG paused. Serving version hiện 3a2f011d-f3b3-5683-83a2-a64837720f3d; Power BI vẫn pin version cũ, cần review riêng trước manual refresh, không bỏ version guard.
 
 Không commit credentials, source extracts hoặc .local/.pbi caches. Không chạy load/build/migrations chỉ để kiểm tra tài liệu.
