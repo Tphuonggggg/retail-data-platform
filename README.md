@@ -8,7 +8,7 @@ flowchart LR
   PY --> RAW[PostgreSQL Raw + version metadata]
   RAW --> DBT[dbt staging / DQ / core / Sales marts]
   DBT --> BI[Power BI Sales Analytics]
-  AF[Airflow: NOT_IMPLEMENTED] -. next milestone .-> PY
+  AF[Airflow WSL: implemented, E2E blocked] -. next milestone .-> PY
 ```
 
 ## Công nghệ và cấu trúc
