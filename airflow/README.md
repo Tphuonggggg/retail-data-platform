@@ -2,6 +2,8 @@
 
 **AIRFLOW_01_ACCEPTED — local supervised runtime, 2026-11-23.** Đã chạy một DAG end-to-end, đủ 8 tasks SUCCESS; 21 dbt models, 69 tests và run-start operation PASS. Không đồng nghĩa production readiness hoặc certified/source-consistent publication.
 
+**AIRFLOW_02_PARTIAL.** Các kiểm thử reliability/recovery trên DAG hiện hữu đã chạy, scheduling vẫn tắt. Recovery live đã rebuild bằng dbt table materialization và DROP các backup tables; điều này vi phạm ràng buộc không DROP bất kỳ PostgreSQL table của AIRFLOW-02, dù dữ liệu trước/sau khớp nhau. Chưa đủ điều kiện nghiệm thu. Phân biệt fixture/mocks, scheduler cô lập và recovery live ở phần dưới; không coi các lỗi mô phỏng là sự cố thật của WWI/PostgreSQL.
+
 ## Môi trường đã xác minh
 
 Ubuntu WSL2, kernel6.18.58.1; Airflow2.11.0 trong `~/airflow_env`, Python3.12.16. System Python3.14.4 không được dùng chạy Airflow. `airflow version`, `db check`, `pip check` PASS; `typing_extensions==4.13.2` không có Sentinel nhưng Airflow import/CLI thực tế không lỗi. Không nâng cấp hoặc cài lại package.
@@ -69,7 +71,22 @@ Change/no-change đều có candidate version VALIDATED theo engine hiện có. 
 
 ## Safety preflight và trigger
 
-Private profile mặc định `allow_pipeline_writes=false`; giữ false trong lúc target đang BLOCKED. Để thực hiện lần supervised run sau này: xác minh source/target identity/TLS/privileges, capture/ledger/checkpoint/pointer baseline, parent validated/contract/depth, không CLI/dbt khác đang chạy, Docker healthy, debug/compile vàlevel1–2 PASS. Xác định write scope: sixRaw delta payloads, incremental events/version ledger vàschemas transform sở hữu dw_staging/dw_intermediate/dw_core/sales_marts/dq; không WWI source, Raw publication hoặc BI.
+Private profile mặc định `allow_pipeline_writes=false`, `write_scope=null`; trả về trạng thái đóng sau mỗi lần vận hành. Trước supervised run: xác minh source/target identity/TLS/privileges, capture/ledger/checkpoint/pointer baseline, parent validated/contract/depth, không CLI/dbt khác đang chạy, Docker healthy và các preflight PASS. Xác định write scope: six Raw delta payloads, incremental events/version ledger và schemas transform sở hữu dw_staging/dw_intermediate/dw_core/sales_marts/dq; không WWI source, Raw publication hoặc BI.
+
+Chỉ bật boolean không còn đủ quyền. Scope private phải khớp **parent + version + actions** của lần được phép. Tính version bằng `bridge.version_for_run(run_id)` trước khi trigger, không dùng UUID ngẫu nhiên thay thế. Ví dụ cấu trúc (thay placeholders bằng UUID đã kiểm chứng; không chạy nguyên mẫu):
+
+```json
+{
+  "allow_pipeline_writes": true,
+  "write_scope": {
+    "parent": "<validated-parent-uuid>",
+    "version": "<uuid-derived-from-exact-run-id>",
+    "actions": ["ingest", "build"]
+  }
+}
+```
+
+Recovery chỉ rebuild thì `actions=["build"]`; bridge và worker đều kiểm scope trước gọi CLI. **dbt table rebuild có DROP backup relations**: scope này không phù hợp với một yêu cầu cấm DROP tuyệt đối. Khi chưa có chấp thuận cho table replacement, giữ gate đóng và chỉ kiểm thử cô lập/đọc. Không cho scope wildcard, không cho một scope áp dụng nhiều version. Gate là interlock local, không thay SQL least privilege hoặc bảo vệ private profile/repository.
 
 Sau khi các gates thực tế PASS, operator bật write gate trong profile private vàtrigger:
 
@@ -85,13 +102,37 @@ Sau khi các gates thực tế PASS, operator bật write gate trong profile pri
 
 ## Retry, rerun, failure
 
-Source/target connection tasks retry1; write tasks retry0. Default all_success khiến failure chặn mọi downstream, không markcomplete nếu dbt/mart thất bại. Manual clear cùng Airflow run giữV/parent; dbt retry không tạo ingestion version mới. Existing successfulV đượcreconcile/read-back, khôngreextract. FAILED/RUNNING/unknownCOMMIT: inspectledger trước, không clear ingestion task mù; fresh extraction dùng **new DAG run_id** vàexplicit validated parent. Không tự restartwholeDAG.
+| Task | Retry tự động | Điều kiện và xử lý |
+|---|---:|---|
+| preflight_source / preflight_target | 1, sau 30 giây | Chỉ lỗi transport được nhận diện, như connection refused/timeout. Auth/certificate, permissions, cấu hình/handoff sai dừng bằng AirflowFailException, không retry. |
+| run_incremental_ingestion | 0 | Có durable idempotency nhưng lỗi giữa transaction/unknown COMMIT cần inspect; không tự chạy lại nguồn. |
+| run_dbt_build | 0 | Rebuild từng model chưa atomic cho toàn graph; phải xác minh cùng read version và partial output trước manual clear. |
+| validate / resolve / marts / complete | 0 | Sai eligibility, digest, grain, test hoặc version cần xử lý nguyên nhân. Nếu chỉ mất kết nối: sau khi kết nối hồi phục, manual clear đúng phần đọc bị lỗi. |
+
+Default `all_success` giữ mọi downstream không thực thi khi upstream fail; leaf không dùng `all_done` để che lỗi. Same run giữ UUID deterministic; một run mới cùng parent tạo UUID mới, không được gọi là retry cùng ingestion identity. Existing VALIDATED V chỉ reconcile/read-back, không re-extract; parent/contract/algorithm/scope phải đúng. FAILED/RUNNING/unknown COMMIT không được ghi đè hoặc reset checkpoint: kiểm ledger và Windows child trước; fresh extraction cần **new DAG run_id**, explicit validated parent và scope riêng.
+
+Quy trình rerun phần dbt:
+
+1. Pause DAG; xem đúng run ID, task states, native logs và ledger. Kiểm tra không còn Windows child, CLI hoặc run khác đang hoạt động. Không suy kết quả COMMIT từ task timeout.
+2. Giữ nguyên run ID/conf/parent; xác minh V vẫn VALIDATED, đủ sáu nguồn, contract/algorithm khớp, ACK=NULL. Đối soát baseline Raw/current-state, serving counts/digests/KPI và pin BI.
+3. Trong Grid chọn đúng run và ba task `run_dbt_build`, `validate_sales_marts`, `pipeline_complete`; clear cả failed/upstream_failed, không chọn upstream/past/future. Năm upstream đã SUCCESS được giữ nguyên. Không mark success thủ công.
+4. Nếu dùng CLI, lấy **logical date chính xác** từ run rồi dùng `airflow tasks clear -s "$LOGICAL_DATE" -e "$LOGICAL_DATE" -t '^(run_dbt_build|validate_sales_marts|pipeline_complete)$' retail_sales_incremental_pipeline`; review danh sách đúng ba task trước xác nhận. Không dùng chỉ ngày khi cùng ngày có nhiều run.
+5. Chỉ khi Owner cho phép DDL table replacement của dbt: mở scope `build` cho đúng P/V rồi unpause DAG manual. Nếu vẫn cấm DROP tuyệt đối thì dừng trước bước này, dùng fixtures để chứng minh recovery. dbt kiểm eligibility lại trước CLI và dùng đúng V; không clear ingestion. Chỉ hoàn tất sau execution receipt và mọi model/data test PASS, mart reconciliation PASS.
+6. Đóng gate, xóa scope hoặc đặt null, pause DAG; so sánh baseline và giữ logs. Không refresh Power BI tự động. Nếu output/receipt/mart mismatch: giữ failure, không fallback capture cũ hoặc tự chạy cả DAG.
 
 Timeout của bridge/worker được báofailure; Windows interopchild có thể còn chạy sau WSLtasktimeout. Không tự kill/retry/createbatch; inspectWindows processes vàdurableversion, đợi/cancel cókiểm soát trước rerun. max_active_runs=1 chỉserializeDAG này; external CLI hoặcDAG khác vẫn cần operator coordination. Existing ingestion/dbt advisory locks vẫn làguard từngengine, khôngglobalatomicpublication. AirflowSQLite sequential chỉ phù hợp localsingleDAG; không HA hoặcdistributedexecutor.
 
+Lock ingestion `941061` chặn writer Full/Incremental khác; lock dbt `941062` chặn transform CLI khác, kể cả ngoài Airflow. Đây là hai locks độc lập, không phải mutex chung cho cả pipeline. Trong recovery live đã giữ ingestion lock trong khi rebuild. Không có atomic publication cho toàn graph, không cho BI refresh trong khoảng rebuild; version guard vẫn bắt mixed/stale versions. Scheduler serialization không thay các locks hoặc chứng minh coherent source snapshot.
+
+## Logs và quan sát
+
+UI Grid/Graph hiển thị run/task/state/attempt/start/end/duration; native task logs ở `~/airflow/logs/dag_id=retail_sales_incremental_pipeline/run_id=<run-id>/task_id=<task-id>/attempt=<n>.log`. Có thể dùng `airflow dags list-runs -d retail_sales_incremental_pipeline` và `airflow tasks states-for-dag-run retail_sales_incremental_pipeline '<run-id>' --output json` để xem states.
+
+Các dòng JSON `retail_stage_start`, `retail_stage_failed`, `retail_stage_success` ghi run_id/task_id/attempt/action/parent/version. Ingestion trả durable status; build thành công thêm dbt_invocation/dbt_command/dbt_exit_code. Đối chiếu invocation với `.local/dbt/invocations/<id>/execution.json` và target/run_results.json; CLI lỗi có command exit code và category được lọc. `READ_VERSION_*`, `DBT_RECEIPT_VERSION_MISMATCH`, `DBT_DATA_TESTS_MISSING`, `MART_*`, unknown COMMIT và timeout không được coi transient để retry ghi. Không relay driver stdout/stderr, exception chứa DSN hoặc credentials; logs không có passwords. XCom chỉ chứa handoff/receipt nhỏ, không chứa dữ liệu nguồn.
+
 ## Kiểm tra và trạng thái
 
-Airflow runtime import đủ 8 tasks, discovery, no import errors, metadata/pip checks và UI health PASS. Toàn repo 160 regression tests PASS, gồm 10 Airflow tests. Failure/receipt/version tests dùng mocks hoặc fixtures, không giả network chaos hoặc source mutation proof.
+Airflow runtime import đủ 8 tasks, discovery, no import errors, metadata/pip checks và UI health PASS. Bộ regression có 17 Airflow tests, ngoài các bộ ingestion/dbt/infrastructure hiện hữu. Failure/receipt/version tests dùng mocks hoặc fixtures, không giả network chaos hoặc source mutation proof.
 
 Source/target preflight từ WSL bridge và dbt debug/compile chỉ đọc PASS. Đã chạy incremental ingestion và dbt build qua supervised DAG; không Full Load/source writes/publication. No-change run và same-ID durable readback đã test thật; INSERT/UPDATE/DELETE/failure cases vẫn là offline/fixture.
 
@@ -108,3 +149,32 @@ Troubleshooting: source Windows auth/ODBC/TLS fail thìdừng, khôngfallbackSQL
 - Gate private false, DAG paused; scheduler/webserver giữ chạy. Temporary evidence ở ignored .local/airflow-01, không commit logs/private profiles.
 
 AIRFLOW-01 không auto-refresh hoặc đổi pin Power BI. Bước POWERBI-VERSION-SYNC-01 sau đó đã xác minh và đồng bộ sáu import guards với serving version 3a2f011d-f3b3-5683-83a2-a64837720f3d; refresh, SQL/DAX reconciliation và render tám trang đã kiểm chứng. Các lần chạy Airflow tiếp theo vẫn cần review/đồng bộ pin riêng trước refresh; không bỏ guard hoặc fallback latest.
+
+## Reliability đã kiểm chứng — AIRFLOW-02
+
+| Scenario | Phương pháp | Kết quả và giới hạn |
+|---|---|---|
+| 01 SQL Server unavailable | ISOLATED transport + Airflow/mock bridge | ODBC kết nối loopback port đóng thất bại; DAG thử preflight hai lần rồi FAILED, downstream upstream_failed, không ingestion/dbt. Không tắt WWI thật. |
+| 02 PostgreSQL unavailable | ISOLATED transport + Airflow/mock bridge | psycopg kết nối loopback port đóng thất bại; target task FAILED, các task ghi không chạy. Không tắt container thật. |
+| 03 Ingestion failure | ISOLATED PostgreSQL fixture + Airflow/mock bridge | 69 fixture checks: rollback events/payload, FAILED ledger giữ lại, same failed UUID bị từ chối, recovery UUID mới và no-change đúng. Fixture chỉ dưới prefix riêng trong dbt_sales_test, không production Raw. |
+| 04 dbt failure | MOCK CLI/receipt + ISOLATED Airflow | Lỗi dbt chặn marts/complete; receipt sai version hoặc thiếu/failed data tests bị từ chối. Clear ba task cuối không gọi lại ingestion. Recovery live bên dưới dùng gate failure trước CLI, không tuyên bố đã làm dbt thật hỏng. |
+| 05 Repeat/retry/clear | ISOLATED + LIVE readback/recovery | Same VALIDATED UUID thực tế trả ALREADY_VALIDATED_NO_REEXTRACTION, đủ sáu reconciliation; clear/rerun tail giữ nguyên P/V và upstream. New run ID khác UUID. |
+| 06 No change | REUSE accepted LIVE evidence + ISOLATED fixture | V hiện tại có 604672 UNCHANGED, INSERT/UPDATE/DELETE=0; ledger/reconciliation kiểm lại. Không quét thêm source snapshot chỉ để lặp kết quả AIRFLOW-01. |
+| 07 Concurrent runs | ISOLATED real scheduler + LIVE DB locks | Hai run được submit queued cùng lúc; max observed running=1, run sau bắt đầu sau khi run trước kết thúc. Fixture worker không gọi source/target thật, gate đóng nên cả hai dừng ở ingestion. Trên target thật, giữ từng advisory lock khiến CLI ingestion/dbt ngoài Airflow bị từ chối trước ghi. |
+| 08 Invalid read version | MOCK + ISOLATED + LIVE SELECT guard | Unknown UUID thật bị READ_VERSION_NOT_ELIGIBLE; unvalidated/failed/missing metadata và version mismatch kiểm bằng doubles. CLI dbt không chạy, không fallback input khác. Không tạo metadata lỗi trong production để thử. |
+
+Recovery live dùng lại `manual__airflow01_20261123T061320Z`, V=`3a2f011d-f3b3-5683-83a2-a64837720f3d`. Clear đúng ba tail tasks khi gate false: build FAILED, hai downstream upstream_failed. Sau đó scope chỉ `build` đúng P/V và ingestion lock được giữ; clear/rerun ba task này thành SUCCESS. dbt invocation `b1d4595c-3f03-4785-8357-af8383db0704`: 21 models, 69 tests, một operation PASS. Build đến attempt 3; năm task upstream giữ nguyên try/start/end/duration. Không tạo DAG run hoặc ingestion candidate mới.
+
+Before/after: count và SHA256 của tám metadata tables giữ nguyên; Raw base/delta/current-state counts và content digests của toàn bộ serving tables giữ nguyên; Sales 172261341.20, Tax 25782098.25, IncludingTax 198043439.45, Units 8950628, Invoices 70510, Orders 73595 giữ nguyên. Hash file Power BI, pin V, publication/checkpoint không đổi. Source chỉ SELECT, không refresh BI. Scope/profile được khôi phục, gate false, DAG paused, schedule=None; scheduler/UI vẫn healthy.
+
+**Sai lệch safety cần Owner review:** SQL log của recovery invocation có 42 câu DROP IF EXISTS cho dbt temporary/backup relations, trong đó 21 câu dành cho `__dbt_backup`; không có TRUNCATE. Các bảng phục vụ đã được thay thế theo cơ chế materialization của dbt; data digests/KPI khớp hoàn toàn, nhưng không thể tuyên bố đã tuân thủ lệnh cấm DROP bất kỳ bảng PostgreSQL. Đã dừng mọi thao tác ghi tiếp theo, không tự coi normal dbt rebuild là ngoại lệ được duyệt. Cần Owner quyết định liệu cho phép table replacement có kiểm soát trong recovery tương lai hay giữ cấm DROP và chỉ demo bằng môi trường cô lập. Không mở scheduling hoặc đánh dấu AIRFLOW-02 accepted khi chưa xử lý sai lệch này.
+
+Tái kiểm tra offline từ Windows: `.venv\Scripts\python.exe scripts/run_checks.py`. Trên WSL dùng Python Airflow hiện có:
+
+```bash
+~/airflow_env/bin/python airflow/tests/reliability_runtime.py --execute-isolated --output .local/airflow-02/isolated
+```
+
+Harness dùng DAG/operators hiện hữu, Airflow home/SQLite tạm riêng và fixture worker, không chạy trên metadata hoặc databases vận hành. Retry delay chỉ được rút xuống 1ms trong test in-process; production vẫn 30 giây. PostgreSQL fixture có thể chạy riêng bằng `.venv\Scripts\python.exe tests/integration/incremental_runtime.py --execute` sau khi kiểm tra target/scope; giữ prefix fixture để inspect, không DROP/TRUNCATE. Runtime evidence tại ignored `.local/airflow-02/`, native Airflow logs và ingestion ledger; không tạo audit database/report hay milestone Markdown mới.
+
+Giới hạn còn lại: local SQLite/SequentialExecutor, chưa HA; timeout Windows child cần operator inspect; dbt graph chưa atomic; locks không chặn source business writers; source consistency vẫn UNVERIFIED; chưa nghiệm thu automated scheduling hoặc sự cố thật bằng cách tắt services.

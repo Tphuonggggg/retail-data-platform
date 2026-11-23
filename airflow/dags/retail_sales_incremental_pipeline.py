@@ -2,26 +2,53 @@
 from datetime import timedelta
 from pathlib import Path
 import importlib.util
+import json
+import logging
 
 import pendulum
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.exceptions import AirflowFailException
 
 
-def execute_stage(action, upstream=None, **context):
+def load_bridge():
     # Import the small repository bridge at task execution, never during parsing.
     path = Path(__file__).resolve().parents[1] / 'bridge.py'
     spec = importlib.util.spec_from_file_location('retail_airflow_bridge', path)
     bridge = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(bridge)
+    return bridge
+
+
+def execute_stage(action, upstream=None, **context):
+    bridge = load_bridge()
     run = context['dag_run']
-    parent = bridge.canonical((run.conf or {})['parent_version'])
-    version = bridge.version_for_run(run.run_id)
-    if upstream:
-        previous = context['ti'].xcom_pull(task_ids=upstream)
-        if not previous or previous.get('status') != 'PASS' or previous.get('version') != version or previous.get('parent') != parent:
-            raise ValueError('Missing or conflicting upstream handoff')
-    return bridge.launch(action, parent, version, execution=action in ('ingest','build'))
+    info = {'run_id':run.run_id,'task_id':context['ti'].task_id,'attempt':context['ti'].try_number,
+            'action':action}
+    log = logging.getLogger(__name__)
+    try:
+        parent = bridge.canonical((run.conf or {})['parent_version'])
+        version = bridge.version_for_run(run.run_id)
+        info.update(parent=parent, version=version)
+        if upstream:
+            previous = context['ti'].xcom_pull(task_ids=upstream)
+            if not previous or previous.get('status') != 'PASS' or previous.get('version') != version or previous.get('parent') != parent:
+                raise ValueError('Missing or conflicting upstream handoff')
+        log.info('retail_stage_start %s', json.dumps(info))
+        result = bridge.launch(action, parent, version, execution=action in ('ingest','build'))
+    except Exception as error:
+        category = error.category if isinstance(error, bridge.BridgeFailure) else 'HANDOFF_OR_CONFIGURATION_INVALID'
+        failed = {**info,'error_category':category}
+        if isinstance(error, bridge.BridgeFailure) and error.command_exit_code is not None:
+            failed['command_exit_code'] = error.command_exit_code
+            if action == 'build':failed.update(dbt_command='build', dbt_exit_code=error.command_exit_code)
+        log.error('retail_stage_failed %s', json.dumps(failed))
+        if isinstance(error, bridge.BridgeFailure) and error.retriable:
+            raise
+        # Permanent validation/permission/unknown-commit failures must not consume a retry.
+        raise AirflowFailException('Retail stage failed: ' + category) from None
+    log.info('retail_stage_success %s', json.dumps({**info,**result}))
+    return result
 
 
 with DAG(

@@ -17,6 +17,7 @@ class BridgeTests(unittest.TestCase):
     def config(self, path, writes=False):
         cfg={k:str(path) for k in ('windows_python_wsl','worker_path_wsl','repository_wsl')}
         cfg.update(worker_path_windows='D:\\repo\\airflow\\worker.py',allow_pipeline_writes=writes)
+        cfg['write_scope']={'parent':P,'version':V,'actions':['ingest','build']} if writes else None
         file=path/'config.json';file.write_text(json.dumps(cfg));return file
 
     def test_same_run_retries_keep_same_version(self):

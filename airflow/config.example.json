@@ -3,5 +3,6 @@
   "repository_wsl": "/mnt/d/Code/Retail_Data_Platform/project1_Retail_Data_platform",
   "worker_path_wsl": "/mnt/d/Code/Retail_Data_Platform/project1_Retail_Data_platform/airflow/worker.py",
   "worker_path_windows": "D:\\Code\\Retail_Data_Platform\\project1_Retail_Data_platform\\airflow\\worker.py",
-  "allow_pipeline_writes": false
+  "allow_pipeline_writes": false,
+  "write_scope": null
 }
