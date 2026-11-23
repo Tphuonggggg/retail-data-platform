@@ -1,0 +1,28 @@
+name: Offline validation
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  portable:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Install driver manager for offline pyodbc imports
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --no-install-recommends libodbc2
+      - name: Install pinned dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Portable regression and static configuration
+        run: python scripts/run_checks.py --portable
+      - name: Validate isolated demo Compose without starting services
+        run: python -m ingestion.demo config
+      - name: Offline dbt docs and lineage
+        run: python scripts/validate_portfolio.py

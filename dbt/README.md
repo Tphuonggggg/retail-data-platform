@@ -93,3 +93,73 @@ Approved design direction is retained here; these policies do not claim a comple
 | Unresolved and Certified gates | Retain source facts with controlled unresolved keys/reasons. No current/earliest fallback, silent fact removal or successful-match claim; multi-match integrity blocks affected publication. Certified coverage remains unimplemented. |
 
 Type 1 corrections need explicit impact, reconciliation and recovery handling; an AccountOpenedDate correction does not automatically create an SCD2 episode. Physical cutover, complete historical lookup and Certified mart coverage must be resolved separately from the implemented observed-current MVP.
+
+## Verified Model Lineage
+
+Các mũi tên dưới đây là dependency trực tiếp từ manifest của **21 production models** sau offline parse, bao gồm các refs sinh bởi rule configuration. Prefix `raw_` biểu diễn source relation; parse dùng FULL nên source đi vào staging qua `source()`. INCREMENTAL dùng state functions cho cùng sáu population. Các relationship tests giữa fact/dimension không được vẽ thành model refs nếu SQL không có ref đó.
+
+<!-- lineage:start -->
+```mermaid
+flowchart LR
+    dim_date --> mart_sales_daily
+    fact_invoice_line --> mart_customer_sales
+    fact_invoice_line --> mart_sales_daily
+    fact_invoice_line --> mart_sales_product_daily
+    int_invoice_header --> fact_invoice_line
+    int_invoice_header --> mart_customer_sales
+    int_invoice_header --> mart_sales_daily
+    int_invoice_header --> mart_sales_monthly
+    int_order_header --> fact_order_line
+    int_order_header --> mart_sales_daily
+    mart_customer_sales --> mart_sales_customer_summary
+    mart_sales_daily --> mart_sales_monthly
+    raw_sales_customers --> stg_sales_customers
+    raw_sales_invoicelines --> stg_sales_invoicelines
+    raw_sales_invoices --> stg_sales_invoices
+    raw_sales_orderlines --> stg_sales_orderlines
+    raw_sales_orders --> stg_sales_orders
+    raw_warehouse_stockitems --> stg_warehouse_stockitems
+    record_status --> dim_customer
+    record_status --> dim_product
+    record_status --> fact_invoice_line
+    record_status --> fact_order_line
+    record_status --> int_invoice_header
+    record_status --> int_order_header
+    record_status --> quarantine_records
+    stg_sales_customers --> dim_customer
+    stg_sales_customers --> record_status
+    stg_sales_customers --> validation_violations
+    stg_sales_invoicelines --> fact_invoice_line
+    stg_sales_invoicelines --> record_status
+    stg_sales_invoicelines --> validation_violations
+    stg_sales_invoices --> dim_date
+    stg_sales_invoices --> int_invoice_header
+    stg_sales_invoices --> record_status
+    stg_sales_invoices --> validation_violations
+    stg_sales_orderlines --> fact_order_line
+    stg_sales_orderlines --> record_status
+    stg_sales_orderlines --> validation_violations
+    stg_sales_orders --> dim_date
+    stg_sales_orders --> int_order_header
+    stg_sales_orders --> record_status
+    stg_sales_orders --> validation_violations
+    stg_warehouse_stockitems --> dim_product
+    stg_warehouse_stockitems --> record_status
+    stg_warehouse_stockitems --> validation_violations
+    validation_violations --> record_status
+```
+<!-- lineage:end -->
+
+Purpose, grain, business keys, metrics và DQ được mô tả ngay trong [schema.yml](models/schema.yml) và [staging schema](models/staging/schema.yml). Mọi grain thuộc một read version. Staging FULL=view, INCREMENTAL=table; headers=view; core/DQ/marts=table. Không thay threads=1, indexes=false hoặc materializations trong lượt này.
+
+## Portfolio Validation
+
+```powershell
+.venv\Scripts\python.exe scripts/validate_portfolio.py
+```
+
+Lệnh tạo project/profile giả tại `.local/portfolio-validation/main`, chạy `dbt parse` rồi `dbt docs generate --empty-catalog --no-compile`, kiểm tra descriptions và so sánh toàn bộ cạnh Mermaid với manifest. Profile dùng localhost port 1 và database giả; không kết nối live, không build hoặc gọi run-start runtime guards. Catalog rỗng nên không xác nhận kiểu/row count/privileges của database. Live compile không chạy trong lượt này.
+
+Demo [demo/dbt_project.yml](demo/dbt_project.yml) là project riêng, hai model và bảy data tests; không nằm trong 21 production models hay 69 accepted tests. Lượt này demo build PASS trên database cô lập; production build không chạy.
+
+Chưa có ảnh chụp dbt terminal phù hợp: khi chủ dự án chạy demo, có thể chụp summary từ log đã kiểm tra không chứa secrets (`2 table models, 7 data tests`). Nếu muốn bằng chứng production 21/69, dùng accepted logs hoặc lần chạy được cấp scope riêng; không dựng ảnh từ văn bản để giả runtime.
