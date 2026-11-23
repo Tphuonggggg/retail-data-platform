@@ -258,4 +258,8 @@ Walkthrough dựa trên **accepted AIRFLOW-01/02/03**, không trigger live trong
 
 Tái hiện offline: `python -m unittest discover -s airflow/tests -p test_reliability.py -v` và `test_worker.py`; kiểm tra failure propagation, write scope, retry và version validation bằng mocks. Chúng không thay thế live Airflow recovery. Harness isolated Airflow đã có tại [reliability_runtime.py](tests/reliability_runtime.py), chỉ chạy trong scope sandbox riêng; không dừng live database để giả lỗi.
 
-Chưa có ảnh Graph View/task logs thật để đưa vào Git. Chủ dự án có thể mở accepted run ở UI, chụp Graph/Grid thấy đủ tám task và run state, sau đó chụp log resolve read version hoặc recovery tail. Giữ DAG paused/gate closed; không cần trigger/refresh dữ liệu. Che credentials, private hostname/path và thông tin phiên trước khi lưu `docs/assets/airflow-graph.png`; không tạo ảnh từ log giả.
+![Apache Airflow — Retail Sales Pipeline](../docs/assets/airflow-graph.png)
+
+Ảnh Graph View thật do chủ dự án cung cấp ghi lại run lịch sử ngày 23/11/2026, 06:13:22 UTC: đủ tám task theo chuỗi dependency, tất cả hiển thị success. `Schedule: None` và nút DAG paused vẫn hiện trên ảnh. Đây là bằng chứng run lịch sử; không có DAG execution mới trong lượt cập nhật tài liệu, không chứng minh daily unattended hoặc automatic Power BI refresh. Ảnh được giữ nguyên, không chỉnh task names/states; [provenance và SHA256](../docs/assets/provenance.json).
+
+Ảnh task logs/recovery chi tiết vẫn chưa được bổ sung. Khi cần, chủ dự án có thể chụp log resolve read version hoặc recovery tail của accepted run, giữ DAG paused/gate closed và che thông tin nhạy cảm; không cần trigger lại pipeline.

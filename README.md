@@ -80,6 +80,22 @@ For eligible invoice lines dated **January 2013 through May 2016**, the validate
 
 Sales before tax follows the project's invoice-line measure definition; no currency or profit interpretation is assumed. See the [metric definitions](dbt/config/measures.yml) and [validation SQL](powerbi/validation.sql).
 
+## Data Warehouse & Lineage
+
+dbt chuyển Raw retail data qua staging và kiểm tra chất lượng, sau đó tạo dimensions, transaction-level facts và Sales Marts. Warehouse có **21 production dbt models**, trong đó có **năm Sales Marts**.
+
+![dbt Data Lineage — Monthly Sales Mart](docs/assets/dbt-lineage.png)
+
+Ảnh dbt Docs do chủ dự án cung cấp hiển thị các dependency upstream của `mart_sales_monthly`: sáu Raw sources và staging models, Data Quality, invoice/order headers, `dim_date`, `fact_invoice_line` và `mart_sales_daily`. Đây là một phần lineage, không phải toàn bộ 21 models; ảnh không chứng minh kết quả chạy data tests. Xem [model grains và lineage đầy đủ](dbt/README.md#verified-model-lineage).
+
+## Pipeline Orchestration
+
+Apache Airflow điều phối batch ELT qua source/target preflight, incremental snapshot-diff ingestion, xác thực batch, bàn giao read version cho dbt, transformations và kiểm tra Sales Marts. DAG tám task nối các bước phụ thuộc, giữ xử lý theo version tường minh và hỗ trợ recovery có kiểm soát.
+
+![Apache Airflow — Retail Sales Pipeline](docs/assets/airflow-graph.png)
+
+Ảnh Graph View do chủ dự án cung cấp ghi lại **run lịch sử thành công ngày 23/11/2026, 06:13:22 UTC** của `retail_sales_incremental_pipeline`: đủ tám task, các đường nối và trạng thái success màu xanh. Ảnh hiển thị `Schedule: None`; unattended daily scheduling chưa được chứng minh và Power BI Import vẫn refresh thủ công. Xem [Airflow operations và recovery](airflow/README.md#portfolio-evidence).
+
 ## Power BI Dashboard
 
 The analytics report focuses on four business perspectives: **sales performance**, **product contribution**, **buyer vs. bill-to attribution**, and **exceptions & coverage**. Four additional detail pages support deeper exploration.

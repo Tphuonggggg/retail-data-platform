@@ -96,6 +96,10 @@ Type 1 corrections need explicit impact, reconciliation and recovery handling; a
 
 ## Verified Model Lineage
 
+![dbt Data Lineage — Monthly Sales Mart](../docs/assets/dbt-lineage.png)
+
+Ảnh dbt Docs thật do chủ dự án cung cấp dùng selector `+mart_sales_monthly`, hiển thị upstream dependencies của Monthly Sales Mart: sáu Raw sources/staging models, DQ, hai headers, `dim_date`, `fact_invoice_line`, `mart_sales_daily` và `mart_sales_monthly`. Ảnh chỉ thể hiện phần lineage này, không hiển thị đủ 21 production models hoặc trạng thái data test execution. Ảnh được giữ nguyên; [provenance và SHA256](../docs/assets/provenance.json).
+
 Các mũi tên dưới đây là dependency trực tiếp từ manifest của **21 production models** sau offline parse, bao gồm các refs sinh bởi rule configuration. Prefix `raw_` biểu diễn source relation; parse dùng FULL nên source đi vào staging qua `source()`. INCREMENTAL dùng state functions cho cùng sáu population. Các relationship tests giữa fact/dimension không được vẽ thành model refs nếu SQL không có ref đó.
 
 <!-- lineage:start -->
