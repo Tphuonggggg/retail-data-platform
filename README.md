@@ -1,142 +1,160 @@
 # Retail Data Platform
 
-**Batch ELT portfolio: Python → PostgreSQL → dbt → Power BI, điều phối bằng Apache Airflow.**
+### End-to-End Retail Analytics with Python, SQL Server, PostgreSQL, dbt, Apache Airflow & Power BI
 
-[![Offline validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
+Retail Data Platform is an end-to-end **batch data engineering project** that transforms operational retail transactions into a structured analytics warehouse and a Power BI sales dashboard. Built using Microsoft's **WideWorldImporters** sample database, it demonstrates the complete journey from source extraction and incremental processing to data modeling, orchestration, data quality, and business reporting.
 
-Badge trỏ đến workflow thật; GitHub-hosted execution hiện **NOT_RUN**, chưa xác nhận CI xanh.
+The project is designed to answer a practical question: **How can a retail business turn transactional data from multiple related tables into reliable, consistent sales insights?**
 
-## Project Overview
+[Explore the architecture](#architecture) · [View the dashboard](#power-bi-dashboard) · [Try the demo](#quickstart--try-the-demo) · [Explore the code](#repository-guide)
 
-Dự án Data Engineering cấp Internship/Fresher chuyển dữ liệu WideWorldImporters từ SQL Server sang Sales Warehouse có đối soát và dashboard Power BI. Phạm vi MVP đã triển khai là Sales Analytics trên môi trường local Windows/WSL/Docker. Có demo riêng bằng dữ liệu tổng hợp để trải nghiệm mà không cần SQL Server hay cấu hình cá nhân.
+## What the Platform Delivers
 
-## Business Problem
-
-Các bảng Orders, Invoices và dòng hàng có grain khác nhau; cộng trực tiếp dễ nhân đôi doanh số. Buyer và Bill-to là hai góc quy thuộc của cùng giao dịch. Pipeline giữ ranh giới này, kiểm tra chất lượng và read version để báo cáo doanh số, sản phẩm và khách hàng có thể đối soát với SQL.
+| Capability | What it enables |
+|---|---|
+| **Data ingestion** | Extracts retail data from SQL Server and loads typed records into PostgreSQL, supporting full loads and incremental snapshot comparison. |
+| **Data warehouse** | Transforms operational tables into reusable dimensions, facts, and sales-oriented data marts with dbt. |
+| **Data quality** | Reconciles source and target records, validates transformation outputs, and protects analytical consistency. |
+| **Orchestration** | Coordinates ingestion, version validation, dbt transformations, and downstream checks through an eight-task Airflow DAG. |
+| **Business intelligence** | Provides Power BI views of sales performance, product contribution, customer attribution, and reporting exceptions. |
+| **Developer experience** | Includes a separate sample-data demo, portable GitHub Actions validation, and documented ingestion benchmarks. |
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    Source["SQL Server WWI: SELECT only"]
-    Full["Python Full Load: 11 objects"]
-    Incremental["Python snapshot-diff: 6 Sales inputs"]
-    Raw["PostgreSQL typed Raw and deltas"]
-    Metadata["Counts, digests, parent and read versions"]
-    Staging["dbt staging: 6 models"]
-    DQ["DQ: violations, status, quarantine"]
-    Headers["Order and invoice headers"]
-    Core["Core dimensions and line facts"]
-    Marts["5 Sales Marts"]
-    BI["Power BI Import: manual refresh and version pin"]
-    AF["Airflow: manual, paused, write gate closed"]
-    Source --> Full --> Raw
-    Source --> Incremental --> Raw
-    Raw --- Metadata
-    Raw --> Staging --> DQ
-    Staging --> Headers --> Core
-    Staging --> Core
-    DQ --> Headers
-    DQ --> Core
-    Core --> Marts
-    Headers --> Marts
-    Core --> BI
-    Headers --> BI
-    Marts -.->|SQL reconciliation| BI
-    AF -.-> Incremental
-    AF -.->|Version handoff and build| Staging
-    AF -.->|Validation| Marts
+    A[SQL Server<br/>WideWorldImporters] --> B[Python Ingestion<br/>Full Load / Snapshot Diff]
+    B --> C[(PostgreSQL<br/>Raw Data & Metadata)]
+    C --> D[dbt<br/>Staging & Data Quality]
+    D --> E[dbt<br/>Dimensions & Facts]
+    E --> F[dbt<br/>Sales Marts]
+    E --> G[Power BI<br/>Import Dashboard]
+    F -. Reconciliation .-> G
+    H[Apache Airflow<br/>Pipeline Orchestration] -. Coordinates .-> B
+    H -. Coordinates .-> D
+    H -. Validates .-> F
 ```
 
-Power BI import sáu bảng core/header; marts phục vụ đối soát SQL riêng. Airflow không refresh Power BI. Metadata ghi candidate đã kiểm tra, chưa phải publication ACK. DQ kiểm tra source→Raw bằng count/digest, sau đó kiểm tra staging/eligibility và KPI ở dbt/marts.
+**How data moves through the platform:**
 
-## Key Features
+1. **Extract & load.** Python reads WideWorldImporters source tables using read-only SQL Server access, then writes normalized data to PostgreSQL Raw storage.
+2. **Detect changes.** Incremental runs compare six Sales-related source snapshots with a validated parent version and classify records as inserted, updated, or unchanged.
+3. **Transform.** dbt organizes the data into staging, quality checks, dimensional models, line-level facts, and five Sales Marts.
+4. **Validate.** Counts, content digests, business rules, version checks, and reconciled KPI definitions help keep reporting consistent.
+5. **Analyze.** Power BI imports a curated set of warehouse tables for interactive reporting. Airflow orchestrates pipeline execution; dashboard refresh remains a separate manual step.
 
-- Full Load có typed codecs, Decimal/NULL/Unicode và `datetime2(7)` chính xác 100 ns.
-- Incremental snapshot-diff với parent tường minh, transaction, read-back reconciliation và idempotency; không phải CDC.
-- 21 dbt models: staging → DQ/header → dimensions/facts → Sales Marts; mô tả grain và lineage có kiểm tra.
-- DAG tám task, write gate theo đúng parent/version/action, advisory locks và recovery phần đuôi dbt mà không extract lại.
-- Power BI có bốn trang chính, bốn trang chi tiết; Import và refresh thủ công.
-- CI offline, demo PostgreSQL riêng, benchmark fixture lặp lại được; không cần WWI để chạy demo.
+## Technology Stack
 
-## Validated Project Results
+| Layer | Technologies |
+|---|---|
+| Operational source | Microsoft SQL Server, WideWorldImporters |
+| Data ingestion | Python, SQL, pyodbc |
+| Raw storage & warehouse | PostgreSQL, Docker |
+| Transformation & modeling | dbt, SQL |
+| Workflow orchestration | Apache Airflow, WSL2 |
+| Analytics & visualization | Power BI, DAX |
+| Testing & automation | Python regression tests, dbt data tests, GitHub Actions |
 
-**Bằng chứng lịch sử accepted**, được đối chiếu từ hồ sơ local ngày 23/11/2026; không phải một lần chạy E2E mới:
+## Project at a Glance
 
-| Kết quả | Giá trị | Phạm vi |
-|---|---:|---|
-| Full Load | 939,208 rows / 11 objects | Bao gồm hai archives |
-| Incremental Sales state | 604,672 rows / 6 objects | Snapshot đã đối soát |
-| dbt | 21 models / 69 data tests PASS | Accepted build lịch sử |
-| Airflow | 8/8 tasks SUCCESS | Supervised run, không chứng minh daily tự động |
-| Sales Before Tax | 172,261,341.20 | Eligible invoice lines, 2013-01-01–2016-05-31 |
-| Invoices / Orders / Source units | 70,510 / 73,595 / 8,950,628 | Grain/date basis theo measure contract |
+The following figures come from validated project runs and represent different stages of the platform rather than one combined performance benchmark.
 
-[Số liệu phân tích công khai](docs/assets/sales-evidence.json), [SQL đối soát](powerbi/validation.sql) và [định nghĩa KPI](dbt/config/measures.yml). Không tự gán currency, recognized revenue, COGS hay net profit.
+| Project result | Value |
+|---|---:|
+| Source data loaded during initial Full Load | **939,208 records** across 11 objects |
+| Sales records evaluated by incremental snapshot comparison | **604,672** across 6 objects |
+| Warehouse transformation models | **21 dbt models** |
+| Data quality checks in the accepted dbt build | **69 passing dbt tests** |
+| Completed orchestration tasks in the accepted Airflow run | **8/8 tasks** |
 
-**Kiểm tra mới trong lượt này:** demo cô lập PASS (2 dbt models, 7 tests, rollback/recovery và expected output); benchmark fixture đã đo thật. Kết quả này không chứng minh full-stack chạy trên máy sạch. Chi tiết lệnh và giới hạn nằm trong module READMEs.
+### Sales Analytics Snapshot
 
-## Dashboard Preview
+For eligible invoice lines dated **January 2013 through May 2016**, the validated sales model reports:
 
-Ảnh thật đã lưu trong bằng chứng Power BI version-sync, tái sử dụng nguyên byte; đang lọc **năm 2014**, không phải tổng toàn kỳ. [Nguồn và SHA256](docs/assets/provenance.json).
+| KPI | Value |
+|---|---:|
+| Sales before tax | **172,261,341.20** |
+| Invoices | **70,510** |
+| Orders | **73,595** |
+| Units | **8,950,628** |
 
-![Power BI Sales Performance, năm 2014](docs/assets/sales-performance.png)
+Sales before tax follows the project's invoice-line measure definition; no currency or profit interpretation is assumed. See the [metric definitions](dbt/config/measures.yml) and [validation SQL](powerbi/validation.sql).
 
-![Power BI Product Contribution, năm 2014 và Top N 5](docs/assets/product-contribution.png)
+## Power BI Dashboard
 
-Chưa tìm thấy ảnh Airflow Graph View hoặc dbt test execution phù hợp để xuất bản. Xem [hướng dẫn chụp Airflow](airflow/README.md#portfolio-evidence) và [dbt](dbt/README.md#portfolio-validation); không tạo ảnh runtime giả.
+The analytics report focuses on four business perspectives: **sales performance**, **product contribution**, **buyer vs. bill-to attribution**, and **exceptions & coverage**. Four additional detail pages support deeper exploration.
 
-## Business Insights
+### Sales Performance
 
-Ba nhận định dưới đây dùng cùng read version lịch sử trong [evidence JSON](docs/assets/sales-evidence.json). Sales = Σ(ExtendedPrice − TaxAmount) trên eligible invoice lines theo InvoiceDate.
+![Power BI Sales Performance dashboard](docs/assets/sales-performance.png)
 
-| Câu hỏi | Kết quả, kỳ và định nghĩa | SQL/model | Ý nghĩa thực tế |
-|---|---|---|---|
-| Tăng số invoice có luôn tăng Sales? | Jan–May 2016 so Jan–May 2015: Sales 22,633,175.55 so 22,679,145.45 (**−0.20%**); invoices 9,190 so 9,108 (**+0.90%**); AIV=Sales/invoices **−1.09%**. 2016 có thêm leap day. | `powerbi/validation.sql` Q05; `mart_sales_daily`, invoice headers | Theo dõi cả volume và giá trị invoice; đây là phân rã số học, chưa chỉ ra nguyên nhân. |
-| Rủi ro tập trung nằm ở Buyer hay Bill-to? | 2013-01-01–2016-05-31: 663 Buyers, 263 Bill-to; Top 5 chiếm **1.07%** và **63.75%** Sales theo từng role; tổng mỗi role cùng là 172,261,341.20. | Q08/Q09; `fact_invoice_line`, `int_invoice_header` | Đánh giá tập trung thu tiền theo Bill-to riêng với phân bổ hoạt động Buyer; không cộng hai tổng role. |
-| Các ngày không có invoice có phải thiếu lịch? | Cùng kỳ: **1,247** ngày lịch liên tục, **178** ngày zero invoices, **0** ngày thiếu trong daily mart. | Q02; `dim_date`, `mart_sales_daily` | Giữ zero-activity days trong mẫu số so sánh; zero activity chưa chứng minh thiếu extract hoặc doanh nghiệp đóng cửa. |
+### Product Contribution
 
-## Quickstart
+![Power BI Product Contribution dashboard](docs/assets/product-contribution.png)
 
-Python **3.12** và Docker Desktop Linux Engine đủ cho demo; full environment cần SQL Server WWI, ODBC Driver 18, WSL Airflow và Power BI Desktop.
+*The screenshots show a 2014 report filter, not the full-period totals presented above.*
+
+### Business Insights
+
+**1. Invoice volume and sales value can move in different directions.** From January–May 2015 to January–May 2016, invoice count increased **0.90%**, while sales before tax decreased **0.20%**. Average invoice value declined **1.09%**. Reviewing transaction volume alone would miss this change in value per invoice.
+
+**2. Buyer and bill-to customer views answer different questions.** Across the validated 2013–2016 period, the top five buyers account for **1.07%** of sales when attributed by buyer, while the top five bill-to customers account for **63.75%** when attributed by bill-to. The two totals describe different roles for the same invoice sales and must not be added together.
+
+**3. Zero-sales dates should remain visible.** The daily sales mart covers **1,247** calendar dates, including **178** dates with zero invoices and **no missing calendar dates**. Maintaining a complete date series supports accurate time-based comparisons without treating zero activity as missing data.
+
+These findings are backed by [analytical evidence](docs/assets/sales-evidence.json), [SQL reconciliation queries](powerbi/validation.sql), and dbt models. They describe historical sample data, not current retail trading conditions.
+
+## Quickstart — Try the Demo
+
+The repository includes an **isolated sample-data demo** that exercises ingestion, PostgreSQL storage, dbt models, and data quality checks without requiring the original SQL Server instance or private project credentials.
+
+**Prerequisites:** Windows, Python 3.12, Docker Desktop with Linux containers, and Git. See the [demo setup notes](infrastructure/README.md#isolated-portfolio-demo) for environment details.
 
 ```powershell
 git clone https://github.com/Tphuonggggg/retail-data-platform.git
 cd retail-data-platform
 py -3.12 -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
+
+# Portable repository checks
 .venv\Scripts\python.exe scripts/run_checks.py --portable
+
+# Start the isolated pipeline demo
 .venv\Scripts\python.exe -m ingestion.demo config
 .venv\Scripts\python.exe -m ingestion.demo run
-# Chỉ dừng demo riêng; dữ liệu tmpfs của demo mất khi dừng.
+
+# Shut down only the isolated demo
 .venv\Scripts\python.exe -m ingestion.demo down
 ```
 
-Clone mặc định tạo `retail-data-platform`. Checkout hiện tại có tên thư mục khác vì đã được đặt tên riêng; không dùng tên checkout riêng trong hướng dẫn clone. Demo tự sinh credentials riêng trong `.local/portfolio-demo`, không đọc `.env`. Xem [demo/isolation](infrastructure/README.md#isolated-portfolio-demo) và [demo/benchmark](ingestion/README.md#portfolio-demo).
+The demo demonstrates initial ingestion, no-change detection, controlled updates/inserts, reconciliation, and dbt results on a small fixture dataset. It is separate from the full WideWorldImporters environment. To reproduce the entire development stack, start with the [infrastructure guide](infrastructure/README.md).
 
-Full setup và provisioning có checkpoint thủ công: bắt đầu từ [infrastructure](infrastructure/README.md), rồi [ingestion](ingestion/README.md), [dbt](dbt/README.md), [Airflow](airflow/README.md) và [Power BI](powerbi/README.md). Không chạy Full/Incremental/build trên dữ liệu hiện hữu chỉ để kiểm tra tài liệu.
+## Repository Guide
 
-## Technical Documentation Links
-
-| Module | Nội dung |
+| Module | What you'll find |
 |---|---|
-| [ingestion](ingestion/README.md) | Source contract, load, recovery, demo và benchmark |
-| [infrastructure](infrastructure/README.md) | Compose, provisioning, permissions, demo isolation |
-| [dbt](dbt/README.md) | Models/grains, metrics, DQ, lineage và non-atomic replacement |
-| [airflow](airflow/README.md) | Tám task, write gate, retry, supervised recovery và lịch manual |
-| [powerbi](powerbi/README.md) | Import model, DAX, version pin và manual refresh |
+| [ingestion/](ingestion/README.md) | Full-load and incremental pipelines, source contracts, reconciliation, demo and benchmarks |
+| [infrastructure/](infrastructure/README.md) | PostgreSQL setup, Docker configuration, roles and environment provisioning |
+| [dbt/](dbt/README.md) | Warehouse models, grains, transformations, data tests and lineage |
+| [airflow/](airflow/README.md) | Eight-task DAG, execution, recovery and operational instructions |
+| [powerbi/](powerbi/README.md) | Dashboard pages, semantic model, measures and refresh guidance |
 
-Kiểm tra local đầy đủ: `python scripts/run_checks.py` (Power BI structural suite cần Windows/Desktop TOM). CI: `python scripts/run_checks.py --portable` và `python scripts/validate_portfolio.py`; không dùng SQL Server/PostgreSQL/Power BI/WSL. Không bỏ qua failure; Power BI suite ngoài phạm vi CI được ghi rõ NOT_RUN. Thay đổi chỉ được commit local trên feature branch, không tự push/merge.
+### Testing and CI
 
-GitHub Description đề xuất: `Local retail batch ELT with Python, PostgreSQL, dbt, Airflow and Power BI; reconciled Sales analytics, isolated demo and offline CI.` Topics: `data-engineering`, `portfolio`, `python`, `postgresql`, `dbt`, `apache-airflow`, `powerbi`, `elt`, `wideworldimporters`. Đây là đề xuất; chưa sửa GitHub settings.
+[![Offline validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
 
-## Limitations and Future Improvements
+GitHub Actions runs portable checks on pushes and pull requests. The repository also includes deeper local regression and environment-specific validation. For details, see the module documentation rather than treating the README as a test log.
 
-- Local Windows/WSL/Docker; full environment cần WWI được restore riêng và review machine-specific guards. Chưa kiểm chứng clean-machine full stack.
-- Snapshot-diff vẫn scan toàn source khi không đổi. Chưa có CDC/watermark hoặc coherent cross-table snapshot; live DELETE bị chặn.
-- Historical SCD2/Certified publication chưa hoàn tất; validated candidate không tương đương ACK/publication.
-- DAG mặc định paused, schedule=None và write gate=false. Chưa chứng minh unattended daily; mỗi interval cần scope riêng.
-- dbt thay từng relation, graph không atomic; không refresh BI trong lúc build/recovery.
-- Power BI refresh thủ công, pin cố định ở sáu imports; UI interaction acceptance chưa hoàn tất. Không tự đổi semantic model hoặc layout.
-- Demo dùng fixture nhỏ và adapter riêng, tái dùng production comparator/codecs; không kiểm chứng toàn production ingestion metadata/SQL Server adapter. Benchmark là in-memory fixture, không phải DB/production throughput.
-- Dữ liệu WWI kết thúc tháng 5/2016; so sánh năm cần coverage tương đương. Inventory/Purchasing/Finance Analytics nằm ngoài MVP.
+## Design Choices & Scope
+
+This is a **local batch analytics platform and portfolio project**, not a cloud-hosted production service. A few important boundaries are intentional:
+
+- Incremental ingestion uses **snapshot comparison**, not SQL Server CDC or streaming; unchanged source rows are still scanned.
+- The Airflow workflow runs with controlled authorization. Scheduling is prepared, but continuous unattended daily operation is not part of the demonstrated MVP.
+- Power BI uses **Import mode and manual refresh**, with an explicit warehouse read-version pin.
+- dbt replaces tables individually; the full transformation graph is not an atomic publication transaction.
+- The full WideWorldImporters setup depends on local SQL Server, Windows/WSL, ODBC, Docker and Power BI. A clean-machine full-stack installation has not been validated; the isolated demo is intended as the simpler entry point.
+
+## Further Reading
+
+Explore the [ingestion pipeline](ingestion/README.md), [warehouse and lineage](dbt/README.md), [Airflow operations](airflow/README.md), [Power BI implementation](powerbi/README.md), or [PostgreSQL infrastructure](infrastructure/README.md) for implementation details, recovery procedures, and deeper technical validation.
