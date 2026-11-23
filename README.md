@@ -204,7 +204,3 @@ For offline maintenance checks:
 - dbt replaces models individually. The graph is not atomically published, and BI refresh must wait for successful validation.
 - Power BI has a fixed six-import version pin and manual refresh. UI click/sync/drill-through acceptance is not complete; structural checks and rendering do not prove every interaction.
 - Captured data ends in May 2016. Sales are invoiced measures, units retain source packaging, and currency/financial accounting assumptions must not be invented.
-
-## Next Steps
-
-Improve safe per-interval scheduling, version-aware BI publication, reproducible environment provisioning and operational alerts. These are potential improvements, not delivered functionality.
