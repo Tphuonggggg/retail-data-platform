@@ -116,6 +116,25 @@ The sequence loads two rows, repeats an unchanged snapshot, injects a pre-COMMIT
 
 A completed rerun verifies the three-row state and reports three UNCHANGED rows. Unexpected state and DELETE are rejected rather than silently reset. Results, logs and generated credentials stay in ignored `.local/portfolio-demo`. `down` removes only demo resources and discards tmpfs data. See [environment isolation](../infrastructure/README.md#demo-environment).
 
+### PostgreSQL integration in CI
+
+The independent `demo-integration` GitHub Actions job runs the demo twice against the same isolated PostgreSQL state. [Integration verification](tests/demo_integration.py) requires the exact initial/no-change/recovery counts, an observed rollback, three UNCHANGED rows on rerun, exact SQL read-back and the daily output above. Each run must complete both demo models and all seven data tests under a fresh dbt invocation. Missing, failed or skipped results stop the job.
+
+To reproduce the integration checks from the repository root:
+
+```powershell
+.venv\Scripts\python.exe -m ingestion.demo config
+.venv\Scripts\python.exe -m ingestion.demo run
+.venv\Scripts\python.exe -m ingestion.tests.demo_integration initial
+.venv\Scripts\python.exe -m ingestion.demo run
+.venv\Scripts\python.exe -m ingestion.tests.demo_integration rerun
+# Run cleanup even if an earlier command fails.
+.venv\Scripts\python.exe -m ingestion.demo down
+.venv\Scripts\python.exe -m ingestion.tests.demo_integration cleanup
+```
+
+Start with no existing demo container or occupied demo port; initial verification rejects a completed-state rerun in place of initialization. Inspect existing demo resources before stopping them. CI uses an `always()` cleanup step and fails visibly if teardown fails or project-labeled containers/networks remain. No repository secrets, production profiles or data dumps are required or uploaded. The integration scope is the synthetic demo, not the WideWorldImporters pipeline.
+
 ## Performance Characteristics
 
 Snapshot-Diff saves payload writes when few rows change, but still reads source and parent populations. The comparator merges ordered streams; unchanged data is still examined.

@@ -164,9 +164,9 @@ The full environment additionally requires WideWorldImporters, Windows Authentic
 | [airflow](airflow/README.md) | Task graph, configuration, execution, scheduling and recovery |
 | [powerbi](powerbi/README.md) | Semantic model, dashboard pages, DAX and Manual Refresh |
 
-[![Offline validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
+[![Retail validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
 
-GitHub Actions runs portable regression checks, Compose configuration validation and offline dbt documentation checks on pushes and pull requests. Desktop-dependent Power BI structural checks remain part of the full local suite.
+GitHub Actions runs two independent jobs on pushes and pull requests: portable regression/configuration/documentation checks and an isolated PostgreSQL integration pipeline. The integration job exercises synthetic-data ingestion, change detection, transactional rollback/recovery, dbt transformations, seven Data Quality tests and analytical reconciliation. It repeats the demo against the same database to verify idempotency, then always cleans up its dedicated Compose project. This covers the sample pipeline; SQL Server extraction, the full production warehouse, Airflow execution and Power BI refresh remain outside CI. Desktop-dependent Power BI structural checks remain part of the full local suite.
 
 ## Design Decisions & Limitations
 

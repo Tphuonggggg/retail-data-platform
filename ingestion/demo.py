@@ -99,7 +99,12 @@ def initialize(db):
     db.execute(sql.SQL('CREATE TABLE IF NOT EXISTS demo_raw.lines ({}, PRIMARY KEY ("ID"))').format(columns))
 
 
-def apply_snapshot(db, rows, fail=False):
+def require_changes(counts, expected):
+    if Counter(counts) != Counter(expected):
+        raise ValueError('DEMO_UNEXPECTED_CHANGE_COUNTS')
+
+
+def apply_snapshot(db, rows, fail=False, *, expected_changes=None):
     """Atomic demo upsert and ordered count/digest read-back using production compare/codecs."""
     from psycopg import sql
     guard(db)
@@ -116,6 +121,8 @@ def apply_snapshot(db, rows, fail=False):
                                           for c in SAMPLE.columns[1:])
                 db.execute(sql.SQL('INSERT INTO demo_raw.lines ({}) VALUES ({}) ON CONFLICT ("ID") DO UPDATE SET {}')
                            .format(fields, sql.SQL(',').join(sql.Placeholder() for _ in SAMPLE.columns), updates), change.after)
+        if expected_changes is not None:
+            require_changes(counts, expected_changes)
         if fail:
             raise ValueError('DEMO_INJECTED_ROLLBACK')
         stored = db.execute('SELECT * FROM demo_raw.lines ORDER BY "ID"').fetchall()
@@ -136,19 +143,22 @@ def run(env):
         if existing:
             if digest(existing) != digest(changed_rows()):
                 raise ValueError('DEMO_UNEXPECTED_EXISTING_STATE')
-            results['completed_rerun'] = apply_snapshot(db, changed_rows())
+            results['completed_rerun'] = apply_snapshot(db, changed_rows(), expected_changes={'UNCHANGED': 3})
         else:
-            results['initial'] = apply_snapshot(db, initial_rows())
-            results['no_change'] = apply_snapshot(db, initial_rows())
+            results['initial'] = apply_snapshot(db, initial_rows(), expected_changes={'INSERT': 2})
+            results['no_change'] = apply_snapshot(db, initial_rows(), expected_changes={'UNCHANGED': 2})
+            changed = {'UPDATE': 1, 'UNCHANGED': 1, 'INSERT': 1}
             try:
-                apply_snapshot(db, changed_rows(), fail=True)
+                apply_snapshot(db, changed_rows(), fail=True, expected_changes=changed)
             except ValueError as error:
                 if str(error) != 'DEMO_INJECTED_ROLLBACK':
                     raise
+            else:
+                raise ValueError('DEMO_ROLLBACK_NOT_INJECTED')
             if digest(db.execute('SELECT * FROM demo_raw.lines ORDER BY "ID"').fetchall()) != digest(initial_rows()):
                 raise ValueError('DEMO_ROLLBACK_FAILED')
             results['rollback_verified'] = True
-            results['recovered'] = apply_snapshot(db, changed_rows())
+            results['recovered'] = apply_snapshot(db, changed_rows(), expected_changes=changed)
         process = subprocess.run([sys.executable, '-m', 'dbt.cli.main', 'build', '--project-dir', str(ROOT / 'dbt/demo'),
                                   '--profiles-dir', str(HOME)], env=env, capture_output=True, timeout=180)
         # dbt console output and artifacts stay local; do not echo driver errors.
