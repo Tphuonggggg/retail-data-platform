@@ -23,21 +23,45 @@ The platform addresses a common reporting problem: orders, invoices and line ite
 
 ```mermaid
 flowchart LR
-    A[SQL Server<br/>WideWorldImporters] --> B[Python Ingestion<br/>Full Load / Snapshot Diff]
-    B --> C[(PostgreSQL<br/>Raw Data & Metadata)]
-    C --> D[dbt<br/>Staging & Data Quality]
-    D --> E[dbt<br/>Dimensions & Facts]
-    E --> F[dbt<br/>Sales Marts]
-    E --> G[Power BI<br/>Import Dashboard]
-    F -. Reconciliation .-> G
-    H[Apache Airflow<br/>Pipeline Orchestration] -. Coordinates .-> B
-    H -. Coordinates .-> D
-    H -. Validates .-> F
+    subgraph Local["Local batch ELT"]
+        Source["SQL Server<br/>WideWorldImporters"]
+        Full["Python<br/>Full Load"]
+        Incremental["Python<br/>Snapshot-Diff"]
+        Raw[("PostgreSQL<br/>Raw Layer and version metadata")]
+        Staging["dbt<br/>Staging and Data Quality"]
+        Headers["Order and invoice<br/>headers"]
+        Core["Core Warehouse<br/>Dimensions and line Facts"]
+        Marts["Five Sales Marts"]
+        BI["Power BI Import<br/>Manual Refresh"]
+        Source --> Full --> Raw
+        Source --> Incremental --> Raw
+        Raw --> Staging
+        Staging --> Headers
+        Staging --> Core
+        Headers --> Core
+        Headers --> Marts
+        Core --> Marts
+        Core -->|Three Dimensions and invoice-line Fact| BI
+        Headers -->|Two headers| BI
+        Marts -. SQL reconciliation .-> BI
+    end
+    Airflow["Airflow<br/>Manual and version-scoped"]
+    Airflow -. Incremental workflow .-> Incremental
+    Airflow -. dbt build .-> Staging
+    Airflow -. Mart validation .-> Marts
+    subgraph CI["GitHub Actions: isolated validation"]
+        Portable["portable<br/>Regression, configuration and docs"]
+        Demo["demo-integration<br/>Synthetic PostgreSQL and dbt"]
+    end
 ```
+
+Solid arrows represent data flow; dotted arrows represent orchestration or independent SQL reconciliation. The CI jobs validate repository code and a separate synthetic demo, without connecting to the local source or warehouse.
 
 Full Load initializes the Raw Layer from 11 source objects, including temporal archives. Incremental Loading scans six Sales-related inputs, compares them with a validated parent and stores INSERT/UPDATE deltas. Both paths retain counts, typed content digests and lineage metadata.
 
 dbt reads one explicit version and builds the analytical layers. Power BI imports six core/header tables; Sales Marts provide independent SQL aggregates for reconciliation. Airflow coordinates ingestion, transformations and validation. Manual Refresh remains separate from orchestration.
+
+Full Load is a separate initialization CLI. The Airflow DAG orchestrates the Incremental Loading path and the downstream dbt graph.
 
 ## Technology Stack
 
@@ -68,6 +92,12 @@ The `retail_sales_incremental_pipeline` DAG connects source/target preflight, In
 ![Apache Airflow — Retail Sales Pipeline](docs/assets/airflow-graph.png)
 
 Eight dependent tasks shown in a completed reference run. The DAG defaults to a manual schedule, paused state and a closed write gate. See the [orchestration guide](airflow/README.md) for execution and recovery.
+
+## Data Quality & Reliability
+
+Source-to-Raw checks reconcile counts, numeric/NULL controls and typed content digests. dbt records rule violations and per-record quality status, separates quarantined records and applies eligibility rules before calculating Sales measures. Warnings remain eligible where the business contract permits.
+
+Explicit Read Versions connect ingestion lineage, transformations and mart checks. Scoped database roles, transactional ingestion and idempotent version reuse support controlled recovery; dbt relation replacement remains non-atomic. [Airflow monitoring](airflow/README.md#monitoring--troubleshooting), ingestion metadata and dbt artifacts provide complementary views of status and failures.
 
 ## Analytics Dashboard
 
@@ -118,7 +148,7 @@ The following insights use the reference dataset from January 2013 through May 2
 
 ## Project Highlights
 
-Reference executions loaded 939,208 records across 11 source objects and examined a six-object Sales state of 604,672 rows. The project defines 21 production dbt models, 69 data tests and an eight-task Airflow graph.
+Reference executions loaded 939,208 records across 11 source objects and examined a six-object Sales state of 604,672 rows. The project defines 21 production dbt models, 69 data test definitions and an eight-task Airflow graph.
 
 | Reference Sales metric | January 2013–May 2016 |
 |---|---:|
@@ -128,6 +158,19 @@ Reference executions loaded 939,208 records across 11 source objects and examine
 | Source Units Sold | 8,950,628 |
 
 Sales Before Tax sums `ExtendedPrice - TaxAmount` on eligible invoice lines by InvoiceDate. Orders use OrderDate, and source units retain their packaging definitions. The project does not assign a currency or interpret these measures as recognized revenue, COGS or net profit. See the [measure contract](dbt/config/measures.yml).
+
+## Testing & CI
+
+[![Retail validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
+
+[GitHub Actions](.github/workflows/ci.yml) runs two independent jobs on pushes and pull requests:
+
+| Job | Scope |
+|---|---|
+| `portable` | Offline Python regression, source/configuration and repository checks, Compose configuration validation, dbt parse and documentation/lineage checks |
+| `demo-integration` | Synthetic ingestion into isolated PostgreSQL, no-change detection, INSERT/UPDATE, rollback/recovery, real dbt build/tests, SQL reconciliation, same-database idempotent rerun and unconditional scoped cleanup |
+
+The production dbt parse discovers 21 models and 69 test definitions; it does not execute those data tests. The integration job executes a separate two-model demo with seven data tests. SQL Server extraction, the full production warehouse, Airflow execution and Power BI refresh remain outside CI. Desktop-dependent Power BI structural checks belong to the full local suite.
 
 ## Getting Started
 
@@ -163,10 +206,6 @@ The full environment additionally requires WideWorldImporters, Windows Authentic
 | [dbt](dbt/README.md) | Data Warehouse models, grains, measures, Data Quality and Data Lineage |
 | [airflow](airflow/README.md) | Task graph, configuration, execution, scheduling and recovery |
 | [powerbi](powerbi/README.md) | Semantic model, dashboard pages, DAX and Manual Refresh |
-
-[![Retail validation](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/Tphuonggggg/retail-data-platform/actions/workflows/ci.yml)
-
-GitHub Actions runs two independent jobs on pushes and pull requests: portable regression/configuration/documentation checks and an isolated PostgreSQL integration pipeline. The integration job exercises synthetic-data ingestion, change detection, transactional rollback/recovery, dbt transformations, seven Data Quality tests and analytical reconciliation. It repeats the demo against the same database to verify idempotency, then always cleans up its dedicated Compose project. This covers the sample pipeline; SQL Server extraction, the full production warehouse, Airflow execution and Power BI refresh remain outside CI. Desktop-dependent Power BI structural checks remain part of the full local suite.
 
 ## Design Decisions & Limitations
 

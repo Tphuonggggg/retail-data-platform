@@ -18,7 +18,7 @@ The dependency direction is Raw sources → Staging Models → Data Quality and 
 | `dw_core` | Three Dimensions and two Facts | Observed attributes and transaction-line measures |
 | `sales_marts` | Five Sales Marts | Daily, monthly, product and customer summaries |
 
-The production graph contains 21 models and 69 data tests. The [demo project](demo/dbt_project.yml) is separate, with two models and seven data tests.
+The production graph contains 21 models and 69 data test definitions. The [demo project](demo/dbt_project.yml) is separate, with two models and seven data tests.
 
 ## Data Model and Grain
 
@@ -130,6 +130,8 @@ Zero denominators return NULL. Money reconciliation tolerance is zero and ratio 
 ## Data Quality Tests
 
 SQL tests in [tests](tests) cover Read Version pins, population accounting, keys, relationships, grains, source fidelity, eligibility, ratios, quarantine, KPI reconciliation and unresolved historical references. Rules distinguish warnings from invalid records rather than treating every exception as exclusion.
+
+Parsing discovers test definitions and validates project dependencies; tests execute against data during `test`/`build`. Per-node outcomes and timings are recorded in the invocation's `target/run_results.json`. Match it with `.local/dbt/invocations/<invocation>/execution.json`, which identifies the command, Read Version, input kind, elapsed time and exit code. `dq.validation_violations`, `record_status` and `quarantine_records` provide record-level quality findings for the relevant capture/evaluation. These findings are separate from the execution status of dbt tests; see [Airflow monitoring](../airflow/README.md#monitoring--troubleshooting) for run correlation.
 
 [acceptance.py](acceptance.py) and [bi_grants_acceptance.py](bi_grants_acceptance.py) provide scoped runtime checks. Inspect their options before use: fixture and rebuild modes can write to controlled test scopes. Offline regression runs through `python scripts/run_checks.py --portable` from the repository root.
 
