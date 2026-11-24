@@ -84,6 +84,8 @@ The maximum incremental chain depth is 32; compaction is not implemented. `VALID
 
 Source-to-Raw checks compare extracted/loaded counts, current-table distinct keys, numeric totals, NULL controls and ordered typed content digests. Zero and unknown NULL remain different. Successful version reuse includes durable read-back rather than relying only on a prior status value.
 
+Full Load records run/object timestamps, status and error codes in `ingestion_meta.runs` and `object_runs`; `load_audits` retains row counts and digests. Incremental `inspect` exposes the selected version's parent/root, status, error code and `evidence.objects`, including per-object change counts and scan/fetch/write timings. Changed keys are recorded in `incremental_events`; UNCHANGED rows contribute counters without events. Total CLI elapsed/reconciliation timings and durable per-object timings have different scopes. See [monitoring and troubleshooting](../airflow/README.md#monitoring--troubleshooting) to correlate these records with an Airflow run and dbt invocation.
+
 ## Running the Pipeline
 
 Use `plan` to inspect scope, then `preflight` to validate the selected objects and target identity/schema/privileges. History INSERT permission is not a global source prerequisite. Follow with the explicitly authorized load/run and reconciliation commands above, checking every exit code.

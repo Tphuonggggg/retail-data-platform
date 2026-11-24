@@ -275,7 +275,39 @@ unset RETAIL_AIRFLOW_DAILY_TIME RETAIL_AIRFLOW_SCHEDULE_PARENT RETAIL_AIRFLOW_SC
 
 Stop Raw only when CLI and BI clients are idle, using `docker stop --time 30 retail-raw-postgres-1` from Windows. Retain its container/volume for later `docker start`. Source SQL Server, native PostgreSQL and unrelated sandbox resources are outside this shutdown procedure.
 
-## Troubleshooting
+## Monitoring & Troubleshooting
+
+Operational information is distributed across Airflow, ingestion metadata and dbt artifacts. Airflow task success alone does not replace ingestion reconciliation, Data Quality checks or Power BI refresh verification.
+
+| Observation | Where to inspect |
+|---|---|
+| DAG/run/task state, attempts and execution duration | Airflow Grid/Graph, task Details and run/task-instance metadata |
+| Failed stage and handoff identity | Task logs: `retail_stage_start`, `retail_stage_success`, `retail_stage_failed`; run ID, task, attempt, parent/version and sanitized error category |
+| Service process identity and scheduler/database health | `start_local.py --status`, scheduler/webserver logs and the Airflow `/health` endpoint |
+| Full Load status and reconciliation | `ingestion_meta.runs`, `object_runs`, `load_contracts` and `load_audits`; timestamps, error codes, counts and digests |
+| Incremental parent/Read Version, change counts and timings | `ingestion_meta.incremental_versions` and its `evidence.objects`; per-object INSERT/UPDATE/UNCHANGED counts, scanned rows, digests and scan/fetch/write timing; `incremental_events` holds changed-key lineage |
+| dbt invocation/version and model/test outcome | Build task's `dbt_invocation`, invocation `execution.json`, `target/run_results.json` and dbt logs |
+| Data Quality details | `dq.validation_violations`, `dq.record_status`, `dq.quarantine_records`, filtered to the intended capture/evaluation; business eligibility is distinct from a test's execution status |
+
+From the configured repository shells, these existing commands inspect status without triggering ingestion or a build:
+
+```bash
+# WSL: process identity, run listing and health of the existing Airflow service.
+~/airflow_env/bin/python airflow/start_local.py --status
+~/airflow_env/bin/airflow dags list-runs -d retail_sales_incremental_pipeline
+curl --fail http://127.0.0.1:8080/health
+```
+
+```powershell
+# Windows: substitute the exact canonical UUID; these commands read PostgreSQL.
+$versionId = '<version-uuid>'
+.venv\Scripts\python.exe -m ingestion.incremental inspect --version-id $versionId
+.venv\Scripts\python.exe -m ingestion.incremental reconcile --version-id $versionId
+```
+
+For a failed run, locate the first failed task and the exact parent/version in its logs. Match `run_dbt_build`'s invocation UUID to `.local/dbt/invocations/<invocation>/execution.json` and `target/run_results.json`; `.local/dbt/latest.json` is only a convenience pointer and may refer to a later command. The receipt records command, input kind, capture ID, elapsed time and exit code, while run results contain individual node statuses and timings. The bridge exposes summary metadata rather than every CLI counter in XCom; use the ingestion ledger for detailed change counts.
+
+Inspect durable state and active Windows children before selecting the recovery scope. Unknown COMMIT and partial dbt replacement require the [recovery procedure](#retry-and-recovery), not a blind retry. Keep profiles and verbose artifacts private, and use the appropriate role: the BI reader cannot inspect ingestion metadata or DQ schemas.
 
 | Symptom | Check |
 |---|---|
