@@ -14,6 +14,7 @@ from uuid import UUID
 
 ROOT=Path(__file__).resolve().parents[3]
 HERE=Path(__file__).resolve().parent
+QUERY_PATHS=(ROOT/'powerbi/validation.sql',HERE/'queries.sql')
 sys.path.insert(0,str(ROOT));sys.path.insert(0,str(ROOT/'dbt'))
 from acceptance import connect
 from configuration import load
@@ -33,16 +34,18 @@ def scalar(value):
 
 
 def query_suite():
-    text=(HERE/'queries.sql').read_text(encoding='utf-8')
-    parts=re.split(r'^-- (Q\d\d) (.+)\n',text,flags=re.M)
-    queries=[]
-    for i in range(1,len(parts),3):
-        key,title,sql=parts[i:i+3]
-        sql=sql.strip().rstrip(';')
-        if not re.match(r'^(SELECT|WITH)\b',sql,re.I):raise ValueError('Only reviewed SELECT queries')
-        queries.append((key,title,sql))
-    if len(queries)!=25 or len({q[0] for q in queries})!=25:raise ValueError('Incomplete query suite')
-    return queries
+    queries={}
+    for path in QUERY_PATHS:
+        text=path.read_text(encoding='utf-8')
+        parts=re.split(r'^-- (Q\d\d) (.+)\n',text,flags=re.M)
+        for i in range(1,len(parts),3):
+            key,title,sql=parts[i:i+3]
+            sql=sql.strip().rstrip(';')
+            if not re.match(r'^(SELECT|WITH)\b',sql,re.I):raise ValueError('Only reviewed SELECT queries')
+            if key in queries:raise ValueError('Duplicate query id')
+            queries[key]=(title,sql)
+    if len(queries)!=25:raise ValueError('Incomplete query suite')
+    return [(key,*queries[key]) for key in sorted(queries)]
 
 
 def fingerprints(db,schemas):
@@ -103,7 +106,7 @@ def main():
         if result['reporting_roles']!=[('BUYER',)]:raise ValueError('Unexpected mart reporting role')
         result['lineage']['view_definitions']={r[0]+'.'+r[1]:r[2] for r in db.execute("SELECT schemaname,viewname,definition FROM pg_views WHERE schemaname='dw_intermediate' ORDER BY 1,2")}
         result['input_files_sha256']={str(path.relative_to(ROOT)).replace('\\','/'):hashlib.sha256(path.read_bytes()).hexdigest()
-            for path in sorted(list((ROOT/'dbt/models').rglob('*.sql'))+list((ROOT/'dbt/config').glob('*.yml'))+[ROOT/'dbt/macros/capture.sql',HERE/'queries.sql'])}
+            for path in sorted(list((ROOT/'dbt/models').rglob('*.sql'))+list((ROOT/'dbt/config').glob('*.yml'))+[ROOT/'dbt/macros/capture.sql',*QUERY_PATHS])}
         before_raw=fingerprints(raw.connection,('raw','ingestion_meta'))
         before_dw=fingerprints(db,SCHEMAS)
         prior_path=ROOT/'.local/incremental-fixture-evidence.json'
