@@ -1,13 +1,16 @@
 """Portable portfolio checks; no service connections."""
 from decimal import Decimal
+from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import yaml
 from ingestion import demo
 from ingestion.benchmark import fixtures, measure
 from ingestion.incremental import compare
+from ingestion.tests import demo_integration
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -65,6 +68,74 @@ class PortfolioTests(unittest.TestCase):
         self.assertEqual(config['permissions'], {'contents': 'read'})
         steps = config['jobs']['portable']['steps']
         self.assertTrue(any(s.get('run') == 'python scripts/run_checks.py --portable' for s in steps))
+        integration = config['jobs']['demo-integration']
+        self.assertNotIn('needs', integration)
+        commands = [s.get('run', '') for s in integration['steps']]
+        self.assertEqual(sum(c.splitlines().count('python -m ingestion.demo run') for c in commands), 2)
+        self.assertIn('python -m ingestion.tests.demo_integration initial', '\n'.join(commands))
+        self.assertIn('python -m ingestion.tests.demo_integration rerun', '\n'.join(commands))
+        cleanup = integration['steps'][-1]
+        self.assertEqual(cleanup['if'], '${{ always() }}')
+        self.assertEqual(cleanup['run'].splitlines(), ['python -m ingestion.demo down',
+                                                     'python -m ingestion.tests.demo_integration cleanup'])
+        self.assertNotIn('continue-on-error', cleanup)
+
+    def test_demo_change_counts_fail_closed(self):
+        demo.require_changes({'UNCHANGED': 3}, {'UNCHANGED': 3})
+        for actual in ({'INSERT': 1, 'UNCHANGED': 2}, {'UPDATE': 1, 'UNCHANGED': 2},
+                       {'DELETE': 1, 'UNCHANGED': 3}, {'UNCHANGED': 2}):
+            with self.subTest(actual=actual), self.assertRaisesRegex(ValueError, 'UNEXPECTED_CHANGE_COUNTS'):
+                demo.require_changes(actual, {'UNCHANGED': 3})
+
+    def test_demo_integration_records_reject_false_success(self):
+        initial_digest = demo.digest(demo.initial_rows())[1]
+        final_digest = demo.digest(demo.changed_rows())[1]
+        initial = {'status': 'PASS', 'rollback_verified': True, 'daily_output': demo_integration.EXPECTED_OUTPUT,
+                   'initial': {'changes': {'INSERT': 2}, 'rows': 2, 'digest': initial_digest},
+                   'no_change': {'changes': {'UNCHANGED': 2}, 'rows': 2, 'digest': initial_digest},
+                   'recovered': {'changes': {'UPDATE': 1, 'INSERT': 1, 'UNCHANGED': 1}, 'rows': 3, 'digest': final_digest}}
+        rerun = {'status': 'PASS', 'daily_output': demo_integration.EXPECTED_OUTPUT,
+                 'completed_rerun': {'changes': {'UNCHANGED': 3}, 'rows': 3, 'digest': final_digest}}
+        demo_integration.verify_records(initial, initial, 'initial')
+        demo_integration.verify_records(initial, rerun, 'rerun')
+        for field, value in [('rollback_verified', False), ('no_change', {'changes': {'UPDATE': 2}}),
+                             ('daily_output', [['2024-01-01', '44.00', 6]])]:
+            invalid = deepcopy(initial); invalid[field] = value
+            with self.subTest(field=field), self.assertRaises(ValueError):
+                demo_integration.verify_records(invalid, rerun, 'rerun')
+        invalid = deepcopy(rerun); invalid['completed_rerun']['changes'] = {'INSERT': 1, 'UNCHANGED': 2}
+        with self.assertRaisesRegex(ValueError, 'NOT_IDEMPOTENT'):
+            demo_integration.verify_records(initial, invalid, 'rerun')
+        with self.assertRaisesRegex(ValueError, 'FIRST_RUN'):
+            demo_integration.verify_records(initial, rerun, 'initial')
+
+    def test_demo_dbt_failed_skipped_or_missing_tests_are_rejected(self):
+        invocation = '00000000-0000-4000-8000-000000000001'
+        nodes = {'model.retail_portfolio_demo.'+name: {'resource_type': 'model'}
+                 for name in ('stg_demo_lines', 'mart_demo_daily')}
+        nodes.update({'test.retail_portfolio_demo.case_'+str(i): {'resource_type': 'test'} for i in range(7)})
+        manifest = {'nodes': nodes, 'metadata': {'invocation_id': invocation}}
+        results = {'metadata': {'invocation_id': invocation}, 'results': [
+            {'unique_id': key, 'status': 'success' if node['resource_type'] == 'model' else 'pass'}
+            for key, node in nodes.items()]}
+        self.assertEqual(demo_integration.verify_dbt(manifest, results), invocation)
+        for status in ('fail', 'error', 'skipped', 'warn'):
+            invalid = deepcopy(results); invalid['results'][-1]['status'] = status
+            with self.subTest(status=status), self.assertRaisesRegex(ValueError, 'FAILED_OR_SKIPPED'):
+                demo_integration.verify_dbt(manifest, invalid)
+        for rows in (results['results'][:-1], results['results']+[results['results'][-1]]):
+            invalid = deepcopy(results); invalid['results'] = rows
+            with self.assertRaisesRegex(ValueError, 'INCOMPLETE_OR_DUPLICATE'):
+                demo_integration.verify_dbt(manifest, invalid)
+
+    def test_demo_cleanup_failures_are_visible_and_scoped(self):
+        for response in (SimpleNamespace(returncode=1, stdout=''), SimpleNamespace(returncode=0, stdout='remaining-id')):
+            with patch.object(demo_integration.subprocess, 'run', return_value=response) as run:
+                with self.assertRaisesRegex(ValueError, 'CLEANUP_INCOMPLETE'):
+                    demo_integration.verify_cleanup()
+                command = run.call_args.args[0]
+                self.assertIn('label=com.docker.compose.project='+demo.PROJECT, command)
+                self.assertNotIn('prune', command)
 
 
 if __name__ == '__main__':
