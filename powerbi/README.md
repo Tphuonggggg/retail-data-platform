@@ -92,13 +92,33 @@ Reset uses ClearAllSlicers, not bookmark restoration or guaranteed removal of ex
 
 ## Dashboard Screenshots
 
+All four overview pages show the full dataset, January 2013–May 2016: Year is All and the date range spans the complete period. Top N and Product selection are All where available; Top 5 concentration cards retain their fixed five-account definition.
+
+### Sales Performance
+
 ![Power BI Sales Performance](../docs/assets/sales-performance.png)
 
-Sales Performance with 2014 selected.
+Sales totals and monthly trends, with invoice volume and average invoice value on independent axes.
+
+### Product Contribution
 
 ![Power BI Product Contribution](../docs/assets/product-contribution.png)
 
-Product Contribution with 2014 and Top N=5 selected. These views have a different scope from the all-period KPI totals and January–May comparisons. [Image provenance](../docs/assets/provenance.json) records hashes and filter context.
+Product contribution across all products, including cumulative sales share, the 80% reference and sales/unit rankings.
+
+### Sales Attribution
+
+![Power BI Sales Attribution](../docs/assets/sales-attribution.png)
+
+Buyer versus Bill-to concentration and customer counts over the same sales population. The cumulative curves and account shares describe each role separately; never add their totals.
+
+### Exceptions & Coverage
+
+![Power BI Exceptions and Coverage](../docs/assets/exceptions-coverage.png)
+
+Negative source LineProfit records and rates, affected products, monthly warning patterns and weekday activity. These source warnings are not certified accounting losses, and zero-transaction Sundays do not by themselves establish missing data or business closure.
+
+[Image provenance](../docs/assets/provenance.json) records hashes and filter context. The screenshots cover all periods, while the January–May comparisons in the business insights use a narrower date window.
 
 ## Refreshing Data
 

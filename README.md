@@ -78,13 +78,33 @@ The report answers four groups of business questions:
 - Sales Attribution: how Buyer and Bill-to roles change the view of customer concentration.
 - Exceptions & Coverage: where source warnings and zero-activity dates affect interpretation.
 
+The overview screenshots cover the full dataset, January 2013–May 2016, with Year set to All and no date-range restriction. Where available, Top N and Product selection are also set to All.
+
+### Sales Performance
+
 ![Power BI Sales Performance dashboard](docs/assets/sales-performance.png)
 
-Sales Performance, filtered to 2014.
+Full-period sales, invoice activity, average invoice value and units, with monthly trends and comparable prior-year sales.
+
+### Product Contribution
 
 ![Power BI Product Contribution dashboard](docs/assets/product-contribution.png)
 
-Product Contribution, filtered to 2014 with Top N set to 5. Four additional detail pages support exploration. The [Power BI guide](powerbi/README.md) describes measures, filters and Manual Refresh.
+Product sales concentration, the Pareto distribution and rankings by sales and source units across all products.
+
+### Sales Attribution
+
+![Power BI Sales Attribution dashboard](docs/assets/sales-attribution.png)
+
+Buyer and Bill-to concentration compare two views of the same sales population; role totals are not additive.
+
+### Exceptions & Coverage
+
+![Power BI Exceptions and Coverage dashboard](docs/assets/exceptions-coverage.png)
+
+Source LineProfit warnings by product and month, alongside weekday order/invoice activity and zero-transaction Sundays. Source warnings do not establish accounting losses.
+
+Four additional detail pages support exploration. The [Power BI guide](powerbi/README.md) describes measures, filters and Manual Refresh.
 
 ## Business Insights
 
