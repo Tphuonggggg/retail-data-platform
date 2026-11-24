@@ -142,6 +142,8 @@ Retain all guards and explicit version selection. Candidate validation with ACK=
 
 [query_model.ps1](query_model.ps1), [dax-validation-queries.json](dax-validation-queries.json), [export_model_metadata.ps1](export_model_metadata.ps1) and SQL utilities support controlled comparisons using a verified Desktop PID and private output files. Compare SQL and DAX at the same Read Version, grain, role and filter scope.
 
+[validation.sql](validation.sql) is the canonical set of 16 reader queries, shared with the [Sales discovery runner](../docs/analytics/sales-discovery-01/analyze.py). Nine additional exploratory queries live in [queries.sql](../docs/analytics/sales-discovery-01/queries.sql); the runner combines both files into the ordered 25-query suite. Generated validation results stay outside Git.
+
 `python scripts/run_checks.py` includes offline Power BI structure tests using Windows/Desktop TOM. The portable suite excludes those Desktop-dependent checks. Structural checks do not refresh data or exercise every visual interaction.
 
 ## Configuration

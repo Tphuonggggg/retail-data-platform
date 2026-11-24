@@ -91,4 +91,35 @@ class ConfigTests(unittest.TestCase):
     def test_unique_on_unregistered_key_fails_clearly(self):
         self.reject(lambda d:d['quality_rules']['rules'][0].update(type='unique',column='customer_name'))
 
+class AnalyticsQueryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import importlib.util
+        path=Path(__file__).resolve().parents[3]/'docs/analytics/sales-discovery-01/analyze.py'
+        spec=importlib.util.spec_from_file_location('sales_query_contract',path)
+        cls.analytics=importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cls.analytics)
+
+    def test_shared_query_suite_preserves_reference_sql(self):
+        import hashlib,json
+        queries=self.analytics.query_suite()
+        self.assertEqual([q[0] for q in queries],[f'Q{i:02}' for i in range(1,26)])
+        # Captured before consolidation: IDs, titles, order and every SQL character.
+        digest=hashlib.sha256(json.dumps(queries,ensure_ascii=False,separators=(',',':')).encode('utf-8')).hexdigest()
+        self.assertEqual(digest,'30e050edab8c7d6c17413fb8563328931527f9ddaeb6d89241b821fc557752dd')
+
+    def test_shared_query_inputs_reject_ambiguous_incomplete_or_write_queries(self):
+        from unittest.mock import patch
+        paths=(Path('reader.sql'),Path('discovery.sql'))
+        reader=''.join(f'-- Q{i:02} Reader {i}\nSELECT {i};\n' for i in range(1,17))
+        extra=''.join(f'-- Q{i:02} Discovery {i}\nSELECT {i};\n' for i in range(17,26))
+        for second in (extra+'-- Q01 Duplicate\nSELECT 1;\n',
+                       extra.replace('-- Q25 Discovery 25\nSELECT 25;\n',''),
+                       extra.replace('SELECT 25','DELETE FROM forbidden')):
+            contents={'reader.sql':reader,'discovery.sql':second}
+            with self.subTest(second=second),patch.object(self.analytics,'QUERY_PATHS',paths), \
+                 patch.object(Path,'read_text',autospec=True,side_effect=lambda p,**kw:contents[p.name]):
+                with self.assertRaises(ValueError):self.analytics.query_suite()
+
+
 if __name__=='__main__':unittest.main()

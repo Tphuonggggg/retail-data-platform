@@ -35,5 +35,9 @@ profiles.yml
 # Power BI binaries contain imported business data; keep definitions in Git.
 /powerbi/*.pbix
 /powerbi/**/.pbi/
+# Generated validation results can contain imported data or private runtime evidence.
+/powerbi/dax-runtime-results.json
+/powerbi/sql-validation.json
+/powerbi/access-verification.json
 # Runtime-only compatibility junction for the original container bootstrap bind.
 /storage/
